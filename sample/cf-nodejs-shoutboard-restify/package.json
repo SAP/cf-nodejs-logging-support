@@ -7,10 +7,6 @@
     "scripts": {
         "test": "echo \"Error: no test specified\" && exit 1"
     },
-    "repository": {
-        "type": "git",
-        "url": "https://github.wdf.sap.corp/D061632/cf-shoutboard"
-    },
     "keywords": [
     "example",
     "node.js",
