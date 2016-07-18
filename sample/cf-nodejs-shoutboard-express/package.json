@@ -23,7 +23,7 @@
     "dependencies": {
         "express": "3.5.1",
         "redis": "latest",
-        "cf-nodejs-logging-support": "git+https://github.infra.hana.ondemand.com/d061632/cf-nodejs-logging-support"
+        "cf-nodejs-logging-support": "git+https://github.com/SAP/cf-nodejs-logging-support"
     },
     "engines": {
         "node": "0.10.x",

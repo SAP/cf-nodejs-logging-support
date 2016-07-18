@@ -13,7 +13,7 @@ Add the following dependency to your package.json.
 
 ```json
 "dependencies": {
-    "cf-nodejs-logging-support": "git+https://github.infra.hana.ondemand.com/d061632/cf-nodejs-logging-support"
+    "cf-nodejs-logging-support": "git+https://github.com/SAP/cf-nodejs-logging-support"
 }
 ```
     
