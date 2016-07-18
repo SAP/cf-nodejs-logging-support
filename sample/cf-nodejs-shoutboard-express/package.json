@@ -1,0 +1,32 @@
+{
+    "name": "shoutboard_cf",
+    "version": "0.0.1",
+    "description": "Sample Node.js app",
+    "main": "web.js",
+    "license": "UNLICENSED",
+    "scripts": {
+        "test": "echo \"Error: no test specified\" && exit 1"
+    },
+    "repository": {
+        "type": "git",
+        "url": "https://github.wdf.sap.corp/D061632/cf-shoutboard"
+    },
+    "keywords": [
+    "example",
+    "node.js",
+    "cloudfoundry",
+    "shoutbox",
+    "shoutboard"
+  ],
+    "author": "Nicklas Dohrn, Christian Dinse",
+    "homepage": "https://github.com/mvanholsteijn/sample_nodejs_cf",
+    "dependencies": {
+        "express": "3.5.1",
+        "redis": "latest",
+        "cf-nodejs-logging-support": "git+https://github.infra.hana.ondemand.com/d061632/cf-nodejs-logging-support"
+    },
+    "engines": {
+        "node": "0.10.x",
+        "npm": "1.3.x"
+    }
+}

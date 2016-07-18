@@ -1,0 +1,257 @@
+html {
+    height: 100%;
+}
+
+body {
+    font-family: Verdana;
+    margin: 0;
+    width: 100%;
+    height: 100%;
+}
+
+.wrapper {
+    height: 100%;
+    width: 100%;
+    padding: 10px;
+    box-sizing: border-box;
+}
+
+#headline {
+    height: 45px;
+    width: 100%;
+    padding: 10px;
+    box-sizing: border-box;
+    background-color: #548aba;
+    color: #fff;
+    font-size: 1.2em;
+}
+
+#main-container {
+    background-color: #333;
+    width: 100%;
+    height: 100%;
+    margin: 0px auto;
+    max-height: 600px;
+    max-width: 800px;
+}
+
+#message-list {
+    height: calc(100% - 85px);
+    padding: 10px;
+    overflow-x: hidden;
+    overflow-y: auto;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+#input-field {
+    margin: 5px;
+    width: calc(100% - 10px);
+    float: left;
+    font-size: 1.0em;
+    padding-right: 40px;
+    padding-left: 5px;
+    height: 30px;
+}
+
+#name-field {
+    width: 200px;
+    font-size: 0.9em;
+    padding-left: 5px;
+    padding-right: 5px;
+    height: 28px;
+}
+
+input[type="text"] {
+    outline: none;
+    box-sizing: border-box;
+    border: none;
+    background-color: rgba(255, 255, 255, 0.57);
+}
+
+input[type="text"]:focus {
+    background-color: rgba(255, 255, 255, 1.0);
+}
+
+.message-box {
+    color: rgb(255, 255, 255);
+    padding: 5px;
+    padding-bottom: 10px;
+    margin-bottom: 5px;
+    display: none;
+    border-bottom: 1px solid #737373;
+}
+
+.message-box-metadata {
+    font-size: 0.8em;
+    color: #8E8E8E;
+}
+
+.message-box-text {
+    color: #FFF;
+}
+
+#bt-send {
+    float: left;
+    margin-left: -38px;
+    color: #FFF;
+    margin-top: 9px;
+    cursor: pointer;
+    background-image: url(../images/send.png);
+    background-size: 30px 20px;
+    background-repeat: no-repeat;
+    width: 30px;
+    height: 30px;
+}
+
+#bt-update {
+    float: left;
+    margin-left: 0;
+    margin-top: -1px;
+    margin-right: 10px;
+    cursor: pointer;
+    background-image: url(../images/update.png);
+    background-size: 28px 28px;
+    background-repeat: no-repeat;
+    width: 32px;
+    height: 32px;
+    transition: width 0.2s;
+}
+
+#bt-update.closed {
+    width: 0;
+}
+
+#bt-auto-update {
+    float: left;
+    margin-left: 0;
+    cursor: pointer;
+    width: 28px;
+    height: 10px;
+    margin-right: 10px;
+    background-color: rgba(0, 0, 0, 0.41);
+    border-radius: 5px;
+    margin-top: 8px;
+}
+
+#bt-menu {
+    display: none;
+    background-image: url(../images/menu.png);
+    width: 32px;
+    height: 32px;
+    cursor: pointer;
+}
+
+#text-auto-update {
+    float: left;
+    font-size: 0.8em;
+    height: 25px;
+    line-height: 25px;
+    margin-right: 10px;
+}
+
+.button-slider {
+    width: 16px;
+    height: 16px;
+    background-color: #e2e2e2;
+    border-radius: 50%;
+    margin-top: -3px;
+    margin-left: 0px;
+    transition: margin-left 0.2s, background-color 0.2s;
+}
+
+.button-slider.activated {
+    margin-left: 12px;
+    background-color: #c3ff6f;
+}
+
+.button {
+    opacity: 0.8;
+    transition: opacity 0.1s
+}
+
+.button:hover {
+    opacity: 1.0;
+}
+
+#headline {
+    -webkit-user-select: none;
+    /* Chrome all / Safari all */
+    -moz-user-select: none;
+    /* Firefox all */
+    -ms-user-select: none;
+    /* IE 10+ */
+    user-select: none;
+    /* Likely future */
+}
+
+::-webkit-input-placeholder {
+    color: #555;
+}
+
+::-moz-placeholder {
+    /* Firefox 19+ */
+    color: #555;
+}
+
+:-ms-input-placeholder {
+    color: #555;
+}
+
+#headline-controls {
+    float: right;
+}
+
+#headline-text {
+    float: left;
+}
+
+@media screen and (max-width: 800px) {
+    .wrapper {
+        padding: 0;
+    }
+    #main-container {
+        max-height: none;
+    }
+    #headline-controls {
+        background-color: rgb(53, 93, 127);
+        position: absolute;
+        top: -80px;
+        padding: 10px;
+        width: 100%;
+        left: 0;
+        box-sizing: border-box;
+        transition: top 0.2s;
+    }
+    #headline-controls.open {
+        top: 50px;
+    }
+    #bt-update {
+        position: fixed;
+        top: 10px;
+        right: 36px;
+    }
+    #bt-menu {
+        position: fixed;
+        top: 7px;
+        right: 8px;
+        display: block;
+    }
+    .button:hover {
+        opacity: 0.8;
+    }
+    .button:active {
+        opacity: 1.0;
+    }
+}
+
+@media screen and (max-width: 400px) {
+    #headline-controls {
+        height: 80px;
+    }
+    #name-field {
+        position: absolute;
+        left: 10px;
+        top: 45px;
+    }
+}

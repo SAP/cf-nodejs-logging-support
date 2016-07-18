@@ -1,0 +1,7 @@
+{
+    "node": true,
+    "jquery": true,
+    "browser": true,
+    "-W041": false,
+    "mocha": true
+}
