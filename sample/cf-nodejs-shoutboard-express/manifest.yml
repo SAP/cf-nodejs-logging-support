@@ -1,6 +1,6 @@
 ---
 applications:
-- name: d061632-express-cf-shoutboard
+- name: express-cf-shoutboard
   command: node web.js
   memory: 128m
   disk: 128m
