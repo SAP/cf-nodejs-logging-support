@@ -68,6 +68,9 @@ var logNetwork = function (req, res, next) {
     logObject.response_time_ms = 0; // Set later
     logObject.direction = "IN";
 
+    req.logObject = logObject;
+    req.logMessage = core.logMessage;
+
     var start = Date.now();
 
     res.on('finish', function () {

@@ -38,7 +38,6 @@ var logNetwork = function (req, res, next) {
         };
     }
 
-
     if (req.header("X-CorrelationID") != null) {
         logObject.correlation_id = req.header("X-CorrelationID");
     } else if (req.header("x-vcap-request-id") != null) {
@@ -66,6 +65,10 @@ var logNetwork = function (req, res, next) {
     logObject.request_received_at = (new Date()).toJSON();
     logObject.response_time_ms = -1; // Set later
     logObject.direction = "IN";
+
+    req.logObject = logObject;
+    req.logMessage = core.logMessage;
+
 
     var start = Date.now();
 

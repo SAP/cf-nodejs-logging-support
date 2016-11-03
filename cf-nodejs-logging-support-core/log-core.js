@@ -94,6 +94,13 @@ var logMessage = function () {
     var msg = util.format.apply(util, args);
 
     var logObject = {};
+
+    var req = this;
+    if (req.logObject != null) {
+        logObject.correlation_id = req.logObject.correlation_id;
+        logObject.request_id = req.logObject.request_id;
+    }
+
     var time = process.hrtime();
 
     initLog(logObject, time);
