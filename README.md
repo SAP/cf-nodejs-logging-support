@@ -32,17 +32,23 @@ log.setLoggingLevel("info");
 app.use(log.logNetwork);
 
 app.get('/', function (req, res) {
+    // Context bound custom message
+    req.logMessage("info", "Hello World will be send");
+    
     res.send('Hello World');
-});
-
+}
 app.listen(3000);
 
-// Formatted log message
+// Formatted log message free of request context
 log.logMessage("info", "Server is listening on port %d", 3000);
 ```
 ### Custom Messages
 
 Use the logMessage(...) function to log custom messages with a given logging level. It is also possible to use the standard format placeholders equivalent to the [util.format](https://nodejs.org/api/util.html#util_util_format_format) method.
+
+Custom messages may be called on two objects:
+- If you want to keep track of a request with custom messages, you want to call req.logMessage(...) so the correct correlation_id and request_id will be added to this log.
+- If you want to write request independent custom messages, you want to call log.logMessage(...) so no further context tracking will be added.
 
 Simple message
 ```js
