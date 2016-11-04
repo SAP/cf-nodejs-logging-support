@@ -35,7 +35,7 @@ app.use(contextroot + '/', express.static(__dirname + '/public'));
 app.use(express.bodyParser());
 
 //Setting CF Port
-var port = Number(process.env.VCAP_APP_PORT || 5000 + parseInt(100 * Math.random()));
+var port = Number(process.env.VCAP_APP_PORT || 8080);
 app.listen(port, function () {
     log.logMessage('info', 'listening on port: %d', port);
 });
