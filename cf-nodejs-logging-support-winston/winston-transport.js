@@ -19,6 +19,9 @@ var winstonTransport = new(winston.transports.Console)({
 
         core.initLog(logObject, time);
         if (options != null) {
+            if (options.level != null) {
+                logObject.level = options.level;
+            }
             logObject.msg = (undefined !== options.message ? options.message : '');
 
             logObject.type = "log";
