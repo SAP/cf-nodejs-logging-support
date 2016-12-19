@@ -36,7 +36,7 @@ app.get('/', function (req, res) {
     req.logMessage("info", "Hello World will be send");
     
     res.send('Hello World');
-}
+});
 app.listen(3000);
 
 // Formatted log message free of request context
