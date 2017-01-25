@@ -1,3 +1,4 @@
+//loading core logger functionality
 var coreLogger = require("./cf-nodejs-logging-support-core/log-core");
 var effectiveLogger = null;
 var transport = require("./cf-nodejs-logging-support-winston/winston-transport");
