@@ -2,7 +2,7 @@
 
 // Log network activity for restify applications
 
-var uuid = require("node-uuid");
+var uuid = require("uuid/v4");
 var core;
 
 var setCoreLogger = function (coreLogger) {
@@ -45,7 +45,7 @@ var logNetwork = function (req, res, next) {
     } else if (req.header("x-vcap-request-id") != null) {
         logObject.correlation_id = req.header("x-vcap-request-id");
     } else {
-        logObject.correlation_id = uuid.v4();
+        logObject.correlation_id = uuid();
     }
 
     logObject.request_id = req.header("x-vcap-request-id") == null ? "-" : req.header("x-vcap-request-id");
