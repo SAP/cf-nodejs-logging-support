@@ -1,6 +1,6 @@
 {
     "name": "cf-nodejs-logging-support",
-    "version": "0.9.62",
+    "version": "0.9.63",
     "description": "Logging tool for Cloud Foundry",
     "keywords": [
     "logging",

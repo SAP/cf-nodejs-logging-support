@@ -222,6 +222,28 @@ describe('Test log-core', function () {
                 "field": "value"
             }));
         });
+
+        it("Test correctly bound request id", function () {
+            var testRequest = {};
+            testRequest.logObject = {
+                "request_id": "456"
+            };
+            testRequest.log = log;
+            testRequest.log("info", "Test");
+            logObject.msg.should.equal("Test");
+            logObject.request_id.should.equal("456");
+        });
+
+        it("Test correctly bound correlation id", function () {
+            var testRequest = {};
+            testRequest.logObject = {
+                "correlation_id": "123"
+            };
+            testRequest.log = log;
+            testRequest.log("info", "Test");
+            logObject.msg.should.equal("Test");
+            logObject.correlation_id.should.equal("123");
+        });
     });
 
     describe('Test initLog', function () {
