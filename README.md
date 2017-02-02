@@ -107,5 +107,5 @@ logger.log("info", "Server is listening on port %d", 3000);
 
 ## Sample Apps
 
-  * [Express Sample](sample/cf-nodejs-shoutboard-express)
-  * [Restify Sample](sample/cf-nodejs-shoutboard-restify)
+  * [Express Sample](https://github.com/SAP/cf-nodejs-logging-support/blob/master/sample/cf-nodejs-shoutboard-express)
+  * [Restify Sample](https://github.com/SAP/cf-nodejs-logging-support/blob/master/sample/cf-nodejs-shoutboard-restify)
