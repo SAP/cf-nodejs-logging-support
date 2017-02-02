@@ -41,5 +41,8 @@
             "name": "christian dinse",
             "email": "christian.dinse@sap.com"
     }
-  ]
+  ],
+    "scripts": {
+        "test": "istanbul cover node_modules/mocha/bin/_mocha"
+    }
 }
