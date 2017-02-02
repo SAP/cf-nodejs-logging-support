@@ -9,12 +9,8 @@
 
 ## Installation
 
-Add the following dependency to your package.json.
-
-```json
-"dependencies": {
-    "cf-nodejs-logging-support": "git+https://github.com/SAP/cf-nodejs-logging-support"
-}
+```bashp
+npm install cf-nodejs-logging-support
 ```
     
 ## Usage
