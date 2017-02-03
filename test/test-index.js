@@ -62,7 +62,7 @@ describe('Test index.js', function () {
             linking.should.equal("express");
         });
 
-        it('testing setLoggingLevel: ', function () {
+        it('Test setLoggingLevel: ', function () {
             var level = "testLevel";
             logger.setLoggingLevel(level);
             loggingLevel.should.equal(level);
@@ -71,7 +71,7 @@ describe('Test index.js', function () {
             loggingLevel.should.equal(level);
         });
 
-        it('testing logMessage: ', function () {
+        it('Test logMessage: ', function () {
             var message = "testLevel";
             logger.logMessage(message);
             message.should.equal(message);
