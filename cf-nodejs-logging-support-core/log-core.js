@@ -116,6 +116,13 @@ var logMessage = function () {
     sendLog(level, logObject);
 };
 
+var getCorrelationId = function () {
+    if (this.logObject != null) {
+        return this.logObject.correlation_id;
+    }
+    return null;
+};
+
 
 
 var validObject = function (obj) {
@@ -136,3 +143,4 @@ exports.initLog = initLog;
 exports.sendLog = sendLog;
 exports.logMessage = logMessage;
 exports.validObject = validObject;
+exports.getCorrelationId = getCorrelationId;

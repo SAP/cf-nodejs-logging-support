@@ -70,6 +70,7 @@ var logNetwork = function (req, res, next) {
 
     req.logObject = logObject;
     req.logMessage = core.logMessage;
+    req.getCorrelationId = core.getCorrelationId;
 
     var start = Date.now();
 

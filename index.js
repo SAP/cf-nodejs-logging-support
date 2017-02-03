@@ -34,4 +34,8 @@ exports.logMessage = function (args) {
     effectiveLogger.logMessage.apply(this, arguments);
 };
 
+exports.getCorrelationId = function () {
+    return effectiveLogger.getCorrelationId();
+};
+
 exports.winstonTransport = transport.winstonTransport;
