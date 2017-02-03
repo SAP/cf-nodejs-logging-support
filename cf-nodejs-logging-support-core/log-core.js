@@ -117,8 +117,11 @@ var logMessage = function () {
 };
 
 var getCorrelationId = function () {
-    if (this.logObject != null) {
-        return this.logObject.correlation_id;
+    var req = this;
+    if (req.logObject != null) {
+        if (req.logObject.correlation_id != null) {
+            return req.logObject.correlation_id;
+        }
     }
     return null;
 };

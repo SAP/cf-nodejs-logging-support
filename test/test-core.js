@@ -1,6 +1,6 @@
 var chai = require("chai");
 var rewire = require("rewire");
-//var assert = chai.assert;
+var assert = chai.assert;
 chai.should();
 var sinon = require("sinon");
 var rewire = require("rewire");
@@ -135,6 +135,38 @@ describe('Test log-core', function () {
                 }
             });
             logText.should.equal('{"field1":"value","field2":42,"field3":47.11,"field4":{"innerField":73,"innerArray":[{"arrayField1":1},{"arrayField2":2}]}}');
+        });
+    });
+
+    describe('Test getCorrelationId', function () {
+        var logObject = null;
+        var getCorrelationId = null;
+
+        before(function () {
+            core = rewire("../cf-nodejs-logging-support-core/log-core.js");
+            core.__set__({
+                "sendLog": function (level, logObj) {
+                    logObject = logObj;
+                }
+            });
+
+            getCorrelationId = core.__get__("getCorrelationId");
+        });
+
+        it('Test correct reading from request', function () {
+            var testRequest = {};
+            testRequest.logObject = {
+                "correlation_id": "456"
+            };
+            testRequest.getCorrelationId = getCorrelationId;
+            testRequest.getCorrelationId().should.equal("456");
+        });
+
+        it('Test correct handling of missing correlation', function () {
+            var testRequest = {};
+            testRequest.logObject = {};
+            testRequest.getCorrelationId = getCorrelationId;
+            assert.isNull(testRequest.getCorrelationId());
         });
     });
 
