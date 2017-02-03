@@ -4,5 +4,5 @@ This app demonstrates the logging functionality by providing an online shoutbox,
 
 ## Installation
  * Clone this repository
- * Edit field 'name' in manifest.yml to match '[c/d/i-user]-cf-shoutboard'
+ * Make sure to choose a unique name by editing the 'name' field in manifest.yml
  * Execute 'cf push' in cf-nodejs-logging-support/sample/cf-nodejs-shoutboard-express folder
