@@ -162,9 +162,15 @@ describe('Test log-core', function () {
             testRequest.getCorrelationId().should.equal("456");
         });
 
-        it('Test correct handling of missing correlation', function () {
+        it('Test correct handling of missing correlation_id', function () {
             var testRequest = {};
             testRequest.logObject = {};
+            testRequest.getCorrelationId = getCorrelationId;
+            assert.isNull(testRequest.getCorrelationId());
+        });
+
+        it('Test correct handling of missing logObject', function () {
+            var testRequest = {};
             testRequest.getCorrelationId = getCorrelationId;
             assert.isNull(testRequest.getCorrelationId());
         });
