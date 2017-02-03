@@ -1,4 +1,6 @@
-# Node.js Logging Support for Cloud Foundry
+# Node.js Logging Support for Cloud Foundry   
+
+[![Build Status](https://travis-ci.org/SAP/cf-nodejs-logging-support.svg?branch=master)](https://travis-ci.org/SAP/cf-nodejs-logging-support)
 
 ## Features
 

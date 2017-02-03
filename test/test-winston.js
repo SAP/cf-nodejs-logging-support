@@ -29,7 +29,10 @@ describe('Test winston.js', function () {
         it('Test formatter with string: ', function () {
             var options = {};
             options.message = "hallo";
-            assert.typeOf(obj.formatter(options), "string");
+            var jsonObj = JSON.parse(obj.formatter(options));
+            assert.property(jsonObj, "msg");
+            jsonObj.msg.should.equal("hallo");
+
         });
 
         it('Test formatter with object: ', function () {
@@ -38,8 +41,19 @@ describe('Test winston.js', function () {
                 "hallo": "ich"
             };
             options.message = "hallo";
-            assert.typeOf(obj.formatter(options), "string");
+            var jsonObj = JSON.parse(obj.formatter(options));
+            assert.property(jsonObj.custom_fields, "hallo");
+            jsonObj.custom_fields.hallo.should.equal("ich");
 
+        });
+
+        it('Test loglevel defined logging', function () {
+
+            var options = {};
+            options.level = "info";
+            var jsonObj = JSON.parse(obj.formatter(options));
+            assert.property(jsonObj, "level");
+            jsonObj.level.should.equal("info");
         });
     });
 });
