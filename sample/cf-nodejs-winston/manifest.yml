@@ -1,6 +1,6 @@
 ---
 applications:
-- name: [c/d/i-user]-cf-shoutboard
+- name: winston-cf-shoutboard
   command: node web.js
   memory: 128m
   disk: 128m
