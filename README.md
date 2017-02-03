@@ -103,6 +103,17 @@ app.listen(3000);
 logger.log("info", "Server is listening on port %d", 3000);
 ```
 
+### Request correlation_id
+In order to get the correlation_id of an request, you can use the following call.
+```js
+app.get('/', function (req, res) {
+    // Call to context bound function
+    var id = req.getCorrelationId();
+    
+    res.send('Hello World');
+});
+```
+
 ## Sample Apps
 
   * [Express Sample](https://github.com/SAP/cf-nodejs-logging-support/blob/master/sample/cf-nodejs-shoutboard-express)
