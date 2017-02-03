@@ -1,6 +1,6 @@
 # Node.js Logging Support for Cloud Foundry   
 
-[![Build Status](https://travis-ci.org/SAP/cf-nodejs-logging-support.svg?branch=master)](https://travis-ci.org/SAP/cf-nodejs-logging-support)
+[![Version npm](https://img.shields.io/npm/v/cf-nodejs-logging-support.svg?style=flat-square)](https://www.npmjs.com/package/cf-nodejs-logging-support)[![npm Downloads](https://img.shields.io/npm/dm/cf-nodejs-logging-support.svg?style=flat-square)](https://www.npmjs.com/package/cf-nodejs-logging-support)[![Build Status](https://img.shields.io/travis/SAP/cf-nodejs-logging-support/master.svg?style=flat-square)](https://travis-ci.org/SAP/cf-nodejs-logging-support)
 
 ## Features
 
