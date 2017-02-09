@@ -90,7 +90,12 @@ var logMessage = function (args) {
     core.logMessage.apply(this, arguments);
 };
 
+var setLogPattern = function (pattern) {
+    core.setLogPattern(pattern);
+};
+
 exports.setCoreLogger = setCoreLogger;
 exports.setLoggingLevel = setLoggingLevel;
 exports.logNetwork = logNetwork;
 exports.logMessage = logMessage;
+exports.setLogPattern = setLogPattern;

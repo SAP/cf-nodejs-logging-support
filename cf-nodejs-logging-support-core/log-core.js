@@ -1,6 +1,8 @@
 var winston = require("winston");
 var util = require('util');
 
+var pattern = null;
+
 // Customized transport, which specifies the correct logging format and logs to stdout
 var consoleTransport = new(winston.transports.Console)({
     timestamp: function () {
@@ -9,7 +11,24 @@ var consoleTransport = new(winston.transports.Console)({
     level: "info",
     formatter: function (options) {
         // Return string will be passed to winston logger.
-        return (undefined !== options.message ? options.message : '');
+        if (null !== pattern) {
+            if (undefined !== options.meta) {
+                var output = pattern;
+
+                for (var key in options.meta) {
+                    if (typeof (options.meta[key]) === "object" && validObject(options.meta[key])) {
+                        output = output.replace('{{' + key + '}}', JSON.stringify(options.meta[key]));
+                    } else {
+                        output = output.replace('{{' + key + '}}', options.meta[key]);
+                    }
+                }
+
+                return output;
+            }
+            return "";
+        } else {
+            return (undefined !== options.meta && validObject(options.meta)) ? JSON.stringify(options.meta) : '';
+        }
     }
 });
 
@@ -52,12 +71,18 @@ var initLog = function (logObject, time) {
     logObject.container_id = !("CF_INSTANCE_IP" in process.env) ? "-" : process.env.CF_INSTANCE_IP;
 
     logObject.logger = "nodejs-logger";
+
+
 };
 
 // Writes the given log file to stdout
 var sendLog = function (level, logObject) {
     // Write log to console to be parsed by logstash
-    winstonLogger.log(level, JSON.stringify(logObject));
+    winstonLogger.log(level, '', logObject);
+};
+
+var setLogPattern = function (p) {
+    pattern = p;
 };
 
 // Logs message and custom fields
@@ -147,3 +172,4 @@ exports.sendLog = sendLog;
 exports.logMessage = logMessage;
 exports.validObject = validObject;
 exports.getCorrelationId = getCorrelationId;
+exports.setLogPattern = setLogPattern;
