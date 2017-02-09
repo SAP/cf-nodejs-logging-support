@@ -387,4 +387,22 @@ describe('Test log-express', function () {
             assert.equal(expArg[3], undefined);
         });
     });
+
+    describe('Test setLogPattern', function () {
+        var pattern = null;
+
+
+        beforeEach(function () {
+            core.setLogPattern = function (p) {
+                pattern = p;
+            };
+        });
+
+        it("Test pattern conservation", function () {
+            expressLogger.setLogPattern("{{hallo}} - {{welt}}");
+
+            pattern.should.equal("{{hallo}} - {{welt}}");
+
+        });
+    });
 });
