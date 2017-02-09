@@ -118,17 +118,17 @@ describe('Test log-core', function () {
 
 
     describe('Test sendLog', function () {
-        var logText;
         var logLevel;
+        var logMeta;
         var sendLog;
 
         before(function () {
             core = rewire("../cf-nodejs-logging-support-core/log-core.js");
             core.__set__({
                 "winstonLogger": {
-                    "log": function (level, text) {
-                        logText = text;
+                    "log": function (level, text, meta) {
                         logLevel = level;
+                        logMeta = meta;
 
                     }
                 }
@@ -144,14 +144,17 @@ describe('Test log-core', function () {
 
         it('Test empty json output', function () {
             sendLog("info", {});
-            logText.should.equal('{}');
+            var output = JSON.stringify(logMeta);
+
+            console.log(output);
+            output.should.equal("{}");
         });
 
         it('Test simple json output', function () {
             sendLog("info", {
                 "field": "value"
             });
-            logText.should.equal('{"field":"value"}');
+            JSON.stringify(logMeta).should.equal('{"field":"value"}');
         });
 
         it('Test complex json output', function () {
@@ -168,7 +171,7 @@ describe('Test log-core', function () {
                     }]
                 }
             });
-            logText.should.equal('{"field1":"value","field2":42,"field3":47.11,"field4":{"innerField":73,"innerArray":[{"arrayField1":1},{"arrayField2":2}]}}');
+            JSON.stringify(logMeta).should.equal('{"field1":"value","field2":42,"field3":47.11,"field4":{"innerField":73,"innerArray":[{"arrayField1":1},{"arrayField2":2}]}}');
         });
     });
 

@@ -376,15 +376,6 @@ describe('Test log-express', function () {
             };
         });
 
-        it("Test this passthrough", function () {
-            expressLogger.logMessage("test", "this", {
-                "totally": "random"
-            });
-
-            assert.equal(Object.keys(expThat).length, 4);
-
-        });
-
         it("Test arg conservation", function () {
             expressLogger.logMessage("test", "this", {
                 "totally": "random"
@@ -394,6 +385,24 @@ describe('Test log-express', function () {
             assert.property(expArg[2], "totally");
             assert.equal(expArg[2].totally, "random");
             assert.equal(expArg[3], undefined);
+        });
+    });
+
+    describe('Test setLogPattern', function () {
+        var pattern = null;
+
+
+        beforeEach(function () {
+            core.setLogPattern = function (p) {
+                pattern = p;
+            };
+        });
+
+        it("Test pattern conservation", function () {
+            expressLogger.setLogPattern("{{hallo}} - {{welt}}");
+
+            pattern.should.equal("{{hallo}} - {{welt}}");
+
         });
     });
 });
