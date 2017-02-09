@@ -74,11 +74,39 @@ describe('Test log-core', function () {
             transport.level.should.equal("info");
         });
 
-        it("Test transport.formatter", function () {
+        it("Test transport.formatter in (default) json mode", function () {
             var options = {};
-            options.message = "test";
+            options.meta = {
+                test: "abc"
+            };
             transport.formatter({}).should.equal("");
-            transport.formatter(options).should.equal("test");
+            transport.formatter(options).should.equal(JSON.stringify(options.meta));
+        });
+
+        it("Test transport.formatter in pattern mode with correct keys", function () {
+            var options = {};
+            options.meta = {
+                test: "abc",
+                number: 21
+            };
+
+            core.setLogPattern("Test: {{test}} {{number}}");
+
+            transport.formatter({}).should.equal("");
+            transport.formatter(options).should.equal("Test: abc 21");
+        });
+
+        it("Test transport.formatter in pattern mode with non-existing keys", function () {
+            var options = {};
+            options.meta = {
+                test: "abc",
+                number: 21
+            };
+
+            core.setLogPattern("Test: {{empty}}");
+
+            transport.formatter({}).should.equal("");
+            transport.formatter(options).should.equal("Test: {{empty}}");
         });
     });
 
