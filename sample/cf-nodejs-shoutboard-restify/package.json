@@ -1,6 +1,6 @@
 {
     "name": "shoutboard_cf",
-    "version": "0.0.1",
+    "version": "1.0.0",
     "description": "Sample Node.js app",
     "main": "web.js",
     "license": "UNLICENSED",
@@ -8,21 +8,22 @@
         "test": "echo \"Error: no test specified\" && exit 1"
     },
     "keywords": [
-    "example",
-    "node.js",
-    "cloudfoundry",
-    "shoutbox",
-    "shoutboard"
-  ],
+        "example",
+        "node.js",
+        "cloudfoundry",
+        "shoutbox",
+        "shoutboard",
+        "restify"
+    ],
     "author": "Nicklas Dohrn, Christian Dinse",
-    "homepage": "https://github.com/mvanholsteijn/sample_nodejs_cf",
     "dependencies": {
         "restify": "latest",
         "redis": "latest",
-        "cf-nodejs-logging-support": "git+https://github.com/SAP/cf-nodejs-logging-support"
+        "cf-nodejs-logging-support": "latest"
     },
+    "repository": "https://github.com/SAP/cf-nodejs-logging-support/tree/master/sample/cf-nodejs-shoutboard-restify",
     "engines": {
-        "node": "0.10.x",
+        "node": ">=4.0.0",
         "npm": "1.3.x"
     }
 }
