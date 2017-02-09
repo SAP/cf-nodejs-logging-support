@@ -376,15 +376,6 @@ describe('Test log-express', function () {
             };
         });
 
-        it("Test this passthrough", function () {
-            expressLogger.logMessage("test", "this", {
-                "totally": "random"
-            });
-
-            assert.equal(Object.keys(expThat).length, 4);
-
-        });
-
         it("Test arg conservation", function () {
             expressLogger.logMessage("test", "this", {
                 "totally": "random"
