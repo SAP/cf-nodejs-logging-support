@@ -86,21 +86,27 @@ describe('Test log-core', function () {
         it("Test transport.formatter in pattern mode with correct keys", function () {
             var options = {};
             options.meta = {
-                test: "abc",
-                number: 21
+                text: "abc",
+                number: 21,
+                obj: {
+                    "id": 42
+                }
             };
 
-            core.setLogPattern("Test: {{test}} {{number}}");
+            core.setLogPattern("Test: {{text}} {{number}} {{obj}}");
 
             transport.formatter({}).should.equal("");
-            transport.formatter(options).should.equal("Test: abc 21");
+            transport.formatter(options).should.equal('Test: abc 21 ' + JSON.stringify(options.meta.obj));
         });
 
         it("Test transport.formatter in pattern mode with non-existing keys", function () {
             var options = {};
             options.meta = {
-                test: "abc",
-                number: 21
+                text: "abc",
+                number: 21,
+                object: {
+                    "id": 42
+                }
             };
 
             core.setLogPattern("Test: {{empty}}");

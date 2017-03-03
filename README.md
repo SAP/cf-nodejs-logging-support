@@ -114,6 +114,13 @@ app.get('/', function (req, res) {
 });
 ```
 
+### Human readable output
+Setup an output pattern to get a human-readable output instead of json. Use '{{' and '}}' to print log parameters.
+```js
+log.setLogPattern("{{written_at}} - {{msg}}");
+```
+
+
 ## Sample Apps
 
   * [Express Sample](https://github.com/SAP/cf-nodejs-logging-support/blob/master/sample/cf-nodejs-shoutboard-express)
