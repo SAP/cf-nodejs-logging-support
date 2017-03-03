@@ -77,6 +77,8 @@ var initLog = function (logObject, time) {
 
 // Writes the given log file to stdout
 var sendLog = function (level, logObject) {
+    //Attach level to logobject
+    logObject.level = level;
     // Write log to console to be parsed by logstash
     winstonLogger.log(level, '', logObject);
 };
