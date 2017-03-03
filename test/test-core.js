@@ -142,19 +142,19 @@ describe('Test log-core', function () {
             logLevel.should.equal('testLevel');
         });
 
-        it('Test empty json output', function () {
+        it('Test empty json input', function () {
             sendLog("info", {});
             var output = JSON.stringify(logMeta);
 
             console.log(output);
-            output.should.equal("{}");
+            output.should.equal('{"level":"info"}');
         });
 
-        it('Test simple json output', function () {
+        it('Test simple json input', function () {
             sendLog("info", {
                 "field": "value"
             });
-            JSON.stringify(logMeta).should.equal('{"field":"value"}');
+            JSON.stringify(logMeta).should.equal('{"field":"value","level":"info"}');
         });
 
         it('Test complex json output', function () {
@@ -171,7 +171,7 @@ describe('Test log-core', function () {
                     }]
                 }
             });
-            JSON.stringify(logMeta).should.equal('{"field1":"value","field2":42,"field3":47.11,"field4":{"innerField":73,"innerArray":[{"arrayField1":1},{"arrayField2":2}]}}');
+            JSON.stringify(logMeta).should.equal('{"field1":"value","field2":42,"field3":47.11,"field4":{"innerField":73,"innerArray":[{"arrayField1":1},{"arrayField2":2}]},"level":"info"}');
         });
     });
 
