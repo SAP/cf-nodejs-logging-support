@@ -46,10 +46,10 @@ app.listen(3000);
 log.logMessage("info", "Server is listening on port %d", 3000);
 ```
 
-### Other Server Libraries
+## Other Server Libraries
 
 The logging library defaults to express middleware behaviour, but it can be forced to work with other Server libraries as well:
-# With restify:
+### With restify:
 ```
 var restify = require('restify');
 var log = require('cf-nodejs-logging-support');
@@ -62,7 +62,7 @@ app.use(log.logNetwork);
 
 //same usage as express logger, see minimal example above
 ```
-# With nodejs http:
+### With nodejs http:
 ```
 var log = require("cf-nodejs-logging-support");
 const http = require('http');
