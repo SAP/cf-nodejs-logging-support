@@ -18,6 +18,9 @@ exports.forceLogger = function (name) {
         case "restify":
             effectiveLogger = require("./cf-nodejs-logging-support-restify/log-restify");
             break;
+        case "plainhttp":
+            effectiveLogger = require("./cf-nodejs-logging-support-plainhttp/log-plainhttp");
+            break;
         default:
             effectiveLogger = require("./cf-nodejs-logging-support-express/log-express");
     }
