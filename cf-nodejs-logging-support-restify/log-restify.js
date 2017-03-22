@@ -63,7 +63,7 @@ var logNetwork = function (req, res, next) {
     logObject.protocol = "HTTP" + (req.httpVersion == null ? "" : "/" + req.httpVersion);
     logObject.remote_ip = logObject.remote_host;
     logObject.response_content_type = "text/html;charset=UTF-8";
-    logObject.request_received_at = (new Date()).toJSON();
+    logObject.request_received_at = logObject.written_at;
     logObject.response_time_ms = 0; // Set later
     logObject.direction = "IN";
 

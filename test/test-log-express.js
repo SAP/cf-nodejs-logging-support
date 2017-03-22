@@ -7,6 +7,7 @@ describe('Test log-express', function () {
     var core = null;
     var expressLogger;
     beforeEach(function () {
+        core = null;
         core = require("../cf-nodejs-logging-support-core/log-core.js");
         expressLogger = require("../cf-nodejs-logging-support-express/log-express.js");
         expressLogger.setCoreLogger(core);
@@ -22,14 +23,20 @@ describe('Test log-express', function () {
             core.setLoggingLevel = function () {
                 callCounter++;
             };
+            core.initBack = core.initLog;
             core.initLog = function () {
                 callCounter++;
             };
+
             core.logMessage = {};
             core.logMessage.apply = function () {
                 callCounter++;
             };
         });
+        afterEach(function () {
+
+            core.initLog = core.initBack;
+        })
 
         it("Test linking setLoggingLevel", function () {
             expressLogger.setLoggingLevel("test");
@@ -287,6 +294,7 @@ describe('Test log-express', function () {
             it('Test received_at', function () {
                 expressLogger.logNetwork(req, res, next);
                 fireLog();
+                console.log("" + core.initLog);
                 logObject.request_received_at.should.equal((new Date()).toJSON());
             });
 

@@ -44,6 +44,22 @@ Module.prototype.require = function () {
             }
         };
     }
+    if (args[0] === "./cf-nodejs-logging-support-plainhttp/log-plainhttp") {
+        linking = "plainhttp";
+        return {
+            "setCoreLogger": function () {},
+            "logNetwork": function (req1, res1) {
+                req = req1;
+                res = res1;
+            },
+            "setLoggingLevel": function (level) {
+                loggingLevel = level;
+            },
+            "logMessage": function (args) {
+                messageArgs = args;
+            }
+        };
+    }
     return originalRequire.apply(this, arguments);
 };
 var logger = require("../index.js");
@@ -58,6 +74,8 @@ describe('Test index.js', function () {
             linking.should.equal("express");
             logger.forceLogger("restify");
             linking.should.equal("restify");
+            logger.forceLogger("plainhttp");
+            linking.should.equal("plainhttp");
             logger.forceLogger("testing defaulting");
             linking.should.equal("express");
         });

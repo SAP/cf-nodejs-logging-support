@@ -22,13 +22,18 @@ describe('Test log-plainhttp', function () {
             core.setLoggingLevel = function () {
                 callCounter++;
             };
+            core.initBack = core.initLog;
             core.initLog = function () {
                 callCounter++;
             };
+
             core.logMessage = {};
             core.logMessage.apply = function () {
                 callCounter++;
             };
+        });
+        afterEach(function () {
+            core.initLog = core.initBack;
         });
 
         it("Test linking setLoggingLevel", function () {
