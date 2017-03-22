@@ -45,6 +45,45 @@ app.listen(3000);
 // Formatted log message free of request context
 log.logMessage("info", "Server is listening on port %d", 3000);
 ```
+
+### Other Server Libraries
+
+The logging library defaults to express middleware behaviour, but it can be forced to work with other Server libraries as well:
+# With restify:
+```
+var restify = require('restify');
+var log = require('cf-nodejs-logging-support');
+var app = restify.createServer();
+//forces logger to run the restify version. (default is express, forcing express is also legal)
+log.forceLogger("restify");
+
+//insert the logger in the server network queue, so each time a https request is recieved, it is will get logged.
+app.use(log.logNetwork);
+
+//same usage as express logger, see minimal example above
+```
+# With nodejs http:
+```
+var log = require("cf-nodejs-logging-support");
+const http = require('http');
+
+//forces logger to run the http version.
+log.forceLogger("plainhttp");
+
+const server = http.createServer((req, res) => {
+    //binds logging to the given request for request tracking
+    log.logNetwork(req, res);
+    
+    // Context bound custom message
+    req.logMessage("info", "request bound information:", {
+        "some": "info"
+    });
+    res.end('ok');
+});
+server.listen(3000);
+// Formatted log message free of request context
+log.logMessage("info", "Server is listening on port %d", 3000);
+```
 ### Custom Messages
 
 Use the logMessage(...) function to log custom messages with a given logging level. It is also possible to use the standard format placeholders equivalent to the [util.format](https://nodejs.org/api/util.html#util_util_format_format) method.
