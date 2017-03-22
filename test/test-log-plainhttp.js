@@ -44,7 +44,6 @@ describe('Test log-plainhttp', function () {
         it("Test linking logNetwork", function () {
             var req = {};
             var res = {};
-            res._headers = {};
             var fireLog = null;
             res.on = function (tag, func) {
                 fireLog = func;
@@ -216,6 +215,15 @@ describe('Test log-plainhttp', function () {
 
             logObject.x_forwarded_for.should.equal("testingHeader");
         });
+
+        it('Test referer', function () {
+            req.headers['referer'] = "testingReferer";
+            httpLogger.logNetwork(req, res, next);
+            fireLog();
+
+            logObject.referer.should.equal("testingReferer");
+        });
+
 
         it('Test remote_ip', function () {
             req.connection.remoteAddress = "correctAddress";

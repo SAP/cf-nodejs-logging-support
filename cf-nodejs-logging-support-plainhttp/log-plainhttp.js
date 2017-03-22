@@ -75,8 +75,8 @@ var logNetwork = function (req, res) {
             var dateObj = new Date();
             logObject.response_time_ms = dateObj.getTime() - start;
             logObject.response_sent_at = dateObj.toJSON();
-            logObject.response_size_b = (res._headers != null && res._headers["content-length"] == null) ? -1 : res._headers["content-length"];
-            logObject.response_content_type = (res._headers != null && res._headers["content-type"] == null) ? "-" : res._headers["content-type"];
+            logObject.response_size_b = (res._headers == null || res._headers["content-length"] == null) ? -1 : res._headers["content-length"];
+            logObject.response_content_type = (res._headers == null || res._headers["content-type"] == null) ? "-" : res._headers["content-type"];
             logObject.response_status = res.statusCode;
             core.sendLog('info', logObject);
             logSent = true;
