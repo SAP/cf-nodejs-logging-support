@@ -303,12 +303,24 @@ describe('Test log-express', function () {
                 logObject.request_received_at.should.equal((new Date()).toJSON());
             });
 
+            it('Test response_sent_at', function () {
+                expressLogger.logNetwork(req, res, next);
+                clock.tick(100);
+                fireLog();
+                logObject.response_sent_at.should.equal((new Date()).toJSON());
+            });
+
             it('Test response_time', function () {
                 expressLogger.logNetwork(req, res, next);
                 clock.tick(100);
                 fireLog();
 
                 logObject.response_time_ms.should.equal(100);
+                expressLogger.logNetwork(req, res, next);
+                clock.tick(50);
+                fireLog();
+
+                logObject.response_time_ms.should.equal(50);
             });
         });
 

@@ -50,7 +50,6 @@ var logNetwork = function (req, res, next) {
     logObject.type = "request";
     logObject.request = req.originalUrl == null ? "-" : req.originalUrl;
     logObject.referer = "-";
-    logObject.response_sent_at = (new Date()).toJSON();
     logObject.response_status = -1; // Set later
     logObject.method = req.method == null ? "-" : req.method;
     logObject.response_size_b = -1; // Set later
@@ -83,7 +82,9 @@ var logNetwork = function (req, res, next) {
 
     var finishLog = function () {
         if (!logSent) {
-            logObject.response_time_ms = Date.now() - start;
+            var timeObj = new Date();
+            logObject.response_sent_at = timeObj.toJSON();
+            logObject.response_time_ms = timeObj.getTime() - start;
             logObject.response_size_b = res.get("content-length") == null ? -1 : res.get("content-length");
             logObject.response_content_type = res.get("content-type") == null ? "-" : res.get("content-type");
             logObject.response_status = res.statusCode;

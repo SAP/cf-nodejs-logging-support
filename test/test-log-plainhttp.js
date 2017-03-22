@@ -2,17 +2,15 @@ var chai = require("chai");
 var sinon = require("sinon");
 var assert = chai.assert;
 chai.should();
-describe('Test log-restify', function () {
+describe('Test log-express', function () {
 
     var core = null;
-    var restifyLogger;
+    var httpLogger;
     beforeEach(function () {
         core = require("../cf-nodejs-logging-support-core/log-core.js");
-        restifyLogger = require("../cf-nodejs-logging-support-restify/log-restify.js");
-        restifyLogger.setCoreLogger(core);
+        httpLogger = require("../cf-nodejs-logging-support-express/log-express.js");
+        httpLogger.setCoreLogger(core);
     });
-
-
 
     describe('Test linkings', function () {
         var callCounter;
@@ -34,12 +32,12 @@ describe('Test log-restify', function () {
         });
 
         it("Test linking setLoggingLevel", function () {
-            restifyLogger.setLoggingLevel("test");
+            httpLogger.setLoggingLevel("test");
             assert.equal(callCounter, 1);
         });
 
         it("Test linking logMessage", function () {
-            restifyLogger.logMessage("test");
+            httpLogger.logMessage("test");
             assert.equal(callCounter, 1);
         });
 
@@ -50,7 +48,7 @@ describe('Test log-restify', function () {
             res.on = function (tag, func) {
                 fireLog = func;
             };
-            restifyLogger.logNetwork(req, res, function () {});
+            httpLogger.logNetwork(req, res, function () {});
             fireLog();
             assert.equal(callCounter, 2);
         });
@@ -81,12 +79,28 @@ describe('Test log-restify', function () {
 
             res = {};
             res.on = function (tag, func) {
-                fireLog = func;
+                if (tag == 'finish') {
+                    fireLog = func;
+                }
             };
 
             res.get = function () {
                 return null;
             };
+        });
+
+        it('Test anti-duplication mechanism', function () {
+            var count = 0;
+
+            core.sendLog = function () {
+                count++;
+            };
+
+            httpLogger.logNetwork(req, res, next);
+            fireLog();
+            fireLog();
+
+            count.should.equal(1);
         });
 
         describe('Test correlation_id', function () {
@@ -97,7 +111,7 @@ describe('Test log-restify', function () {
                     }
                 };
 
-                restifyLogger.logNetwork(req, res, next);
+                httpLogger.logNetwork(req, res, next);
                 fireLog();
 
                 logObject.correlation_id.should.equal("correctID");
@@ -110,14 +124,14 @@ describe('Test log-restify', function () {
                     }
                 };
 
-                restifyLogger.logNetwork(req, res, next);
+                httpLogger.logNetwork(req, res, next);
                 fireLog();
 
                 logObject.correlation_id.should.equal("correctID");
             });
 
             it('Test generated uuid', function () {
-                restifyLogger.logNetwork(req, res, next);
+                httpLogger.logNetwork(req, res, next);
                 fireLog();
 
                 var uuid = logObject.correlation_id;
@@ -136,7 +150,7 @@ describe('Test log-restify', function () {
                     }
                 };
 
-                restifyLogger.logNetwork(req, res, next);
+                httpLogger.logNetwork(req, res, next);
                 fireLog();
 
                 logObject.correlation_id.should.equal("correctID");
@@ -150,16 +164,16 @@ describe('Test log-restify', function () {
                 }
             };
 
-            restifyLogger.logNetwork(req, res, next);
+            httpLogger.logNetwork(req, res, next);
             fireLog();
 
             logObject.request_id.should.equal("correctID");
         });
 
         it('Test request', function () {
-            req.url = "correctUrl";
+            req.originalUrl = "correctUrl";
 
-            restifyLogger.logNetwork(req, res, next);
+            httpLogger.logNetwork(req, res, next);
             fireLog();
 
             logObject.request.should.equal("correctUrl");
@@ -168,7 +182,7 @@ describe('Test log-restify', function () {
         it('Test response_status', function () {
             res.statusCode = 418;
 
-            restifyLogger.logNetwork(req, res, next);
+            httpLogger.logNetwork(req, res, next);
             fireLog();
 
             logObject.response_status.should.equal(418);
@@ -177,7 +191,7 @@ describe('Test log-restify', function () {
         it('Test method', function () {
             req.method = "correctMethod";
 
-            restifyLogger.logNetwork(req, res, next);
+            httpLogger.logNetwork(req, res, next);
             fireLog();
 
             logObject.method.should.equal("correctMethod");
@@ -190,7 +204,7 @@ describe('Test log-restify', function () {
                 }
                 return null;
             };
-            restifyLogger.logNetwork(req, res, next);
+            httpLogger.logNetwork(req, res, next);
             fireLog();
 
             logObject.request_size_b.should.equal(4711);
@@ -203,7 +217,7 @@ describe('Test log-restify', function () {
                 }
                 return null;
             };
-            restifyLogger.logNetwork(req, res, next);
+            httpLogger.logNetwork(req, res, next);
             fireLog();
 
             logObject.response_size_b.should.equal(4711);
@@ -216,7 +230,7 @@ describe('Test log-restify', function () {
                 }
                 return null;
             };
-            restifyLogger.logNetwork(req, res, next);
+            httpLogger.logNetwork(req, res, next);
             fireLog();
 
             logObject.request_size_b.should.equal(4711);
@@ -225,7 +239,7 @@ describe('Test log-restify', function () {
         it('Test remote_host', function () {
             req.connection = {};
             req.connection.remoteAddress = "correctAddress";
-            restifyLogger.logNetwork(req, res, next);
+            httpLogger.logNetwork(req, res, next);
             fireLog();
 
             logObject.remote_host.should.equal("correctAddress");
@@ -234,7 +248,7 @@ describe('Test log-restify', function () {
         it('Test remote_port', function () {
             req.connection = {};
             req.connection.remotePort = "correctPort";
-            restifyLogger.logNetwork(req, res, next);
+            httpLogger.logNetwork(req, res, next);
             fireLog();
 
             logObject.remote_port.should.equal("correctPort");
@@ -243,7 +257,7 @@ describe('Test log-restify', function () {
         it('Test x_forwarded_for', function () {
             req.headers = {};
             req.headers['x-forwarded-for'] = "testingHeader";
-            restifyLogger.logNetwork(req, res, next);
+            httpLogger.logNetwork(req, res, next);
             fireLog();
 
             logObject.x_forwarded_for.should.equal("testingHeader");
@@ -251,7 +265,7 @@ describe('Test log-restify', function () {
 
         it('Test remote_ip', function () {
             req.connection.remoteAddress = "correctAddress";
-            restifyLogger.logNetwork(req, res, next);
+            httpLogger.logNetwork(req, res, next);
             fireLog();
 
             logObject.remote_ip.should.equal("correctAddress");
@@ -263,14 +277,14 @@ describe('Test log-restify', function () {
                     return "text/html;charset=UTF-8";
                 }
             };
-            restifyLogger.logNetwork(req, res, next);
+            httpLogger.logNetwork(req, res, next);
             fireLog();
             logObject.response_content_type.should.equal("text/html;charset=UTF-8");
         });
 
         it('Test protocol', function () {
             req.httpVersion = 1.1;
-            restifyLogger.logNetwork(req, res, next);
+            httpLogger.logNetwork(req, res, next);
             fireLog();
             logObject.protocol.should.equal("HTTP/1.1");
         });
@@ -284,36 +298,30 @@ describe('Test log-restify', function () {
                 clock.restore();
             });
             it('Test received_at', function () {
-                restifyLogger.logNetwork(req, res, next);
+                httpLogger.logNetwork(req, res, next);
                 fireLog();
                 logObject.request_received_at.should.equal((new Date()).toJSON());
             });
 
-
             it('Test response_sent_at', function () {
-                restifyLogger.logNetwork(req, res, next);
+                httpLogger.logNetwork(req, res, next);
                 clock.tick(100);
                 fireLog();
                 logObject.response_sent_at.should.equal((new Date()).toJSON());
             });
 
             it('Test response_time', function () {
-                restifyLogger.logNetwork(req, res, next);
+                httpLogger.logNetwork(req, res, next);
                 clock.tick(100);
                 fireLog();
 
                 logObject.response_time_ms.should.equal(100);
-                restifyLogger.logNetwork(req, res, next);
-                clock.tick(50);
-                fireLog();
-
-                logObject.response_time_ms.should.equal(50);
             });
         });
 
 
         it('Test static fields', function () {
-            restifyLogger.logNetwork(req, res, next);
+            httpLogger.logNetwork(req, res, next);
             fireLog();
 
             logObject.type.should.equal("request");
@@ -323,7 +331,7 @@ describe('Test log-restify', function () {
         });
 
         it('Test default values', function () {
-            restifyLogger.logNetwork(req, res, next);
+            httpLogger.logNetwork(req, res, next);
             fireLog();
 
             logObject.request_id.should.equal("-");
@@ -353,11 +361,11 @@ describe('Test log-restify', function () {
         });
 
         it("Test Logging level", function () {
-            restifyLogger.setLoggingLevel("error");
+            httpLogger.setLoggingLevel("error");
             level.should.equal("error");
-            restifyLogger.setLoggingLevel("log");
+            httpLogger.setLoggingLevel("log");
             level.should.equal("log");
-            restifyLogger.setLoggingLevel("test");
+            httpLogger.setLoggingLevel("test");
             level.should.equal("test");
         });
     });
@@ -376,7 +384,7 @@ describe('Test log-restify', function () {
         });
 
         it("Test arg conservation", function () {
-            restifyLogger.logMessage("test", "this", {
+            httpLogger.logMessage("test", "this", {
                 "totally": "random"
             });
             expArg[0].should.equal("test");
@@ -398,7 +406,7 @@ describe('Test log-restify', function () {
         });
 
         it("Test pattern conservation", function () {
-            restifyLogger.setLogPattern("{{hallo}} - {{welt}}");
+            httpLogger.setLogPattern("{{hallo}} - {{welt}}");
 
             pattern.should.equal("{{hallo}} - {{welt}}");
 
