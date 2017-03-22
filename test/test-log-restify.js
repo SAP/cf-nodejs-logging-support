@@ -209,19 +209,6 @@ describe('Test log-restify', function () {
             logObject.response_size_b.should.equal(4711);
         });
 
-        it('Test request_size_b', function () {
-            req.header = function (field) {
-                if (field == "content-length") {
-                    return 4711;
-                }
-                return null;
-            };
-            restifyLogger.logNetwork(req, res, next);
-            fireLog();
-
-            logObject.request_size_b.should.equal(4711);
-        });
-
         it('Test remote_host', function () {
             req.connection = {};
             req.connection.remoteAddress = "correctAddress";
