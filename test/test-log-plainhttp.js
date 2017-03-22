@@ -2,13 +2,13 @@ var chai = require("chai");
 var sinon = require("sinon");
 var assert = chai.assert;
 chai.should();
-describe('Test log-express', function () {
+describe('Test log-plainhttp', function () {
 
     var core = null;
     var httpLogger;
     beforeEach(function () {
         core = require("../cf-nodejs-logging-support-core/log-core.js");
-        httpLogger = require("../cf-nodejs-logging-support-express/log-express.js");
+        httpLogger = require("../cf-nodejs-logging-support-plainhttp/log-plainhttp");
         httpLogger.setCoreLogger(core);
     });
 
@@ -48,7 +48,7 @@ describe('Test log-express', function () {
             res.on = function (tag, func) {
                 fireLog = func;
             };
-            httpLogger.logNetwork(req, res, function () {});
+            httpLogger.logNetwork(req, res);
             fireLog();
             assert.equal(callCounter, 2);
         });
@@ -69,9 +69,6 @@ describe('Test log-express', function () {
             next = function () {};
 
             req = {};
-            req.header = function () {
-                return null;
-            };
 
             req.connection = {};
             req.headers = {};
@@ -84,9 +81,7 @@ describe('Test log-express', function () {
                 }
             };
 
-            res.get = function () {
-                return null;
-            };
+            res._headers = {};
         });
 
         it('Test anti-duplication mechanism', function () {
@@ -105,11 +100,7 @@ describe('Test log-express', function () {
 
         describe('Test correlation_id', function () {
             it('Test X-CorrelationID', function () {
-                req.header = function (field) {
-                    if (field == "X-CorrelationID") {
-                        return "correctID";
-                    }
-                };
+                req.headers["X-CorrelationID"] = "correctID";
 
                 httpLogger.logNetwork(req, res, next);
                 fireLog();
@@ -118,11 +109,7 @@ describe('Test log-express', function () {
             });
 
             it('Test x-vcap-request-id', function () {
-                req.header = function (field) {
-                    if (field == "x-vcap-request-id") {
-                        return "correctID";
-                    }
-                };
+                req.headers["x-vcap-request-id"] = "correctID";
 
                 httpLogger.logNetwork(req, res, next);
                 fireLog();
@@ -141,14 +128,8 @@ describe('Test log-express', function () {
             });
 
             it('Test X-CorrelationID vs x-vcap-request-id', function () {
-                req.header = function (field) {
-                    if (field == "X-CorrelationID") {
-                        return "correctID";
-                    }
-                    if (field == "x-vcap-request-id") {
-                        return "wrongID";
-                    }
-                };
+                req.headers["X-CorrelationID"] = "correctID";
+                req.headers["x-vcap-request-id"] = "wrongID";
 
                 httpLogger.logNetwork(req, res, next);
                 fireLog();
@@ -158,11 +139,7 @@ describe('Test log-express', function () {
         });
 
         it('Test request_id', function () {
-            req.header = function (field) {
-                if (field == "x-vcap-request-id") {
-                    return "correctID";
-                }
-            };
+            req.headers["x-vcap-request-id"] = "correctID";
 
             httpLogger.logNetwork(req, res, next);
             fireLog();
@@ -171,7 +148,7 @@ describe('Test log-express', function () {
         });
 
         it('Test request', function () {
-            req.originalUrl = "correctUrl";
+            req.url = "correctUrl";
 
             httpLogger.logNetwork(req, res, next);
             fireLog();
@@ -198,12 +175,7 @@ describe('Test log-express', function () {
         });
 
         it('Test request_size_b', function () {
-            req.header = function (field) {
-                if (field == "content-length") {
-                    return 4711;
-                }
-                return null;
-            };
+            req.headers["content-length"] = 4711;
             httpLogger.logNetwork(req, res, next);
             fireLog();
 
@@ -211,29 +183,11 @@ describe('Test log-express', function () {
         });
 
         it('Test response_size_b', function () {
-            res.get = function (field) {
-                if (field == "content-length") {
-                    return 4711;
-                }
-                return null;
-            };
+            res._headers["content-length"] = 4711;
             httpLogger.logNetwork(req, res, next);
             fireLog();
 
             logObject.response_size_b.should.equal(4711);
-        });
-
-        it('Test request_size_b', function () {
-            req.header = function (field) {
-                if (field == "content-length") {
-                    return 4711;
-                }
-                return null;
-            };
-            httpLogger.logNetwork(req, res, next);
-            fireLog();
-
-            logObject.request_size_b.should.equal(4711);
         });
 
         it('Test remote_host', function () {
@@ -255,13 +209,21 @@ describe('Test log-express', function () {
         });
 
         it('Test x_forwarded_for', function () {
-            req.headers = {};
             req.headers['x-forwarded-for'] = "testingHeader";
             httpLogger.logNetwork(req, res, next);
             fireLog();
 
             logObject.x_forwarded_for.should.equal("testingHeader");
         });
+
+        it('Test referer', function () {
+            req.headers['referer'] = "testingReferer";
+            httpLogger.logNetwork(req, res, next);
+            fireLog();
+
+            logObject.referer.should.equal("testingReferer");
+        });
+
 
         it('Test remote_ip', function () {
             req.connection.remoteAddress = "correctAddress";
@@ -272,11 +234,7 @@ describe('Test log-express', function () {
         });
 
         it('Test response_content_type', function () {
-            res.get = function (field) {
-                if (field == "content-type") {
-                    return "text/html;charset=UTF-8";
-                }
-            };
+            res._headers["content-type"] = "text/html;charset=UTF-8";
             httpLogger.logNetwork(req, res, next);
             fireLog();
             logObject.response_content_type.should.equal("text/html;charset=UTF-8");
