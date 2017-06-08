@@ -51,7 +51,7 @@ log.logMessage("info", "Server is listening on port %d", 3000);
 
 The logging library defaults to express middleware behaviour, but it can be forced to work with other Server libraries as well:
 #### With restify:
-```
+```js
 var restify = require('restify');
 var log = require('cf-nodejs-logging-support');
 var app = restify.createServer();
@@ -64,7 +64,7 @@ app.use(log.logNetwork);
 //same usage as express logger, see minimal example above
 ```
 #### With nodejs http:
-```
+```js
 var log = require("cf-nodejs-logging-support");
 const http = require('http');
 
@@ -125,7 +125,7 @@ logMessage("info", "Test data %j", {"field" :"value"}, {});
 ```
 
 ### Winston Transport
-This logging tool can be used in conjunction with Winston. Example:
+This logging tool can be used in conjunction with Winston. Logging via Winston transport is limited to custom logs. Network activity can not be tracked automatically. Example:
 ```js
 var express = require('express');
 var log = require('cf-nodejs-logging-support');
