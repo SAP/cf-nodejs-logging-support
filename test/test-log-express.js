@@ -26,6 +26,7 @@ describe('Test log-express', function () {
             core.initBack = core.initLog;
             core.initLog = function () {
                 callCounter++;
+                return {};
             };
 
             core.logMessage = {};
@@ -294,7 +295,6 @@ describe('Test log-express', function () {
             it('Test received_at', function () {
                 expressLogger.logNetwork(req, res, next);
                 fireLog();
-                console.log("" + core.initLog);
                 logObject.request_received_at.should.equal((new Date()).toJSON());
             });
 

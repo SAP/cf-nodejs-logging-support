@@ -57,7 +57,7 @@ var getLoggingLevel = function () {
 var initLog = function () {
 
     var time = process.hrtime();
-    var logObject;
+    var logObject = {};
     if (initDummy == null) {
         logObject = prepareInitDummy();
         initDummy = JSON.stringify(logObject);
@@ -155,7 +155,9 @@ var logMessage = function () {
 
     if (customFields != null) {
         for (var key in customFields) {
-            customFields[key] = JSON.stringify(customFields[key]);
+            if(!typeof customFields[key] == "string") {
+                customFields[key] = JSON.stringify(customFields[key]);
+            }
         }
         logObject.custom_fields = customFields;
     }

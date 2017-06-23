@@ -145,8 +145,6 @@ describe('Test log-core', function () {
         it('Test empty json input', function () {
             sendLog("info", {});
             var output = JSON.stringify(logMeta);
-
-            console.log(output);
             output.should.equal('{"level":"info"}');
         });
 
@@ -322,17 +320,28 @@ describe('Test log-core', function () {
     });
 
     describe('Test initLog', function () {
+        var logObject;
+        var clock;
+        var inherit = {};
 
         before(function () {
             core = require("../cf-nodejs-logging-support-core/log-core.js");
+            clock = sinon.useFakeTimers();
+            inherit.VCAP_APPLICATION = process.env.VCAP_APPLICATION;
+            inherit.CF_INSTANCE_IP = process.env.CF_INSTANCE_IP;
+            process.env.VCAP_APPLICATION = JSON.stringify({
+                "application_id": "123456789",
+                "application_name": "correct_name",
+                "instance_index": "42",
+                "space_name": "correct_name",
+                "space_id": "123456789",
+                "instance_index": "42"
+            });
+            process.env.CF_INSTANCE_IP = "42";
         });
 
-        var logObject = null;
-        var clock;
-
-        before(function () {
-            logObject = {};
-            clock = sinon.useFakeTimers();
+        beforeEach(function () {
+            logObject = null;
         });
 
         after(function () {
@@ -345,78 +354,67 @@ describe('Test log-core', function () {
         });
 
         it('Test written_at: ', function () {
-            core.initLog(logObject, null);
+            logObject = core.initLog();
             logObject.written_at.should.equal((new Date()).toJSON());
 
-            core.initLog(logObject, null);
+            logObject = core.initLog();
             clock.tick(1);
             logObject.written_at.should.not.equal((new Date()).toJSON());
         });
 
         it('Test written_ts: ', function () {
-            var time = [42, 73];
-            core.initLog(logObject, time);
+            process.hrtime = function () {
+                return [12, 14];
+            } 
+            var time = process.hrtime();
+            logObject = core.initLog();
             logObject.written_ts.should.equal(time[0] * 1e9 + time[1]);
         });
 
         // Write values from process.env.VCAP_APPLICATION
         it('Test component_id: ', function () {
-            process.env.VCAP_APPLICATION = JSON.stringify({
-                "application_id": "123456789"
-            });
-            core.initLog(logObject, null);
+            logObject = core.initLog();
             logObject.component_id.should.equal("123456789");
         });
 
         it('Test component_name: ', function () {
-            process.env.VCAP_APPLICATION = JSON.stringify({
-                "application_name": "correct_name"
-            });
-            core.initLog(logObject, null);
+            logObject = core.initLog();
             logObject.component_name.should.equal("correct_name");
         });
 
         it('Test component_instance: ', function () {
-            process.env.VCAP_APPLICATION = JSON.stringify({
-                "instance_index": "42"
-            });
-            core.initLog(logObject, null);
+            logObject = core.initLog();
             logObject.component_instance.should.equal("42");
         });
 
         it('Test space_name: ', function () {
-            process.env.VCAP_APPLICATION = JSON.stringify({
-                "space_name": "correct_name"
-            });
-            core.initLog(logObject, null);
+            logObject = core.initLog();
             logObject.space_name.should.equal("correct_name");
         });
 
         it('Test space_id: ', function () {
-            process.env.VCAP_APPLICATION = JSON.stringify({
-                "space_id": "123456789"
-            });
-            core.initLog(logObject, null);
+            logObject = core.initLog();
             logObject.space_id.should.equal("123456789");
         });
 
         it('Test source_instance: ', function () {
-            process.env.VCAP_APPLICATION = JSON.stringify({
-                "instance_index": "42"
-            });
-            core.initLog(logObject, null);
+            logObject = core.initLog();
             logObject.source_instance.should.equal("42");
         });
 
         it('Test container_id: ', function () {
-            process.env.CF_INSTANCE_IP = "42";
-            core.initLog(logObject, null);
+            logObject = core.initLog();
             logObject.container_id.should.equal("42");
         });
 
 
         it('Test default values: ', function () {
-            core.initLog(logObject, null);
+            //resetting inherit memory for fast init
+            var core2 = rewire("../cf-nodejs-logging-support-core/log-core.js");
+            core2.__set__("initDummy",null);
+            //init object
+            logObject = core2.initLog();
+            //assertions
             logObject.component_id.should.equal("-");
             logObject.component_name.should.equal("-");
             logObject.component_instance.should.equal("0");
@@ -427,7 +425,7 @@ describe('Test log-core', function () {
         });
 
         it('Test static values: ', function () {
-            core.initLog(logObject, null);
+            logObject = core.initLog();
             logObject.component_type.should.equal("application");
             logObject.layer.should.equal("[NODEJS]");
             logObject.logger.should.equal("nodejs-logger");

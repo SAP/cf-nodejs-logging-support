@@ -25,6 +25,7 @@ describe('Test log-plainhttp', function () {
             core.initBack = core.initLog;
             core.initLog = function () {
                 callCounter++;
+                return {};
             };
 
             core.logMessage = {};
