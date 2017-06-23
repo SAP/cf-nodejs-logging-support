@@ -14,11 +14,9 @@ var setLoggingLevel = function (level) {
 
 // Logs requests and responses
 var logNetwork = function (req, res) {
-    var logObject = {};
     var logSent = false;
-    var time = process.hrtime();
 
-    core.initLog(logObject, time);
+    var logObject = core.initLog();
 
     //rendering the given arguments failsave against missing fields
     if (req.connection == null) {

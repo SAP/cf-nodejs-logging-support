@@ -14,10 +14,7 @@ var winstonTransport = new(winston.transports.Console)({
     level: "info",
     formatter: function (options) {
         // Return string will be passed to winston logger.
-        var logObject = {};
-        var time = process.hrtime();
-
-        core.initLog(logObject, time);
+        var logObject = core.initLog();
         if (options != null) {
             if (options.level != null) {
                 logObject.level = options.level;
