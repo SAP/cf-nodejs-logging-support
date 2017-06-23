@@ -126,7 +126,7 @@ var logMessage = function () {
 
     var level = args[0];
     if (logLevelInt < winstonLogger.levels[level]) {
-        return false;
+        return;
     }
     var customFields = null;
 
@@ -155,8 +155,7 @@ var logMessage = function () {
 
     if (customFields != null) {
         for (var key in customFields) {
-            if(!((typeof customFields[key]) == "string")) {
-                console.log(customFields[key]);
+            if(!typeof customFields[key] == "string") {
                 customFields[key] = JSON.stringify(customFields[key]);
             }
         }
@@ -164,7 +163,6 @@ var logMessage = function () {
     }
 
     sendLog(level, logObject);
-    return true;
 };
 
 var getCorrelationId = function () {

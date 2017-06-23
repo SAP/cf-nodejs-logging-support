@@ -287,24 +287,13 @@ describe('Test log-core', function () {
 
         it("Test parameter and custom fields log", function () {
             log("info", "Test %s", "abc", {
-                "string": "text",
-                "int": 0,
-                "obj": {
-                    "test": "value"
-                }
+                "field": "value"
             });
 
             logObject.msg.should.equal('Test abc');
             JSON.stringify(logObject.custom_fields).should.equal(JSON.stringify({
-                "string": "text",
-                "int": "0",
-                "obj": "{\"test\":\"value\"}"
+                "field": "value"
             }));
-        });
-
-        it("Test logLevel catch", function () {
-            assert.isTrue(log("info", "message delivered"));
-            assert.isFalse(log("verbose", "message delivered"));
         });
 
         it("Test correctly bound request id", function () {
@@ -423,7 +412,6 @@ describe('Test log-core', function () {
             //resetting inherit memory for fast init
             var core2 = rewire("../cf-nodejs-logging-support-core/log-core.js");
             core2.__set__("initDummy",null);
-            //rewrite process to old values
             //init object
             logObject = core2.initLog();
             //assertions
