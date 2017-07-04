@@ -156,7 +156,6 @@ var logMessage = function () {
     if (customFields != null) {
         for (var key in customFields) {
             if(!((typeof customFields[key]) == "string")) {
-                console.log(customFields[key]);
                 customFields[key] = JSON.stringify(customFields[key]);
             }
         }
