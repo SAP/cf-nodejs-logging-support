@@ -43,10 +43,10 @@ describe('Test log-core', function () {
         it("Test settingLoggingLevel", function () {
             core.setLoggingLevel("error");
             core.getLoggingLevel().should.equal("error");
-            core.setLoggingLevel("log");
-            core.getLoggingLevel().should.equal("log");
-            core.setLoggingLevel("test");
-            core.getLoggingLevel().should.equal("test");
+            core.setLoggingLevel("info");
+            core.getLoggingLevel().should.equal("info");
+            core.setLoggingLevel("warn");
+            core.getLoggingLevel().should.equal("warn");
         });
     });
 
@@ -124,18 +124,19 @@ describe('Test log-core', function () {
 
         before(function () {
             core = rewire("../cf-nodejs-logging-support-core/log-core.js");
-            core.__set__({
-                "winstonLogger": {
-                    "log": function (level, text, meta) {
+            logger = core.__get__("winstonLogger");
+             logger.log = function (level, text, meta) {
                         logLevel = level;
                         logMeta = meta;
 
-                    }
-                }
-            });
-
+                    };
             sendLog = core.__get__("sendLog");
         });
+
+        beforeEach(function () {
+            logMeta = null;
+            logLevel = "info";
+        })
 
         it('Test level', function () {
             sendLog("testLevel", {});
@@ -146,6 +147,16 @@ describe('Test log-core', function () {
             sendLog("info", {});
             var output = JSON.stringify(logMeta);
             output.should.equal('{"level":"info"}');
+        });
+
+        it("Test correct dumping by level", function() {
+            core.setLoggingLevel("error");
+            sendLog("info", {});
+            assert.isNull(logMeta);
+            core.setLoggingLevel("info");
+            sendLog("info", {});
+            assert.isNotNull(logMeta);
+
         });
 
         it('Test simple json input', function () {
