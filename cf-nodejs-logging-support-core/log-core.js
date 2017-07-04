@@ -1,46 +1,57 @@
+var winston = require("winston");
 var util = require('util');
-
+var initDummy = null;
 const nsPerSec = 1e9;
 const logType = "log";
-const loggingLevels = { 'error': 0, 'warn': 1, 'info': 2, 'verbose': 3, 'debug': 4, 'silly': 5 };
-
-var initDummy = null;
 var logLevelInt = 2;
+
 var pattern = null;
 
 
-var writeLogToConsole = function(logObject) {
 
-    // Check logging level
-   if (logLevelInt < loggingLevels[logObject.level]) {
-        return false;
-    }
+// Customized transport, which specifies the correct logging format and logs to stdout
+var consoleTransport = new(winston.transports.Console)({
+    timestamp: function () {
+        return Date.now();
+    },
+    level: "info",
+    formatter: function (options) {
+        // Return string will be passed to winston logger.
+        if (null !== pattern) {
+            if (undefined !== options.meta) {
+                var output = pattern;
 
-    var output = "";
-    if (null !== pattern) {
-        output = pattern;
-        if (undefined !== logObject) {
-            for (var key in logObject) {
-                if (typeof (logObject[key]) === "object" && validObject(logObject[key])) {
-                    output = output.replace('{{' + key + '}}', JSON.stringify(logObject[key]));
-                } else {
-                    output = output.replace('{{' + key + '}}', logObject[key]);
+                for (var key in options.meta) {
+                    if (typeof (options.meta[key]) === "object" && validObject(options.meta[key])) {
+                        output = output.replace('{{' + key + '}}', JSON.stringify(options.meta[key]));
+                    } else {
+                        output = output.replace('{{' + key + '}}', options.meta[key]);
+                    }
                 }
+
+                return output;
             }
+            return "";
+        } else {
+            return (undefined !== options.meta && validObject(options.meta)) ? JSON.stringify(options.meta) : '';
         }
-    } else {
-        output = (undefined !== logObject && validObject(logObject)) ? JSON.stringify(logObject) : '';
     }
-    console.log(output);
-}
+});
+
+var winstonLogger = new(winston.Logger)({
+    transports: [consoleTransport]
+});
 
 // Sets the minimum logging level. Messages with a lower level will not be forwarded. (Levels: error, warn, info, verbose, debug, silly)
 var setLoggingLevel = function (level) {
-    logLevelInt = loggingLevels[level];
-}
+    consoleTransport.level = level;
+    logLevelInt = winstonLogger.levels[level];
+    console.log(winstonLogger.levels);
+};
+
 // Gets the minimum logging level. (Levels: error, warn, info, verbose, debug, silly)
 var getLoggingLevel = function () {
-    return loggingLevels[logLevelInt];
+    return consoleTransport.level;
 };
 
 // Initializes an empty log object
@@ -88,10 +99,7 @@ var sendLog = function (level, logObject) {
     //Attach level to logobject
     logObject.level = level;
     // Write log to console to be parsed by logstash
-
-    //winstonLogger.log(level, '', logObject);
-
-    writeLogToConsole(logObject);
+    winstonLogger.log(level, '', logObject);
 };
 
 var setLogPattern = function (p) {
@@ -118,7 +126,7 @@ var logMessage = function () {
     var args = Array.prototype.slice.call(arguments);
 
     var level = args[0];
-    if (logLevelInt < loggingLevels[level]) {
+    if (logLevelInt < winstonLogger.levels[level]) {
         return false;
     }
     var customFields = null;
