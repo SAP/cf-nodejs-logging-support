@@ -12,9 +12,6 @@ var pattern = null;
 var writeLogToConsole = function(logObject) {
 
     // Check logging level
-   if (logLevelInt < loggingLevels[logObject.level]) {
-        return false;
-    }
 
     var output = "";
     if (null !== pattern) {
@@ -40,7 +37,11 @@ var setLoggingLevel = function (level) {
 }
 // Gets the minimum logging level. (Levels: error, warn, info, verbose, debug, silly)
 var getLoggingLevel = function () {
-    return loggingLevels[logLevelInt];
+    for(var key in loggingLevels) {
+        if(loggingLevels[key] == logLevelInt) {
+            return key;
+        }
+    }
 };
 
 // Initializes an empty log object
@@ -90,8 +91,9 @@ var sendLog = function (level, logObject) {
     // Write log to console to be parsed by logstash
 
     //winstonLogger.log(level, '', logObject);
-
-    writeLogToConsole(logObject);
+   if (logLevelInt >= loggingLevels[level]) {
+        writeLogToConsole(logObject);
+    }
 };
 
 var setLogPattern = function (p) {

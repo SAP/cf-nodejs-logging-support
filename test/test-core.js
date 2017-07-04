@@ -51,7 +51,7 @@ describe('Test log-core', function () {
     });
 
 
-    describe('Test winstonTransport', function () {
+    /*describe('Test winstonTransport', function () {
 
         var transport;
         var clock;
@@ -114,7 +114,7 @@ describe('Test log-core', function () {
             transport.formatter({}).should.equal("");
             transport.formatter(options).should.equal("Test: {{empty}}");
         });
-    });
+    });*/
 
 
     describe('Test sendLog', function () {
@@ -124,23 +124,25 @@ describe('Test log-core', function () {
 
         before(function () {
             core = rewire("../cf-nodejs-logging-support-core/log-core.js");
-            logger = core.__get__("winstonLogger");
-             logger.log = function (level, text, meta) {
-                        logLevel = level;
-                        logMeta = meta;
-
-                    };
+            core.__set__({
+                "writeLogToConsole": function (obj) {
+                    logMeta = obj;
+                    logLevel = obj.level;
+                }
+            });
             sendLog = core.__get__("sendLog");
         });
 
         beforeEach(function () {
             logMeta = null;
-            logLevel = "info";
+            core.setLoggingLevel("info");
         })
 
         it('Test level', function () {
-            sendLog("testLevel", {});
-            logLevel.should.equal('testLevel');
+            sendLog("info", {});
+            logLevel.should.equal('info');
+            sendLog("error", {});
+            logLevel.should.equal('error');
         });
 
         it('Test empty json input', function () {
@@ -349,6 +351,9 @@ describe('Test log-core', function () {
         before(function () {
             core = require("../cf-nodejs-logging-support-core/log-core.js");
             clock = sinon.useFakeTimers();
+        });
+
+        beforeEach(function () {
             inherit.VCAP_APPLICATION = process.env.VCAP_APPLICATION;
             inherit.CF_INSTANCE_IP = process.env.CF_INSTANCE_IP;
             process.env.VCAP_APPLICATION = JSON.stringify({
@@ -360,19 +365,11 @@ describe('Test log-core', function () {
                 "instance_index": "42"
             });
             process.env.CF_INSTANCE_IP = "42";
-        });
-
-        beforeEach(function () {
             logObject = null;
         });
 
         after(function () {
             clock.restore();
-        });
-
-        afterEach(function () {
-            delete process.env.VCAP_APPLICATION;
-            delete process.env.CF_INSTANCE_IP;
         });
 
         it('Test written_at: ', function () {
@@ -431,6 +428,8 @@ describe('Test log-core', function () {
 
 
         it('Test default values: ', function () {
+            delete process.env.VCAP_APPLICATION;
+            delete process.env.CF_INSTANCE_IP;
             //resetting inherit memory for fast init
             var core2 = rewire("../cf-nodejs-logging-support-core/log-core.js");
             core2.__set__("initDummy",null);
