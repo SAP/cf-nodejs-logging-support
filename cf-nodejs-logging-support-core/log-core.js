@@ -46,7 +46,6 @@ var winstonLogger = new(winston.Logger)({
 var setLoggingLevel = function (level) {
     consoleTransport.level = level;
     logLevelInt = winstonLogger.levels[level];
-    console.log(winstonLogger.levels);
 };
 
 // Gets the minimum logging level. (Levels: error, warn, info, verbose, debug, silly)
@@ -157,6 +156,7 @@ var logMessage = function () {
     if (customFields != null) {
         for (var key in customFields) {
             if(!((typeof customFields[key]) == "string")) {
+                console.log(customFields[key]);
                 customFields[key] = JSON.stringify(customFields[key]);
             }
         }
