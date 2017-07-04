@@ -20,8 +20,7 @@
         "node": ">=4.0.0"
     },
     "dependencies": {
-        "uuid": "3.0.1",
-        "winston": "2.3.1"
+        "uuid": "3.0.1"
     },
     "devDependencies": {
         "chai": "^3.5.0",
