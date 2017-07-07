@@ -1,5 +1,4 @@
 var util = require('util');
-var os = require('os');
 
 const nsPerSec = 1e9;
 const logType = "log";
@@ -8,7 +7,6 @@ const loggingLevels = { 'error': 0, 'warn': 1, 'info': 2, 'verbose': 3, 'debug':
 var initDummy = null;
 var logLevelInt = 2;
 var pattern = null;
-var stdout = process.stdout;
 
 
 var writeLogToConsole = function(logObject) {
@@ -16,9 +14,9 @@ var writeLogToConsole = function(logObject) {
     // Check logging level
 
     var output = "";
-    if (null != pattern) {
-        if (undefined !== logObject && logObject != null) {
-            output = pattern;
+    if (null !== pattern) {
+        output = pattern;
+        if (undefined !== logObject) {
             for (var key in logObject) {
                 if (typeof (logObject[key]) === "object" && validObject(logObject[key])) {
                     output = output.replace('{{' + key + '}}', JSON.stringify(logObject[key]));
@@ -30,8 +28,7 @@ var writeLogToConsole = function(logObject) {
     } else {
         output = (undefined !== logObject && validObject(logObject)) ? JSON.stringify(logObject) : '';
     }
-    
-    stdout.write(output + os.EOL);
+    console.log(output);
 }
 
 // Sets the minimum logging level. Messages with a lower level will not be forwarded. (Levels: error, warn, info, verbose, debug, silly)
