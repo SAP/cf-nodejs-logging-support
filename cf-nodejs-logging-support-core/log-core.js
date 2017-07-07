@@ -11,8 +11,10 @@ var pattern = null;
 var stdout = process.stdout;
 
 
-// Stringify and log given object to console. If a custom pattern is set, the referenced object fields are used to replace the references.
 var writeLogToConsole = function(logObject) {
+
+    // Check logging level
+
     var output = "";
     if (null != pattern) {
         if (undefined !== logObject && logObject != null) {
