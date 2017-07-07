@@ -1,48 +1,47 @@
 {
-  "name": "cf-nodejs-logging-support",
-  "version": "2.0.0",
-  "description": "Logging tool for Cloud Foundry",
-  "keywords": [
+    "name": "cf-nodejs-logging-support",
+    "version": "2.0.0",
+    "description": "Logging tool for Cloud Foundry",
+    "keywords": [
     "logging",
     "cf",
     "perfx"
   ],
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/SAP/cf-nodejs-logging-support"
-  },
-  "license": "Apache-2.0",
-  "author": {
-    "name": "Christian Dinse, Nicklas Dohrn"
-  },
-  "main": "./index.js",
-  "engines": {
-    "node": ">=4.0.0"
-  },
-  "dependencies": {
-    "uuid": "3.0.1"
-  },
-  "devDependencies": {
-    "chai": "^3.5.0",
-    "eslint": "latest",
-    "istanbul": "^0.4.4",
-    "mocha": "^2.5.3",
-    "mock-require": "^1.3.0",
-    "rewire": "^2.5.2",
-    "sinon": "latest",
-    "winston": "^2.3.1"
-  },
-  "maintainers": [
-    {
-      "name": "nicklas dohrn",
-      "email": "nicklas.dohrn@sap.com"
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/SAP/cf-nodejs-logging-support"
     },
-    {
-      "name": "christian dinse",
-      "email": "christian.dinse@sap.com"
+    "license": "Apache-2.0",
+    "author": {
+        "name": "Christian Dinse, Nicklas Dohrn"
+    },
+    "main": "./index.js",
+    "engines": {
+        "node": ">=4.0.0"
+    },
+    "dependencies": {
+        "uuid": "3.0.1"
+    },
+    "devDependencies": {
+        "chai": "^3.5.0",
+        "eslint": "latest",
+        "istanbul": "^0.4.4",
+        "mocha": "^2.5.3",
+        "mock-require": "^1.3.0",
+        "rewire": "^2.5.2",
+        "sinon": "latest"
+    },
+    "maintainers": [
+        {
+            "name": "nicklas dohrn",
+            "email": "nicklas.dohrn@sap.com"
+    },
+        {
+            "name": "christian dinse",
+            "email": "christian.dinse@sap.com"
     }
   ],
-  "scripts": {
-    "test": "istanbul cover node_modules/mocha/bin/_mocha"
-  }
+    "scripts": {
+        "test": "istanbul cover node_modules/mocha/bin/_mocha"
+    }
 }
