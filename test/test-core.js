@@ -2,6 +2,7 @@ var chai = require("chai");
 var rewire = require("rewire");
 var assert = chai.assert;
 chai.should();
+var os = require("os");
 var sinon = require("sinon");
 var rewire = require("rewire");
 
@@ -51,14 +52,27 @@ describe('Test log-core', function () {
     });
 
 
-    /*describe('Test winstonTransport', function () {
+    describe('Test log output', function () {
 
-        var transport;
+        var write;
         var clock;
+        var origStdout;
+        var output;
 
         before(function () {
             core = rewire("../cf-nodejs-logging-support-core/log-core.js");
-            transport = core.__get__("consoleTransport");
+            write = core.__get__("writeLogToConsole");
+
+            origStdout = process.stdout.write;
+
+            core.__set__({
+                "stdout": {
+                    write: function (data) {
+                        output = data;
+                    }
+                }
+            })
+
             clock = sinon.useFakeTimers();
         });
 
@@ -66,26 +80,21 @@ describe('Test log-core', function () {
             clock.restore();
         });
 
-        it("Test transport.timestamp", function () {
-            transport.timestamp().should.equal(0);
+        afterEach(function () {
+            core.setLogPattern(null);
         });
 
-        it("Test transport.level", function () {
-            transport.level.should.equal("info");
-        });
-
-        it("Test transport.formatter in (default) json mode", function () {
-            var options = {};
-            options.meta = {
+        it("Test log writing in (default) json mode", function () {
+            var data = {
                 test: "abc"
             };
-            transport.formatter({}).should.equal("");
-            transport.formatter(options).should.equal(JSON.stringify(options.meta));
+
+            write(data);
+            output.should.equal(JSON.stringify(data) + os.EOL);
         });
 
-        it("Test transport.formatter in pattern mode with correct keys", function () {
-            var options = {};
-            options.meta = {
+        it("Test  log writing in pattern mode with correct keys", function () {
+            var data = {
                 text: "abc",
                 number: 21,
                 obj: {
@@ -94,14 +103,12 @@ describe('Test log-core', function () {
             };
 
             core.setLogPattern("Test: {{text}} {{number}} {{obj}}");
-
-            transport.formatter({}).should.equal("");
-            transport.formatter(options).should.equal('Test: abc 21 ' + JSON.stringify(options.meta.obj));
+            write(data)
+            output.should.equal('Test: abc 21 ' + JSON.stringify(data.obj) + os.EOL);
         });
 
-        it("Test transport.formatter in pattern mode with non-existing keys", function () {
-            var options = {};
-            options.meta = {
+        it("Test  log writing in pattern mode with non-existing keys", function () {
+            var data = {
                 text: "abc",
                 number: 21,
                 object: {
@@ -111,10 +118,28 @@ describe('Test log-core', function () {
 
             core.setLogPattern("Test: {{empty}}");
 
-            transport.formatter({}).should.equal("");
-            transport.formatter(options).should.equal("Test: {{empty}}");
+            write(data)
+            output.should.equal("Test: {{empty}}" + os.EOL);
         });
-    });*/
+
+        it("Test log writingwith faulty values", function () {
+            var data;
+            write(data);
+            output.should.equal(os.EOL);
+
+            core.setLogPattern(undefined);
+            write(data);
+            output.should.equal(os.EOL);
+
+            core.setLogPattern("Test: {{empty}}");
+            write(data);
+            output.should.equal(os.EOL);
+
+            core.setLogPattern("Test: {{empty}}");
+            write(null);
+            output.should.equal(os.EOL);
+        });
+    });
 
 
     describe('Test sendLog', function () {
@@ -151,7 +176,7 @@ describe('Test log-core', function () {
             output.should.equal('{"level":"info"}');
         });
 
-        it("Test correct dumping by level", function() {
+        it("Test correct dumping by level", function () {
             core.setLoggingLevel("error");
             sendLog("info", {});
             assert.isNull(logMeta);
@@ -384,7 +409,7 @@ describe('Test log-core', function () {
         it('Test written_ts: ', function () {
             process.hrtime = function () {
                 return [12, 14];
-            } 
+            }
             var time = process.hrtime();
             logObject = core.initLog();
             logObject.written_ts.should.equal(time[0] * 1e9 + time[1]);
@@ -432,7 +457,7 @@ describe('Test log-core', function () {
             delete process.env.CF_INSTANCE_IP;
             //resetting inherit memory for fast init
             var core2 = rewire("../cf-nodejs-logging-support-core/log-core.js");
-            core2.__set__("initDummy",null);
+            core2.__set__("initDummy", null);
             //rewrite process to old values
             //init object
             logObject = core2.initLog();
