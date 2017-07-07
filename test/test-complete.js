@@ -3,9 +3,9 @@ var sinon = require("sinon");
 var assert = chai.assert;
 chai.should();
 
-describe('Test log-express', function () {
+describe('Test Complete', function () {
 
-    var should = {
+    var dummyStdout = {
         "written_at": "2017-07-07T09:40:15.961Z",
         "written_ts": 0,
         "component_type": "application",
@@ -22,19 +22,21 @@ describe('Test log-express', function () {
         "type": "log",
         "level": "info"
     };
-    var dummy = process.stdout.write;
+    var store = [];
+    var storeCount = 0;
+    var origStdout = process.stdout.write;
     before(function () {
-        var log = require("../index.js");
-        const http = require('http');
-        var fs = require('fs');
-        var dump = fs.createWriteStream('version_2.log');
-        var dummy = process.stdout.write;
-        process.stdout.write = process.stderr.write = dump.write.bind(dump);
+        var log = require("../index");
+        var http = require('http');
+        var request = require('request');
+        process.stdout.write = (obj) => {
+            store[storeCount++] = obj;
+        }
 
         //forces logger to run the http version.
         log.forceLogger("plainhttp");
 
-        const server = http.createServer((req, res) => {
+        var server = http.createServer((req, res) => {
             //binds logging to the given request for request tracking
             log.logNetwork(req, res);
 
@@ -47,13 +49,18 @@ describe('Test log-express', function () {
         server.listen(3000);
         // Formatted log message free of request context
         log.logMessage("info", "Server is listening on port %d", 3000);
+        request.get("localhost:3000").on("response", callback);
     });
-    
+
     beforeEach(() => {
-        process.stdout.write = dummy;
+        process.stdout.write = origStdout;
     });
-    
-    it("testing complete", () => {
-        console.log("tesd");
+
+    it("checking dummy app results", () => {
+        console.log(store);
     });
 });
+
+var callback = function (res) {
+    console.log(res);
+}
