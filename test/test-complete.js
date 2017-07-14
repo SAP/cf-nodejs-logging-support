@@ -39,10 +39,6 @@ describe('Test Complete', function () {
         }
     );
     before(function () {
-
-            process.hrtime = function () {
-                return [12, 14];
-            }
         clock = sinon.useFakeTimers();
     });
 
@@ -52,7 +48,10 @@ describe('Test Complete', function () {
     });
 
     it("checking dummy app results", () => {
-        req = httpMock.createRequest( {
+        process.hrtime = function () {
+            return [12, 14];
+        }
+        req = httpMock.createRequest({
             headers: {
                 "X-CorrelationID": "uuid-Dummy"
             }
@@ -62,6 +61,6 @@ describe('Test Complete', function () {
 
         log.logNetwork(req, res, () => {});
         res.end("ok");
-       results.getLogMessage().should.equal(store);
+        store.should.equal(results.getLogMessage());
     });
 });
