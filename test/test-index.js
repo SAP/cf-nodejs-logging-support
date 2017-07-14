@@ -8,65 +8,73 @@ var loggingLevel = null;
 var messageArgs = null;
 var originalRequire = Module.prototype.require;
 
-Module.prototype.require = function () {
-    var args = Array.prototype.slice.call(arguments);
-    if (args[0] === "./cf-nodejs-logging-support-express/log-express") {
-        linking = "express";
-        return {
-            "setCoreLogger": function () {},
-            "logNetwork": function (req1, res1, next1) {
-                req = req1;
-                res = res1;
-                next = next1;
-            },
-            "setLoggingLevel": function (level) {
-                loggingLevel = level;
-            },
-            "logMessage": function (args) {
-                messageArgs = args;
-            }
-        };
-    }
-    if (args[0] === "./cf-nodejs-logging-support-restify/log-restify") {
-        linking = "restify";
-        return {
-            "setCoreLogger": function () {},
-            "logNetwork": function (req1, res1, next1) {
-                req = req1;
-                res = res1;
-                next = next1;
-            },
-            "setLoggingLevel": function (level) {
-                loggingLevel = level;
-            },
-            "logMessage": function (args) {
-                messageArgs = args;
-            }
-        };
-    }
-    if (args[0] === "./cf-nodejs-logging-support-plainhttp/log-plainhttp") {
-        linking = "plainhttp";
-        return {
-            "setCoreLogger": function () {},
-            "logNetwork": function (req1, res1) {
-                req = req1;
-                res = res1;
-            },
-            "setLoggingLevel": function (level) {
-                loggingLevel = level;
-            },
-            "logMessage": function (args) {
-                messageArgs = args;
-            }
-        };
-    }
-    return originalRequire.apply(this, arguments);
-};
+
 var logger = require("../index.js");
 var assert = chai.assert;
 chai.should();
 
 describe('Test index.js', function () {
+    var origRequire = Module.prototype.require;
+    before(function () {
+        Module.prototype.require = function () {
+            var args = Array.prototype.slice.call(arguments);
+            if (args[0] === "./cf-nodejs-logging-support-express/log-express") {
+                linking = "express";
+                return {
+                    "setCoreLogger": function () {},
+                    "logNetwork": function (req1, res1, next1) {
+                        req = req1;
+                        res = res1;
+                        next = next1;
+                    },
+                    "setLoggingLevel": function (level) {
+                        loggingLevel = level;
+                    },
+                    "logMessage": function (args) {
+                        messageArgs = args;
+                    }
+                };
+            }
+            if (args[0] === "./cf-nodejs-logging-support-restify/log-restify") {
+                linking = "restify";
+                return {
+                    "setCoreLogger": function () {},
+                    "logNetwork": function (req1, res1, next1) {
+                        req = req1;
+                        res = res1;
+                        next = next1;
+                    },
+                    "setLoggingLevel": function (level) {
+                        loggingLevel = level;
+                    },
+                    "logMessage": function (args) {
+                        messageArgs = args;
+                    }
+                };
+            }
+            if (args[0] === "./cf-nodejs-logging-support-plainhttp/log-plainhttp") {
+                linking = "plainhttp";
+                return {
+                    "setCoreLogger": function () {},
+                    "logNetwork": function (req1, res1) {
+                        req = req1;
+                        res = res1;
+                    },
+                    "setLoggingLevel": function (level) {
+                        loggingLevel = level;
+                    },
+                    "logMessage": function (args) {
+                        messageArgs = args;
+                    }
+                };
+            }
+            return originalRequire.apply(this, arguments);
+        };
+    });
+
+    after(function() {
+        Module.prototype.require = origRequire;
+    });
     describe('setLoggingLevel', function () {
 
         it('Test forceLogger: ', function () {
