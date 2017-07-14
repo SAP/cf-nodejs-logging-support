@@ -20,7 +20,6 @@
     "node": ">=4.0.0"
   },
   "dependencies": {
-    "request": "^2.81.0",
     "uuid": "3.0.1"
   },
   "devDependencies": {

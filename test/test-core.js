@@ -374,22 +374,13 @@ describe('Test log-core', function () {
         var inherit = {};
 
         before(function () {
-            inherit.VCAP_APPLICATION = process.env.VCAP_APPLICATION;
-            inherit.CF_INSTANCE_IP = process.env.CF_INSTANCE_IP;
-            process.env.VCAP_APPLICATION = JSON.stringify({
-                "application_id": "123456789",
-                "application_name": "correct_name",
-                "instance_index": "42",
-                "space_name": "correct_name",
-                "space_id": "123456789",
-                "instance_index": "42"
-            });
-            process.env.CF_INSTANCE_IP = "42";
-            core = rewire("../cf-nodejs-logging-support-core/log-core.js");    
+            core = require("../cf-nodejs-logging-support-core/log-core.js");
             clock = sinon.useFakeTimers();
         });
 
         beforeEach(function () {
+            inherit.VCAP_APPLICATION = process.env.VCAP_APPLICATION;
+            inherit.CF_INSTANCE_IP = process.env.CF_INSTANCE_IP;
             process.env.VCAP_APPLICATION = JSON.stringify({
                 "application_id": "123456789",
                 "application_name": "correct_name",
