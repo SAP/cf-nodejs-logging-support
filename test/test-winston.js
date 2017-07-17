@@ -16,17 +16,17 @@ describe('Test winston.js', function () {
             clock.restore();
         });
 
-        it('Test timestamp', function () {
+        it('Test timestamp: ', function () {
             obj.timestamp().should.equal(0);
         });
 
-        it('Test formatter with bad values ', function () {
+        it('Test formatter with bad values: ', function () {
             assert.typeOf(obj.formatter(), "string");
             assert.typeOf(obj.formatter(""), "string");
             assert.typeOf(obj.formatter({}), "string");
         });
 
-        it('Test formatter with string ', function () {
+        it('Test formatter with string: ', function () {
             var options = {};
             options.message = "hallo";
             var jsonObj = JSON.parse(obj.formatter(options));
@@ -35,7 +35,7 @@ describe('Test winston.js', function () {
 
         });
 
-        it('Test formatter with object ', function () {
+        it('Test formatter with object: ', function () {
             var options = {};
             options.meta = {
                 "hallo": "ich"

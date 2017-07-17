@@ -8,8 +8,6 @@ This is a collection of support libraries for node.js applications running on Cl
 
 For details on the concepts and log formats, please look at the sibling project for [java logging support](https://github.com/SAP/cf-java-logging-support).
 
-#### Version 2.0 introduced loging without Winston and changed custom fields to be parsed and reported as strings regardless of original type.
-
 ## Features
 
   * Network logging (http requests) for CloudFoundry
@@ -53,7 +51,7 @@ log.logMessage("info", "Server is listening on port %d", 3000);
 
 The logging library defaults to express middleware behaviour, but it can be forced to work with other Server libraries as well:
 #### With restify:
-```js
+```
 var restify = require('restify');
 var log = require('cf-nodejs-logging-support');
 var app = restify.createServer();
@@ -66,7 +64,7 @@ app.use(log.logNetwork);
 //same usage as express logger, see minimal example above
 ```
 #### With nodejs http:
-```js
+```
 var log = require("cf-nodejs-logging-support");
 const http = require('http');
 
@@ -113,7 +111,7 @@ logMessage("info", "This %s a %s", "is", "test");
 // ... "msg":"This is a test" ...
 ```
 
-With custom fields added to custom_fields field. Keep in mind, that the last argument is handled as custom_fields object, if it is an object.
+With custom fields added to custom_fields field. Keep in mind, that the last argument is handled as custom fields object, if it is an object.
 ```js
 logMessage("info", "Test data %j", {"field" :"value"}); 
 // ... "msg":"Test data %j" 
@@ -127,7 +125,7 @@ logMessage("info", "Test data %j", {"field" :"value"}, {});
 ```
 
 ### Winston Transport
-This logging tool can be used in conjunction with Winston. Logging via Winston transport is limited to custom logs. Network activity can not be tracked automatically. Example:
+This logging tool can be used in conjunction with Winston. Example:
 ```js
 var express = require('express');
 var log = require('cf-nodejs-logging-support');

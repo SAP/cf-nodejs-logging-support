@@ -1,88 +1,78 @@
+var winston = require("winston");
 var util = require('util');
-var os = require('os');
 
-const nsPerSec = 1e9;
-const logType = "log";
-const loggingLevels = { 'error': 0, 'warn': 1, 'info': 2, 'verbose': 3, 'debug': 4, 'silly': 5 };
-
-var initDummy = null;
-var logLevelInt = 2;
 var pattern = null;
-var stdout = process.stdout;
 
+// Customized transport, which specifies the correct logging format and logs to stdout
+var consoleTransport = new(winston.transports.Console)({
+    timestamp: function () {
+        return Date.now();
+    },
+    level: "info",
+    formatter: function (options) {
+        // Return string will be passed to winston logger.
+        if (null !== pattern) {
+            if (undefined !== options.meta) {
+                var output = pattern;
 
-// Stringify and log given object to console. If a custom pattern is set, the referenced object fields are used to replace the references.
-var writeLogToConsole = function(logObject) {
-    var output = "";
-    if (null != pattern) {
-        if (undefined !== logObject && logObject != null) {
-            output = pattern;
-            for (var key in logObject) {
-                if (typeof (logObject[key]) === "object" && validObject(logObject[key])) {
-                    output = output.replace('{{' + key + '}}', JSON.stringify(logObject[key]));
-                } else {
-                    output = output.replace('{{' + key + '}}', logObject[key]);
+                for (var key in options.meta) {
+                    if (typeof (options.meta[key]) === "object" && validObject(options.meta[key])) {
+                        output = output.replace('{{' + key + '}}', JSON.stringify(options.meta[key]));
+                    } else {
+                        output = output.replace('{{' + key + '}}', options.meta[key]);
+                    }
                 }
-            }
-        }
-    } else {
-        output = (undefined !== logObject && validObject(logObject)) ? JSON.stringify(logObject) : '';
-    }
-    
-    stdout.write(output + os.EOL);
-}
 
-// Sets the minimum logging level. Messages with a lower level will not be forwarded. (Levels: error, warn, info, verbose, debug, silly)
+                return output;
+            }
+            return "";
+        } else {
+            return (undefined !== options.meta && validObject(options.meta)) ? JSON.stringify(options.meta) : '';
+        }
+    }
+});
+
+var winstonLogger = new(winston.Logger)({
+    transports: [consoleTransport]
+});
+
+// Sets the minimum logging level. Messages with a lower level, will not be forwarded. (Levels: error, warn, info, verbose, debug, silly)
 var setLoggingLevel = function (level) {
-    logLevelInt = loggingLevels[level];
-}
+    consoleTransport.level = level;
+};
+
 // Gets the minimum logging level. (Levels: error, warn, info, verbose, debug, silly)
 var getLoggingLevel = function () {
-    for(var key in loggingLevels) {
-        if(loggingLevels[key] == logLevelInt) {
-            return key;
-        }
-    }
+    return consoleTransport.level;
 };
 
 // Initializes an empty log object
-var initLog = function () {
+var initLog = function (logObject, time) {
+    var vcapEnvironment = ("VCAP_APPLICATION" in process.env) ? JSON.parse(process.env.VCAP_APPLICATION) : {};
 
-    var time = process.hrtime();
-    var logObject = {};
-    if (initDummy == null) {
-        logObject = prepareInitDummy();
-        initDummy = JSON.stringify(logObject);
-    } else {
-        logObject = JSON.parse(initDummy);
+    if (time == null) {
+        time = [0, 0];
     }
 
     logObject.written_at = (new Date()).toJSON();
-    logObject.written_ts = time[0] * nsPerSec + time[1];
+    logObject.written_ts = time[0] * 1e9 + time[1];
 
-    return logObject;
+    logObject.component_type = "application";
+    logObject.component_id = !("application_id" in vcapEnvironment) ? "-" : vcapEnvironment.application_id;
+    logObject.component_name = !("application_name" in vcapEnvironment) ? "-" : vcapEnvironment.application_name;
+    logObject.component_instance = !("instance_index" in vcapEnvironment) ? "0" : vcapEnvironment.instance_index.toString();
+    logObject.layer = "[NODEJS]";
 
-};
+    logObject.space_name = !("space_name" in vcapEnvironment) ? "-" : vcapEnvironment.space_name;
+    logObject.space_id = !("space_id" in vcapEnvironment) ? "-" : vcapEnvironment.space_id;
 
-var prepareInitDummy = function () {
-    var obj = {};
-    var vcapEnvironment = ("VCAP_APPLICATION" in process.env) ? JSON.parse(process.env.VCAP_APPLICATION) : {};
+    logObject.source_instance = logObject.component_instance;
 
-    obj.component_type = "application";
-    obj.component_id = !("application_id" in vcapEnvironment) ? "-" : vcapEnvironment.application_id;
-    obj.component_name = !("application_name" in vcapEnvironment) ? "-" : vcapEnvironment.application_name;
-    obj.component_instance = !("instance_index" in vcapEnvironment) ? "0" : vcapEnvironment.instance_index.toString();
-    obj.source_instance = obj.component_instance;
+    logObject.container_id = !("CF_INSTANCE_IP" in process.env) ? "-" : process.env.CF_INSTANCE_IP;
 
-    obj.layer = "[NODEJS]";
+    logObject.logger = "nodejs-logger";
 
-    obj.space_name = !("space_name" in vcapEnvironment) ? "-" : vcapEnvironment.space_name;
-    obj.space_id = !("space_id" in vcapEnvironment) ? "-" : vcapEnvironment.space_id;
 
-    obj.container_id = !("CF_INSTANCE_IP" in process.env) ? "-" : process.env.CF_INSTANCE_IP;
-
-    obj.logger = "nodejs-logger";
-    return obj;
 };
 
 // Writes the given log file to stdout
@@ -90,11 +80,7 @@ var sendLog = function (level, logObject) {
     //Attach level to logobject
     logObject.level = level;
     // Write log to console to be parsed by logstash
-
-    //winstonLogger.log(level, '', logObject);
-   if (logLevelInt >= loggingLevels[level]) {
-        writeLogToConsole(logObject);
-    }
+    winstonLogger.log(level, '', logObject);
 };
 
 var setLogPattern = function (p) {
@@ -121,9 +107,6 @@ var logMessage = function () {
     var args = Array.prototype.slice.call(arguments);
 
     var level = args[0];
-    if (logLevelInt < loggingLevels[level]) {
-        return false;
-    }
     var customFields = null;
 
     args.shift();
@@ -137,7 +120,7 @@ var logMessage = function () {
 
     var msg = util.format.apply(util, args);
 
-    var logObject = initLog();
+    var logObject = {};
 
     var req = this;
     if (req.logObject != null) {
@@ -145,21 +128,19 @@ var logMessage = function () {
         logObject.request_id = req.logObject.request_id;
     }
 
+    var time = process.hrtime();
+
+    initLog(logObject, time);
+
     logObject.msg = msg;
 
-    logObject.type = logType;
+    logObject.type = "log";
 
     if (customFields != null) {
-        for (var key in customFields) {
-            if(!((typeof customFields[key]) == "string")) {
-                customFields[key] = JSON.stringify(customFields[key]);
-            }
-        }
         logObject.custom_fields = customFields;
     }
 
     sendLog(level, logObject);
-    return true;
 };
 
 var getCorrelationId = function () {
