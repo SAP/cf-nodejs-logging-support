@@ -252,39 +252,46 @@ describe('Test log-core', function () {
     describe('Test setCorrelationId', function () {
         var logObject = null;
         var setCorrelationId = null;
+        var testRequest;
 
         before(function () {
             core = rewire("../cf-nodejs-logging-support-core/log-core.js");
-            core.__set__({
-                "sendLog": function (level, logObj) {
-                    logObject = logObj;
-                }
-            });
-
+            uuid = require("uuid/v4");
             setCorrelationId = core.__get__("setCorrelationId");
         });
 
+        beforeEach(function() {
+
+            testRequest = {};
+            testRequest.setCorrelationId = setCorrelationId;
+        });
+
         it('Test correct writing to request', function () {
-            var testRequest = {};
             testRequest.logObject = {
                 "correlation_id": "456"
             };
-            testRequest.setCorrelationId = setCorrelationId;
-            testRequest.setCorrelationId 
-            testRequest.getCorrelationId().should.equal("456");
+            testId = uuid();
+
+
+            assert.isTrue(testRequest.setCorrelationId(testId)); 
+            testRequest.logObject.correlation_id.should.equal(testId);
         });
 
-        it('Test correct handling of missing correlation_id', function () {
-            var testRequest = {};
-            testRequest.logObject = {};
-            testRequest.getCorrelationId = getCorrelationId;
-            assert.isNull(testRequest.getCorrelationId());
+        it('Test correct handling of faulty uuid', function () {
+            testRequest.logObject = {
+                "correlation_id": "456"
+            };
+            testId = "faulty";
+
+
+            assert.isFalse(testRequest.setCorrelationId(testId)); 
+            testRequest.logObject.correlation_id.should.equal("456");
         });
 
         it('Test correct handling of missing logObject', function () {
-            var testRequest = {};
-            testRequest.getCorrelationId = getCorrelationId;
-            assert.isNull(testRequest.getCorrelationId());
+            testId = uuid();
+            
+            assert.isFalse(testRequest.setCorrelationId(testId));
         });
     });
 

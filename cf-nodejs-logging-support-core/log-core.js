@@ -3,7 +3,14 @@ var os = require('os');
 
 const nsPerSec = 1e9;
 const logType = "log";
-const loggingLevels = { 'error': 0, 'warn': 1, 'info': 2, 'verbose': 3, 'debug': 4, 'silly': 5 };
+const loggingLevels = {
+    'error': 0,
+    'warn': 1,
+    'info': 2,
+    'verbose': 3,
+    'debug': 4,
+    'silly': 5
+};
 
 var initDummy = null;
 var logLevelInt = 2;
@@ -13,7 +20,7 @@ var uuidCheck = /[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[0-9a-f]{4}-[0-9a-f]{12}/;
 
 
 // Stringify and log given object to console. If a custom pattern is set, the referenced object fields are used to replace the references.
-var writeLogToConsole = function(logObject) {
+var writeLogToConsole = function (logObject) {
     var output = "";
     if (null != pattern) {
         if (undefined !== logObject && logObject != null) {
@@ -29,7 +36,7 @@ var writeLogToConsole = function(logObject) {
     } else {
         output = (undefined !== logObject && validObject(logObject)) ? JSON.stringify(logObject) : '';
     }
-    
+
     stdout.write(output + os.EOL);
 }
 
@@ -39,8 +46,8 @@ var setLoggingLevel = function (level) {
 }
 // Gets the minimum logging level. (Levels: error, warn, info, verbose, debug, silly)
 var getLoggingLevel = function () {
-    for(var key in loggingLevels) {
-        if(loggingLevels[key] == logLevelInt) {
+    for (var key in loggingLevels) {
+        if (loggingLevels[key] == logLevelInt) {
             return key;
         }
     }
@@ -93,7 +100,7 @@ var sendLog = function (level, logObject) {
     // Write log to console to be parsed by logstash
 
     //winstonLogger.log(level, '', logObject);
-   if (logLevelInt >= loggingLevels[level]) {
+    if (logLevelInt >= loggingLevels[level]) {
         writeLogToConsole(logObject);
     }
 };
@@ -152,7 +159,7 @@ var logMessage = function () {
 
     if (customFields != null) {
         for (var key in customFields) {
-            if(!((typeof customFields[key]) == "string")) {
+            if (!((typeof customFields[key]) == "string")) {
                 customFields[key] = JSON.stringify(customFields[key]);
             }
         }
@@ -177,9 +184,11 @@ var getCorrelationId = function () {
 //setCorrelationId sets the Correlation_id for the request this is called on. Checks i the id is a correct uuid-v4. Returns true if set, false otherwise
 var setCorrelationId = function (correlationId) {
     var req = this;
-    if(uuidCheck.exec(correlationId)) {
-        req.logObject.correlation_id = correlationId;
-        return true;
+    if (req.logObject != null) {
+        if (uuidCheck.exec(correlationId)) {
+            req.logObject.correlation_id = correlationId;
+            return true;
+        }
     }
     return false;
 }
