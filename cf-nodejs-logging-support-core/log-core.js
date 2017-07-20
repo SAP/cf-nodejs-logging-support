@@ -184,7 +184,7 @@ var setCorrelationId = function (correlationId) {
     return false;
 }
 
-var bindLogFunction = function(req) {
+var bindLogFunctions = function(req) {
     req.logMessage = logMessage;
     req.getCorrelationId = getCorrelationId;
     req.setCorrelationId = setCorrelationId;
@@ -209,3 +209,4 @@ exports.sendLog = sendLog;
 exports.logMessage = logMessage;
 exports.validObject = validObject;
 exports.setLogPattern = setLogPattern;
+exports.bindLogFunctions = bindLogFunctions;

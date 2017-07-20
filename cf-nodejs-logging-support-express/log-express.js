@@ -65,7 +65,7 @@ var logNetwork = function (req, res, next) {
 
     req.logObject = logObject;
 
-    core.bindLogFunction(req);
+    core.bindLogFunctions(req);
 
 
     var start = Date.now();
