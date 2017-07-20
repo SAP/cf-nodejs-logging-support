@@ -9,6 +9,7 @@ var initDummy = null;
 var logLevelInt = 2;
 var pattern = null;
 var stdout = process.stdout;
+var uuidCheck = /[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[0-9a-f]{4}-[0-9a-f]{12}/;
 
 
 // Stringify and log given object to console. If a custom pattern is set, the referenced object fields are used to replace the references.
@@ -162,6 +163,7 @@ var logMessage = function () {
     return true;
 };
 
+//getCorrelationId returns the current correlation id for the req this is called on
 var getCorrelationId = function () {
     var req = this;
     if (req.logObject != null) {
@@ -171,6 +173,16 @@ var getCorrelationId = function () {
     }
     return null;
 };
+
+//setCorrelationId sets the Correlation_id for the request this is called on. Checks i the id is a correct uuid-v4. Returns true if set, false otherwise
+var setCorrelationId = function (correlationId) {
+    var req = this;
+    if(uuidCheck.exec(correlationId)) {
+        req.logObject.correlation_id = correlationId;
+        return true;
+    }
+    return false;
+}
 
 
 
@@ -194,3 +206,4 @@ exports.logMessage = logMessage;
 exports.validObject = validObject;
 exports.getCorrelationId = getCorrelationId;
 exports.setLogPattern = setLogPattern;
+exports.setCorrelationId = setCorrelationId;
