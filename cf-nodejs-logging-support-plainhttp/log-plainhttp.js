@@ -54,10 +54,8 @@ var logNetwork = function (req, res) {
     logObject.direction = "IN";
 
     req.logObject = logObject;
-    req.logMessage = core.logMessage;
-    req.getCorrelationId = core.getCorrelationId;
-    req.setCorrelationId = core.setCorrelationId;
-
+    
+    core.bindLogFunction(req);
 
     var start = Date.now();
 
