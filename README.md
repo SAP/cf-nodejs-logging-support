@@ -2,7 +2,7 @@
 
 [![Version npm](https://img.shields.io/npm/v/cf-nodejs-logging-support.svg?style=flat-square)](https://www.npmjs.com/package/cf-nodejs-logging-support)[![npm Downloads](https://img.shields.io/npm/dm/cf-nodejs-logging-support.svg?style=flat-square)](https://www.npmjs.com/package/cf-nodejs-logging-support)[![Build Status](https://img.shields.io/travis/SAP/cf-nodejs-logging-support/master.svg?style=flat-square)](https://travis-ci.org/SAP/cf-nodejs-logging-support)
 
-### For compatibility reasons the current nodejs version (greater than 2.0.1) can be found in the 2.X Branch.
+### For compatibility reasons the current npm version (greater than 2.0.1) can be found in the 2.X Branch.
 
 ## Summary
 
@@ -91,9 +91,10 @@ log.logMessage("info", "Server is listening on port %d", 3000);
 
 Use the logMessage(...) function to log custom messages with a given logging level. It is also possible to use the standard format placeholders equivalent to the [util.format](https://nodejs.org/api/util.html#util_util_format_format) method.
 
-Custom messages may be called on two objects:
-- If you want to keep track of a request with custom messages, you want to call req.logMessage(...) so the correct correlation_id and request_id will be added to this log.
+Custom messages may be called on three objects:
+- If you want to keep track of a request with custom messages before response.send(), you want to call req.logMessage(...) so the correct correlation_id and request_id will be added to this log.
 - If you want to write request independent custom messages, you want to call log.logMessage(...) so no further context tracking will be added.
+- If you want to write logs out of a (asynchronous) function called by a request handler, you can forward a context object. Retrieve it by calling context = req.getCorrelationObject(). Justs use context.logMessage(...) to write logs at your function. The correct correlation_id will be added to the log automatically. Context objects persists, even if the original request has been finished.
 
 Simple message
 ```js
@@ -156,6 +157,19 @@ In order to get the correlation_id of an request, you can use the following call
 app.get('/', function (req, res) {
     // Call to context bound function
     var id = req.getCorrelationId();
+    
+    res.send('Hello World');
+});
+```
+
+### Request correlationContext
+In order to get the correlation_id of an request, you can use the following call.
+```js
+app.get('/', function (req, res) {
+    // Call to context bound function
+    var ctx = req.getCorrelationContext();
+    
+    myAsyncFunction(ctx); // Just use ctx.logMessage(...) to write logs from inside the function.
     
     res.send('Hello World');
 });
