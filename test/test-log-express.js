@@ -354,16 +354,14 @@ describe('Test log-express', function () {
 
     describe('Test correlation object', function () {
 
-        var textObject = {
+        var testObject = {
             test: "123"
         }
 
         beforeEach(function() {
-            core.__set__({
-                "getCorrelationObject": function (obj) {
-                    return testObject;
-                }
-            });
+            core.getCorrelationObject = function () {
+                return testObject;
+            };
         })
 
         it("Testing getCorrelationObject method propagation", function() {

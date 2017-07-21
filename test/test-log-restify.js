@@ -355,6 +355,23 @@ describe('Test log-restify', function () {
             level.should.equal("test");
         });
     });
+    
+    describe('Test correlation object', function () {
+
+        var testObject = {
+            test: "123"
+        }
+
+        beforeEach(function() {
+            core.getCorrelationObject = function () {
+                return testObject;
+            };
+        })
+
+        it("Testing getCorrelationObject method propagation", function() {
+            restifyLogger.getCorrelationObject().test.should.equal(testObject.test);            
+        });
+    });
 
     describe('Test logMessage', function () {
         var expThat = null;
