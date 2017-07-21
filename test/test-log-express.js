@@ -351,6 +351,27 @@ describe('Test log-express', function () {
 
     });
 
+
+    describe('Test correlation object', function () {
+
+        var textObject = {
+            test: "123"
+        }
+
+        beforeEach(function() {
+            core.__set__({
+                "getCorrelationObject": function (obj) {
+                    return testObject;
+                }
+            });
+        })
+
+        it("Testing getCorrelationObject method propagation", function() {
+            expressLogger.getCorrelationObject().test.should.equal(testObject.test);            
+        });
+
+    });
+
     describe('Test setLoggingLevel', function () {
         var level = null;
 
