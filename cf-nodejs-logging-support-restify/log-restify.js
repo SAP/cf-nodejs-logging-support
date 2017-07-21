@@ -94,6 +94,11 @@ var setLogPattern = function (pattern) {
     core.setLogPattern(pattern);
 };
 
+// Provides a context object, which allows message logging and uses correlationId from its parent request.
+var getCorrelationObject = function() {
+    return core.getCorrelationObject();
+}
+
 exports.setCoreLogger = setCoreLogger;
 exports.setLoggingLevel = setLoggingLevel;
 exports.logNetwork = logNetwork;
