@@ -1,5 +1,6 @@
 var util = require('util');
 var os = require('os');
+var uuid = require('uuid/v4');
 
 const nsPerSec = 1e9;
 const logType = "log";
@@ -150,7 +151,9 @@ var logMessage = function () {
     var req = this;
     if (req.logObject != null) {
         logObject.correlation_id = req.logObject.correlation_id;
-        logObject.request_id = req.logObject.request_id;
+        if (req.logObject.request_id != null) {
+            logObject.request_id = req.logObject.request_id;
+        }
     }
 
     logObject.msg = msg;
@@ -193,10 +196,11 @@ var setCorrelationId = function (correlationId) {
     return false;
 }
 
-var bindLogFunctions = function(req) {
+var bindLogFunctions = function (req) {
     req.logMessage = logMessage;
     req.getCorrelationId = getCorrelationId;
     req.setCorrelationId = setCorrelationId;
+    req.getCorrelationObject = getCorrelationObject;
 }
 
 var validObject = function (obj) {
@@ -210,6 +214,20 @@ var validObject = function (obj) {
     return true;
 };
 
+var getCorrelationObject = function () {
+    var context = this;
+    var newContext = {};
+    newContext.logObject = {};
+    if (context.logObject != null) {
+        newContext.logObject.correlation_id = context.logObject.correlation_id;
+    } else {
+        newContext.logObject.correlation_id = uuid();
+    }
+    bindLogFunctions(newContext);
+    return newContext;
+
+}
+
 
 exports.setLoggingLevel = setLoggingLevel;
 exports.getLoggingLevel = getLoggingLevel;
@@ -219,3 +237,4 @@ exports.logMessage = logMessage;
 exports.validObject = validObject;
 exports.setLogPattern = setLogPattern;
 exports.bindLogFunctions = bindLogFunctions;
+exports.getCorrelationObject = getCorrelationObject;

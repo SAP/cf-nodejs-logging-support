@@ -1,12 +1,9 @@
 //loading core logger functionality
 var coreLogger = require("./cf-nodejs-logging-support-core/log-core");
 var effectiveLogger = null;
-var transport = require("./cf-nodejs-logging-support-winston/winston-transport");
 
 effectiveLogger = require("./cf-nodejs-logging-support-express/log-express");
 effectiveLogger.setCoreLogger(coreLogger);
-
-transport.setCoreLogger(coreLogger);
 
 exports.setLoggingLevel = function (level) {
     effectiveLogger.setLoggingLevel(level);
@@ -37,6 +34,16 @@ exports.logMessage = function (args) {
     effectiveLogger.logMessage.apply(this, arguments);
 };
 
-exports.winstonTransport = transport.winstonTransport;
+exports.winstonTransport = function () {
+    var transport = require("./cf-nodejs-logging-support-winston/winston-transport");
+
+
+    transport.setCoreLogger(coreLogger);
+    return transport;
+}();
+
+exports.getCorrelationObject = function () {
+    return effectiveLogger.getCorrelationObject();
+}
 
 exports.setLogPattern = effectiveLogger.setLogPattern;

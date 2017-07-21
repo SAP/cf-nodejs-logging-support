@@ -103,8 +103,13 @@ var setLogPattern = function (pattern) {
     core.setLogPattern(pattern);
 };
 
+var getCorrelationObject = function() {
+    return core.getCorrelationObject();
+}
+
 exports.setCoreLogger = setCoreLogger;
 exports.setLoggingLevel = setLoggingLevel;
 exports.logNetwork = logNetwork;
 exports.logMessage = logMessage;
 exports.setLogPattern = setLogPattern;
+exports.getCorrelationObject = getCorrelationObject;
