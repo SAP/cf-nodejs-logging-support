@@ -4,12 +4,12 @@ var setCoreLogger = function (coreLogger) {
     core = coreLogger;
 };
 var getWinstonTransport = function () {
+    var winston;
     try {
-        require.resolve("winston")
+        winston = require("winston");
     } catch (e) {
-        return {}
+        return null
     }
-    var winston = require("winston");
     var winstonTransport = new(winston.transports.Console)({
         timestamp: function () {
             return Date.now();
