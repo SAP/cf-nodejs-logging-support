@@ -100,3 +100,4 @@ exports.setLoggingLevel = setLoggingLevel;
 exports.logNetwork = logNetwork;
 exports.logMessage = logMessage;
 exports.setLogPattern = setLogPattern;
+exports.getCorrelationObject = getCorrelationObject;
