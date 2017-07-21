@@ -260,7 +260,7 @@ describe('Test log-core', function () {
             setCorrelationId = core.__get__("setCorrelationId");
         });
 
-        beforeEach(function() {
+        beforeEach(function () {
 
             testRequest = {};
             testRequest.setCorrelationId = setCorrelationId;
@@ -273,7 +273,7 @@ describe('Test log-core', function () {
             testId = uuid();
 
 
-            assert.isTrue(testRequest.setCorrelationId(testId)); 
+            assert.isTrue(testRequest.setCorrelationId(testId));
             testRequest.logObject.correlation_id.should.equal(testId);
         });
 
@@ -284,15 +284,51 @@ describe('Test log-core', function () {
             testId = "faulty";
 
 
-            assert.isFalse(testRequest.setCorrelationId(testId)); 
+            assert.isFalse(testRequest.setCorrelationId(testId));
             testRequest.logObject.correlation_id.should.equal("456");
         });
 
         it('Test correct handling of missing logObject', function () {
             testId = uuid();
-            
+
             assert.isFalse(testRequest.setCorrelationId(testId));
         });
+    });
+
+    describe('Test getCorrelationObject', function () {
+        var logObject = null;
+        var getCorrelationObject;
+
+        before(function () {
+            core = rewire("../cf-nodejs-logging-support-core/log-core.js");
+            uuid = require("uuid/v4");
+            getCorrelationObject = core.__get__("getCorrelationObject");
+        });
+
+        it('Test correct new object', function () {
+            var obj = getCorrelationObject();
+            obj.logObject.correlation_id.should.be.a("string");
+            correlation_id = obj.logObject.correlation_id;
+            obj.getCorrelationId().should.equal(correlation_id);
+            obj.setCorrelationId(uuid());
+            obj.getCorrelationId().should.not.equal(correlation_id);
+        });
+
+        it('Test correct correlation to old object', function () {
+            var old = {
+                logObject: {
+                    correlation_id: uuid()
+                }
+            };
+            old.getCorrelationObject = getCorrelationObject;
+            var obj = old.getCorrelationObject(old);
+            obj.logObject.correlation_id.should.be.a("string");
+            obj.getCorrelationId().should.equal(old.logObject.correlation_id);
+            obj.setCorrelationId(uuid());
+            obj.getCorrelationId().should.not.equal(correlation_id);
+        });
+
+
     });
 
 
@@ -431,7 +467,7 @@ describe('Test log-core', function () {
                 "instance_index": "42"
             });
             process.env.CF_INSTANCE_IP = "42";
-            core = rewire("../cf-nodejs-logging-support-core/log-core.js");    
+            core = rewire("../cf-nodejs-logging-support-core/log-core.js");
             clock = sinon.useFakeTimers();
         });
 

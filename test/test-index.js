@@ -33,8 +33,10 @@ describe('Test index.js', function () {
                     "logMessage": function (args) {
                         messageArgs = args;
                     },
-                    "getCorrelationObject": function() {
-                        return {test: "express"};
+                    "getCorrelationObject": function () {
+                        return {
+                            test: "express"
+                        };
                     }
                 };
             }
@@ -53,8 +55,10 @@ describe('Test index.js', function () {
                     "logMessage": function (args) {
                         messageArgs = args;
                     },
-                    "getCorrelationObject": function() {
-                        return {test: "restify"};
+                    "getCorrelationObject": function () {
+                        return {
+                            test: "restify"
+                        };
                     }
                 };
             }
@@ -72,8 +76,10 @@ describe('Test index.js', function () {
                     "logMessage": function (args) {
                         messageArgs = args;
                     },
-                    "getCorrelationObject": function() {
-                        return {test: "plain"};
+                    "getCorrelationObject": function () {
+                        return {
+                            test: "plainhttp"
+                        };
                     }
                 };
             }
@@ -81,7 +87,11 @@ describe('Test index.js', function () {
         };
     });
 
-    after(function() {
+    beforeEach(function () {
+        logger.forceLogger("express");
+    });
+
+    after(function () {
         Module.prototype.require = origRequire;
     });
     describe('setLoggingLevel', function () {
@@ -106,11 +116,11 @@ describe('Test index.js', function () {
             loggingLevel.should.equal(level);
         });
 
-        it('Test setLoggingLevel: ', function () {
+        it('Test getCorrelationObject: ', function () {
             var obj = {};
             obj.test = "express";
             logger.getCorrelationObject().test.should.equal(obj.test);
-            
+
             logger.forceLogger("restify");
             obj.test = "restify";
             logger.getCorrelationObject().test.should.equal(obj.test);
@@ -130,7 +140,6 @@ describe('Test index.js', function () {
             var obj1 = {};
             var obj2 = {};
             var obj3 = {};
-
             logger.logNetwork(obj1, obj2, obj3);
             req.should.equal(obj1);
             res.should.equal(obj2);
