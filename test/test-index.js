@@ -32,6 +32,9 @@ describe('Test index.js', function () {
                     },
                     "logMessage": function (args) {
                         messageArgs = args;
+                    },
+                    "getCorrelationObject": function() {
+                        return {test: "express"};
                     }
                 };
             }
@@ -49,6 +52,9 @@ describe('Test index.js', function () {
                     },
                     "logMessage": function (args) {
                         messageArgs = args;
+                    },
+                    "getCorrelationObject": function() {
+                        return {test: "restify"};
                     }
                 };
             }
@@ -65,6 +71,9 @@ describe('Test index.js', function () {
                     },
                     "logMessage": function (args) {
                         messageArgs = args;
+                    },
+                    "getCorrelationObject": function() {
+                        return {test: "plain"};
                     }
                 };
             }
@@ -95,6 +104,20 @@ describe('Test index.js', function () {
             logger.forceLogger("restify");
             logger.setLoggingLevel(level);
             loggingLevel.should.equal(level);
+        });
+
+        it('Test setLoggingLevel: ', function () {
+            var obj = {};
+            obj.test = "express";
+            logger.getCorrelationObject().test.should.equal(obj.test);
+            
+            logger.forceLogger("restify");
+            obj.test = "restify";
+            logger.getCorrelationObject().test.should.equal(obj.test);
+
+            logger.forceLogger("plainhttp");
+            obj.test = "plainhttp";
+            logger.getCorrelationObject().test.should.equal(obj.test);
         });
 
         it('Test logMessage: ', function () {
