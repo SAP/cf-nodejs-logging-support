@@ -39,7 +39,7 @@ exports.winstonTransport = function () {
 
 
     transport.setCoreLogger(coreLogger);
-    return transport;
+    return transport.getWinstonTransport();
 }();
 
 exports.getCorrelationObject = function () {
