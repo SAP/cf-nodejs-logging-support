@@ -78,7 +78,6 @@ describe('Test winston.js', function () {
 
         it('Test correct empty object', function () {
             obj = logger.winstonTransport;
-            console.log(obj);
             assert.isNull(obj);
         });
     });
