@@ -43,7 +43,11 @@ var writeLogToConsole = function (logObject) {
 
 // Sets the minimum logging level. Messages with a lower level will not be forwarded. (Levels: error, warn, info, verbose, debug, silly)
 var setLoggingLevel = function (level) {
-    logLevelInt = loggingLevels[level];
+    if(loggingLevels[level] != undefined){
+        logLevelInt = loggingLevels[level];
+        return true;
+    }
+    return false
 }
 // Gets the minimum logging level. (Levels: error, warn, info, verbose, debug, silly)
 var getLoggingLevel = function () {
