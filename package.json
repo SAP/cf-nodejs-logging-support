@@ -34,12 +34,10 @@
     },
     "maintainers": [
         {
-            "name": "nicklas dohrn",
-            "email": "nicklas.dohrn@sap.com"
+            "name": "nicklas dohrn"
     },
         {
-            "name": "christian dinse",
-            "email": "christian.dinse@sap.com"
+            "name": "christian dinse"
     }
   ],
     "scripts": {
