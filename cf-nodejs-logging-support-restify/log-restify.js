@@ -80,7 +80,7 @@ var logNetwork = function (req, res, next) {
         logObject.response_size_b = res.get("content-length") == null ? -1 : res.get("content-length");
         logObject.response_content_type = res.get("content-type") == null ? "-" : res.get("content-type");
         logObject.response_status = res.statusCode;
-        core.sendLog('info', logObject);
+        core.sendLog('info', logObject, req.logLevel);
     });
 
     next();

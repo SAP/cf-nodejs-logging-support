@@ -76,11 +76,21 @@ var initLog = function (logObject, time) {
 };
 
 // Writes the given log file to stdout
-var sendLog = function (level, logObject) {
-    //Attach level to logobject
-    logObject.level = level;
-    // Write log to console to be parsed by logstash
-    winstonLogger.log(level, '', logObject);
+var sendLog = function (level, logObject, logThreshold) {
+    if (logThreshold) {
+        var globalLogLevel = getLoggingLevel();
+        setLoggingLevel(logThreshold);
+    }
+    try {
+        //Attach level to logobject
+        logObject.level = level;
+        // Write log to console to be parsed by logstash
+        winstonLogger.log(level, '', logObject);
+    } finally {
+        if (logThreshold) {
+            setLoggingLevel(globalLogLevel);
+        }
+    }
 };
 
 var setLogPattern = function (p) {
@@ -98,7 +108,7 @@ var setLogPattern = function (p) {
 // With additional string values
 // logMessage("info", "This %s a %s", "is", "test"); >> ... "msg":"This is a test" ...
 //
-// With custom fields (Added to custom_fields field) 
+// With custom fields (Added to custom_fields field)
 // logMessage("info", "Test data %j", {"field" :"value"}); >> ... "msg":"Test data %j" ... "custom_fields": {"field": "value"} ...
 //
 // With json object embedded in the message (nothing will be added to custom_fields)
@@ -140,7 +150,7 @@ var logMessage = function () {
         logObject.custom_fields = customFields;
     }
 
-    sendLog(level, logObject);
+    sendLog(level, logObject, req.logLevel);
 };
 
 var getCorrelationId = function () {

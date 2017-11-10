@@ -121,15 +121,18 @@ describe('Test log-core', function () {
         var logLevel;
         var logMeta;
         var sendLog;
+        var consoleTransport;
+        var transportLevel;
 
         before(function () {
             core = rewire("../cf-nodejs-logging-support-core/log-core.js");
+            consoleTransport = core.__get__("consoleTransport");
             core.__set__({
                 "winstonLogger": {
                     "log": function (level, text, meta) {
                         logLevel = level;
                         logMeta = meta;
-
+                        transportLevel = consoleTransport.level;
                     }
                 }
             });
@@ -172,6 +175,17 @@ describe('Test log-core', function () {
                 }
             });
             JSON.stringify(logMeta).should.equal('{"field1":"value","field2":42,"field3":47.11,"field4":{"innerField":73,"innerArray":[{"arrayField1":1},{"arrayField2":2}]},"level":"info"}');
+        });
+
+        it('Test dynamic change of transport level', function () {
+            var defaultLevel = consoleTransport.level;
+            sendLog("info", {}, "error");
+            transportLevel.should.equal("error");
+            consoleTransport.level.should.equal(defaultLevel);
+
+            sendLog("info", {}, "debug");
+            transportLevel.should.equal("debug");
+            consoleTransport.level.should.equal(defaultLevel);
         });
     });
 

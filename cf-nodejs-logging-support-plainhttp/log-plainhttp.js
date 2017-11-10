@@ -78,7 +78,7 @@ var logNetwork = function (req, res) {
             logObject.response_size_b = (res._headers == null || res._headers["content-length"] == null) ? -1 : res._headers["content-length"];
             logObject.response_content_type = (res._headers == null || res._headers["content-type"] == null) ? "-" : res._headers["content-type"];
             logObject.response_status = res.statusCode;
-            core.sendLog('info', logObject);
+            core.sendLog('info', logObject, req.logLevel);
             logSent = true;
         }
     };
