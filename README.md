@@ -162,14 +162,14 @@ app.get('/', function (req, res) {
 });
 ```
 
-### Request correlationContext
-In order to get the correlation_id of an request, you can use the following call.
+### Request correlationObject
+In order to get the correlation object of an request, you can use the following call.
 ```js
 app.get('/', function (req, res) {
     // Call to context bound function
-    var ctx = req.getCorrelationContext();
+    var correlationObj = req.getCorrelationObject();
     
-    myAsyncFunction(ctx); // Just use ctx.logMessage(...) to write logs from inside the function.
+    myAsyncFunction(correlationObj); // Just use correlationObj.logMessage(...) to write logs from inside the function.
     
     res.send('Hello World');
 });
