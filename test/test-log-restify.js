@@ -96,6 +96,22 @@ describe('Test log-restify', function () {
             };
         });
 
+        describe('Test overrideField', function () {
+            it('Test with custom msg', function () {
+                restifyLogger.overrideField("msg", "custom_msg");
+                restifyLogger.logNetwork(req, res, next);
+                fireLog();
+                logObject.msg.should.equal("custom_msg");
+            });
+
+            it('Test with new field', function () {
+                restifyLogger.overrideField("custom_field", "content");
+                restifyLogger.logNetwork(req, res, next);
+                fireLog();
+                logObject.custom_field.should.equal("content");
+            });
+        });
+
         describe('Test correlation_id', function () {
             it('Test X-CorrelationID', function () {
                 req.header = function (field) {
@@ -355,21 +371,21 @@ describe('Test log-restify', function () {
             level.should.equal("test");
         });
     });
-    
+
     describe('Test correlation object', function () {
 
         var testObject = {
             test: "123"
         }
 
-        beforeEach(function() {
+        beforeEach(function () {
             core.getCorrelationObject = function () {
                 return testObject;
             };
         })
 
-        it("Testing getCorrelationObject method propagation", function() {
-            restifyLogger.getCorrelationObject().test.should.equal(testObject.test);            
+        it("Testing getCorrelationObject method propagation", function () {
+            restifyLogger.getCorrelationObject().test.should.equal(testObject.test);
         });
     });
 

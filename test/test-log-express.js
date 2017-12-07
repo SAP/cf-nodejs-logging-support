@@ -111,6 +111,22 @@ describe('Test log-express', function () {
             count.should.equal(1);
         });
 
+        describe('Test overrideField', function () {
+            it('Test with custom msg', function () {
+                expressLogger.overrideField("msg", "custom_msg");
+                expressLogger.logNetwork(req, res, next);
+                fireLog();
+                logObject.msg.should.equal("custom_msg");
+            });
+
+            it('Test with new field', function () {
+                expressLogger.overrideField("custom_field", "content");
+                expressLogger.logNetwork(req, res, next);
+                fireLog();
+                logObject.custom_field.should.equal("content");
+            });
+        });
+
         describe('Test correlation_id', function () {
             it('Test X-CorrelationID', function () {
                 req.header = function (field) {
@@ -358,14 +374,14 @@ describe('Test log-express', function () {
             test: "123"
         }
 
-        beforeEach(function() {
+        beforeEach(function () {
             core.getCorrelationObject = function () {
                 return testObject;
             };
         })
 
-        it("Testing getCorrelationObject method propagation", function() {
-            expressLogger.getCorrelationObject().test.should.equal(testObject.test);            
+        it("Testing getCorrelationObject method propagation", function () {
+            expressLogger.getCorrelationObject().test.should.equal(testObject.test);
         });
 
     });

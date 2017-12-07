@@ -48,6 +48,7 @@ describe('Test log-core', function () {
             core.getLoggingLevel().should.equal("info");
             core.setLoggingLevel("warn");
             core.getLoggingLevel().should.equal("warn");
+            assert.isFalse(core.setLoggingLevel("something"));
         });
     });
 

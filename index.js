@@ -44,8 +44,11 @@ exports.winstonTransport = function () {
 
 exports.getCorrelationObject = function () {
     return effectiveLogger.getCorrelationObject();
-}
+};
 
-exports.setLogPattern = effectiveLogger.setLogPattern;
-
-exports.overrideNetworkField = effectiveLogger.overrideField;
+exports.setLogPattern = function(args) {
+    effectiveLogger.setLogPattern.apply(this, arguments);
+};
+exports.overrideNetworkField = function (args) {
+    effectiveLogger.overrideField.apply(this, arguments);
+};

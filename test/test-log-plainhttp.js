@@ -104,6 +104,24 @@ describe('Test log-plainhttp', function () {
             count.should.equal(1);
         });
 
+        
+
+        describe('Test overrideField', function () {
+            it('Test with custom msg', function () {
+                httpLogger.overrideField("msg", "custom_msg");
+                httpLogger.logNetwork(req, res, next);
+                fireLog();
+                logObject.msg.should.equal("custom_msg");
+            });
+
+            it('Test with new field', function () {
+                httpLogger.overrideField("custom_field", "content");
+                httpLogger.logNetwork(req, res, next);
+                fireLog();
+                logObject.custom_field.should.equal("content");
+            });
+        });
+
         describe('Test correlation_id', function () {
             it('Test X-CorrelationID', function () {
                 req.headers["X-CorrelationID"] = "correctID";

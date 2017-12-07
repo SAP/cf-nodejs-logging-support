@@ -4,8 +4,11 @@ var linking = null;
 var req = null;
 var res = null;
 var next = null;
+var field = null;
+var value = null;
 var loggingLevel = null;
 var messageArgs = null;
+var logPattern = null;
 var originalRequire = Module.prototype.require;
 
 
@@ -37,7 +40,14 @@ describe('Test index.js', function () {
                         return {
                             test: "express"
                         };
-                    }
+                    },
+                    "overrideField": function (field1, value1) {
+                        field = field1;
+                        value = value1;
+                    },
+                    "setLogPattern": function (pattern) {
+                        logPattern = pattern
+                    } 
                 };
             }
             if (args[0] === "./cf-nodejs-logging-support-restify/log-restify") {
@@ -59,7 +69,14 @@ describe('Test index.js', function () {
                         return {
                             test: "restify"
                         };
-                    }
+                    },
+                    "overrideField": function (field1, value1) {
+                        field = field1;
+                        value = value1;
+                    },
+                    "setLogPattern": function (pattern) {
+                        logPattern = pattern
+                    } 
                 };
             }
             if (args[0] === "./cf-nodejs-logging-support-plainhttp/log-plainhttp") {
@@ -80,7 +97,14 @@ describe('Test index.js', function () {
                         return {
                             test: "plainhttp"
                         };
-                    }
+                    },
+                    "overrideField": function (field1, value1) {
+                        field = field1;
+                        value = value1;
+                    },
+                    "setLogPattern": function (pattern) {
+                        logPattern = pattern;
+                    } 
                 };
             }
             return originalRequire.apply(this, arguments);
@@ -88,7 +112,7 @@ describe('Test index.js', function () {
     });
 
     beforeEach(function () {
-        logger.forceLogger("express");
+        logger.forceLogger("default");
     });
 
     after(function () {
@@ -114,6 +138,9 @@ describe('Test index.js', function () {
             logger.forceLogger("restify");
             logger.setLoggingLevel(level);
             loggingLevel.should.equal(level);
+            logger.forceLogger("plainhttp");
+            logger.setLoggingLevel(level);
+            loggingLevel.should.equal(level);
         });
 
         it('Test getCorrelationObject: ', function () {
@@ -136,6 +163,24 @@ describe('Test index.js', function () {
             message.should.equal(message);
         });
 
+        it('Test overrideNetworkField', function () {
+            var field1 = "test";
+            var value1 = "value";
+            logger.overrideNetworkField(field1, value1);
+            field.should.equal(field1);
+            value.should.equal(value1);
+
+            logger.forceLogger("restify");
+            logger.overrideNetworkField(field1, value1);
+            field.should.equal(field1);
+            value.should.equal(value1);
+
+            logger.forceLogger("plainhttp");
+            logger.overrideNetworkField(field1, value1);
+            field.should.equal(field1);
+            value.should.equal(value1);
+        });
+
         it('Test logNetwork: ', function () {
             var obj1 = {};
             var obj2 = {};
@@ -156,6 +201,15 @@ describe('Test index.js', function () {
             req.should.equal(obj1);
             res.should.equal(obj2);
             next.should.equal(obj3);
+
+            logger.forceLogger("plainhttp");
+
+            obj1 = {};
+            obj2 = {};
+
+            logger.logNetwork(obj1, obj2);
+            req.should.equal(obj1);
+            res.should.equal(obj2);
         });
 
         it('Test winstonTransport: ', function () {
@@ -163,6 +217,21 @@ describe('Test index.js', function () {
             assert.typeOf(obj, "object");
             assert.typeOf(obj.timestamp, "function");
             assert.typeOf(obj.formatter, "function");
+        });
+
+        it('Test setLogPattern: ' , function () {
+            var pattern = "testing pattern {{msg}}";
+            logger.setLogPattern(pattern);
+            logPattern.should.equal(pattern);
+
+            logger.forceLogger("restify");
+            logger.setLogPattern(pattern + "restify");
+            logPattern.should.equal(pattern + "restify");
+            
+
+            logger.forceLogger("plainhttp");
+            logger.setLogPattern(pattern + "plain");
+            logPattern.should.equal(pattern + "plain");
         });
 
     });
