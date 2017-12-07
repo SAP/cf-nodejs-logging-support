@@ -40,3 +40,5 @@ exports.logMessage = function (args) {
 exports.winstonTransport = transport.winstonTransport;
 
 exports.setLogPattern = effectiveLogger.setLogPattern;
+
+exports.overrideNetworkField = effectiveLogger.overrideField;
