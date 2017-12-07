@@ -47,3 +47,5 @@ exports.getCorrelationObject = function () {
 }
 
 exports.setLogPattern = effectiveLogger.setLogPattern;
+
+exports.overrideNetworkField = effectiveLogger.overrideField;

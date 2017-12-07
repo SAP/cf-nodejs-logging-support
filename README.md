@@ -167,6 +167,13 @@ Setup an output pattern to get a human-readable output instead of json. Use '{{'
 log.setLogPattern("{{written_at}} - {{msg}}");
 ```
 
+### Fixed Values for Network Logging (will impact log parsing if used incorrectly)
+Possibility to tailor logs to your needs, you can for example change the msg field for Network-logs to a find them in Human readable format:
+```js
+log.overrideNetworkField("msg", YOUR_CUSTOM_MSG);
+```
+This will replace the value of the previously empty msg field for network logs with YOUR_CUSTOM_MSG.
+
 
 ## Sample Apps
 

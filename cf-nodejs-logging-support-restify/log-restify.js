@@ -4,6 +4,7 @@
 
 var uuid = require("uuid/v4");
 var core;
+var fixedValues = [];
 
 var setCoreLogger = function (coreLogger) {
     core = coreLogger;
@@ -65,6 +66,7 @@ var logNetwork = function (req, res, next) {
     logObject.request_received_at = logObject.written_at;
     logObject.response_time_ms = 0; // Set later
     logObject.direction = "IN";
+    logObject.msg = "";
 
     req.logObject = logObject;
 
@@ -79,6 +81,11 @@ var logNetwork = function (req, res, next) {
         logObject.response_size_b = res.get("content-length") == null ? -1 : res.get("content-length");
         logObject.response_content_type = res.get("content-type") == null ? "-" : res.get("content-type");
         logObject.response_status = res.statusCode;
+
+        //override values with predefined values
+        for(var key in fixedValues) {
+            logObject[key] = fixedValues[key];
+        }
         core.sendLog('info', logObject);
     });
 
@@ -98,6 +105,10 @@ var setLogPattern = function (pattern) {
 var getCorrelationObject = function() {
     return core.getCorrelationObject();
 }
+// overrides Values in ALL Network logs (will impact log parsing, so use with caution!)
+var overrideField = function (field, value) {
+    fixedValues[field] = value;
+}
 
 exports.setCoreLogger = setCoreLogger;
 exports.setLoggingLevel = setLoggingLevel;
@@ -105,3 +116,4 @@ exports.logNetwork = logNetwork;
 exports.logMessage = logMessage;
 exports.setLogPattern = setLogPattern;
 exports.getCorrelationObject = getCorrelationObject;
+exports.overrideField = overrideField;
