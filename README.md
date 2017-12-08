@@ -8,7 +8,7 @@ This is a collection of support libraries for node.js applications running on Cl
 
 For details on the concepts and log formats, please look at the sibling project for [java logging support](https://github.com/SAP/cf-java-logging-support).
 
-#### Version 2.0 introduced loging without Winston and changed custom fields to be parsed and reported as strings regardless of original type.
+#### Version 2.0 introduced logging without Winston and changed custom fields to be parsed and reported as strings regardless of original type.
 
 ## Features
 
