@@ -17,6 +17,7 @@ var initDummy = null;
 var logLevelInt = 2;
 var pattern = null;
 var stdout = process.stdout;
+var patternDivider = /((?:\{\{)([^\}\{]+)(?:\}\}))/g;
 var uuidCheck = /[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[0-9a-f]{4}-[0-9a-f]{12}/;
 
 
@@ -25,14 +26,22 @@ var writeLogToConsole = function (logObject) {
     var output = "";
     if (null != pattern) {
         if (undefined !== logObject && logObject != null) {
-            output = pattern;
-            for (var key in logObject) {
-                if (typeof (logObject[key]) === "object" && validObject(logObject[key])) {
-                    output = output.replace('{{' + key + '}}', JSON.stringify(logObject[key]));
-                } else {
-                    output = output.replace('{{' + key + '}}', logObject[key]);
+            output = "";
+            var rest = pattern.split(patternDivider);
+            var value;
+            for (i = 0; i < (rest.length - 1) / 3; i++) {
+                output += rest[i * 3];
+                value = logObject[rest[2 + i * 3]];
+                if (value != null) {
+                    if (typeof value == "string") {
+                        output += value;
+                    } else {
+                        output += JSON.stringify(value);
+                    }
                 }
+
             }
+            output += rest[rest.length - 1];
         }
     } else {
         output = (undefined !== logObject && validObject(logObject)) ? JSON.stringify(logObject) : '';

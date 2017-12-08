@@ -120,7 +120,7 @@ describe('Test log-core', function () {
             core.setLogPattern("Test: {{empty}}");
 
             write(data)
-            output.should.equal("Test: {{empty}}" + os.EOL);
+            output.should.equal("Test: " + os.EOL);
         });
 
         it("Test log writingwith faulty values", function () {

@@ -101,8 +101,17 @@ var getCorrelationObject = function () {
     return core.getCorrelationObject();
 }
 // overrides Values in ALL Network logs (will impact log parsing, so use with caution!)
-var overrideField = function (field, value) {
-    fixedValues[field] = value;
+var overrideField = function (field, value) {  
+    if(field != null && typeof field == "string") {
+        if(value == undefined || value == null) {
+            fixedValues[field] = null;
+            return true;
+        } else {
+            fixedValues[field] = value;
+            return true;
+        }
+    }
+    return false;
 }
 
 exports.setCoreLogger = setCoreLogger;
