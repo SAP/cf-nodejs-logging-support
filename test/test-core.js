@@ -1,5 +1,4 @@
 var chai = require("chai");
-var rewire = require("rewire");
 var assert = chai.assert;
 chai.should();
 var os = require("os");
@@ -568,6 +567,43 @@ describe('Test log-core', function () {
             logObject.component_type.should.equal("application");
             logObject.layer.should.equal("[NODEJS]");
             logObject.logger.should.equal("nodejs-logger");
+        });
+    });
+
+    describe('Test overrideField', function () {
+        var values = {};
+        var overrideField = null;
+
+        beforeEach(function () {
+            values = {};
+            core = rewire("../cf-nodejs-logging-support-core/log-core.js");
+            core.__set__({
+                "fixedValues": values
+            });
+            overrideField = core.__get__("overrideField");
+
+        });
+
+        it("testing corect values", function () {
+            assert.isTrue(overrideField("msg", "test"));
+            values["msg"].should.equal("test");
+            assert.isTrue(overrideField("msg", "test2"));
+            values["msg"].should.equal("test2");
+        });
+
+        it("testing resetting values", function () {
+            overrideField("msg", "test");
+            values["msg"].should.equal("test");
+            assert.isTrue(overrideField("msg", undefined));
+            assert.equal(values["msg"], null);
+            overrideField("msg", "test");
+            values["msg"].should.equal("test");
+            assert.isTrue(overrideField("msg", null));
+            assert.equal(values["msg"], null);
+        });
+
+        it("testing incorrect values values", function () {
+            assert.isFalse(overrideField(1, false));
         });
     });
 });

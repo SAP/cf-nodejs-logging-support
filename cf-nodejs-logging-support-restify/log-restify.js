@@ -66,7 +66,6 @@ var logNetwork = function (req, res, next) {
     logObject.request_received_at = logObject.written_at;
     logObject.response_time_ms = 0; // Set later
     logObject.direction = "IN";
-    logObject.msg = "";
 
     req.logObject = logObject;
 
@@ -83,9 +82,7 @@ var logNetwork = function (req, res, next) {
         logObject.response_status = res.statusCode;
 
         //override values with predefined values
-        for(var key in fixedValues) {
-            logObject[key] = fixedValues[key];
-        }
+        core.writeStaticFields(logObject);
         core.sendLog('info', logObject);
     });
 
@@ -102,14 +99,15 @@ var setLogPattern = function (pattern) {
 };
 
 // Provides a context object, which allows message logging and uses correlationId from its parent request.
-var getCorrelationObject = function() {
+var getCorrelationObject = function () {
     return core.getCorrelationObject();
 }
-// overrides Values in ALL Network logs (will impact log parsing, so use with caution!)
+
 var overrideField = function (field, value) {
-    fixedValues[field] = value;
+    return core.overrideField(field, value);
 }
 
+exports.overrideField = overrideField;
 exports.setCoreLogger = setCoreLogger;
 exports.setLoggingLevel = setLoggingLevel;
 exports.logNetwork = logNetwork;

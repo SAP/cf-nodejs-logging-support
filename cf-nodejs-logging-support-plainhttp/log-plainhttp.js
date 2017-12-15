@@ -53,7 +53,6 @@ var logNetwork = function (req, res) {
     logObject.request_received_at = logObject.written_at;
     logObject.response_time_ms = -1; // Set later
     logObject.direction = "IN";
-    logObject.msg = "";
 
     req.logObject = logObject;
 
@@ -78,9 +77,7 @@ var logNetwork = function (req, res) {
             logObject.response_content_type = (res._headers == null || res._headers["content-type"] == null) ? "-" : res._headers["content-type"];
             logObject.response_status = res.statusCode;
             //override values with predefined values
-            for (var key in fixedValues) {
-                logObject[key] = fixedValues[key];
-            }
+            core.writeStaticFields(logObject);
             core.sendLog('info', logObject);
             logSent = true;
         }
@@ -92,6 +89,8 @@ var logMessage = function () {
     core.logMessage.apply(this, arguments);
 };
 
+
+
 var setLogPattern = function (pattern) {
     core.setLogPattern(pattern);
 };
@@ -100,20 +99,12 @@ var setLogPattern = function (pattern) {
 var getCorrelationObject = function () {
     return core.getCorrelationObject();
 }
-// overrides Values in ALL Network logs (will impact log parsing, so use with caution!)
-var overrideField = function (field, value) {  
-    if(field != null && typeof field == "string") {
-        if(value == undefined || value == null) {
-            fixedValues[field] = null;
-            return true;
-        } else {
-            fixedValues[field] = value;
-            return true;
-        }
-    }
-    return false;
+
+var overrideField = function (field, value) {
+    return core.overrideField(field, value);
 }
 
+exports.overrideField = overrideField;
 exports.setCoreLogger = setCoreLogger;
 exports.setLoggingLevel = setLoggingLevel;
 exports.logNetwork = logNetwork;

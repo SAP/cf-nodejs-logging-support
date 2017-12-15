@@ -33,8 +33,8 @@ exports.getLogMessage = function () {
         "request_received_at": "1970-01-01T00:00:00.000Z",
         "response_time_ms": 0,
         "direction": "IN",
-        "msg": "",
         "response_sent_at": "1970-01-01T00:00:00.000Z",
+        "msg": "testmessage",
         "level": "info"
     };
     return JSON.stringify(message) + os.EOL;

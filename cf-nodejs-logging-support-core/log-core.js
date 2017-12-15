@@ -13,6 +13,7 @@ const loggingLevels = {
     'silly': 5
 };
 
+var fixedValues = {};
 var initDummy = null;
 var logLevelInt = 2;
 var pattern = null;
@@ -52,7 +53,7 @@ var writeLogToConsole = function (logObject) {
 
 // Sets the minimum logging level. Messages with a lower level will not be forwarded. (Levels: error, warn, info, verbose, debug, silly)
 var setLoggingLevel = function (level) {
-    if(loggingLevels[level] != undefined){
+    if (loggingLevels[level] != undefined) {
         logLevelInt = loggingLevels[level];
         return true;
     }
@@ -241,7 +242,28 @@ var getCorrelationObject = function () {
 
 }
 
+var writeStaticFields = function (logObject) {
+    for (var key in fixedValues) {
+        logObject[key] = fixedValues[key];
+    }
+}
 
+// overrides Values in ALL Network logs (will impact log parsing, so use with caution!), returns true if field is set.
+var overrideField = function (field, value) {
+    if (field != null && typeof field == "string") {
+        if (value == undefined || value == null) {
+            fixedValues[field] = null;
+            return true;
+        } else {
+            fixedValues[field] = value;
+            return true;
+        }
+    }
+    return false;
+}
+
+exports.overrideField = overrideField;
+exports.writeStaticFields = writeStaticFields;
 exports.setLoggingLevel = setLoggingLevel;
 exports.getLoggingLevel = getLoggingLevel;
 exports.initLog = initLog;

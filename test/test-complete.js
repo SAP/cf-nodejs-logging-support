@@ -58,7 +58,7 @@ describe('Test Complete', function () {
         });
         res = httpMock.createResponse();
         prepare(res);
-
+        log.overrideNetworkField("msg","testmessage");
         log.logNetwork(req, res, () => {});
         res.end("ok");
         store.should.equal(results.getLogMessage());
