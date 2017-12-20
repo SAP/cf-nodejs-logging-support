@@ -8,6 +8,8 @@ exports.getLogMessage = function () {
         "component_instance": "0",
         "source_instance": "0",
         "layer": "[NODEJS]",
+        "organisation_id": "-",
+        "organisation_name": "-",
         "space_name": "-",
         "space_id": "-",
         "container_id": "-",
