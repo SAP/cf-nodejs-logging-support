@@ -30,6 +30,7 @@ var writeLogToConsole = function (logObject) {
             output = "";
             var rest = pattern.split(patternDivider);
             var value;
+            //iterates over split custom pattern, where n%3=0 is text outside the marked fields and n%3=2 are the fields to be replaced (inside {{}}), n elem rest.
             for (i = 0; i < (rest.length - 1) / 3; i++) {
                 output += rest[i * 3];
                 value = logObject[rest[2 + i * 3]];
@@ -115,9 +116,8 @@ var prepareInitDummy = function () {
 var sendLog = function (level, logObject) {
     //Attach level to logobject
     logObject.level = level;
-    // Write log to console to be parsed by logstash
 
-    //winstonLogger.log(level, '', logObject);
+    // Write log to console
     if (logLevelInt >= loggingLevels[level]) {
         writeLogToConsole(logObject);
     }
