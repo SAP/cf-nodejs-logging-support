@@ -99,6 +99,9 @@ var prepareInitDummy = function () {
 
     obj.layer = "[NODEJS]";
 
+    obj.organisation_id = "-";
+    obj.organisation_name = "-";
+
     obj.space_name = !("space_name" in vcapEnvironment) ? "-" : vcapEnvironment.space_name;
     obj.space_id = !("space_id" in vcapEnvironment) ? "-" : vcapEnvironment.space_id;
 
