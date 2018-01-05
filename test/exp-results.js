@@ -39,6 +39,6 @@ exports.getLogMessage = function () {
         "msg": "testmessage",
         "level": "info"
     };
-    return JSON.stringify(message) + os.EOL;
+    return message;
 
 }

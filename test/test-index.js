@@ -25,6 +25,7 @@ describe('Test index.js', function () {
                 linking = "express";
                 return {
                     "setCoreLogger": function () {},
+                    "setConfig": function () {},
                     "logNetwork": function (req1, res1, next1) {
                         req = req1;
                         res = res1;
@@ -54,6 +55,7 @@ describe('Test index.js', function () {
                 linking = "restify";
                 return {
                     "setCoreLogger": function () {},
+                    "setConfig": function () {},
                     "logNetwork": function (req1, res1, next1) {
                         req = req1;
                         res = res1;
@@ -83,6 +85,7 @@ describe('Test index.js', function () {
                 linking = "plainhttp";
                 return {
                     "setCoreLogger": function () {},
+                    "setConfig": function () {},
                     "logNetwork": function (req1, res1) {
                         req = req1;
                         res = res1;

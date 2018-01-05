@@ -3,7 +3,9 @@ var coreLogger = require("./cf-nodejs-logging-support-core/log-core");
 var effectiveLogger = null;
 
 effectiveLogger = require("./cf-nodejs-logging-support-express/log-express");
+defaultConfig = require("./config.js");
 effectiveLogger.setCoreLogger(coreLogger);
+effectiveLogger.setConfig(defaultConfig.config);
 
 exports.setLoggingLevel = function (level) {
     effectiveLogger.setLoggingLevel(level);
@@ -22,6 +24,7 @@ exports.forceLogger = function (name) {
             effectiveLogger = require("./cf-nodejs-logging-support-express/log-express");
     }
     effectiveLogger.setCoreLogger(coreLogger);
+    effectiveLogger.setConfig(defaultConfig.config);
 };
 
 

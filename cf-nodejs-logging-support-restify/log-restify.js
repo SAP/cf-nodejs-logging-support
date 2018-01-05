@@ -10,6 +10,10 @@ var setCoreLogger = function (coreLogger) {
     core = coreLogger;
 };
 
+var setConfig = function (newConfig) {
+    config = newConfig;
+}
+
 // Set the minimum logging level. Messages with a lower level, will not be forwarded. (Levels: error, warn, info, verbose, debug, silly)
 var setLoggingLevel = function (level) {
     core.setLoggingLevel(level);
@@ -115,3 +119,4 @@ exports.logMessage = logMessage;
 exports.setLogPattern = setLogPattern;
 exports.getCorrelationObject = getCorrelationObject;
 exports.overrideField = overrideField;
+exports.setConfig = setConfig;

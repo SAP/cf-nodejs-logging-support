@@ -3,10 +3,15 @@
 var uuid = require("uuid/v4");
 var core;
 var fixedValues = [];
+var config = [];
 
 var setCoreLogger = function (coreLogger) {
     core = coreLogger;
 };
+
+var setConfig = function (newConfig) {
+    config = newConfig;
+}
 
 // Set the minimum logging level. Messages with a lower level, will not be forwarded. (Levels: error, warn, info, verbose, debug, silly)
 var setLoggingLevel = function (level) {
@@ -36,40 +41,54 @@ var logNetwork = function (req, res, next) {
             return "";
         };
     }
+    fallbacks = [];
+    selfReferences = [];
+    resDependent = [];
+    for (var i = 0; i < config.length; i++) {
+        switch (config[i].source.type) {
+            case "header":
+                logObject[config[i].name] = req.header(config[i].source.name);
+                break;
+            case "static":
+                logObject[config[i].name] = config[i].source.value;
+                break;
+            case "field":
+                logObject[config[i].name] = req[config[i].source.name];
+                break;
+            case "self":
+                selfReferences[config[i].name] = config[i].source.name;
+                break;
+            case "resDep":
+                if(config[i].source.pre != null)
+                    logObject[config[i].name] = config[i].source.pre(req, res, logObject);
+                else 
+                    logObject[config[i].name] = "-1";
+                resDependent[config[i].name] = config[i].source.post;
+                break;
+            case "special":
+                fallbacks[config[i].name] = config[i].fallback;
+                break;
+        }
+        if (config[i].mandatory && logObject[config[i].name] == null) {
+            if (config[i].default != null) {
+                logObject[config[i].name] = config[i].default;
+            } else  {
+                console.log("falling back for: " + config[i].name);
+                fallbacks[config[i].name] = config[i].fallback;
+            }
 
-    if (req.header("X-CorrelationID") != null) {
-        logObject.correlation_id = req.header("X-CorrelationID");
-    } else if (req.header("x-vcap-request-id") != null) {
-        logObject.correlation_id = req.header("x-vcap-request-id");
-    } else {
-        logObject.correlation_id = uuid();
+        }
+    }
+    for (var key in fallbacks) {
+        logObject[key] = fallbacks[key](req, res, logObject);
+    }
+    for (var key in selfReferences) 
+    {
+        logObject[key] = logObject[selfReferences[key]];
     }
 
-    logObject.request_id = req.header("x-vcap-request-id") == null ? "-" : req.header("x-vcap-request-id");
-    logObject.type = "request";
-    logObject.request = req.originalUrl == null ? "-" : req.originalUrl;
-    logObject.referer = "-";
-    logObject.response_status = -1; // Set later
-    logObject.method = req.method == null ? "-" : req.method;
-    logObject.response_size_b = -1; // Set later
-    logObject.request_size_b = req.header("content-length") == null ? -1 : req.header("content-length");
-    logObject.remote_host = req.connection.remoteAddress == null ? "-" : req.connection.remoteAddress;
-    logObject.remote_port = req.connection.remotePort == null ? "-" : req.connection.remotePort.toString();
-    logObject.remote_user = "-";
-    logObject.x_forwarded_for = req.headers['x-forwarded-for'] == null ? "" : req.headers['x-forwarded-for'];
-    logObject.protocol = "HTTP" + (req.httpVersion == null ? "" : "/" + req.httpVersion);
-    logObject.remote_ip = logObject.remote_host;
-    logObject.response_content_type = "-1"; //set later
-    logObject.request_received_at = logObject.written_at;
-    logObject.response_time_ms = -1; // Set later
-    logObject.direction = "IN";
-
     req.logObject = logObject;
-
     core.bindLogFunctions(req);
-
-
-    var start = Date.now();
 
     res.on('finish', function () {
         finishLog();
@@ -81,12 +100,10 @@ var logNetwork = function (req, res, next) {
 
     var finishLog = function () {
         if (!logSent) {
-            var timeObj = new Date();
-            logObject.response_sent_at = timeObj.toJSON();
-            logObject.response_time_ms = timeObj.getTime() - start;
-            logObject.response_size_b = res.get("content-length") == null ? -1 : res.get("content-length");
-            logObject.response_content_type = res.get("content-type") == null ? "-" : res.get("content-type");
-            logObject.response_status = res.statusCode;
+
+            for(var key in resDependent) {
+                logObject[key] = resDependent[key](req, res, logObject);
+            }
 
             //override values with predefined values
             core.writeStaticFields(logObject);
@@ -108,7 +125,7 @@ var setLogPattern = function (pattern) {
 };
 
 // Provides a context object, which allows message logging and uses correlationId from its parent request.
-var getCorrelationObject = function() {
+var getCorrelationObject = function () {
     return core.getCorrelationObject();
 }
 
@@ -124,3 +141,4 @@ exports.logMessage = logMessage;
 exports.setLogPattern = setLogPattern;
 exports.getCorrelationObject = getCorrelationObject;
 exports.overrideField = overrideField;
+exports.setConfig = setConfig;
