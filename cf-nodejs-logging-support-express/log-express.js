@@ -45,36 +45,38 @@ var logNetwork = function (req, res, next) {
     selfReferences = [];
     resDependent = [];
     for (var i = 0; i < config.length; i++) {
-        switch (config[i].source.type) {
+        var configEntry = config[i];
+
+        switch (configEntry.source.type) {
             case "header":
-                logObject[config[i].name] = req.header(config[i].source.name);
+                logObject[configEntry.name] = req.header(configEntry.source.name);
                 break;
             case "static":
-                logObject[config[i].name] = config[i].source.value;
+                logObject[configEntry.name] = configEntry.source.value;
                 break;
             case "field":
-                logObject[config[i].name] = req[config[i].source.name];
+                logObject[configEntry.name] = req[configEntry.source.name];
                 break;
             case "self":
-                selfReferences[config[i].name] = config[i].source.name;
+                selfReferences[configEntry.name] = configEntry.source.name;
                 break;
             case "resDep":
-                if(config[i].source.pre != null)
-                    logObject[config[i].name] = config[i].source.pre(req, res, logObject);
+                if(configEntry.source.pre != null)
+                    logObject[configEntry.name] = configEntry.source.pre(req, res, logObject);
                 else 
-                    logObject[config[i].name] = "-1";
-                resDependent[config[i].name] = config[i].source.post;
+                    logObject[configEntry.name] = "-1";
+                resDependent[configEntry.name] = configEntry.source.post;
                 break;
             case "special":
-                fallbacks[config[i].name] = config[i].fallback;
+                fallbacks[configEntry.name] = configEntry.fallback;
                 break;
         }
-        if (config[i].mandatory && logObject[config[i].name] == null) {
-            if (config[i].default != null) {
-                logObject[config[i].name] = config[i].default;
+        if (configEntry.mandatory && logObject[configEntry.name] == null) {
+            if (configEntry.default != null) {
+                logObject[configEntry.name] = configEntry.default;
             } else  {
-                console.log("falling back for: " + config[i].name);
-                fallbacks[config[i].name] = config[i].fallback;
+                console.log("falling back for: " + configEntry.name);
+                fallbacks[configEntry.name] = configEntry.fallback;
             }
 
         }
