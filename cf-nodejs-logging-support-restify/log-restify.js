@@ -43,48 +43,90 @@ var logNetwork = function (req, res, next) {
             return "";
         };
     }
+    var fallbacks = [];
+    var selfReferences = [];
+    var configEntry;
+    var preConfig = core.getPreLogConfig();
+    for (var i = 0; i < preConfig.length; i++) {
+        configEntry = preConfig[i];
 
-
-    if (req.header("X-CorrelationID") != null) {
-        logObject.correlation_id = req.header("X-CorrelationID");
-    } else if (req.header("x-vcap-request-id") != null) {
-        logObject.correlation_id = req.header("x-vcap-request-id");
-    } else {
-        logObject.correlation_id = uuid();
+        switch (configEntry.source.type) {
+            case "header":
+                logObject[configEntry.name] = req.header(configEntry.source.name);
+                break;
+            case "static":
+                logObject[configEntry.name] = configEntry.source.value;
+                break;
+            case "field":
+                logObject[configEntry.name] = req[configEntry.source.name];
+                break;
+            case "self":
+                selfReferences[configEntry.name] = configEntry.source.name;
+                break;
+            case "time":
+                if (configEntry.source.pre != null)
+                    logObject[configEntry.name] = configEntry.source.pre(req, res, logObject);
+                else
+                    logObject[configEntry.name] = -1 //defaulting for time fields
+                break;
+            case "special":
+                fallbacks[configEntry.name] = configEntry.fallback;
+                break;
+        }
+        
+        handleDefaults(configEntry, logObject, fallbacks);
     }
 
-    logObject.request_id = req.header("x-vcap-request-id") == null ? "-" : req.header("x-vcap-request-id");
-    logObject.type = "request";
-    logObject.request = req.url == null ? "-" : req.url;
-    logObject.referer = "-";
-    logObject.response_status = 200; // Set later
-    logObject.method = req.method == null ? "-" : req.method;
-    logObject.response_size_b = -1; // Set later
-    logObject.request_size_b = req.header("content-length") == null ? -1 : req.header("content-length");
-    logObject.remote_host = req.connection.remoteAddress == null ? "-" : req.connection.remoteAddress;
-    logObject.remote_port = req.connection.remotePort == null ? "-" : req.connection.remotePort.toString();
-    logObject.remote_user = "-";
-    logObject.x_forwarded_for = req.headers['x-forwarded-for'] == null ? "" : req.headers['x-forwarded-for'];
-    logObject.protocol = "HTTP" + (req.httpVersion == null ? "" : "/" + req.httpVersion);
-    logObject.remote_ip = logObject.remote_host;
-    logObject.response_content_type = "text/html;charset=UTF-8";
-    logObject.request_received_at = logObject.written_at;
-    logObject.response_time_ms = 0; // Set later
-    logObject.direction = "IN";
+    for (var key in fallbacks) {
+        logObject[key] = fallbacks[key](req, res, logObject);
+    }
+    
+    for (var key in selfReferences) {
+        logObject[key] = logObject[selfReferences[key]];
+    }
 
     req.logObject = logObject;
 
     core.bindLogFunctions(req);
 
-    var start = Date.now();
-
     res.on('finish', function () {
-        var timeObj = new Date();
-        logObject.response_sent_at = timeObj.toJSON();
-        logObject.response_time_ms = timeObj.getTime() - start;
-        logObject.response_size_b = res.get("content-length") == null ? -1 : res.get("content-length");
-        logObject.response_content_type = res.get("content-type") == null ? "-" : res.get("content-type");
-        logObject.response_status = res.statusCode;
+        
+
+        var postConfig = core.getPostLogConfig();
+        var fallbacks = [];
+        var selfReferences = [];
+        for (var i = 0; i < postConfig.length; i++) {
+        configEntry = postConfig[i];
+
+        switch (configEntry.source.type) {
+            case "header":
+                logObject[configEntry.name] = res.get(configEntry.source.name);
+                break;
+            case "field":
+                logObject[configEntry.name] = res[configEntry.source.name];
+                break;
+            case "self":
+                selfReferences[configEntry.name] = configEntry.source.name;
+                break;
+            case "time":
+                if (configEntry.source.post != null)
+                    logObject[configEntry.name] = configEntry.source.post(req, res, logObject);
+                break;
+            case "special":
+                fallbacks[configEntry.name] = configEntry.fallback;
+                break;
+        }
+
+        handleDefaults(configEntry, logObject, fallbacks);
+    }
+
+    for (var key in fallbacks) {
+        logObject[key] = fallbacks[key](req, res, logObject);
+    }
+
+    for (var key in selfReferences) {
+        logObject[key] = logObject[selfReferences[key]];
+    }
 
         //override values with predefined values
         core.writeStaticFields(logObject);
@@ -93,6 +135,18 @@ var logNetwork = function (req, res, next) {
 
     next();
 };
+
+
+var handleDefaults = function (configEntry, logObject, fallbacks) {
+    if (configEntry.mandatory && logObject[configEntry.name] == null) {
+        if (configEntry.default != null) {
+            logObject[configEntry.name] = configEntry.default;
+        } else {
+            console.log("falling back for: " + configEntry.name);
+            fallbacks[configEntry.name] = configEntry.fallback;
+        }
+    }
+}
 
 // Logs message and custom fields
 var logMessage = function (args) {

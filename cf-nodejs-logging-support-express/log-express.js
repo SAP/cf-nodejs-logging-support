@@ -8,7 +8,7 @@ var setCoreLogger = function (coreLogger) {
     core = coreLogger;
 };
 
-var setConfig = function (newConfig) {
+var setConfig = function (config) {
     core.setConfig(config);
 }
 
@@ -63,6 +63,8 @@ var logNetwork = function (req, res, next) {
             case "time":
                 if (configEntry.source.pre != null)
                     logObject[configEntry.name] = configEntry.source.pre(req, res, logObject);
+                else
+                    logObject[configEntry.name] = -1 //defaulting for time fields
                 break;
             case "special":
                 fallbacks[configEntry.name] = configEntry.fallback;
@@ -103,7 +105,7 @@ var logNetwork = function (req, res, next) {
 
                 switch (configEntry.source.type) {
                     case "header":
-                        logObject[configEntry.name] = res.header(configEntry.source.name);
+                        logObject[configEntry.name] = res.get(configEntry.source.name);
                         break;
                     case "field":
                         logObject[configEntry.name] = res[configEntry.source.name];

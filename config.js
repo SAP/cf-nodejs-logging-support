@@ -43,11 +43,11 @@ var config = [{
     name: "response_status",
     mandatory: true,
     source: {
-        type: "resDep",
-        post: (req, res, logObj) => {
-            return res.statusCode;
-        }
-    }
+        type: "field",
+        parent: "res",
+        name: "statusCode"
+    },
+    default: 200
 }, {
     name: "method",
     mandatory: true,
@@ -60,20 +60,21 @@ var config = [{
     name: "response_size_b",
     mandatory: true,
     source: {
-        type: "resDep",
-        post: (req, res, logObj) => {
-            return res.get("content-length") == null ? -1 : res.get("content-length");
-        }
-    }
+        type: "header",
+        parent: "res",
+        name: "content-length"
+    },
+    default: -1
 }, {
     name: "response_content_type",
     mandatory: true,
     source: {
-        type: "resDep",
-        post: (req, res, logObj) => {
-            return res.get("content-type") == null ? "-" : res.get("content-type");
-        }
-    }
+        type: "header",
+        parent: "res",
+        name: "content-type"
+    },
+    default: "-"
+
 }, {
     name: "remote_host",
     mandatory: true,
@@ -142,7 +143,7 @@ var config = [{
     name: "response_time_ms",
     mandatory: true,
     source: {
-        type: "resDep",
+        type: "time",
         pre: () => {
             return Date.now();
         },
@@ -154,7 +155,7 @@ var config = [{
     name: "response_sent_at",
     mandatory: true,
     source: {
-        type: "resDep",
+        type: "time",
         post: (req, res, logObj) => {
             return (new Date()).toJSON();
         }

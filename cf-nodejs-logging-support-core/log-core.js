@@ -20,20 +20,23 @@ var pattern = null;
 var stdout = process.stdout;
 var patternDivider = /((?:\{\{)([^\}\{]+)(?:\}\}))/g;
 var uuidCheck = /[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[0-9a-f]{4}-[0-9a-f]{12}/;
-var prelogconfig =[];
-var postlogconfig =[];
+var prelogconfig = [];
+var postlogconfig = [];
 
 var setConfig = function (config) {
     precompileConfig(config);
 }
 
-var precompileConfig = function(config) {
+var precompileConfig = function (config) {
     var coreConfig = [];
-    for(var i = 0; i < config.length; i++) {
+    for (var i = 0; i < config.length; i++) {
         var obj = config[i];
-        if(obj.core){
+        if (obj.core) {
             coreConfig.push(obj);
-        } else if (obj.source.parent != null && obj.source.parent.equals("req")) {
+        } else if (obj.source.type == "time") {
+            prelogconfig.push(obj);
+            postlogconfig.push(obj);
+        } else if ((obj.source.parent != null && obj.source.parent == "res")) {
             postlogconfig.push(obj);
         } else {
             prelogconfig.push(obj);
@@ -41,11 +44,11 @@ var precompileConfig = function(config) {
     }
 }
 
-var getPreLogConfig = function() {
+var getPreLogConfig = function () {
     return prelogconfig;
 }
 
-var getPostLogConfig = function() {
+var getPostLogConfig = function () {
     return postlogconfig;
 }
 
@@ -303,3 +306,6 @@ exports.validObject = validObject;
 exports.setLogPattern = setLogPattern;
 exports.bindLogFunctions = bindLogFunctions;
 exports.getCorrelationObject = getCorrelationObject;
+exports.setConfig = setConfig;
+exports.getPostLogConfig = getPostLogConfig;
+exports.getPreLogConfig = getPreLogConfig;
