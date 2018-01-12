@@ -1,6 +1,9 @@
+const importFresh = require('import-fresh');
 var chai = require("chai");
 var sinon = require("sinon");
 var assert = chai.assert;
+
+
 chai.should();
 describe('Test log-express', function () {
 
@@ -8,9 +11,10 @@ describe('Test log-express', function () {
     var expressLogger;
     beforeEach(function () {
         core = null;
-        core = require("../cf-nodejs-logging-support-core/log-core.js");
-        expressLogger = require("../cf-nodejs-logging-support-express/log-express.js");
+        core = importFresh("../cf-nodejs-logging-support-core/log-core.js");
+        expressLogger = importFresh("../cf-nodejs-logging-support-express/log-express.js");
         expressLogger.setCoreLogger(core);
+        expressLogger.setConfig(importFresh("../config.js").config);
     });
 
     describe('Test linkings', function () {
@@ -375,7 +379,7 @@ describe('Test log-express', function () {
 
         var testObject = {};
 
-        before(function () {
+        beforeEach(function () {
             core.overrideField = function (field, value) {
                 testObject[field] = value;
                 return true;

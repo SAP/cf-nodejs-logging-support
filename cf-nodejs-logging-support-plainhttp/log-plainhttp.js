@@ -8,8 +8,8 @@ var setCoreLogger = function (coreLogger) {
     core = coreLogger;
 };
 
-var setConfig = function (newConfig) {
-    config = newConfig;
+var setConfig = function (config) {
+    core.setConfig(config);
 }
 
 // Set the minimum logging level. Messages with a lower level, will not be forwarded. (Levels: error, warn, info, verbose, debug, silly)

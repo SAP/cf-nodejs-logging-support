@@ -1,15 +1,18 @@
+const importFresh = require('import-fresh');
 var chai = require("chai");
 var sinon = require("sinon");
 var assert = chai.assert;
 chai.should();
+
 describe('Test log-restify', function () {
 
     var core = null;
     var restifyLogger;
     beforeEach(function () {
-        core = require("../cf-nodejs-logging-support-core/log-core.js");
-        restifyLogger = require("../cf-nodejs-logging-support-restify/log-restify.js");
+        core = importFresh("../cf-nodejs-logging-support-core/log-core.js");
+        restifyLogger = importFresh("../cf-nodejs-logging-support-restify/log-restify.js");
         restifyLogger.setCoreLogger(core);
+        restifyLogger.setConfig(importFresh("../config.js").config);
     });
 
 
@@ -379,7 +382,7 @@ describe('Test log-restify', function () {
 
         var testObject = {};
 
-        before(function () {
+        beforeEach(function () {
             core.overrideField = function (field, value) {
                 testObject[field] = value;
                 return true;

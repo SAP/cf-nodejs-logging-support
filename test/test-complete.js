@@ -1,7 +1,9 @@
+const importFresh = require('import-fresh');
 var chai = require("chai");
 var sinon = require("sinon");
 var httpMock = require("node-mocks-http");
 var assert = chai.assert;
+
 chai.should();
 
 Function.prototype.override = function (func) {
@@ -15,7 +17,7 @@ Function.prototype.override = function (func) {
 describe('Test Complete', function () {
     var store;
 
-    var log = require("../index");
+    var log = importFresh("../index");
     var results = require("./exp-results");
 
     var prepare = function (res) {

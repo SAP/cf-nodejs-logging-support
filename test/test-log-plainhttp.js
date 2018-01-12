@@ -1,15 +1,18 @@
+const importFresh = require('import-fresh');
 var chai = require("chai");
 var sinon = require("sinon");
 var assert = chai.assert;
+
 chai.should();
 describe('Test log-plainhttp', function () {
 
     var core = null;
     var httpLogger;
     beforeEach(function () {
-        core = require("../cf-nodejs-logging-support-core/log-core.js");
-        httpLogger = require("../cf-nodejs-logging-support-plainhttp/log-plainhttp");
+        core = importFresh("../cf-nodejs-logging-support-core/log-core.js");
+        httpLogger = importFresh("../cf-nodejs-logging-support-plainhttp/log-plainhttp");
         httpLogger.setCoreLogger(core);
+        httpLogger.setConfig(importFresh("../config.js").config);
     });
 
     describe('Test linkings', function () {
@@ -357,7 +360,7 @@ describe('Test log-plainhttp', function () {
 
         var testObject = {};
 
-        before(function () {
+        beforeEach(function () {
             core.overrideField = function (field, value) {
                 testObject[field] = value;
                 return true;

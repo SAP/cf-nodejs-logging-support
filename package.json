@@ -25,6 +25,7 @@
   "devDependencies": {
     "chai": "^4.1.2",
     "eslint": "latest",
+    "import-fresh": "^2.0.0",
     "istanbul": "^0.4.4",
     "mocha": "^4.0.1",
     "mock-require": "^2.0.2",

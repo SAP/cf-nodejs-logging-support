@@ -1,10 +1,12 @@
+const importFresh = require('import-fresh');
 var chai = require("chai");
-var logger = require("../index.js");
+var logger = importFresh("../index.js");
 var sinon = require("sinon");
 var assert = chai.assert;
 var should = chai.should();
 var Module = require('module');
 var rewire = require('rewire');
+
 
 describe('Test winston.js', function () {
     describe('Test functionality', function () {

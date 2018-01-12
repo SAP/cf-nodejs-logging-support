@@ -1,9 +1,11 @@
+const importFresh = require('import-fresh');
 var chai = require("chai");
 var assert = chai.assert;
 chai.should();
 var os = require("os");
 var sinon = require("sinon");
 var rewire = require("rewire");
+
 
 describe('Test log-core', function () {
 
@@ -12,7 +14,7 @@ describe('Test log-core', function () {
     describe('Test validateObject', function () {
 
         before(function () {
-            core = require("../cf-nodejs-logging-support-core/log-core.js");
+            core = importFresh("../cf-nodejs-logging-support-core/log-core.js");
         });
 
         it('Test equals method: ', function () {

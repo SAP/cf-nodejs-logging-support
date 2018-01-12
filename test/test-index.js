@@ -1,3 +1,4 @@
+const importFresh = require('import-fresh');
 var chai = require("chai");
 var Module = require('module');
 var linking = null;
@@ -12,7 +13,7 @@ var logPattern = null;
 var originalRequire = Module.prototype.require;
 
 
-var logger = require("../index.js");
+var logger = importFresh("../index.js");
 var assert = chai.assert;
 chai.should();
 
