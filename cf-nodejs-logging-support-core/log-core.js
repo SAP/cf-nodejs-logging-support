@@ -20,8 +20,8 @@ var pattern = null;
 var stdout = process.stdout;
 var patternDivider = /((?:\{\{)([^\}\{]+)(?:\}\}))/g;
 var uuidCheck = /[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[0-9a-f]{4}-[0-9a-f]{12}/;
-var prelogconfig = [];
-var postlogconfig = [];
+var preLogConfig = [];
+var postLogConfig = [];
 
 var setConfig = function (config) {
     precompileConfig(config);
@@ -34,22 +34,32 @@ var precompileConfig = function (config) {
         if (obj.core) {
             coreConfig.push(obj);
         } else if (obj.source.type == "time") {
-            prelogconfig.push(obj);
-            postlogconfig.push(obj);
+            preLogConfig.push(obj);
+            postLogConfig.push(obj);
         } else if ((obj.source.parent != null && obj.source.parent == "res")) {
-            postlogconfig.push(obj);
+            postLogConfig.push(obj);
         } else {
-            prelogconfig.push(obj);
+            preLogConfig.push(obj);
         }
     }
 }
 
 var getPreLogConfig = function () {
-    return prelogconfig;
+    return preLogConfig;
 }
 
 var getPostLogConfig = function () {
-    return postlogconfig;
+    return postLogConfig;
+}
+
+var handleConfigDefaults = function (configEntry, logObject, fallbacks) {
+    if (configEntry.mandatory && logObject[configEntry.name] == null) {
+        if (configEntry.default != null) {
+            logObject[configEntry.name] = configEntry.default;
+        } else {
+            fallbacks[configEntry.name] = configEntry.fallback;
+        }
+    }
 }
 
 // Stringify and log given object to console. If a custom pattern is set, the referenced object fields are used to replace the references.
@@ -309,3 +319,4 @@ exports.getCorrelationObject = getCorrelationObject;
 exports.setConfig = setConfig;
 exports.getPostLogConfig = getPostLogConfig;
 exports.getPreLogConfig = getPreLogConfig;
+exports.handleConfigDefaults = handleConfigDefaults;

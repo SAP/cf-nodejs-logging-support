@@ -74,7 +74,7 @@ var logNetwork = function (req, res, next) {
                 break;
         }
         
-        handleDefaults(configEntry, logObject, fallbacks);
+        core.handleConfigDefaults(configEntry, logObject, fallbacks);
     }
 
     for (var key in fallbacks) {
@@ -117,7 +117,7 @@ var logNetwork = function (req, res, next) {
                 break;
         }
 
-        handleDefaults(configEntry, logObject, fallbacks);
+        core.handleConfigDefaults(configEntry, logObject, fallbacks);
     }
 
     for (var key in fallbacks) {
@@ -135,18 +135,6 @@ var logNetwork = function (req, res, next) {
 
     next();
 };
-
-
-var handleDefaults = function (configEntry, logObject, fallbacks) {
-    if (configEntry.mandatory && logObject[configEntry.name] == null) {
-        if (configEntry.default != null) {
-            logObject[configEntry.name] = configEntry.default;
-        } else {
-            console.log("falling back for: " + configEntry.name);
-            fallbacks[configEntry.name] = configEntry.fallback;
-        }
-    }
-}
 
 // Logs message and custom fields
 var logMessage = function (args) {

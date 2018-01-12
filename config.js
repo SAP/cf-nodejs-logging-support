@@ -36,7 +36,7 @@ var config = [{
     mandatory: true,
     source: {
         type: "field",
-        name: "originalUrl"
+        name: "url"
     },
     default: "-"
 }, {
@@ -164,9 +164,10 @@ var config = [{
     name: "referer",
     mandatory: true,
     source: {
-        type: "static",
-        value: "-"
-    }
+        type: "header",
+        name: "referer"
+    },
+    default: "-"
 }, {
     name: "correlation_id",
     mandatory: true,
