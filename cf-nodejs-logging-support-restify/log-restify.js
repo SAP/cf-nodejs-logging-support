@@ -5,6 +5,7 @@
 var uuid = require("uuid/v4");
 var core;
 var fixedValues = [];
+var config = [];
 
 var setCoreLogger = function (coreLogger) {
     core = coreLogger;

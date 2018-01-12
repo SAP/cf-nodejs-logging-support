@@ -41,11 +41,12 @@ var logNetwork = function (req, res, next) {
             return "";
         };
     }
-    fallbacks = [];
-    selfReferences = [];
-    resDependent = [];
+    var fallbacks = [];
+    var selfReferences = [];
+    var resDependent = [];
+    var configEntry;
     for (var i = 0; i < config.length; i++) {
-        var configEntry = config[i];
+        configEntry = config[i];
 
         switch (configEntry.source.type) {
             case "header":
