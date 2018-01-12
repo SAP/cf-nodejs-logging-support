@@ -20,7 +20,34 @@ var pattern = null;
 var stdout = process.stdout;
 var patternDivider = /((?:\{\{)([^\}\{]+)(?:\}\}))/g;
 var uuidCheck = /[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[0-9a-f]{4}-[0-9a-f]{12}/;
+var prelogconfig =[];
+var postlogconfig =[];
 
+var setConfig = function (config) {
+    precompileConfig(config);
+}
+
+var precompileConfig = function(config) {
+    var coreConfig = [];
+    for(var i = 0; i < config.length; i++) {
+        var obj = config[i];
+        if(obj.core){
+            coreConfig.push(obj);
+        } else if (obj.source.parent != null && obj.source.parent.equals("req")) {
+            postlogconfig.push(obj);
+        } else {
+            prelogconfig.push(obj);
+        }
+    }
+}
+
+var getPreLogConfig = function() {
+    return prelogconfig;
+}
+
+var getPostLogConfig = function() {
+    return postlogconfig;
+}
 
 // Stringify and log given object to console. If a custom pattern is set, the referenced object fields are used to replace the references.
 var writeLogToConsole = function (logObject) {

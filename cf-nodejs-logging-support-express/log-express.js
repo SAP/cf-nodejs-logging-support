@@ -3,14 +3,13 @@
 var uuid = require("uuid/v4");
 var core;
 var fixedValues = [];
-var config = [];
 
 var setCoreLogger = function (coreLogger) {
     core = coreLogger;
 };
 
 var setConfig = function (newConfig) {
-    config = newConfig;
+    core.setConfig(config);
 }
 
 // Set the minimum logging level. Messages with a lower level, will not be forwarded. (Levels: error, warn, info, verbose, debug, silly)
@@ -43,10 +42,10 @@ var logNetwork = function (req, res, next) {
     }
     var fallbacks = [];
     var selfReferences = [];
-    var resDependent = [];
     var configEntry;
-    for (var i = 0; i < config.length; i++) {
-        configEntry = config[i];
+    var preConfig = core.getPreLogConfig();
+    for (var i = 0; i < preConfig.length; i++) {
+        configEntry = preConfig[i];
 
         switch (configEntry.source.type) {
             case "header":
@@ -61,32 +60,23 @@ var logNetwork = function (req, res, next) {
             case "self":
                 selfReferences[configEntry.name] = configEntry.source.name;
                 break;
-            case "resDep":
-                if(configEntry.source.pre != null)
+            case "time":
+                if (configEntry.source.pre != null)
                     logObject[configEntry.name] = configEntry.source.pre(req, res, logObject);
-                else 
-                    logObject[configEntry.name] = "-1";
-                resDependent[configEntry.name] = configEntry.source.post;
                 break;
             case "special":
                 fallbacks[configEntry.name] = configEntry.fallback;
                 break;
         }
-        if (configEntry.mandatory && logObject[configEntry.name] == null) {
-            if (configEntry.default != null) {
-                logObject[configEntry.name] = configEntry.default;
-            } else  {
-                console.log("falling back for: " + configEntry.name);
-                fallbacks[configEntry.name] = configEntry.fallback;
-            }
-
-        }
+        
+        handleDefaults(configEntry, logObject, fallbacks);
     }
+
     for (var key in fallbacks) {
         logObject[key] = fallbacks[key](req, res, logObject);
     }
-    for (var key in selfReferences) 
-    {
+    
+    for (var key in selfReferences) {
         logObject[key] = logObject[selfReferences[key]];
     }
 
@@ -104,8 +94,41 @@ var logNetwork = function (req, res, next) {
     var finishLog = function () {
         if (!logSent) {
 
-            for(var key in resDependent) {
-                logObject[key] = resDependent[key](req, res, logObject);
+            var postConfig = core.getPostLogConfig();
+            var fallbacks = [];
+            var selfReferences = [];
+
+            for (var i = 0; i < postConfig.length; i++) {
+                configEntry = postConfig[i];
+
+                switch (configEntry.source.type) {
+                    case "header":
+                        logObject[configEntry.name] = res.header(configEntry.source.name);
+                        break;
+                    case "field":
+                        logObject[configEntry.name] = res[configEntry.source.name];
+                        break;
+                    case "self":
+                        selfReferences[configEntry.name] = configEntry.source.name;
+                        break;
+                    case "time":
+                        if (configEntry.source.post != null)
+                            logObject[configEntry.name] = configEntry.source.post(req, res, logObject);
+                        break;
+                    case "special":
+                        fallbacks[configEntry.name] = configEntry.fallback;
+                        break;
+                }
+
+                handleDefaults(configEntry, logObject, fallbacks);
+            }
+
+            for (var key in fallbacks) {
+                logObject[key] = fallbacks[key](req, res, logObject);
+            }
+
+            for (var key in selfReferences) {
+                logObject[key] = logObject[selfReferences[key]];
             }
 
             //override values with predefined values
@@ -117,6 +140,17 @@ var logNetwork = function (req, res, next) {
 
     next();
 };
+
+var handleDefaults = function (configEntry, logObject, fallbacks) {
+    if (configEntry.mandatory && logObject[configEntry.name] == null) {
+        if (configEntry.default != null) {
+            logObject[configEntry.name] = configEntry.default;
+        } else {
+            console.log("falling back for: " + configEntry.name);
+            fallbacks[configEntry.name] = configEntry.fallback;
+        }
+    }
+}
 
 // Logs message and custom fields
 var logMessage = function () {
