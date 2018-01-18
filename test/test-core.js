@@ -15,6 +15,7 @@ describe('Test log-core', function () {
 
         before(function () {
             core = importFresh("../cf-nodejs-logging-support-core/log-core.js");
+            core.setConfig(importFresh("../config.js").config);
         });
 
         it('Test equals method: ', function () {
@@ -64,6 +65,7 @@ describe('Test log-core', function () {
         before(function () {
             core = rewire("../cf-nodejs-logging-support-core/log-core.js");
             write = core.__get__("writeLogToConsole");
+            core.setConfig(importFresh("../config.js").config);
 
             origStdout = process.stdout.write;
 
@@ -157,6 +159,7 @@ describe('Test log-core', function () {
                     logLevel = obj.level;
                 }
             });
+            core.setConfig(importFresh("../config.js").config);
             sendLog = core.__get__("sendLog");
         });
 
@@ -224,6 +227,7 @@ describe('Test log-core', function () {
                     logObject = logObj;
                 }
             });
+            core.setConfig(importFresh("../config.js").config);
 
             getCorrelationId = core.__get__("getCorrelationId");
         });
@@ -258,6 +262,7 @@ describe('Test log-core', function () {
 
         before(function () {
             core = rewire("../cf-nodejs-logging-support-core/log-core.js");
+            core.setConfig(importFresh("../config.js").config);
             uuid = require("uuid/v4");
             setCorrelationId = core.__get__("setCorrelationId");
         });
@@ -303,6 +308,7 @@ describe('Test log-core', function () {
 
         before(function () {
             core = rewire("../cf-nodejs-logging-support-core/log-core.js");
+            core.setConfig(importFresh("../config.js").config);
             uuid = require("uuid/v4");
             getCorrelationObject = core.__get__("getCorrelationObject");
         });
@@ -346,6 +352,7 @@ describe('Test log-core', function () {
                     logObject = logObj;
                 }
             });
+            core.setConfig(importFresh("../config.js").config);
 
             log = core.__get__("logMessage");
         });
@@ -470,6 +477,7 @@ describe('Test log-core', function () {
             });
             process.env.CF_INSTANCE_IP = "42";
             core = rewire("../cf-nodejs-logging-support-core/log-core.js");
+            core.setConfig(importFresh("../config.js").config);
             clock = sinon.useFakeTimers();
         });
 
@@ -551,6 +559,7 @@ describe('Test log-core', function () {
             //resetting inherit memory for fast init
             var core2 = rewire("../cf-nodejs-logging-support-core/log-core.js");
             core2.__set__("initDummy", null);
+            core2.setConfig(importFresh("../config.js").config);
             //rewrite process to old values
             //init object
             logObject = core2.initLog();
@@ -582,6 +591,7 @@ describe('Test log-core', function () {
             core.__set__({
                 "fixedValues": values
             });
+            core.setConfig(importFresh("../config.js").config);
             overrideField = core.__get__("overrideField");
 
         });

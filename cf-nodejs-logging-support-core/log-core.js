@@ -14,12 +14,13 @@ const loggingLevels = {
 };
 
 var fixedValues = {};
-var initDummy = null;
+var initDummy = "{}";
 var logLevelInt = 2;
 var pattern = null;
 var stdout = process.stdout;
 var patternDivider = /((?:\{\{)([^\}\{]+)(?:\}\}))/g;
 var uuidCheck = /[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[0-9a-f]{4}-[0-9a-f]{12}/;
+
 var preLogConfig = [];
 var postLogConfig = [];
 
@@ -42,6 +43,9 @@ var precompileConfig = function (config) {
             preLogConfig.push(obj);
         }
     }
+
+    var logObject = prepareInitDummy(coreConfig);
+    initDummy = JSON.stringify(logObject);
 }
 
 var getPreLogConfig = function () {
@@ -113,13 +117,14 @@ var getLoggingLevel = function () {
 var initLog = function () {
 
     var time = process.hrtime();
-    var logObject = {};
+    var logObject = JSON.parse(initDummy);
+    /*
     if (initDummy == null) {
-        logObject = prepareInitDummy();
+        logObject = prepareInitDummy(coreConfig);
         initDummy = JSON.stringify(logObject);
     } else {
         logObject = JSON.parse(initDummy);
-    }
+    }*/
 
     logObject.written_at = (new Date()).toJSON();
     logObject.written_ts = time[0] * nsPerSec + time[1];
@@ -128,8 +133,14 @@ var initLog = function () {
 
 };
 
-var prepareInitDummy = function () {
+var prepareInitDummy = function (coreConfig) {
     var obj = {};
+
+    for (var i = 0; i < coreConfig.length; i++) {
+        configEntry = coreConfig[i];
+        // TODO
+    }
+    
     var vcapEnvironment = ("VCAP_APPLICATION" in process.env) ? JSON.parse(process.env.VCAP_APPLICATION) : {};
 
     obj.component_type = "application";
