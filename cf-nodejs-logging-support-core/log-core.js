@@ -136,15 +136,44 @@ var initLog = function () {
 var prepareInitDummy = function (coreConfig) {
     var obj = {};
 
+
+    var fallbacks = [];
+    var selfReferences = [];
+    var configEntry;
+
     for (var i = 0; i < coreConfig.length; i++) {
         configEntry = coreConfig[i];
-        // TODO
+        switch (configEntry.source.type) {
+            case "env":
+                obj[configEntry.name] = process.env[configEntry.source.name];
+                break;
+            case "nested-env":
+                obj[configEntry.name] = resolveNestedVariable(process.env, configEntry.source.path);
+                break;
+            case "static":
+                obj[configEntry.name] = configEntry.source.value;
+                break;
+            case "self":
+                selfReferences[configEntry.name] = configEntry.source.name;
+                break;
+        }
+        handleConfigDefaults(configEntry, obj, fallbacks);
     }
-    
+
+    for (var key in fallbacks) {
+        obj[key] = fallbacks[key](req, res, obj);
+    }
+
+    for (var key in selfReferences) {
+        obj[key] = obj[selfReferences[key]];
+    }
+
+
+
     var vcapEnvironment = ("VCAP_APPLICATION" in process.env) ? JSON.parse(process.env.VCAP_APPLICATION) : {};
 
     obj.component_type = "application";
-    obj.component_id = !("application_id" in vcapEnvironment) ? "-" : vcapEnvironment.application_id;
+    //obj.component_id = !("application_id" in vcapEnvironment) ? "-" : vcapEnvironment.application_id;
     obj.component_name = !("application_name" in vcapEnvironment) ? "-" : vcapEnvironment.application_name;
     obj.component_instance = !("instance_index" in vcapEnvironment) ? "0" : vcapEnvironment.instance_index.toString();
     obj.source_instance = obj.component_instance;
@@ -162,6 +191,40 @@ var prepareInitDummy = function (coreConfig) {
     obj.logger = "nodejs-logger";
     return obj;
 };
+
+// Resolves a path to a variable in a structure of objects to its value. Parts of the object hierarchy that are represented as strings will be parsed.
+var resolveNestedVariable = function (root, path) {
+
+    // return, if path is empty.
+    if(path == null || path.length == 0) {
+        return null;
+    }
+
+    var rootObj;
+
+    // if root is a string => parse it to an object. Otherwise => use it directly as object.
+    if (typeof root === 'string') {
+        rootObj = JSON.parse(root);
+    } else if (typeof root === 'object') {
+        rootObj = root;
+    } else {
+        return null;
+    }
+
+    // get value from root object
+    var value = rootObj[path[0]];
+
+    // cut first entry of the object path
+    path.shift();
+
+    // if the path is not empty, recursively resolve the remaining waypoints.
+    if(path.length >= 1) {
+        return resolveNestedVariable(value, path);
+    }
+
+    // return the resolved value, if path is empty.
+    return value;
+}
 
 // Writes the given log file to stdout
 var sendLog = function (level, logObject) {
