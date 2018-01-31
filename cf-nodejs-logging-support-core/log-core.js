@@ -172,23 +172,23 @@ var prepareInitDummy = function (coreConfig) {
 
     var vcapEnvironment = ("VCAP_APPLICATION" in process.env) ? JSON.parse(process.env.VCAP_APPLICATION) : {};
 
-    obj.component_type = "application";
-    //obj.component_id = !("application_id" in vcapEnvironment) ? "-" : vcapEnvironment.application_id;
-    obj.component_name = !("application_name" in vcapEnvironment) ? "-" : vcapEnvironment.application_name;
-    obj.component_instance = !("instance_index" in vcapEnvironment) ? "0" : vcapEnvironment.instance_index.toString();
-    obj.source_instance = obj.component_instance;
+    // obj.component_type = "application";
+    // obj.component_id = !("application_id" in vcapEnvironment) ? "-" : vcapEnvironment.application_id;
+    //obj.component_name = !("application_name" in vcapEnvironment) ? "-" : vcapEnvironment.application_name;
+    //obj.component_instance = !("instance_index" in vcapEnvironment) ? "0" : vcapEnvironment.instance_index.toString();
+    //obj.source_instance = obj.component_instance;
 
-    obj.layer = "[NODEJS]";
+    //obj.layer = "[NODEJS]";
 
-    obj.organisation_id = "-";
-    obj.organisation_name = "-";
+    //obj.organisation_id = "-";
+    //obj.organisation_name = "-";
 
-    obj.space_name = !("space_name" in vcapEnvironment) ? "-" : vcapEnvironment.space_name;
-    obj.space_id = !("space_id" in vcapEnvironment) ? "-" : vcapEnvironment.space_id;
+    //obj.space_name = !("space_name" in vcapEnvironment) ? "-" : vcapEnvironment.space_name;
+    //obj.space_id = !("space_id" in vcapEnvironment) ? "-" : vcapEnvironment.space_id;
 
-    obj.container_id = !("CF_INSTANCE_IP" in process.env) ? "-" : process.env.CF_INSTANCE_IP;
+    //obj.container_id = !("CF_INSTANCE_IP" in process.env) ? "-" : process.env.CF_INSTANCE_IP;
 
-    obj.logger = "nodejs-logger";
+    //obj.logger = "nodejs-logger";
     return obj;
 };
 

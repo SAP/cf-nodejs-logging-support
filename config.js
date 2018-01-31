@@ -2,6 +2,14 @@ var uuid = require("uuid/v4");
 
 var config = [
     {
+        name: "component_type",
+        mandatory: true,
+        core: true,
+        source: {
+            type: "static",
+            value: "application"
+        }
+    }, {
         name: "component_id",
         mandatory: true,
         core: true,
@@ -10,6 +18,91 @@ var config = [
             path: ["VCAP_APPLICATION", "application_id"]
         },
         default: "-"
+    }, {
+        name: "component_name",
+        mandatory: true,
+        core: true,
+        source: {
+            type: "nested-env",
+            path: ["VCAP_APPLICATION", "application_name"]
+        },
+        default: "-"
+    }, {
+        name: "component_instance",
+        mandatory: true,
+        core: true,
+        source: {
+            type: "nested-env",
+            path: ["VCAP_APPLICATION", "instance_index"]
+        },
+        default: "0"
+    }, {
+        name: "source_instance",
+        mandatory: false,
+        core: true,
+        source: {
+            type: "self",
+            name: "component_instance"
+        }
+    }, {
+        name: "layer",
+        mandatory: true,
+        core: true,
+        source: {
+            type: "static",
+            value: "[NODEJS]"
+        }
+    }, {
+        name: "organisation_id",
+        mandatory: true,
+        core: true,
+        source: {
+            type: "static",
+            value: "-"
+        }
+    }, {
+        name: "organisation_name",
+        mandatory: true,
+        core: true,
+        source: {
+            type: "static",
+            value: "-"
+        }
+    }, {
+        name: "space_name",
+        mandatory: true,
+        core: true,
+        source: {
+            type: "nested-env",
+            path: ["VCAP_APPLICATION", "space_name"]
+        },
+        default: "-"
+    }, {
+        name: "space_id",
+        mandatory: true,
+        core: true,
+        source: {
+            type: "nested-env",
+            path: ["VCAP_APPLICATION", "space_id"]
+        },
+        default: "-"
+    }, {
+        name: "container_id",
+        mandatory: true,
+        core: true,
+        source: {
+            type: "env",
+            name: "CF_INSTANCE_IP"
+        },
+        default: "-"
+    }, {
+        name: "logger",
+        mandatory: true,
+        core: true,
+        source: {
+            type: "static",
+            value: "nodejs-logger"
+        }
     }, {
         name: "request_id",
         mandatory: true,
