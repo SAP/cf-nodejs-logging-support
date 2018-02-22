@@ -31,6 +31,14 @@ var logNetwork = function (req, res) {
         req.headers = {};
     }
 
+    var token = req.headers[core.getDynLogLevelHeaderName()];
+
+    if (token != null) {
+        req.dynamicLogLevel = core.getLogLevelFromJWT(token);
+    } else {
+        req.dynamicLogLevel = null;
+    }
+
     var fallbacks = [];
     var selfReferences = [];
     var configEntry;
@@ -127,7 +135,7 @@ var logNetwork = function (req, res) {
             }
             //override values with predefined values
             core.writeStaticFields(logObject);
-            core.sendLog('info', logObject);
+            core.sendLog('info', logObject, req.dynamicLogLevel);
             logSent = true;
         }
     };

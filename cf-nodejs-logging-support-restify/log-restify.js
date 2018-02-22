@@ -42,6 +42,15 @@ var logNetwork = function (req, res, next) {
             return "";
         };
     }
+
+    var token = req.header(core.getDynLogLevelHeaderName());
+
+    if (token != null) {
+        req.dynamicLogLevel = core.getLogLevelFromJWT(token);
+    } else {
+        req.dynamicLogLevel = null;
+    }
+
     var fallbacks = [];
     var selfReferences = [];
     var configEntry;
@@ -72,14 +81,14 @@ var logNetwork = function (req, res, next) {
                 fallbacks[configEntry.name] = configEntry.fallback;
                 break;
         }
-        
+
         core.handleConfigDefaults(configEntry, logObject, fallbacks);
     }
 
     for (var key in fallbacks) {
         logObject[key] = fallbacks[key](req, res, logObject);
     }
-    
+
     for (var key in selfReferences) {
         logObject[key] = logObject[selfReferences[key]];
     }
@@ -89,47 +98,47 @@ var logNetwork = function (req, res, next) {
     core.bindLogFunctions(req);
 
     res.on('finish', function () {
-        
+
 
         var postConfig = core.getPostLogConfig();
         var fallbacks = [];
         var selfReferences = [];
         for (var i = 0; i < postConfig.length; i++) {
-        configEntry = postConfig[i];
+            configEntry = postConfig[i];
 
-        switch (configEntry.source.type) {
-            case "header":
-                logObject[configEntry.name] = res.get(configEntry.source.name);
-                break;
-            case "field":
-                logObject[configEntry.name] = res[configEntry.source.name];
-                break;
-            case "self":
-                selfReferences[configEntry.name] = configEntry.source.name;
-                break;
-            case "time":
-                if (configEntry.source.post != null)
-                    logObject[configEntry.name] = configEntry.source.post(req, res, logObject);
-                break;
-            case "special":
-                fallbacks[configEntry.name] = configEntry.fallback;
-                break;
+            switch (configEntry.source.type) {
+                case "header":
+                    logObject[configEntry.name] = res.get(configEntry.source.name);
+                    break;
+                case "field":
+                    logObject[configEntry.name] = res[configEntry.source.name];
+                    break;
+                case "self":
+                    selfReferences[configEntry.name] = configEntry.source.name;
+                    break;
+                case "time":
+                    if (configEntry.source.post != null)
+                        logObject[configEntry.name] = configEntry.source.post(req, res, logObject);
+                    break;
+                case "special":
+                    fallbacks[configEntry.name] = configEntry.fallback;
+                    break;
+            }
+
+            core.handleConfigDefaults(configEntry, logObject, fallbacks);
         }
 
-        core.handleConfigDefaults(configEntry, logObject, fallbacks);
-    }
+        for (var key in fallbacks) {
+            logObject[key] = fallbacks[key](req, res, logObject);
+        }
 
-    for (var key in fallbacks) {
-        logObject[key] = fallbacks[key](req, res, logObject);
-    }
-
-    for (var key in selfReferences) {
-        logObject[key] = logObject[selfReferences[key]];
-    }
+        for (var key in selfReferences) {
+            logObject[key] = logObject[selfReferences[key]];
+        }
 
         //override values with predefined values
         core.writeStaticFields(logObject);
-        core.sendLog('info', logObject);
+        core.sendLog('info', logObject, req.dynamicLogLevel);
     });
 
     next();
