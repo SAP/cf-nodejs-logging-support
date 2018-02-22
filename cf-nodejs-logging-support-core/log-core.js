@@ -53,6 +53,16 @@ var precompileConfig = function (config) {
     var coreConfig = [];
     for (var i = 0; i < config.length; i++) {
         var obj = config[i];
+
+        // Check if config field needs a set env var to be enabled. If specified env var does not exist, the config field is dismissed
+        if(obj.envVarSwitch != null) {
+            var val = process.env[obj.envVarSwitch];
+            var pass = (val == "true" || val ==  "True" || val == "TRUE");
+            if(!pass) {
+                continue;
+            }
+        }
+
         if (obj.core) {
             coreConfig.push(obj);
         } else if (obj.source.type == "time") {
