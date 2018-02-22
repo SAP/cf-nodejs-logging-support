@@ -2,6 +2,8 @@
 var coreLogger = require("./cf-nodejs-logging-support-core/log-core");
 var effectiveLogger = null;
 
+coreLogger.init();
+
 effectiveLogger = require("./cf-nodejs-logging-support-express/log-express");
 defaultConfig = require("./config.js");
 effectiveLogger.setCoreLogger(coreLogger);

@@ -1,6 +1,11 @@
 var util = require('util');
 var os = require('os');
 var uuid = require('uuid/v4');
+var jwt = require('jsonwebtoken');
+
+const envDynLogHeader = "DYN_LOG_HEADER";
+const envDynLogKey = "DYN_LOG_LEVEL_KEY";
+const dynLogLevelDefaultHeader = "SAP-LOG-LEVEL"
 
 const nsPerSec = 1e9;
 const logType = "log";
@@ -23,6 +28,22 @@ var uuidCheck = /[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[0-9a-f]{4}-[0-9a-f]{12}/;
 
 var preLogConfig = [];
 var postLogConfig = [];
+
+var dynLogLevelHeader = dynLogLevelDefaultHeader;
+
+// Initializes the core logger, including setup of environment var defined settings
+var init = function() {
+    // Read dyn. log level header name from environment var
+    var headerName = process.env[envDynLogHeader];
+    if(headerName != null && headerName != "") {
+        dynLogLevelHeader = headerName;
+    } else {
+        dynLogLevelHeader = dynLogLevelDefaultHeader;
+    }
+
+    // Read dyn log level key from environemt var.
+    dynLogLevelKey = process.env[envDynLogKey];
+}
 
 var setConfig = function (config) {
     precompileConfig(config);
@@ -118,13 +139,6 @@ var initLog = function () {
 
     var time = process.hrtime();
     var logObject = JSON.parse(initDummy);
-    /*
-    if (initDummy == null) {
-        logObject = prepareInitDummy(coreConfig);
-        initDummy = JSON.stringify(logObject);
-    } else {
-        logObject = JSON.parse(initDummy);
-    }*/
 
     logObject.written_at = (new Date()).toJSON();
     logObject.written_ts = time[0] * nsPerSec + time[1];
@@ -227,12 +241,20 @@ var resolveNestedVariable = function (root, path) {
 }
 
 // Writes the given log file to stdout
-var sendLog = function (level, logObject) {
+var sendLog = function (level, logObject, dynamicLogLevel) {
     //Attach level to logobject
     logObject.level = level;
 
+    var threshold;
+    
+    if(dynamicLogLevel != null) {
+        threshold = dynamicLogLevel; // use dynamic log level
+    } else {
+        threshold = logLevelInt; // use global log level
+    }
+
     // Write log to console
-    if (logLevelInt >= loggingLevels[level]) {
+    if (threshold >= loggingLevels[level]) {
         writeLogToConsole(logObject);
     }
 };
@@ -260,10 +282,17 @@ var setLogPattern = function (p) {
 var logMessage = function () {
     var args = Array.prototype.slice.call(arguments);
 
+    var dynamicLogLevel = this.dynamicLogLevel;
+    
     var level = args[0];
-    if (logLevelInt < loggingLevels[level]) {
+    if (dynamicLogLevel != null) { // check if dynamic log level is setup
+        if (dynamicLogLevel < loggingLevels[level]) {
+            return false;
+        }
+    } else if (logLevelInt < loggingLevels[level]) {
         return false;
     }
+
     var customFields = null;
 
     args.shift();
@@ -300,7 +329,7 @@ var logMessage = function () {
         logObject.custom_fields = customFields;
     }
 
-    sendLog(level, logObject);
+    sendLog(level, logObject, dynamicLogLevel);
     return true;
 };
 
@@ -379,6 +408,37 @@ var overrideField = function (field, value) {
     return false;
 }
 
+// Get the name of the dynamic log level header
+var getDynLogLevelHeaderName = function() {
+    return dynLogLevelHeader;
+}
+
+// Get the dynamic logging level from the given JWT.
+var getLogLevelFromJWT = function(token) {
+    var level;
+    var payload = verifyAndDecodeJWT(token, dynLogLevelKey);
+
+    if(payload == null) {
+        return null;
+    }
+
+    return loggingLevels[payload.level];
+}
+
+// Verifies the given JWT and returns its payload.
+var verifyAndDecodeJWT = function(token, key) {
+    if(key == null || token == null) {
+        return null; // no public key or jwt provided
+    }
+
+    try {
+        return jwt.verify(token, key);
+    } catch(err) {
+        return null; // token not verified
+    }
+}
+
+exports.init = init;
 exports.overrideField = overrideField;
 exports.writeStaticFields = writeStaticFields;
 exports.setLoggingLevel = setLoggingLevel;
@@ -394,3 +454,5 @@ exports.setConfig = setConfig;
 exports.getPostLogConfig = getPostLogConfig;
 exports.getPreLogConfig = getPreLogConfig;
 exports.handleConfigDefaults = handleConfigDefaults;
+exports.getDynLogLevelHeaderName = getDynLogLevelHeaderName;
+exports.getLogLevelFromJWT = getLogLevelFromJWT;
