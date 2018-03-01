@@ -181,6 +181,7 @@ var config = [
     }, {
         name: "remote_host",
         mandatory: true,
+        envVarSwitch: "LOG_SENSITIVE_CONNECTION_DATA",
         source: {
             type: "special"
         },
@@ -190,6 +191,7 @@ var config = [
     }, {
         name: "remote_port",
         mandatory: true,
+        envVarSwitch: "LOG_SENSITIVE_CONNECTION_DATA",
         source: {
             type: "special"
         },
@@ -199,6 +201,7 @@ var config = [
     }, {
         name: "remote_user",
         mandatory: true,
+        envVarSwitch: "LOG_REMOTE_USER",
         source: {
             type: "static",
             value: "-"
@@ -213,6 +216,7 @@ var config = [
     }, {
         name: "x_forwarded_for",
         mandatory: true,
+        envVarSwitch: "LOG_SENSITIVE_CONNECTION_DATA",
         source: {
             type: "special"
         },
@@ -222,6 +226,7 @@ var config = [
     }, {
         name: "remote_ip",
         mandatory: false,
+        envVarSwitch: "LOG_SENSITIVE_CONNECTION_DATA",
         source: {
             type: "self",
             name: "remote_host"
@@ -266,6 +271,7 @@ var config = [
     }, {
         name: "referer",
         mandatory: true,
+        envVarSwitch: "LOG_REFERER",
         source: {
             type: "header",
             name: "referer"

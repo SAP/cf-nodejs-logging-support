@@ -7,6 +7,8 @@ const envDynLogHeader = "DYN_LOG_HEADER";
 const envDynLogKey = "DYN_LOG_LEVEL_KEY";
 const dynLogLevelDefaultHeader = "SAP-LOG-LEVEL"
 
+const reductedPlaceholder = "reducted"
+
 const nsPerSec = 1e9;
 const logType = "log";
 const loggingLevels = {
@@ -59,7 +61,7 @@ var precompileConfig = function (config) {
             var val = process.env[obj.envVarSwitch];
             var pass = (val == "true" || val ==  "True" || val == "TRUE");
             if(!pass) {
-                continue;
+                //obj.reduce = true;
             }
         }
 
@@ -93,6 +95,21 @@ var handleConfigDefaults = function (configEntry, logObject, fallbacks) {
             logObject[configEntry.name] = configEntry.default;
         } else {
             fallbacks[configEntry.name] = configEntry.fallback;
+        }
+    }
+}
+
+var reduceFields = function(config, logObject) {
+    for(var i = 0; i < config.length; i++) {
+        var configEntry = config[i];
+
+        if(configEntry.reduce) {
+            var value = logObject[configEntry.name];
+            var defaultValue = configEntry.default != null ? configEntry.default : "-";
+            if(value == null || value == "" || value == defaultValue) {
+                continue;
+            }
+            logObject[configEntry.name] = reductedPlaceholder;
         }
     }
 }
@@ -192,7 +209,7 @@ var prepareInitDummy = function (coreConfig) {
         obj[key] = obj[selfReferences[key]];
     }
 
-
+    reduceFields(coreConfig, obj);
 
     var vcapEnvironment = ("VCAP_APPLICATION" in process.env) ? JSON.parse(process.env.VCAP_APPLICATION) : {};
 
@@ -451,6 +468,7 @@ var verifyAndDecodeJWT = function(token, key) {
 exports.init = init;
 exports.overrideField = overrideField;
 exports.writeStaticFields = writeStaticFields;
+exports.reduceFields = reduceFields;
 exports.setLoggingLevel = setLoggingLevel;
 exports.getLoggingLevel = getLoggingLevel;
 exports.initLog = initLog;

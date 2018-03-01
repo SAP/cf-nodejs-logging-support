@@ -95,6 +95,9 @@ var logNetwork = function (req, res, next) {
         logObject[key] = logObject[selfReferences[key]];
     }
 
+    // Replace all set fields, which are marked to be reduced, with a placeholder (defined in log-core.js)
+    core.reduceFields(preConfig, logObject);
+
     req.logObject = logObject;
     core.bindLogFunctions(req);
 
@@ -148,6 +151,10 @@ var logNetwork = function (req, res, next) {
 
             //override values with predefined values
             core.writeStaticFields(logObject);
+
+            // Replace all set fields, which are marked to be reduced, with a placeholder (defined in log-core.js)
+            core.reduceFields(postConfig, logObject);
+
             core.sendLog('info', logObject, req.dynamicLogLevel);
             logSent = true;
         }
