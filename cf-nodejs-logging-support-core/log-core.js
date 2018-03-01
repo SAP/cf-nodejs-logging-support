@@ -56,7 +56,7 @@ var precompileConfig = function (config) {
     for (var i = 0; i < config.length; i++) {
         var obj = config[i];
 
-        // Check if config field needs a set env var to be enabled. If specified env var does not exist, the config field is dismissed
+        // Check if config field needs a set env var to be enabled. If specified env var does not exist, the resulting log field will be replaced by reductedPlaceholder
         if(obj.envVarSwitch != null) {
             var val = process.env[obj.envVarSwitch];
             var pass = (val == "true" || val ==  "True" || val == "TRUE");
@@ -99,6 +99,7 @@ var handleConfigDefaults = function (configEntry, logObject, fallbacks) {
     }
 }
 
+// Replace all fields, which are marked to be reduced and do not equal to their default value, empty or "-", to reductedPlaceholder.
 var reduceFields = function(config, logObject) {
     for(var i = 0; i < config.length; i++) {
         var configEntry = config[i];
