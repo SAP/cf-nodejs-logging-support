@@ -10,7 +10,11 @@ describe('Test log-express', function () {
     var core = null;
     var expressLogger;
     beforeEach(function () {
-        core = null;
+        // Set env vars to enable logging of sensitive data
+        process.env.LOG_SENSITIVE_CONNECTION_DATA = true;
+        process.env.LOG_REMOTE_USER = true;
+        process.env.LOG_REFERER = true;
+
         core = importFresh("../cf-nodejs-logging-support-core/log-core.js");
         expressLogger = importFresh("../cf-nodejs-logging-support-express/log-express.js");
         expressLogger.setCoreLogger(core);

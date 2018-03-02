@@ -9,6 +9,12 @@ describe('Test log-plainhttp', function () {
     var core = null;
     var httpLogger;
     beforeEach(function () {
+
+        // Set env vars to enable logging of sensitive data
+        process.env.LOG_SENSITIVE_CONNECTION_DATA = true;
+        process.env.LOG_REMOTE_USER = true;
+        process.env.LOG_REFERER = true;
+
         core = importFresh("../cf-nodejs-logging-support-core/log-core.js");
         httpLogger = importFresh("../cf-nodejs-logging-support-plainhttp/log-plainhttp");
         httpLogger.setCoreLogger(core);
@@ -75,7 +81,7 @@ describe('Test log-plainhttp', function () {
                 logObject = logObj;
             };
 
-            next = function () {};
+            next = function () { };
 
             req = {};
 
@@ -336,25 +342,25 @@ describe('Test log-plainhttp', function () {
             level.should.equal("test");
         });
     });
-        
+
     describe('Test correlation object', function () {
 
         var testObject = {
             test: "123"
         }
 
-        beforeEach(function() {
+        beforeEach(function () {
             core.getCorrelationObject = function () {
                 return testObject;
             };
         })
 
-        it("Testing getCorrelationObject method propagation", function() {
-            httpLogger.getCorrelationObject().test.should.equal(testObject.test);            
+        it("Testing getCorrelationObject method propagation", function () {
+            httpLogger.getCorrelationObject().test.should.equal(testObject.test);
         });
     });
 
-    
+
 
     describe('Test overrideField', function () {
 
@@ -368,7 +374,7 @@ describe('Test log-plainhttp', function () {
         })
 
         it("Testing overrideField method propagation", function () {
-            assert.isTrue(httpLogger.overrideField("msg","test"));
+            assert.isTrue(httpLogger.overrideField("msg", "test"));
             testObject["msg"].should.equal("test");
         });
 

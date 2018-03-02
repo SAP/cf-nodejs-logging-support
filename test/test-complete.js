@@ -17,6 +17,11 @@ Function.prototype.override = function (func) {
 describe('Test Complete', function () {
     var store;
 
+    // Set env vars to enable logging of sensitive data
+    process.env.LOG_SENSITIVE_CONNECTION_DATA = true;
+    process.env.LOG_REMOTE_USER = true;
+    process.env.LOG_REFERER = true;
+
     var log = importFresh("../index");
     var results = require("./exp-results");
 

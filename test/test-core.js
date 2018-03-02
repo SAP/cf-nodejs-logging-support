@@ -11,6 +11,163 @@ describe('Test log-core', function () {
 
     var core = null;
 
+    describe('Test setConfig assignments', function () {
+        var testConfig = [
+            {
+                name: "test-field-a",
+                core: true,
+                source: {
+                    type: "static",
+                    value: "42"
+                }
+            },{
+                name: "test-field-b",
+                core: false,
+                source: {
+                    type: "self",
+                    name: "other-field"
+                }
+            },{
+                name: "test-field-c",
+                core: false,
+                source: {
+                    type: "time"
+                }
+            },{
+                name: "test-field-d",
+                core: false,
+                source: {
+                    type: "field",
+                    parent: "res"
+                }
+            }
+
+        ]
+
+        beforeEach(function () {
+            core = rewire("../cf-nodejs-logging-support-core/log-core.js");
+        });
+
+        it('Test config assignment (core): ', function () {
+           
+            core.__set__({
+                "prepareInitDummy": function (config) {
+                    config.length.should.equal(1);
+                    config[0].should.equal(testConfig[0]);
+                }
+            })
+
+            core.setConfig(testConfig);
+        });
+
+        it('Test config assignment (pre): ', function () {
+            core.setConfig(testConfig);
+
+            var config = core.getPreLogConfig();
+            config.length.should.equal(2);
+            config[0].should.equal(testConfig[1]);
+            config[1].should.equal(testConfig[2]);
+        });
+
+        it('Test config assignment (post): ', function () {
+            core.setConfig(testConfig);
+
+            var config = core.getPostLogConfig();
+            config.length.should.equal(2);
+            config[0].should.equal(testConfig[2]);
+            config[1].should.equal(testConfig[3]);
+        });
+    });
+
+    describe('Test setConfig environment var switches', function () {
+        var coreConfig = null;
+
+        before(function () {
+            core = rewire("../cf-nodejs-logging-support-core/log-core.js");
+            core.__set__({
+                "prepareInitDummy": function (config) {
+                    coreConfig = config;
+                }
+            })
+        });
+
+        it('Test unset switch: ', function () {
+            testConfig = [{
+                core: true
+            }];
+            core.setConfig(testConfig);
+            coreConfig.length.should.equal(1);
+            coreConfig[0].should.deep.equal({core: true});
+        });
+
+        it('Test set switch and unset env var: ', function () {
+            testConfig = [{
+                core: true,
+                envVarSwitch: "LOG_TEST_VAR"
+            }];
+            process.env.LOG_TEST_VAR = undefined
+            core.setConfig(testConfig);
+            coreConfig.length.should.equal(1);
+            coreConfig[0].should.deep.equal({core: true, envVarSwitch: "LOG_TEST_VAR", reduce: true});
+        });
+
+        it('Test set switch and set env var ("true"): ', function () {
+            testConfig = [{
+                core: true,
+                envVarSwitch: "LOG_TEST_VAR"
+            }];
+            process.env.LOG_TEST_VAR = 'true';
+            core.setConfig(testConfig);
+            coreConfig.length.should.equal(1); 
+            coreConfig[0].should.deep.equal({core: true, envVarSwitch: "LOG_TEST_VAR"});
+        });
+
+        it('Test set switch and set env var ("True"): ', function () {
+            testConfig = [{
+                core: true,
+                envVarSwitch: "LOG_TEST_VAR"
+            }];
+            process.env.LOG_TEST_VAR = 'True';
+            core.setConfig(testConfig);
+            coreConfig.length.should.equal(1);
+            coreConfig[0].should.deep.equal({core: true, envVarSwitch: "LOG_TEST_VAR"});
+        });
+
+        it('Test set switch and set env var ("true"): ', function () {
+            testConfig = [{
+                core: true,
+                envVarSwitch: "LOG_TEST_VAR"
+            }];
+            process.env.LOG_TEST_VAR = 'TRUE';
+            core.setConfig(testConfig);
+            coreConfig.length.should.equal(1);
+            coreConfig[0].should.deep.equal({core: true, envVarSwitch: "LOG_TEST_VAR"});
+        });
+
+        it('Test set switch and set env var ("false"): ', function () {
+            testConfig = [{
+                core: true,
+                envVarSwitch: "LOG_TEST_VAR"
+            }];
+            process.env.LOG_TEST_VAR = 'false';
+            core.setConfig(testConfig);
+            coreConfig.length.should.equal(1);
+            coreConfig[0].should.deep.equal({core: true, envVarSwitch: "LOG_TEST_VAR", reduce: true});
+        });
+
+        it('Test set switch and set env var ("0"): ', function () {
+            testConfig = [{
+                core: true,
+                envVarSwitch: "LOG_TEST_VAR"
+            }];
+            process.env.LOG_TEST_VAR = '0';
+            core.setConfig(testConfig);
+            coreConfig.length.should.equal(1);
+            coreConfig[0].should.deep.equal({core: true, envVarSwitch: "LOG_TEST_VAR", reduce: true});
+        });
+    });
+
+
     describe('Test validateObject', function () {
 
         before(function () {
@@ -43,6 +200,12 @@ describe('Test log-core', function () {
     });
 
     describe('Test setLoggingLevel', function () {
+
+        before(function () {
+            core = importFresh("../cf-nodejs-logging-support-core/log-core.js");
+            core.setConfig(importFresh("../config.js").config);
+        });
+
         it("Test settingLoggingLevel", function () {
             core.setLoggingLevel("error");
             core.getLoggingLevel().should.equal("error");

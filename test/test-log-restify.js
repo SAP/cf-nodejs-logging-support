@@ -9,6 +9,12 @@ describe('Test log-restify', function () {
     var core = null;
     var restifyLogger;
     beforeEach(function () {
+
+        // Set env vars to enable logging of sensitive data
+        process.env.LOG_SENSITIVE_CONNECTION_DATA = true;
+        process.env.LOG_REMOTE_USER = true;
+        process.env.LOG_REFERER = true;
+
         core = importFresh("../cf-nodejs-logging-support-core/log-core.js");
         restifyLogger = importFresh("../cf-nodejs-logging-support-restify/log-restify.js");
         restifyLogger.setCoreLogger(core);
@@ -60,7 +66,7 @@ describe('Test log-restify', function () {
             res.on = function (tag, func) {
                 fireLog = func;
             };
-            restifyLogger.logNetwork(req, res, function () {});
+            restifyLogger.logNetwork(req, res, function () { });
             fireLog();
             assert.equal(callCounter, 2);
         });
@@ -78,7 +84,7 @@ describe('Test log-restify', function () {
                 logObject = logObj;
             };
 
-            next = function () {};
+            next = function () { };
 
             req = {};
             req.header = function () {

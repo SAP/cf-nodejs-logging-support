@@ -53,6 +53,9 @@ var setConfig = function (config) {
 
 var precompileConfig = function (config) {
     var coreConfig = [];
+    preLogConfig = [];
+    postLogConfig = [];
+
     for (var i = 0; i < config.length; i++) {
         var obj = config[i];
 
@@ -62,7 +65,7 @@ var precompileConfig = function (config) {
             var pass = (val == "true" || val ==  "True" || val == "TRUE");
             if(!pass) {
                 // Uncomment to enable log field reduction (currently breaking test cases)
-                //obj.reduce = true;
+                obj.reduce = true;
             }
         }
 
@@ -212,8 +215,6 @@ var prepareInitDummy = function (coreConfig) {
     }
 
     reduceFields(coreConfig, obj);
-
-    var vcapEnvironment = ("VCAP_APPLICATION" in process.env) ? JSON.parse(process.env.VCAP_APPLICATION) : {};
 
     // obj.component_type = "application";
     // obj.component_id = !("application_id" in vcapEnvironment) ? "-" : vcapEnvironment.application_id;
