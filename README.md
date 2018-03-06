@@ -93,19 +93,19 @@ log.logMessage("info", "Server is listening on port %d", 3000);
 ```
 
 ### Sensitive data reduction
-Version 3.0.0 and above implements a sensitive data reduction system, which replaces the content of sensitive field with 'reducted'. Only fields, which are **not** empty and **unequal** to their default value (usually '-') will be reduced.
+Version 3.0.0 and above implements a sensitive data reduction system, which deactivates the logging of sensitive fields. The field will contain 'reducted' instead of the original content.
 
-Following fields will be reduced by default: remote_ip, remote_host, remote_port, x_forwarded_for, remote_user, referer.
+Following fields will be *reduced* by default: remote_ip, remote_host, remote_port, x_forwarded_for, remote_user, referer.
 
-In order to disable this behavior for all or some of these fields, you have to setup environment variables with the following names:
+In order to activate normal logging for all or some of these fields, you have to setup environment variables with the following names:
 
-| Environment Variable                      | Activated fields (disables reduction)                |
-|-------------------------------------------|------------------------------------------------------|
-| ```LOG_SENSITIVE_CONNECTION_DATA: true``` | remote_ip, remote_host, remote_port, x_forwarded_for |
-| ```LOG_REMOTE_USER: true```               | remote_user                                          |
-| ```LOG_REFERER: true```                   | referer                                              |
+| Environment Variable                      | Optional fields                                                           |
+|-------------------------------------------|---------------------------------------------------------------------------|
+| ```LOG_SENSITIVE_CONNECTION_DATA: true``` | activates the fields remote_ip, remote_host, remote_port, x_forwarded_for |
+| ```LOG_REMOTE_USER: true```               | activates the field remote_user                                           |
+| ```LOG_REFERER: true```                   | activates the field referer                                               |
 
-This behavior matches with the corresponding mechanism in the (CF Java Logging library)[https://github.com/SAP/cf-java-logging-support/wiki/Overview#logging-sensitive-user-data]
+This behavior matches with the corresponding mechanism in the [CF Java Logging Support](https://github.com/SAP/cf-java-logging-support/wiki/Overview#logging-sensitive-user-data) library.
 
 
 ### Custom Messages
