@@ -92,22 +92,6 @@ server.listen(3000);
 log.logMessage("info", "Server is listening on port %d", 3000);
 ```
 
-### Sensitive data reduction
-Version 3.0.0 and above implements a sensitive data reduction system, which deactivates the logging of sensitive fields. The field will contain 'reducted' instead of the original content.
-
-Following fields will be *reduced* by default: remote_ip, remote_host, remote_port, x_forwarded_for, remote_user, referer.
-
-In order to activate normal logging for all or some of these fields, you have to setup environment variables with the following names:
-
-| Environment Variable                      | Optional fields                                                           |
-|-------------------------------------------|---------------------------------------------------------------------------|
-| ```LOG_SENSITIVE_CONNECTION_DATA: true``` | activates the fields remote_ip, remote_host, remote_port, x_forwarded_for |
-| ```LOG_REMOTE_USER: true```               | activates the field remote_user                                           |
-| ```LOG_REFERER: true```                   | activates the field referer                                               |
-
-This behavior matches with the corresponding mechanism in the [CF Java Logging Support](https://github.com/SAP/cf-java-logging-support/wiki/Overview#logging-sensitive-user-data) library.
-
-
 ### Custom Messages
 
 Use the logMessage(...) function to log custom messages with a given logging level. It is also possible to use the standard format placeholders equivalent to the [util.format](https://nodejs.org/api/util.html#util_util_format_format) method.
@@ -145,6 +129,62 @@ With json object forced to be embedded in to the message (nothing will be added 
 ```js
 logMessage("info", "Test data %j", {"field" :"value"}, {}); 
 // ... "msg":"Test data {\"field\": \"value\"}" ...
+```
+
+### Sensitive data reduction
+Version 3.0.0 and above implements a sensitive data reduction system, which deactivates the logging of sensitive fields. The field will contain 'reducted' instead of the original content.
+
+Following fields will be *reduced* by default: remote_ip, remote_host, remote_port, x_forwarded_for, remote_user, referer.
+
+In order to activate normal logging for all or some of these fields, you have to setup environment variables with the following names:
+
+| Environment Variable                      | Optional fields                                                           |
+|-------------------------------------------|---------------------------------------------------------------------------|
+| ```LOG_SENSITIVE_CONNECTION_DATA: true``` | activates the fields remote_ip, remote_host, remote_port, x_forwarded_for |
+| ```LOG_REMOTE_USER: true```               | activates the field remote_user                                           |
+| ```LOG_REFERER: true```                   | activates the field referer                                               |
+
+This behavior matches with the corresponding mechanism in the [CF Java Logging Support](https://github.com/SAP/cf-java-logging-support/wiki/Overview#logging-sensitive-user-data) library.
+
+### Dynamic log levels
+Sometimes it is useful to change the logging level for a specific request. This can be achieved by dynamic log levels set by a special header field or directly inside the corresponding request handler. 
+
+#### Change log level via header field
+You can change the log level for a specific request by providing a JSON Web Token ([JWT](https://de.wikipedia.org/wiki/JSON_Web_Token)) via the request header. This way it is not necessary to redeploy your app for every log level change.
+
+##### 1 Preparation
+JWTs are signed objects, which can be verified with a preprovided key. Create a key and setup a environment variable:
+```
+DYN_LOG_LEVEL_KEY: <your JWT key>
+```
+
+Redeploy your app in order to load the key from environment variables.
+
+##### 2 Creating JWTs
+Create a JWT token with the TokenCreator following payload:
+```
+{
+  "issuer": "<valid e-mail address>",
+  "level": "debug",
+  "iat": 1506016127,
+  "exp": 1506188927
+}
+```
+Setup the *level* field with your prefered logging level (error, warn, info, verbose, debug or silly).
+Make sure to set valid *Issued At (iat)* and *Expiration Date (exp)* timestamps.
+
+##### 3 Using JWTs
+Provide your created JWT via the header field 'SAP-LOG-LEVEL'. The logging level will be set to the provided level for the resulting request (and also corresponding custom log messages).  
+
+If you want to use another header name for the JWT, you can specify it via a enviroment variable:
+```
+DYN_LOG_HEADER: MY-HEADER-FIELD
+```
+
+#### Change log level within request handler
+You can also change the log level for all requests of a specific request handler by calling:
+```js
+req.setDynamicLoggingLevel("verbose");
 ```
 
 ### Winston Transport
