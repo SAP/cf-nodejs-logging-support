@@ -91,6 +91,23 @@ server.listen(3000);
 // Formatted log message free of request context
 log.logMessage("info", "Server is listening on port %d", 3000);
 ```
+
+### Sensitive data reduction
+Version 3.0.0 and above implements a sensitive data reduction system, which replaces the content of sensitive field with 'reducted'. Only fields, which are **not** empty and **unequal** to their default value (usually '-') will be reduced.
+
+Following fields will be reduced by default: remote_ip, remote_host, remote_port, x_forwarded_for, remote_user, referer.
+
+In order to disable this behavior for all or some of these fields, you have to setup environment variables with the following names:
+
+| Environment Variable                      | Activated fields (disables reduction)                |
+|-------------------------------------------|------------------------------------------------------|
+| ```LOG_SENSITIVE_CONNECTION_DATA: true``` | remote_ip, remote_host, remote_port, x_forwarded_for |
+| ```LOG_REMOTE_USER: true```               | remote_user                                          |
+| ```LOG_REFERER: true```                   | referer                                              |
+
+This behavior matches with the corresponding mechanism in the (CF Java Logging library)[https://github.com/SAP/cf-java-logging-support/wiki/Overview#logging-sensitive-user-data]
+
+
 ### Custom Messages
 
 Use the logMessage(...) function to log custom messages with a given logging level. It is also possible to use the standard format placeholders equivalent to the [util.format](https://nodejs.org/api/util.html#util_util_format_format) method.
