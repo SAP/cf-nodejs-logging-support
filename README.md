@@ -9,12 +9,16 @@ This is a collection of support libraries for node.js applications running on Cl
 For details on the concepts and log formats, please look at the sibling project for [java logging support](https://github.com/SAP/cf-java-logging-support).
 
 #### Version 2.0 introduced logging without Winston and changed custom fields to be parsed and reported as strings regardless of original type.
+#### Version 3.0 introduced dynamic log levels, sensitive data reduction and a redesigned field configuration system
 
 ## Features
 
   * Network logging (http requests) for CloudFoundry
   * Custom message logging
   * Logging levels
+  * Dynamic logging level (per request)
+  * Extendable field configuration
+  * Sensitive data reduction
   * Can be bound to [Winston](https://github.com/winstonjs/winston) as transport 
 
 ## Installation
