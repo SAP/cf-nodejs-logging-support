@@ -2,7 +2,7 @@
 
 [![Version npm](https://img.shields.io/npm/v/cf-nodejs-logging-support.svg?style=flat-square)](https://www.npmjs.com/package/cf-nodejs-logging-support)[![npm Downloads](https://img.shields.io/npm/dm/cf-nodejs-logging-support.svg?style=flat-square)](https://www.npmjs.com/package/cf-nodejs-logging-support)[![Build Status](https://img.shields.io/travis/SAP/cf-nodejs-logging-support/master.svg?style=flat-square)](https://travis-ci.org/SAP/cf-nodejs-logging-support)
 
-### For compatibility reasons the current npm version (greater than 2.0.1) can be found in the 2.X Branch.
+### For compatibility reasons the current npm version (greater than 3.0.0) can be found in the 3.X Branch. 2.X versions can be found in the 2.X branch.
 
 ## Summary
 
