@@ -391,7 +391,9 @@ var bindLogFunctions = function (req) {
     req.getCorrelationId = getCorrelationId;
     req.setCorrelationId = setCorrelationId;
     req.getCorrelationObject = getCorrelationObject;
+    req.setDynamicLoggingLevel = setDynamicLoggingLevel;
 }
+
 
 var validObject = function (obj) {
     if (obj === null || obj === undefined) {
@@ -416,6 +418,12 @@ var getCorrelationObject = function () {
     bindLogFunctions(newContext);
     return newContext;
 
+}
+
+// Sets the dynamic log level for the request to the given level
+var setDynamicLoggingLevel = function(levelName) {
+    var context = this;
+    context.dynamicLogLevel = getLogLevelFromName(levelName);
 }
 
 var writeStaticFields = function (logObject) {
@@ -445,14 +453,21 @@ var getDynLogLevelHeaderName = function() {
 
 // Get the dynamic logging level from the given JWT.
 var getLogLevelFromJWT = function(token) {
-    var level;
     var payload = verifyAndDecodeJWT(token, dynLogLevelKey);
 
     if(payload == null) {
         return null;
     }
 
-    return loggingLevels[payload.level];
+    var levelName = payload.level;
+
+    return getLogLevelFromName(levelName);
+}
+
+// Gets the log level number from a given level name
+var getLogLevelFromName = function(levelName) {
+    if(levelName == null) return null;
+    return loggingLevels[levelName.toLowerCase()];
 }
 
 // Verifies the given JWT and returns its payload.
