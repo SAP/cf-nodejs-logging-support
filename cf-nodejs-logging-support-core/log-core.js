@@ -454,7 +454,7 @@ var getDynLogLevelHeaderName = function() {
 // Get the dynamic logging level from the given JWT.
 var getLogLevelFromJWT = function(token) {
     var payload = verifyAndDecodeJWT(token, dynLogLevelKey);
-
+    console.log(payload);
     if(payload == null) {
         return null;
     }
@@ -477,9 +477,9 @@ var verifyAndDecodeJWT = function(token, key) {
     }
 
     try {
-        return jwt.verify(token, key);
+        return jwt.verify(token, "-----BEGIN PUBLIC KEY-----\n" + key + "\n-----END PUBLIC KEY-----", {algorithms: ["RS256", "RS384", "RS512"]});
     } catch(err) {
-        return null; // token not verified
+        return null; // token expired or invalid
     }
 }
 
