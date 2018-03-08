@@ -167,7 +167,7 @@ The tool mentioned above takes a log level, creates a key pair and signs the res
 }
 ```
 
-This library supports six logging levels: error, warn, info, verbose, debug or silly. Make sure, that your JWT specifies one of them in order to work correctly. It is also important to make sure, that the JWT has not been expired, when using it. 
+This library supports six logging levels: *error*, *warn*, *info*, *verbose*, *debug* and *silly*. Make sure, that your JWT specifies one of them in order to work correctly. It is also important to make sure, that the JWT has not been expired, when using it. 
 
 ##### 2 Providing the public key
 The logging library will try to verify JWTs attached to incoming requests. In order to do so, the public key (from above) needs to be provided via an environment variable called *DYN_LOG_LEVEL_KEY*:
@@ -182,7 +182,7 @@ Provide the created JWTs via a header field named 'SAP-LOG-LEVEL'. The logging l
 
 Note: If the provided JWT can not be verified, is expired or contains an invalid logging level, the library ignores it and uses the global logging level.
 
-If you want to use another header name for the JWT, you can specify it via a enviroment variable:
+If you want to use another header name for the JWT, you can specify it via an enviroment variable:
 ```
 DYN_LOG_HEADER: MY-HEADER-FIELD
 ```
