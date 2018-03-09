@@ -118,7 +118,7 @@ logMessage("info", "This %s a %s", "is", "test");
 // ... "msg":"This is a test" ...
 ```
 
-With custom fields added to custom_fields field. Keep in mind, that the last argument is handled as custom_fields object, if it is an object.
+With custom fields added to custom_fields field. Keep in mind that the last argument is handled as custom_fields object, if it is an object.
 ```js
 logMessage("info", "Test data %j", {"field" :"value"}); 
 // ... "msg":"Test data %j" 
@@ -167,7 +167,7 @@ The tool mentioned above takes a log level, creates a key pair and signs the res
 }
 ```
 
-This library supports six logging levels: *error*, *warn*, *info*, *verbose*, *debug* and *silly*. Make sure, that your JWT specifies one of them in order to work correctly. It is also important to make sure, that the JWT has not been expired, when using it. 
+This library supports six logging levels: *error*, *warn*, *info*, *verbose*, *debug* and *silly*. Make sure that your JWT specifies one of them in order to work correctly. It is also important to make sure that the JWT has not been expired, when using it. 
 
 ##### 2 Providing the public key
 The logging library will try to verify JWTs attached to incoming requests. In order to do so, the public key (from above) needs to be provided via an environment variable called *DYN_LOG_LEVEL_KEY*:
@@ -235,7 +235,7 @@ log.setLogPattern("{{written_at}} - {{msg}}");
 ```
 
 ### Fixed Values for Network Logging (will impact log parsing if used incorrectly)
-Possibility to tailor logs to your needs, you can for example change the msg field for Network-logs to a find them in Human readable format:
+Possibility to tailor logs to your needs, you can for example change the msg field for Network-logs to find them in the Human readable format:
 ```js
 log.overrideNetworkField("msg", YOUR_CUSTOM_MSG);
 ```
