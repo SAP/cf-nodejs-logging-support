@@ -5,9 +5,9 @@ var jwt = require('jsonwebtoken');
 
 const envDynLogHeader = "DYN_LOG_HEADER";
 const envDynLogKey = "DYN_LOG_LEVEL_KEY";
-const dynLogLevelDefaultHeader = "SAP-LOG-LEVEL"
+const dynLogLevelDefaultHeader = "SAP-LOG-LEVEL";
 
-const reductedPlaceholder = "reducted"
+const reductedPlaceholder = "redacted";
 
 const nsPerSec = 1e9;
 const logType = "log";

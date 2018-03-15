@@ -132,7 +132,7 @@ logMessage("info", "Test data %j", {"field" :"value"}, {});
 ```
 
 ### Sensitive data reduction
-Version 3.0.0 and above implements a sensitive data reduction system, which deactivates the logging of sensitive fields. The field will contain 'reducted' instead of the original content.
+Version 3.0.0 and above implements a sensitive data reduction system, which deactivates the logging of sensitive fields. The field will contain 'redacted' instead of the original content.
 
 Following fields will be *reduced* by default: remote_ip, remote_host, remote_port, x_forwarded_for, remote_user, referer.
 
