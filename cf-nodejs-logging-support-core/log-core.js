@@ -454,7 +454,7 @@ var getDynLogLevelHeaderName = function() {
 // Get the dynamic logging level from the given JWT.
 var getLogLevelFromJWT = function(token) {
     var payload = verifyAndDecodeJWT(token, dynLogLevelKey);
-    console.log(payload);
+
     if(payload == null) {
         return null;
     }
