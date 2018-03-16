@@ -153,9 +153,9 @@ Sometimes it is useful to change the logging level for a specific request. This 
 You can change the log level for a specific request by providing a JSON Web Token ([JWT](https://de.wikipedia.org/wiki/JSON_Web_Token)) via the request header. This way it is not necessary to redeploy your app for every log level change.
 
 ##### 1 Creating a JWT
-JWTs are signed claims, which consists of a header, a payload and a signature. You can create JWTs by using the [TokenCreator](https://github.com/SAP/cf-java-logging-support/blob/30b4bf65478fcd902316680aef9eaad89efe9db6/cf-java-logging-support-servlet/src/main/java/com/sap/hcp/cf/logging/servlet/dynlog/TokenCreator.java) from the Java Logging Support libary.
+JWTs are signed claims, which consists of a header, a payload and a signature. You can create JWTs by using the [TokenCreator](https://github.com/SAP/cf-java-logging-support/blob/30b4bf65478fcd902316680aef9eaad89efe9db6/cf-java-logging-support-servlet/src/main/java/com/sap/hcp/cf/logging/servlet/dynlog/TokenCreator.java) from the Java Logging Support library.
 
-Basically JWTs are signed with RSA or HMAC signing algorithms. But we decided to support RDA algorithms (RS256, RS384 and RS512) only. In contrast to HMAC algorithms (HS256, HS384 and HS512), RSA algorithms are asymmetric and therefore require key pairs (public and private key).
+Basically, JWTs are signed with RSA or HMAC signing algorithms. But we decided to support RDA algorithms (RS256, RS384 and RS512) only. In contrast to HMAC algorithms (HS256, HS384 and HS512), RSA algorithms are asymmetric and therefore require key pairs (public and private key).
 
 The tool mentioned above takes a log level, creates a key pair and signs the resulting JWT with the private key. The payload of a JWT looks like this:
 ```
@@ -180,7 +180,7 @@ Redeploy your app after setting up the environment variable.
 ##### 3 Attaching JWTs to requests
 Provide the created JWTs via a header field named 'SAP-LOG-LEVEL'. The logging level will be set to the provided level for the request (and also corresponding custom log messages). 
 
-Note: If the provided JWT can not be verified, is expired or contains an invalid logging level, the library ignores it and uses the global logging level.
+Note: If the provided JWT cannot be verified, is expired or contains an invalid logging level, the library ignores it and uses the global logging level.
 
 If you want to use another header name for the JWT, you can specify it via an enviroment variable:
 ```
