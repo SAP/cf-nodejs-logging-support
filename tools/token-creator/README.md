@@ -1,4 +1,4 @@
-# Token Creator
+# TokenCreator
 
 This tool helps with the creation of valid Json-Webtokens for dynamic log level setting feature. 
 
