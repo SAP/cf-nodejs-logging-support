@@ -131,10 +131,10 @@ logMessage("info", "Test data %j", {"field" :"value"}, {});
 // ... "msg":"Test data {\"field\": \"value\"}" ...
 ```
 
-### Sensitive data reduction
-Version 3.0.0 and above implements a sensitive data reduction system, which deactivates the logging of sensitive fields. The field will contain 'redacted' instead of the original content.
+### Sensitive data redaction
+Version 3.0.0 and above implements a sensitive data redaction system, which deactivates the logging of sensitive fields. The field will contain 'redacted' instead of the original content.
 
-Following fields will be *reduced* by default: remote_ip, remote_host, remote_port, x_forwarded_for, remote_user, referer.
+Following fields will be *redacted* by default: remote_ip, remote_host, remote_port, x_forwarded_for, remote_user, referer.
 
 In order to activate normal logging for all or some of these fields, you have to setup environment variables with the following names:
 
@@ -153,7 +153,7 @@ Sometimes it is useful to change the logging level for a specific request. This 
 You can change the log level for a specific request by providing a JSON Web Token ([JWT](https://de.wikipedia.org/wiki/JSON_Web_Token)) via the request header. This way it is not necessary to redeploy your app for every log level change.
 
 ##### 1 Creating a JWT
-JWTs are signed claims, which consists of a header, a payload and a signature. You can create JWTs by using the [TokenCreator](https://github.com/SAP/cf-java-logging-support/blob/30b4bf65478fcd902316680aef9eaad89efe9db6/cf-java-logging-support-servlet/src/main/java/com/sap/hcp/cf/logging/servlet/dynlog/TokenCreator.java) from the Java Logging Support library.
+JWTs are signed claims, which consists of a header, a payload and a signature. You can create JWTs by using the [TokenCreator](https://github.com/SAP/cf-nodejs-logging-support/tree/master/tools/token-creator) from the tools folder.
 
 Basically, JWTs are signed with RSA or HMAC signing algorithms. But we decided to support RDA algorithms (RS256, RS384 and RS512) only. In contrast to HMAC algorithms (HS256, HS384 and HS512), RSA algorithms are asymmetric and therefore require key pairs (public and private key).
 
