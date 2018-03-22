@@ -9,7 +9,6 @@ npm install
 ```
 
 ## Usage
-
 ### Basic usage
 ```node token-creator [options] <level>```
 
@@ -22,3 +21,6 @@ Available command-line options:
 -i, --issuer <email-address>        valid issuer e-mail address
 -h, --help                          output usage information
 ```
+
+### Note:
+Currently it is neccessary to create a keypair (public and private key) yourself and provide the private key via the --key or --keyfile option. 
