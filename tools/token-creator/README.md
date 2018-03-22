@@ -1,6 +1,6 @@
 # TokenCreator
 
-This tool helps with the creation of valid Json-Webtokens for dynamic log level setting feature. 
+This tool helps with the creation of valid Json-Webtokens for [dynamic log level setting](https://github.com/SAP/cf-nodejs-logging-support#dynamic-log-levels) feature. 
 
 ## Install
 Switch to the token-creator folder and execute
