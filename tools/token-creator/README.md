@@ -3,7 +3,7 @@
 This tool helps with the creation of valid Json-Webtokens for dynamic log level setting feature. 
 
 ## Install
-Switch to the Toke.Creator folder and execute
+Switch to the token-creator folder and execute
 ```sh
 npm install
 ```
