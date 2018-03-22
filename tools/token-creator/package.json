@@ -1,0 +1,27 @@
+{
+  "name": "cf-nodejs-logging-support-token-creator",
+  "version": "1.0.0",
+  "description": "Creates JWTs, which can be used to set log-levels dynamically per request.",
+  "main": "token-creator.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/SAP/cf-nodejs-logging-support"
+  },
+  "license": "Apache-2.0",
+  "author": {
+    "name": "Christian Dinse"
+  },
+  "dependencies": {
+    "commander": "^2.15.0",
+    "jsonwebtoken": "^8.2.0"
+  },
+  "maintainers": [
+    {
+      "name": "christian dinse",
+      "email": "christian.dinse@sap.com"
+    }
+  ]
+}
