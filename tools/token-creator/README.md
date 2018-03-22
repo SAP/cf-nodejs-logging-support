@@ -23,4 +23,4 @@ Available command-line options:
 ```
 
 ### Note:
-Currently it is neccessary to create a keypair (public and private key) yourself and provide the private key via the --key or --keyfile option. 
+Currently it is neccessary to create a keypair (public and private key) yourself and provide the private key via the ```--key``` or ```--keyfile``` option. 
