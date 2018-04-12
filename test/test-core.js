@@ -10,6 +10,118 @@ var rewire = require("rewire");
 describe('Test log-core', function () {
 
     var core = null;
+    describe('Test init function', function () {
+        var defHeader, envAdress;
+
+        before(function () {
+            core = rewire("../cf-nodejs-logging-support-core/log-core.js");
+            defHeader = core.__get__("dynLogLevelDefaultHeader");
+            envAdress = core.__get__("envDynLogHeader");
+        });
+
+        it('Test correct reading from process.env', function () {
+            core.init();
+            core.__get__("dynLogLevelHeader").should.equal(defHeader);
+            process.env[envAdress] = "test";
+            core.init();
+            core.__get__("dynLogLevelHeader").should.equal("test");
+        });
+    });
+
+    describe('Test reduceFields', function () {
+        var testConfig = [
+            {
+                name: "test-field-a",
+                core: true,
+                reduce: true,
+                source: {
+                    type: "static",
+                    value: "42"
+                }
+            },{
+                name: "test-field-b",
+                core: false,
+                source: {
+                    type: "static",
+                    value: "test"
+                }
+            },{
+                name: "test-field-c",
+                core: false,
+                reduce: true,
+                source: {
+                    type: "static",
+                    value: "test"
+                },
+                default: "def"
+            }
+        ];
+        var logObj
+        var reduceFields;
+        before(function () {
+            core = rewire("../cf-nodejs-logging-support-core/log-core.js");
+            reduceFields = core.__get__("reduceFields");
+        });
+
+        beforeEach(function() {
+            logObj = {
+                "test-field-a": 42,
+                "test-field-b": "test",
+                "test-field-c": "def"
+            };
+        })
+
+        it('Test correct handling of cases: ', function () {
+            reduceFields(testConfig, logObj);
+            logObj["test-field-a"].should.not.equal(42);
+            logObj["test-field-b"].should.equal("test");
+            logObj["test-field-c"].should.equal("def");
+
+        });
+    });
+
+    describe('Test prepareInitDummy', function () {
+        var testConfig = [
+            {
+                name: "test-field-a",
+                core: true,
+                source: {
+                    type: "static",
+                    value: 42
+                }
+            },{
+                name: "test-field-b",
+                core: true,
+                mandatory: true,
+                source: {
+                    type: "sth"
+                },
+                fallback: function (req, res, obj) {
+                    return obj["test-field-a"] * 2;
+                }
+            }
+
+        ]
+        var logObj
+        var prepareDummy;
+        before(function () {
+            core = rewire("../cf-nodejs-logging-support-core/log-core.js");
+            prepareDummy = core.__get__("prepareInitDummy");
+        });
+
+        beforeEach(function() {
+            logObj = {
+                "test-field-a": 42,
+                "test-field-b": 84
+            };
+        })
+
+        it('Test fallbacks:', function () {
+            var res = prepareDummy(testConfig);
+            console.log(res);
+            assert.equal(res["test-field-b"], logObj["test-field-b"]);
+        });
+    });
 
     describe('Test setConfig assignments', function () {
         var testConfig = [
@@ -781,4 +893,34 @@ describe('Test log-core', function () {
             assert.isFalse(overrideField(1, false));
         });
     });
+
+    describe('test DynamicLogLevel', function() {
+        var req;
+        var levels;
+
+        before(function() {
+            core = rewire("../cf-nodejs-logging-support-core/log-core.js");
+            levels = core.__get__("loggingLevels");
+        });
+
+        beforeEach(function () {
+            values = {};
+            req = {};
+            core.bindLogFunctions(req);
+        });
+
+        it("test setDynamicLogLevel", function() {
+            req.setDynamicLoggingLevel("error");
+            assert.equal(req.dynamicLogLevel, levels["error"]);
+            req.setDynamicLoggingLevel("info");
+            assert.equal(req.dynamicLogLevel, levels["info"]);
+        })
+
+        it("test logMessage with dynamicLogLevel", function() {
+            req.setDynamicLoggingLevel("info");
+            assert.isTrue(req.logMessage("info","will go through"));
+            req.setDynamicLoggingLevel("error");
+            assert.isFalse(req.logMessage("info","will not go through"));
+        });
+    })
 });

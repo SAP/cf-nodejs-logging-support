@@ -21,6 +21,7 @@
   },
   "dependencies": {
     "jsonwebtoken": "^8.1.1",
+    "npm": "^5.8.0",
     "uuid": "^3.1.0"
   },
   "devDependencies": {
