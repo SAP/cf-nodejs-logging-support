@@ -351,7 +351,7 @@ var logMessage = function () {
     logObject.type = logType;
 
     if (customFields != null) {
-        logObject.custom_fields = {};
+        logObject.custom_fields = customFields.constructor == Array ? [] : {};
         for (var key in customFields) {
             if (!((typeof customFields[key]) == "string")) {
                 logObject.custom_fields[key] = JSON.stringify(customFields[key]);

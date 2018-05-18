@@ -615,7 +615,7 @@ describe('Test log-core', function () {
             }));
         });
 
-        it("Test custom fields log type consistency", function () {
+        it("Test custom fields log type consistency (for objects)", function () {
             var obj = {
                 "fieldString": "value",
                 "fieldNumber": 123,
@@ -629,6 +629,17 @@ describe('Test log-core', function () {
             assert.isNumber(obj.fieldNumber);
             assert.isObject(obj.fieldObj);
             assert.isArray(obj.fieldArray);
+        });
+
+        it("Test custom fields log type consistency (for arrays)", function () {
+            var obj = [ "value", 123, {a : 456}, [7,8,9]];
+            
+            log("info", "Test", obj);
+
+            assert.isString(obj[0]);
+            assert.isNumber(obj[1]);
+            assert.isObject(obj[2]);
+            assert.isArray(obj[3]);
         });
 
         it("Test parameter and custom fields log", function () {
