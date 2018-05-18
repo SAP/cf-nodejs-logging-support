@@ -79,6 +79,44 @@ describe('Test log-core', function () {
         });
     });
 
+    describe('Test reduceFields assignments', function () {
+        var testConfig = [
+            {
+                name: "test-field-a",
+                core: true,
+                reduce: true,
+                source: {
+                    type: "static",
+                    value: "42"
+                }
+            },
+            {
+                name: "test-field-b",
+                core: true,
+                source: {
+                    type: "static",
+                    value: "42"
+                }
+            }
+        ]
+
+        beforeEach(function () {
+            core = rewire("../cf-nodejs-logging-support-core/log-core.js");
+        });
+
+        it('Test config assignment (core): ', function () {
+           
+            core.__set__({
+                "prepareInitDummy": function (config) {
+                    config.length.should.equal(2);
+                    config[1].should.equal(testConfig[1]);
+                }
+            })
+
+            core.setConfig(testConfig);
+        });
+    });
+
     describe('Test setConfig environment var switches', function () {
         var coreConfig = null;
 
@@ -620,6 +658,59 @@ describe('Test log-core', function () {
             logObject.msg.should.equal("Test");
             logObject.correlation_id.should.equal("123");
         });
+    });
+
+    describe('Test init', function () {
+
+        var header;
+        var defaultHeader;
+        var envHeaderVariable;
+
+        before(function () {
+            core = rewire("../cf-nodejs-logging-support-core/log-core.js");
+            core.__set__({
+                "writeLogToConsole": function (obj) {
+                    logMeta = obj;
+                    logLevel = obj.level;
+                }
+            });
+            core.setConfig(importFresh("../config.js").config);
+            defaultHeader = core.__get__("dynLogLevelDefaultHeader");
+            envHeaderVariable = core.__get__("envDynLogHeader");
+        });
+
+        beforeEach(function() {
+        });
+
+        afterEach(function () {
+            process.env[envHeaderVariable] = null;
+        });
+
+        it('test default behaviour', function() {
+            core.init();
+            header = core.__get__("dynLogLevelHeader");
+            header.should.equal(defaultHeader);
+            process.env[envHeaderVariable] = "";
+            core.init();
+            header = core.__get__("dynLogLevelHeader");
+            header.should.equal(defaultHeader);
+
+        });
+
+        it('testing reading from correct env Variable', function() {
+            process.env[envHeaderVariable] = "test";
+            console.log(envHeaderVariable);
+            core.init();
+            header = core.__get__("dynLogLevelHeader");
+            header.should.equal("test");
+            process.env[envHeaderVariable] = "";
+            core.init();
+            header = core.__get__("dynLogLevelHeader");
+            header.should.equal(defaultHeader);
+        });
+
+
+
     });
 
     describe('Test initLog', function () {
