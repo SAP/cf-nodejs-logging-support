@@ -604,7 +604,7 @@ describe('Test log-core', function () {
             logObject.msg.should.equal('Test abc 42 {"field":"value"}');
         });
 
-        it("Test custom fields log", function () {
+        it("Test custom fields log output", function () {
             log("info", "Test", {
                 "field": "value"
             });
@@ -613,6 +613,22 @@ describe('Test log-core', function () {
             JSON.stringify(logObject.custom_fields).should.equal(JSON.stringify({
                 "field": "value"
             }));
+        });
+
+        it("Test custom fields log type consistency", function () {
+            var obj = {
+                "fieldString": "value",
+                "fieldNumber": 123,
+                "fieldObj": {a : 456},
+                "fieldArray": [7,8,9]
+            };
+            
+            log("info", "Test", obj);
+
+            assert.isString(obj.fieldString);
+            assert.isNumber(obj.fieldNumber);
+            assert.isObject(obj.fieldObj);
+            assert.isArray(obj.fieldArray);
         });
 
         it("Test parameter and custom fields log", function () {
