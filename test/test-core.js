@@ -805,7 +805,7 @@ describe('Test log-core', function () {
         var defaultHeader;
         var envHeaderVariable;
 
-        before(function () {
+        beforeEach(function() {
             core = rewire("../cf-nodejs-logging-support-core/log-core.js");
             core.__set__({
                 "writeLogToConsole": function (obj) {
@@ -816,12 +816,6 @@ describe('Test log-core', function () {
             core.setConfig(importFresh("../config.js").config);
             defaultHeader = core.__get__("dynLogLevelDefaultHeader");
             envHeaderVariable = core.__get__("envDynLogHeader");
-        });
-
-        beforeEach(function() {
-        });
-
-        afterEach(function () {
             process.env[envHeaderVariable] = null;
         });
 

@@ -37,7 +37,7 @@ var dynLogLevelHeader = dynLogLevelDefaultHeader;
 var init = function() {
     // Read dyn. log level header name from environment var
     var headerName = process.env[envDynLogHeader];
-    if(headerName != null && headerName != "") {
+    if(headerName != null && headerName != "null" && headerName != "") {
         dynLogLevelHeader = headerName;
     } else {
         dynLogLevelHeader = dynLogLevelDefaultHeader;
