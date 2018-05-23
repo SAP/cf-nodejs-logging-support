@@ -351,12 +351,14 @@ var logMessage = function () {
     logObject.type = logType;
 
     if (customFields != null) {
+        logObject.custom_fields = customFields.constructor == Array ? [] : {};
         for (var key in customFields) {
             if (!((typeof customFields[key]) == "string")) {
-                customFields[key] = JSON.stringify(customFields[key]);
+                logObject.custom_fields[key] = JSON.stringify(customFields[key]);
+            } else {
+                logObject.custom_fields[key] = customFields[key];
             }
         }
-        logObject.custom_fields = customFields;
     }
 
     sendLog(level, logObject, dynamicLogLevel);
