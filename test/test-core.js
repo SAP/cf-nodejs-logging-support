@@ -604,7 +604,7 @@ describe('Test log-core', function () {
             logObject.msg.should.equal('Test abc 42 {"field":"value"}');
         });
 
-        it("Test custom fields log output", function () {
+        it("Test custom fields log output (object)", function () {
             log("info", "Test", {
                 "field": "value"
             });
@@ -615,7 +615,16 @@ describe('Test log-core', function () {
             }));
         });
 
-        it("Test custom fields log type consistency (for objects)", function () {
+        it("Test custom fields log output (array)", function () {
+            log("info", "Test", [
+               1, "123", {"field": "values"}
+            ]);
+
+            logObject.msg.should.equal('Test');
+            JSON.stringify(logObject.custom_fields).should.equal('["1","123","{\\"field\\":\\"values\\"}"]');
+        });
+
+        it("Test custom fields log type consistency (objects)", function () {
             var obj = {
                 "fieldString": "value",
                 "fieldNumber": 123,
@@ -631,7 +640,7 @@ describe('Test log-core', function () {
             assert.isArray(obj.fieldArray);
         });
 
-        it("Test custom fields log type consistency (for arrays)", function () {
+        it("Test custom fields log type consistency (arrays)", function () {
             var obj = [ "value", 123, {a : 456}, [7,8,9]];
             
             log("info", "Test", obj);
@@ -726,7 +735,6 @@ describe('Test log-core', function () {
 
         it('testing reading from correct env Variable', function() {
             process.env[envHeaderVariable] = "test";
-            console.log(envHeaderVariable);
             core.init();
             header = core.__get__("dynLogLevelHeader");
             header.should.equal("test");
