@@ -1,6 +1,6 @@
 {
   "name": "cf-nodejs-logging-support-token-creator",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Creates JWTs, which can be used to set log-levels dynamically per request.",
   "main": "token-creator.js",
   "scripts": {
