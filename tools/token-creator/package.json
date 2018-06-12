@@ -17,11 +17,5 @@
   "dependencies": {
     "commander": "^2.15.0",
     "jsonwebtoken": "^8.2.0"
-  },
-  "maintainers": [
-    {
-      "name": "christian dinse",
-      "email": "christian.dinse@sap.com"
-    }
-  ]
+  }
 }
