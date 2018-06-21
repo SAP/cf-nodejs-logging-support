@@ -53,7 +53,7 @@ var config = [
             value: "[NODEJS]"
         }
     }, {
-        name: "organisation_id",
+        name: "organization_id",
         mandatory: true,
         core: true,
         source: {
@@ -61,7 +61,7 @@ var config = [
             value: "-"
         }
     }, {
-        name: "organisation_name",
+        name: "organization_name",
         mandatory: true,
         core: true,
         source: {
