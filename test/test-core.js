@@ -118,7 +118,6 @@ describe('Test log-core', function () {
 
         it('Test fallbacks:', function () {
             var res = prepareDummy(testConfig);
-            console.log(res);
             assert.equal(res["test-field-b"], logObj["test-field-b"]);
         });
     });
@@ -1027,6 +1026,8 @@ describe('Test log-core', function () {
         before(function() {
             core = rewire("../cf-nodejs-logging-support-core/log-core.js");
             levels = core.__get__("loggingLevels");
+            core.__set__("sendLog",function(level, logObject, dynamicLogLevel) {
+            });
         });
 
         beforeEach(function () {

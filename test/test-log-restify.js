@@ -119,19 +119,6 @@ describe('Test log-restify', function () {
                 logObject.correlation_id.should.equal("correctID");
             });
 
-            it('Test x-vcap-request-id', function () {
-                req.header = function (field) {
-                    if (field == "x-vcap-request-id") {
-                        return "correctID";
-                    }
-                };
-
-                restifyLogger.logNetwork(req, res, next);
-                fireLog();
-
-                logObject.correlation_id.should.equal("correctID");
-            });
-
             it('Test generated uuid', function () {
                 restifyLogger.logNetwork(req, res, next);
                 fireLog();

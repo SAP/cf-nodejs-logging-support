@@ -123,15 +123,6 @@ describe('Test log-plainhttp', function () {
                 logObject.correlation_id.should.equal("correctID");
             });
 
-            it('Test x-vcap-request-id', function () {
-                req.headers["x-vcap-request-id"] = "correctID";
-
-                httpLogger.logNetwork(req, res, next);
-                fireLog();
-
-                logObject.correlation_id.should.equal("correctID");
-            });
-
             it('Test generated uuid', function () {
                 httpLogger.logNetwork(req, res, next);
                 fireLog();

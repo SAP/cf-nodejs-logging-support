@@ -133,19 +133,6 @@ describe('Test log-express', function () {
                 logObject.correlation_id.should.equal("correctID");
             });
 
-            it('Test x-vcap-request-id', function () {
-                req.header = function (field) {
-                    if (field == "x-vcap-request-id") {
-                        return "correctID";
-                    }
-                };
-
-                expressLogger.logNetwork(req, res, next);
-                fireLog();
-
-                logObject.correlation_id.should.equal("correctID");
-            });
-
             it('Test generated uuid', function () {
                 expressLogger.logNetwork(req, res, next);
                 fireLog();
