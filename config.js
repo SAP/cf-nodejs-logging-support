@@ -120,14 +120,6 @@ var config = [
         },
         default: -1
     }, {
-        name: "request_id",
-        mandatory: true,
-        source: {
-            type: "header",
-            name: "x-vcap-request-id"
-        },
-        default: "-"
-    }, {
         name: "type",
         mandatory: true,
         source: {
@@ -285,7 +277,7 @@ var config = [
             name: "X-CorrelationID"
         },
         fallback: (req, res, logObject) => {
-            return (logObject.request_id != null && logObject.request_id != "-") ? logObject.request_id : uuid();
+            return uuid();
         }
     }
 ];
