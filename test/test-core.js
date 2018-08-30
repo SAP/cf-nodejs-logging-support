@@ -716,6 +716,12 @@ describe('Test log-core', function () {
             logObject.msg.should.equal('Test abc 42 {"field":"value"}');
         });
 
+        it("Test custom fields log output (number)", function () {
+            log("info", "Test", 42);
+
+            logObject.msg.should.equal('Test 42');
+        });
+
         it("Test custom fields log output (object)", function () {
             log("info", "Test", {
                 "field": "value"
