@@ -8,17 +8,18 @@
         "test": "echo \"Error: no test specified\" && exit 1"
     },
     "keywords": [
-    "example",
-    "node.js",
-    "cloudfoundry",
-    "shoutbox",
-    "shoutboard"
-  ],
+        "example",
+        "node.js",
+        "cloudfoundry",
+        "shoutbox",
+        "shoutboard"
+    ],
     "author": "Nicklas Dohrn, Christian Dinse",
     "dependencies": {
-        "express": "3.5.1",
+        "express": "4.x",
         "redis": "latest",
-        "cf-nodejs-logging-support": "latest"
+        "cf-nodejs-logging-support": "latest",
+        "simple-bodyparser": "latest"
     },
     "repository": "https://github.com/SAP/cf-nodejs-logging-support/tree/master/sample/cf-nodejs-shoutboard-express",
     "engines": {

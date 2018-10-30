@@ -2,6 +2,7 @@
 var express = require("express");
 var log = require("cf-nodejs-logging-support");
 var redis = require("redis");
+var bodyParser = require('simple-bodyparser');
 var app = express();
 var redisRunning = true;
 var reconnect = false;
@@ -32,7 +33,7 @@ app.use(log.logNetwork);
 
 app.use(contextroot + '/', express.static(__dirname + '/public'));
 
-app.use(express.bodyParser());
+app.use(bodyParser());
 
 //Setting CF Port
 var port = Number(process.env.VCAP_APP_PORT || 8080);
