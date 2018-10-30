@@ -2,3 +2,5 @@ test
 sample
 .jshintrc
 coverage
+.vscode/*
+.travis.yml
