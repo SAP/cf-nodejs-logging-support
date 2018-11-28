@@ -244,7 +244,7 @@ As stated above the ```req``` acts as context preserving object and provides con
 var ctx = log.getCorrelationObject();
 ctx.logMessage(...);
 ``` 
-at any time to create new context objects. Custom context objects are provided with newly a generated correlation_id.
+at any time to create new context objects. Custom context objects are provided with a newly generated correlation_id.
 
 Another usecase for this functionality is forwarding the context object of a request to other functions. Imagine a request handler which calls function ```foo()``` that should log messages in context of the original request. Instead of providing the ```req``` object to ```foo()``` it is a cleaner solution to create a new context object which retains the original correlation_id by calling: 
 ```
