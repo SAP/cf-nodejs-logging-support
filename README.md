@@ -228,6 +228,34 @@ app.get('/', function (req, res) {
 });
 ```
 
+It is also possible to change the correlation_id:
+```js
+app.get('/', function (req, res) {
+    // Call to context bound function
+    req.setCorrelationId(<my-correlation-id>);
+    
+    res.send('Hello World');
+});
+```
+
+
+
+### Correlation Context
+As stated above the ```req``` acts as context preserving object and provides context bound functions like ```logMessage(...)```. In some cases you might want to create new context objects in order to create logs in context of other incoming data events (e.g. RabbitMQ). To do so you can use: 
+```
+var ctx = log.getCorrelationObject();
+``` 
+at any time to create new context objects. Custom context objects are provided with newly a generated correlation_id.
+
+Another usecase for this functionality is forwarding the context object of a request to other functions. Imagine a request handler which calls function ```foo()``` that should log messages in context of the original request. Instead of providing the ```req``` object to ```foo()``` it is a cleaner solution to create a new context object which retains the original correlation_id by calling: 
+```
+var ctx = req.getCorrelationObject();
+foo(ctx);
+```
+
+If you want to provide your own correlation_id, you can use the ctx.setCorrelationId(<id>) method. To write context bound logs, just use ctx.logMesssage(...) as described before. 
+
+
 ### Human readable output
 Setup an output pattern to get a human-readable output instead of json. Use '{{' and '}}' to print log parameters.
 ```js
