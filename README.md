@@ -239,14 +239,14 @@ app.get('/', function (req, res) {
 ```
 
 ### Correlation context objects
-As stated above the ```req``` acts as context preserving object and provides context bound functions like ```logMessage(...)```. In some cases you might want to create new context objects in order to create logs in context of other incoming data events (e.g. RabbitMQ). To do so you can use: 
+As stated above the ```req``` acts as context preserving object and provides context bound functions like ```logMessage(...)```. In some cases you might want to create new context objects in order to create logs in context of other incoming data events (e.g. RabbitMQ). To do so you can use
 ```
 var ctx = log.getCorrelationObject();
 ctx.logMessage(...);
 ``` 
 at any time to create new context objects. Custom context objects are provided with a newly generated correlation_id.
 
-Another usecase for this functionality is forwarding the context object of a request to other functions. Imagine a request handler which calls function ```foo()``` that should log messages in context of the original request. Instead of providing the ```req``` object to ```foo()``` it is a cleaner solution to create a new context object which retains the original correlation_id by calling: 
+Another usecase for this functionality is forwarding the context object of a request to other functions. Imagine a request handler that calls function ```foo()``` which should log messages in context of the original request. Instead of providing the ```req``` object to ```foo()``` it is a cleaner solution to create a new context object which retains the original correlation_id by calling: 
 ```
 var ctx = req.getCorrelationObject();
 foo(ctx);
