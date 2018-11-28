@@ -43,7 +43,7 @@ app.use(log.logNetwork);
 
 app.get('/', function (req, res) {
     // Context bound custom message
-    req.logMessage("info", "Hello World will be send");
+    req.logMessage("info", "Hello World will be sent");
     
     res.send('Hello World');
 });
