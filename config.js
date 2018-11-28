@@ -279,6 +279,13 @@ var config = [
         fallback: (req, res, logObject) => {
             return uuid();
         }
+    }, {
+        name: "level",
+        mandatory: true,
+        source:{
+            type: "static",
+            value: "info"
+        }
     }
 ];
 

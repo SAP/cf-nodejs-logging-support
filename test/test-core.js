@@ -96,13 +96,13 @@ describe('Test log-core', function () {
                 source: {
                     type: "sth"
                 },
-                fallback: function (req, res, obj) {
+                fallback: function (obj) {
                     return obj["test-field-a"] * 2;
                 }
             }
 
         ]
-        var logObj
+        var logObj;
         var prepareDummy;
         before(function () {
             core = rewire("../cf-nodejs-logging-support-core/log-core.js");
@@ -459,7 +459,6 @@ describe('Test log-core', function () {
 
 
     describe('Test sendLog', function () {
-        var logLevel;
         var logMeta;
         var sendLog;
 
@@ -468,7 +467,6 @@ describe('Test log-core', function () {
             core.__set__({
                 "writeLogToConsole": function (obj) {
                     logMeta = obj;
-                    logLevel = obj.level;
                 }
             });
             core.setConfig(importFresh("../config.js").config);
@@ -480,38 +478,15 @@ describe('Test log-core', function () {
             core.setLoggingLevel("info");
         })
 
-        it('Test level', function () {
-            sendLog("info", {});
-            logLevel.should.equal('info');
-            sendLog("error", {});
-            logLevel.should.equal('error');
-        });
-
-        it('Test empty json input', function () {
-            sendLog("info", {});
-            var output = JSON.stringify(logMeta);
-            output.should.equal('{"level":"info"}');
-        });
-
-        it("Test correct dumping by level", function () {
-            core.setLoggingLevel("error");
-            sendLog("info", {});
-            assert.isNull(logMeta);
-            core.setLoggingLevel("info");
-            sendLog("info", {});
-            assert.isNotNull(logMeta);
-
-        });
-
         it('Test simple json input', function () {
-            sendLog("info", {
+            sendLog({
                 "field": "value"
             });
-            JSON.stringify(logMeta).should.equal('{"field":"value","level":"info"}');
+            JSON.stringify(logMeta).should.equal('{"field":"value"}');
         });
 
         it('Test complex json output', function () {
-            sendLog("info", {
+            sendLog({
                 "field1": "value",
                 "field2": 42,
                 "field3": 47.11,
@@ -524,7 +499,7 @@ describe('Test log-core', function () {
                     }]
                 }
             });
-            JSON.stringify(logMeta).should.equal('{"field1":"value","field2":42,"field3":47.11,"field4":{"innerField":73,"innerArray":[{"arrayField1":1},{"arrayField2":2}]},"level":"info"}');
+            JSON.stringify(logMeta).should.equal('{"field1":"value","field2":42,"field3":47.11,"field4":{"innerField":73,"innerArray":[{"arrayField1":1},{"arrayField2":2}]}}');
         });
     });
 
@@ -660,7 +635,7 @@ describe('Test log-core', function () {
         before(function () {
             core = rewire("../cf-nodejs-logging-support-core/log-core.js");
             core.__set__({
-                "sendLog": function (level, logObj) {
+                "sendLog": function (logObj) {
                     logObject = logObj;
                 }
             });

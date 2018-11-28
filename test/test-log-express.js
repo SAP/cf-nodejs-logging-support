@@ -78,7 +78,7 @@ describe('Test log-express', function () {
         var next;
 
         beforeEach(function () {
-            core.sendLog = function (level, logObj) {
+            core.sendLog = function (logObj) {
                 logObject = logObj;
             };
 

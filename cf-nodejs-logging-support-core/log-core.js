@@ -207,7 +207,7 @@ var prepareInitDummy = function (coreConfig) {
     }
 
     for (var key in fallbacks) {
-        obj[key] = fallbacks[key](req, res, obj);
+        obj[key] = fallbacks[key](obj);
     }
 
     for (var key in selfReferences) {
@@ -252,23 +252,20 @@ var resolveNestedVariable = function (root, path) {
     return value;
 }
 
-// Writes the given log file to stdout
-var sendLog = function (level, logObject, dynamicLogLevel) {
-    //Attach level to logobject
-    logObject.level = level;
-
+var checkLoggingLevel = function(level, dynamicLogLevel) {
     var threshold;
     
     if(dynamicLogLevel != null) {
         threshold = dynamicLogLevel; // use dynamic log level
     } else {
         threshold = logLevelInt; // use global log level
-    }
+    } 
+    return (threshold >= loggingLevels[level]);
+}
 
-    // Write log to console
-    if (threshold >= loggingLevels[level]) {
-        writeLogToConsole(logObject);
-    }
+// Writes the given log file to stdout
+var sendLog = function (logObject) {
+    writeLogToConsole(logObject);
 };
 
 var setLogPattern = function (p) {
@@ -297,12 +294,11 @@ var logMessage = function () {
     var dynamicLogLevel = this.dynamicLogLevel;
     
     var level = args[0];
-    if (dynamicLogLevel != null) { // check if dynamic log level is setup
-        if (dynamicLogLevel < loggingLevels[level]) {
+    if (!checkLoggingLevel(level,this.dynamicLogLevel)) { 
             return false;
-        }
-    } else if (logLevelInt < loggingLevels[level]) {
-        return false;
+    } else {
+        var logObject = initLog();
+        logObject.level = level;
     }
 
     var customFields = null;
@@ -317,8 +313,6 @@ var logMessage = function () {
     }
 
     var msg = util.format.apply(util, args);
-
-    var logObject = initLog();
 
     var req = this;
     if (req.logObject != null) {
@@ -343,7 +337,7 @@ var logMessage = function () {
         }
     }
 
-    sendLog(level, logObject, dynamicLogLevel);
+    sendLog(logObject);
     return true;
 };
 
@@ -401,7 +395,6 @@ var getCorrelationObject = function () {
     }
     bindLogFunctions(newContext);
     return newContext;
-
 }
 
 // Sets the dynamic log level for the request to the given level
@@ -467,6 +460,8 @@ var verifyAndDecodeJWT = function(token, key) {
     }
 }
 
+
+exports.checkLoggingLevel = checkLoggingLevel;
 exports.init = init;
 exports.overrideField = overrideField;
 exports.writeStaticFields = writeStaticFields;

@@ -77,7 +77,7 @@ describe('Test log-plainhttp', function () {
         var next;
 
         beforeEach(function () {
-            core.sendLog = function (level, logObj) {
+            core.sendLog = function (logObj) {
                 logObject = logObj;
             };
 

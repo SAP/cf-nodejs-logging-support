@@ -68,6 +68,7 @@ describe('Test Complete', function () {
         log.overrideNetworkField("msg","testmessage");
         log.logNetwork(req, res, () => {});
         res.end("ok");
+        console.log(store);
         assert.deepEqual(JSON.parse(store),results.getLogMessage());
     });
 });
