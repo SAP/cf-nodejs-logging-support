@@ -238,12 +238,11 @@ app.get('/', function (req, res) {
 });
 ```
 
-
-
-### Correlation Context
+### Correlation context objects
 As stated above the ```req``` acts as context preserving object and provides context bound functions like ```logMessage(...)```. In some cases you might want to create new context objects in order to create logs in context of other incoming data events (e.g. RabbitMQ). To do so you can use: 
 ```
 var ctx = log.getCorrelationObject();
+ctx.logMessage(...);
 ``` 
 at any time to create new context objects. Custom context objects are provided with newly a generated correlation_id.
 
@@ -253,8 +252,7 @@ var ctx = req.getCorrelationObject();
 foo(ctx);
 ```
 
-If you want to provide your own correlation_id, you can use the ctx.setCorrelationId(<id>) method. To write context bound logs, just use ctx.logMesssage(...) as described before. 
-
+If you want to provide your own correlation_id, you can use the ```ctx.setCorrelationId(<id>)``` method.
 
 ### Human readable output
 Setup an output pattern to get a human-readable output instead of json. Use '{{' and '}}' to print log parameters.
