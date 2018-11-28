@@ -232,7 +232,7 @@ It is also possible to change the correlation_id:
 ```js
 app.get('/', function (req, res) {
     // Call to context bound function
-    req.setCorrelationId(<my-correlation-id>);
+    req.setCorrelationId(YOUR_CUSTOM_CORRELATION_ID);
     
     res.send('Hello World');
 });
