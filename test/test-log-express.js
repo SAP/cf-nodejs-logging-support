@@ -18,7 +18,7 @@ describe('Test log-express', function () {
         core = importFresh("../cf-nodejs-logging-support-core/log-core.js");
         expressLogger = importFresh("../cf-nodejs-logging-support-express/log-express.js");
         expressLogger.setCoreLogger(core);
-        expressLogger.setConfig(importFresh("../config.js").config);
+        expressLogger.setConfig(importFresh("./allbranchconfig.js").config);
     });
 
     describe('Test linkings', function () {
@@ -78,6 +78,7 @@ describe('Test log-express', function () {
         var next;
 
         beforeEach(function () {
+            logObject = null;
             core.sendLog = function (logObj) {
                 logObject = logObj;
             };
@@ -340,10 +341,18 @@ describe('Test log-express', function () {
             logObject.x_forwarded_for.should.equal("");
             logObject.protocol.should.equal("HTTP");
             logObject.response_content_type.should.equal("-");
-
         });
 
-
+        it("Test log ommitting per loging Level", function () {
+            expressLogger.setLoggingLevel("error");
+            expressLogger.logNetwork(req, res, next);
+            fireLog();
+            assert.isNull(logObject);
+            expressLogger.setLoggingLevel("info");
+            expressLogger.logNetwork(req, res, next);
+            fireLog();
+            assert.isNotNull(logObject);
+        });
     });
 
 

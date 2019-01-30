@@ -72,8 +72,15 @@ var precompileConfig = function (config) {
         if (obj.core) {
             coreConfig.push(obj);
         } else if (obj.source.type == "time") {
-            preLogConfig.push(obj);
-            postLogConfig.push(obj);
+            if(obj.source.pre)
+                preLogConfig.push(obj);
+            if(obj.source.post)
+                postLogConfig.push(obj);
+            if(!obj.source.pre && !obj.source.post){
+                obj.source.type = "static";
+                obj.source.value = -1;
+                preLogConfig.push(obj);
+            }
         } else if ((obj.source.parent != null && obj.source.parent == "res")) {
             postLogConfig.push(obj);
         } else {
@@ -428,28 +435,26 @@ var getDynLogLevelHeaderName = function() {
     return dynLogLevelHeader;
 }
 
-// Get the dynamic logging level from the given JWT.
-var getLogLevelFromJWT = function(token) {
-    var payload = verifyAndDecodeJWT(token, dynLogLevelKey);
-
-    if(payload == null) {
-        return null;
-    }
-
-    var levelName = payload.level;
-
-    return getLogLevelFromName(levelName);
-}
-
 // Gets the log level number from a given level name
 var getLogLevelFromName = function(levelName) {
     if(levelName == null) return null;
     return loggingLevels[levelName.toLowerCase()];
 }
 
+// Binds the Loglevel extracted from JWT token to the given req
+var bindDynLogLevel = function(token, req) {
+    
+    var payload = verifyAndDecodeJWT(token, dynLogLevelKey);
+
+    if(payload) {
+        req.dynamicLogLevel = getLogLevelFromName(payload.level);
+    }
+
+}
+
 // Verifies the given JWT and returns its payload.
 var verifyAndDecodeJWT = function(token, key) {
-    if(key == null || token == null) {
+    if(key == null || !token) {
         return null; // no public key or jwt provided
     }
 
@@ -480,4 +485,4 @@ exports.getPostLogConfig = getPostLogConfig;
 exports.getPreLogConfig = getPreLogConfig;
 exports.handleConfigDefaults = handleConfigDefaults;
 exports.getDynLogLevelHeaderName = getDynLogLevelHeaderName;
-exports.getLogLevelFromJWT = getLogLevelFromJWT;
+exports.bindDynLogLevel = bindDynLogLevel;
