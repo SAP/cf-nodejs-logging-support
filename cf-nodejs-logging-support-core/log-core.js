@@ -64,7 +64,6 @@ var precompileConfig = function (config) {
             var val = process.env[obj.envVarSwitch];
             var pass = (val == "true" || val ==  "True" || val == "TRUE");
             if(!pass) {
-                // Uncomment to enable log field reduction (currently breaking test cases)
                 obj.reduce = true;
             }
         }
