@@ -34,10 +34,10 @@ var postLogConfig = [];
 var dynLogLevelHeader = dynLogLevelDefaultHeader;
 
 // Initializes the core logger, including setup of environment var defined settings
-var init = function() {
+var init = function () {
     // Read dyn. log level header name from environment var
     var headerName = process.env[envDynLogHeader];
-    if(headerName != null && headerName != "null" && headerName != "") {
+    if (headerName != null && headerName != "null" && headerName != "") {
         dynLogLevelHeader = headerName;
     } else {
         dynLogLevelHeader = dynLogLevelDefaultHeader;
@@ -60,10 +60,10 @@ var precompileConfig = function (config) {
         var obj = config[i];
 
         // Check if config field needs a set env var to be enabled. If specified env var does not exist, the resulting log field will be replaced by reductedPlaceholder
-        if(obj.envVarSwitch != null) {
+        if (obj.envVarSwitch != null) {
             var val = process.env[obj.envVarSwitch];
-            var pass = (val == "true" || val ==  "True" || val == "TRUE");
-            if(!pass) {
+            var pass = (val == "true" || val == "True" || val == "TRUE");
+            if (!pass) {
                 obj.reduce = true;
             }
         }
@@ -71,11 +71,11 @@ var precompileConfig = function (config) {
         if (obj.core) {
             coreConfig.push(obj);
         } else if (obj.source.type == "time") {
-            if(obj.source.pre)
+            if (obj.source.pre)
                 preLogConfig.push(obj);
-            if(obj.source.post)
+            if (obj.source.post)
                 postLogConfig.push(obj);
-            if(!obj.source.pre && !obj.source.post){
+            if (!obj.source.pre && !obj.source.post) {
                 obj.source.type = "static";
                 obj.source.value = -1;
                 preLogConfig.push(obj);
@@ -110,14 +110,14 @@ var handleConfigDefaults = function (configEntry, logObject, fallbacks) {
 }
 
 // Replace all fields, which are marked to be reduced and do not equal to their default value, empty or "-", to reductedPlaceholder.
-var reduceFields = function(config, logObject) {
-    for(var i = 0; i < config.length; i++) {
+var reduceFields = function (config, logObject) {
+    for (var i = 0; i < config.length; i++) {
         var configEntry = config[i];
 
-        if(configEntry.reduce) {
+        if (configEntry.reduce) {
             var value = logObject[configEntry.name];
             var defaultValue = configEntry.default != null ? configEntry.default : "-";
-            if(value == null || value == "" || value == defaultValue) {
+            if (value == null || value == "" || value == defaultValue) {
                 continue;
             }
             logObject[configEntry.name] = reductedPlaceholder;
@@ -228,7 +228,7 @@ var prepareInitDummy = function (coreConfig) {
 var resolveNestedVariable = function (root, path) {
 
     // return, if path is empty.
-    if(path == null || path.length == 0) {
+    if (path == null || path.length == 0) {
         return null;
     }
 
@@ -250,7 +250,7 @@ var resolveNestedVariable = function (root, path) {
     path.shift();
 
     // if the path is not empty, recursively resolve the remaining waypoints.
-    if(path.length >= 1) {
+    if (path.length >= 1) {
         return resolveNestedVariable(value, path);
     }
 
@@ -258,14 +258,14 @@ var resolveNestedVariable = function (root, path) {
     return value;
 }
 
-var checkLoggingLevel = function(level, dynamicLogLevel) {
+var checkLoggingLevel = function (level, dynamicLogLevel) {
     var threshold;
-    
-    if(dynamicLogLevel != null) {
+
+    if (dynamicLogLevel != null) {
         threshold = dynamicLogLevel; // use dynamic log level
     } else {
         threshold = logLevelInt; // use global log level
-    } 
+    }
     return (threshold >= loggingLevels[level]);
 }
 
@@ -298,10 +298,10 @@ var logMessage = function () {
     var args = Array.prototype.slice.call(arguments);
 
     var dynamicLogLevel = this.dynamicLogLevel;
-    
+
     var level = args[0];
-    if (!checkLoggingLevel(level,this.dynamicLogLevel)) { 
-            return false;
+    if (!checkLoggingLevel(level, this.dynamicLogLevel)) {
+        return false;
     } else {
         var logObject = initLog();
         logObject.level = level;
@@ -404,7 +404,7 @@ var getCorrelationObject = function () {
 }
 
 // Sets the dynamic log level for the request to the given level
-var setDynamicLoggingLevel = function(levelName) {
+var setDynamicLoggingLevel = function (levelName) {
     var context = this;
     context.dynamicLogLevel = getLogLevelFromName(levelName);
 }
@@ -430,36 +430,39 @@ var overrideField = function (field, value) {
 }
 
 // Get the name of the dynamic log level header
-var getDynLogLevelHeaderName = function() {
+var getDynLogLevelHeaderName = function () {
     return dynLogLevelHeader;
 }
 
 // Gets the log level number from a given level name
-var getLogLevelFromName = function(levelName) {
-    if(levelName == null) return null;
-    return loggingLevels[levelName.toLowerCase()];
+var getLogLevelFromName = function (levelName) {
+    if (levelName == null) return null;
+    return (loggingLevels[levelName.toLowerCase()] != undefined) ? loggingLevels[levelName.toLowerCase()] : null;
 }
 
 // Binds the Loglevel extracted from JWT token to the given req
-var bindDynLogLevel = function(token, req) {
-    
+var bindDynLogLevel = function (token, req) {
+
     var payload = verifyAndDecodeJWT(token, dynLogLevelKey);
 
-    if(payload) {
+    if (payload) {
         req.dynamicLogLevel = getLogLevelFromName(payload.level);
     }
 
 }
 
 // Verifies the given JWT and returns its payload.
-var verifyAndDecodeJWT = function(token, key) {
-    if(key == null || !token) {
+var verifyAndDecodeJWT = function (token, key) {
+    if (key == null || !token) {
         return null; // no public key or jwt provided
     }
 
     try {
-        return jwt.verify(token, "-----BEGIN PUBLIC KEY-----\n" + key + "\n-----END PUBLIC KEY-----", {algorithms: ["RS256", "RS384", "RS512"]});
-    } catch(err) {
+        if (key.match(/BEGIN PUBLIC KEY/))
+            return jwt.verify(token, key, { algorithms: ["RS256", "RS384", "RS512"] });
+        else
+            return jwt.verify(token, "-----BEGIN PUBLIC KEY-----\n" + key + "\n-----END PUBLIC KEY-----", { algorithms: ["RS256", "RS384", "RS512"] });
+    } catch (err) {
         return null; // token expired or invalid
     }
 }

@@ -5,7 +5,8 @@ chai.should();
 var os = require("os");
 var sinon = require("sinon");
 var rewire = require("rewire");
-
+var jwt = require('jsonwebtoken');
+var fs = require('fs');
 
 describe('Test log-core', function () {
 
@@ -38,14 +39,14 @@ describe('Test log-core', function () {
                     type: "static",
                     value: "42"
                 }
-            },{
+            }, {
                 name: "test-field-b",
                 core: false,
                 source: {
                     type: "static",
                     value: "test"
                 }
-            },{
+            }, {
                 name: "test-field-c",
                 core: false,
                 reduce: true,
@@ -63,7 +64,7 @@ describe('Test log-core', function () {
             reduceFields = core.__get__("reduceFields");
         });
 
-        beforeEach(function() {
+        beforeEach(function () {
             logObj = {
                 "test-field-a": 42,
                 "test-field-b": "test",
@@ -89,7 +90,7 @@ describe('Test log-core', function () {
                     type: "static",
                     value: 42
                 }
-            },{
+            }, {
                 name: "test-field-b",
                 core: true,
                 mandatory: true,
@@ -109,7 +110,7 @@ describe('Test log-core', function () {
             prepareDummy = core.__get__("prepareInitDummy");
         });
 
-        beforeEach(function() {
+        beforeEach(function () {
             logObj = {
                 "test-field-a": 42,
                 "test-field-b": 84
@@ -131,20 +132,20 @@ describe('Test log-core', function () {
                     type: "static",
                     value: "42"
                 }
-            },{
+            }, {
                 name: "test-field-b",
                 core: false,
                 source: {
                     type: "self",
                     name: "other-field"
                 }
-            },{
+            }, {
                 name: "test-field-c",
                 core: false,
                 source: {
                     type: "time"
                 }
-            },{
+            }, {
                 name: "test-field-d",
                 core: false,
                 source: {
@@ -160,7 +161,7 @@ describe('Test log-core', function () {
         });
 
         it('Test config assignment (core): ', function () {
-           
+
             core.__set__({
                 "prepareInitDummy": function (config) {
                     config.length.should.equal(1);
@@ -215,7 +216,7 @@ describe('Test log-core', function () {
         });
 
         it('Test config assignment (core): ', function () {
-           
+
             core.__set__({
                 "prepareInitDummy": function (config) {
                     config.length.should.equal(2);
@@ -245,7 +246,7 @@ describe('Test log-core', function () {
             }];
             core.setConfig(testConfig);
             coreConfig.length.should.equal(1);
-            coreConfig[0].should.deep.equal({core: true});
+            coreConfig[0].should.deep.equal({ core: true });
         });
 
         it('Test set switch and unset env var: ', function () {
@@ -256,7 +257,7 @@ describe('Test log-core', function () {
             process.env.LOG_TEST_VAR = undefined
             core.setConfig(testConfig);
             coreConfig.length.should.equal(1);
-            coreConfig[0].should.deep.equal({core: true, envVarSwitch: "LOG_TEST_VAR", reduce: true});
+            coreConfig[0].should.deep.equal({ core: true, envVarSwitch: "LOG_TEST_VAR", reduce: true });
         });
 
         it('Test set switch and set env var ("true"): ', function () {
@@ -266,8 +267,8 @@ describe('Test log-core', function () {
             }];
             process.env.LOG_TEST_VAR = 'true';
             core.setConfig(testConfig);
-            coreConfig.length.should.equal(1); 
-            coreConfig[0].should.deep.equal({core: true, envVarSwitch: "LOG_TEST_VAR"});
+            coreConfig.length.should.equal(1);
+            coreConfig[0].should.deep.equal({ core: true, envVarSwitch: "LOG_TEST_VAR" });
         });
 
         it('Test set switch and set env var ("True"): ', function () {
@@ -278,7 +279,7 @@ describe('Test log-core', function () {
             process.env.LOG_TEST_VAR = 'True';
             core.setConfig(testConfig);
             coreConfig.length.should.equal(1);
-            coreConfig[0].should.deep.equal({core: true, envVarSwitch: "LOG_TEST_VAR"});
+            coreConfig[0].should.deep.equal({ core: true, envVarSwitch: "LOG_TEST_VAR" });
         });
 
         it('Test set switch and set env var ("true"): ', function () {
@@ -289,7 +290,7 @@ describe('Test log-core', function () {
             process.env.LOG_TEST_VAR = 'TRUE';
             core.setConfig(testConfig);
             coreConfig.length.should.equal(1);
-            coreConfig[0].should.deep.equal({core: true, envVarSwitch: "LOG_TEST_VAR"});
+            coreConfig[0].should.deep.equal({ core: true, envVarSwitch: "LOG_TEST_VAR" });
         });
 
         it('Test set switch and set env var ("false"): ', function () {
@@ -300,7 +301,7 @@ describe('Test log-core', function () {
             process.env.LOG_TEST_VAR = 'false';
             core.setConfig(testConfig);
             coreConfig.length.should.equal(1);
-            coreConfig[0].should.deep.equal({core: true, envVarSwitch: "LOG_TEST_VAR", reduce: true});
+            coreConfig[0].should.deep.equal({ core: true, envVarSwitch: "LOG_TEST_VAR", reduce: true });
         });
 
         it('Test set switch and set env var ("0"): ', function () {
@@ -311,7 +312,7 @@ describe('Test log-core', function () {
             process.env.LOG_TEST_VAR = '0';
             core.setConfig(testConfig);
             coreConfig.length.should.equal(1);
-            coreConfig[0].should.deep.equal({core: true, envVarSwitch: "LOG_TEST_VAR", reduce: true});
+            coreConfig[0].should.deep.equal({ core: true, envVarSwitch: "LOG_TEST_VAR", reduce: true });
         });
     });
 
@@ -708,7 +709,7 @@ describe('Test log-core', function () {
 
         it("Test custom fields log output (array)", function () {
             log("info", "Test", [
-               1, "123", {"field": "values"}
+                1, "123", { "field": "values" }
             ]);
 
             logObject.msg.should.equal('Test');
@@ -719,10 +720,10 @@ describe('Test log-core', function () {
             var obj = {
                 "fieldString": "value",
                 "fieldNumber": 123,
-                "fieldObj": {a : 456},
-                "fieldArray": [7,8,9]
+                "fieldObj": { a: 456 },
+                "fieldArray": [7, 8, 9]
             };
-            
+
             log("info", "Test", obj);
 
             assert.isString(obj.fieldString);
@@ -732,8 +733,8 @@ describe('Test log-core', function () {
         });
 
         it("Test custom fields log type consistency (arrays)", function () {
-            var obj = [ "value", 123, {a : 456}, [7,8,9]];
-            
+            var obj = ["value", 123, { a: 456 }, [7, 8, 9]];
+
             log("info", "Test", obj);
 
             assert.isString(obj[0]);
@@ -793,7 +794,7 @@ describe('Test log-core', function () {
         var defaultHeader;
         var envHeaderVariable;
 
-        beforeEach(function() {
+        beforeEach(function () {
             core = rewire("../cf-nodejs-logging-support-core/log-core.js");
             core.__set__({
                 "writeLogToConsole": function (obj) {
@@ -807,7 +808,7 @@ describe('Test log-core', function () {
             process.env[envHeaderVariable] = null;
         });
 
-        it('test default behaviour', function() {
+        it('test default behaviour', function () {
             core.init();
             header = core.__get__("dynLogLevelHeader");
             header.should.equal(defaultHeader);
@@ -818,7 +819,7 @@ describe('Test log-core', function () {
 
         });
 
-        it('testing reading from correct env Variable', function() {
+        it('testing reading from correct env Variable', function () {
             process.env[envHeaderVariable] = "test";
             core.init();
             header = core.__get__("dynLogLevelHeader");
@@ -993,14 +994,14 @@ describe('Test log-core', function () {
         });
     });
 
-    describe('test DynamicLogLevel', function() {
+    describe('test DynamicLogLevel', function () {
         var req;
         var levels;
 
-        before(function() {
+        before(function () {
             core = rewire("../cf-nodejs-logging-support-core/log-core.js");
             levels = core.__get__("loggingLevels");
-            core.__set__("sendLog",function(level, logObject, dynamicLogLevel) {
+            core.__set__("sendLog", function (level, logObject, dynamicLogLevel) {
             });
         });
 
@@ -1010,18 +1011,95 @@ describe('Test log-core', function () {
             core.bindLogFunctions(req);
         });
 
-        it("test setDynamicLogLevel", function() {
+        it("test setDynamicLogLevel", function () {
             req.setDynamicLoggingLevel("error");
             assert.equal(req.dynamicLogLevel, levels["error"]);
             req.setDynamicLoggingLevel("info");
             assert.equal(req.dynamicLogLevel, levels["info"]);
         })
 
-        it("test logMessage with dynamicLogLevel", function() {
+        it("test logMessage with dynamicLogLevel", function () {
             req.setDynamicLoggingLevel("info");
-            assert.isTrue(req.logMessage("info","will go through"));
+            assert.isTrue(req.logMessage("info", "will go through"));
             req.setDynamicLoggingLevel("error");
-            assert.isFalse(req.logMessage("info","will not go through"));
+            assert.isFalse(req.logMessage("info", "will not go through"));
         });
-    })
+    });
+
+    describe('Test DynlogLevel', function () {
+
+        var header;
+        var defaultHeader;
+        var envHeaderVariable;
+        var getLogLevelFromName;
+        var verifyAndDecodeJWT;
+
+        beforeEach(function () {
+            core = rewire("../cf-nodejs-logging-support-core/log-core.js");
+            core.__set__({
+                "writeLogToConsole": function (obj) {
+                    logMeta = obj;
+                    logLevel = obj.level;
+                }
+            });
+            verifyAndDecodeJWT = core.__get__("verifyAndDecodeJWT");
+            bindDynLogLevel = core.__get__("dynLogLevelDefaultHeader");
+            getLogLevelFromName = core.__get__("getLogLevelFromName");
+            envHeaderVariable = core.__get__("envDynLogHeader");
+            process.env[envHeaderVariable] = null;
+        });
+
+        it("test bindDynLogLevel", function () {
+            core.__set__({
+                "verifyAndDecodeJWT": function (token, key) {
+                    if (!token) {
+                        return null;
+                    } else {
+                        var payload = {};
+                        payload.level = "error";
+                        return payload;
+                    }
+                }
+            });
+            var req = {};
+            core.bindDynLogLevel(null, req);
+            assert.isUndefined(req.dynamicLogLevel);
+            core.bindDynLogLevel(1, req);
+            req.dynamicLogLevel.should.equal(0);
+        });
+
+        it("test getLogLevelFromName", function () {
+
+            res = getLogLevelFromName("error");
+            res.should.equal(0);
+            res = getLogLevelFromName("test123");
+            assert.isNull(res);
+            res = getLogLevelFromName(null);
+            assert.isNull(res);
+
+        });
+
+        it("test verifyAndDecodeJWT", function () {
+
+            var private_correct = fs.readFileSync("./test/jwtRS256_correct.key").toString('utf8');
+            var private_wrong = fs.readFileSync("./test/jwtRS256_wrong.key").toString('utf8');
+            var public = fs.readFileSync("./test/jwtRS256.key.pub").toString('utf8');
+            var public_missing_desc = fs.readFileSync("./test/jwtRS256_missing_desc.key.pub").toString('utf8');
+
+            token_correct = jwt.sign({ "level": "error" }, private_correct, { algorithm: 'RS256' });
+            token_wrong = jwt.sign({ "level": "error" }, private_wrong, { algorithm: 'RS256' });
+
+            var res = verifyAndDecodeJWT(token_correct, public);
+            res.level.should.equal("error");
+            res = verifyAndDecodeJWT(token_wrong, public);
+            assert.isNull(res);
+
+            res = null;
+            res = verifyAndDecodeJWT(token_correct, public_missing_desc);
+            res.level.should.equal("error");
+            res = verifyAndDecodeJWT(token_wrong, public_missing_desc);
+            assert.isNull(res);
+
+        });
+    });
 });
