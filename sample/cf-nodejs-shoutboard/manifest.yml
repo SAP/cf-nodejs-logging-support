@@ -1,0 +1,11 @@
+---
+applications:
+- name: express-cf-shoutboard
+  command: node web-express.js
+  memory: 128m
+  disk: 128m
+  instances: 1
+  path: .
+  stackato:
+    env:
+      RELEASE: v5
