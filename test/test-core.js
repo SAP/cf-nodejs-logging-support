@@ -184,9 +184,8 @@ describe('Test log-core', function () {
             core.setConfig(testConfig);
 
             var config = core.getPostLogConfig();
-            config.length.should.equal(2);
-            config[0].should.equal(testConfig[2]);
-            config[1].should.equal(testConfig[3]);
+            config.length.should.equal(1);
+            config[0].should.equal(testConfig[3]);
         });
     });
 

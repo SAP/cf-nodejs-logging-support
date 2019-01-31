@@ -18,7 +18,7 @@ describe('Test log-restify', function () {
         core = importFresh("../cf-nodejs-logging-support-core/log-core.js");
         restifyLogger = importFresh("../cf-nodejs-logging-support-restify/log-restify.js");
         restifyLogger.setCoreLogger(core);
-        restifyLogger.setConfig(importFresh("../config.js").config);
+        restifyLogger.setConfig(importFresh("./allbranchconfig.js").config);
     });
 
 
@@ -80,6 +80,7 @@ describe('Test log-restify', function () {
         var next;
 
         beforeEach(function () {
+            logObject = null;
             core.sendLog = function (logObj) {
                 logObject = logObj;
             };
@@ -327,10 +328,18 @@ describe('Test log-restify', function () {
             logObject.x_forwarded_for.should.equal("");
             logObject.protocol.should.equal("HTTP");
             logObject.response_content_type.should.equal("-");
-
         });
 
-
+        it("Test log ommitting per loging Level", function () {
+            restifyLogger.setLoggingLevel("error");
+            restifyLogger.logNetwork(req, res, next);
+            fireLog();
+            assert.isNull(logObject);
+            restifyLogger.setLoggingLevel("info");
+            restifyLogger.logNetwork(req, res, next);
+            fireLog();
+            assert.isNotNull(logObject);
+        });
     });
 
     describe('Test setLoggingLevel', function () {

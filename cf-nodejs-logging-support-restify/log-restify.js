@@ -1,5 +1,3 @@
-/*jshint node:true */
-
 // Log network activity for restify applications
 
 var uuid = require("uuid/v4");
@@ -44,12 +42,7 @@ var logNetwork = function (req, res, next) {
     }
 
     var token = req.header(core.getDynLogLevelHeaderName());
-
-    if (token != null) {
-        req.dynamicLogLevel = core.getLogLevelFromJWT(token);
-    } else {
-        req.dynamicLogLevel = null;
-    }
+    core.bindDynLogLevel(token, req);
 
     var fallbacks = [];
     var selfReferences = [];
@@ -72,10 +65,7 @@ var logNetwork = function (req, res, next) {
                 selfReferences[configEntry.name] = configEntry.source.name;
                 break;
             case "time":
-                if (configEntry.source.pre != null)
-                    logObject[configEntry.name] = configEntry.source.pre(req, res, logObject);
-                else
-                    logObject[configEntry.name] = -1 //defaulting for time fields
+                logObject[configEntry.name] = configEntry.source.pre(req, res, logObject);
                 break;
             case "special":
                 fallbacks[configEntry.name] = configEntry.fallback;
@@ -121,8 +111,7 @@ var logNetwork = function (req, res, next) {
                     selfReferences[configEntry.name] = configEntry.source.name;
                     break;
                 case "time":
-                    if (configEntry.source.post != null)
-                        logObject[configEntry.name] = configEntry.source.post(req, res, logObject);
+                    logObject[configEntry.name] = configEntry.source.post(req, res, logObject);
                     break;
                 case "special":
                     fallbacks[configEntry.name] = configEntry.fallback;
@@ -146,7 +135,7 @@ var logNetwork = function (req, res, next) {
         // Replace all set fields, which are marked to be reduced, with a placeholder (defined in log-core.js)
         core.reduceFields(postConfig, logObject);
 
-        if(core.checkLoggingLevel(logObject.level,req.dynamicLogLevel))
+        if (core.checkLoggingLevel(logObject.level, req.dynamicLogLevel))
             core.sendLog(logObject);
     });
 

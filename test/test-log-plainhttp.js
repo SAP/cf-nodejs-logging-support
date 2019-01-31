@@ -18,7 +18,7 @@ describe('Test log-plainhttp', function () {
         core = importFresh("../cf-nodejs-logging-support-core/log-core.js");
         httpLogger = importFresh("../cf-nodejs-logging-support-plainhttp/log-plainhttp");
         httpLogger.setCoreLogger(core);
-        httpLogger.setConfig(importFresh("../config.js").config);
+        httpLogger.setConfig(importFresh("./allbranchconfig.js").config);
     });
 
     describe('Test linkings', function () {
@@ -77,6 +77,7 @@ describe('Test log-plainhttp', function () {
         var next;
 
         beforeEach(function () {
+            logObject = null;
             core.sendLog = function (logObj) {
                 logObject = logObj;
             };
@@ -309,7 +310,17 @@ describe('Test log-plainhttp', function () {
             logObject.x_forwarded_for.should.equal("");
             logObject.protocol.should.equal("HTTP");
             logObject.response_content_type.should.equal("-");
+        });
 
+        it("Test log ommitting per loging Level", function () {
+            httpLogger.setLoggingLevel("error");
+            httpLogger.logNetwork(req, res, next);
+            fireLog();
+            assert.isNull(logObject);
+            httpLogger.setLoggingLevel("info");
+            httpLogger.logNetwork(req, res, next);
+            fireLog();
+            assert.isNotNull(logObject);
         });
 
 
