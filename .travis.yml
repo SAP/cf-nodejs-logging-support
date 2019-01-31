@@ -8,8 +8,5 @@ node_js:
   - "4.0.0"
 install:
   - npm install -g codecov
-  - npm install mocha
-  - npm install -g istanbul
 script:
-  - istanbul cover ./node_modules/mocha/bin/_mocha -- --timeout 10000
   - codecov
