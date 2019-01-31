@@ -6,7 +6,6 @@ node_js:
   - "5.11"
   - "4.4"
   - "4.0.0"
-install:
-  - npm install -g codecov
 script:
-  - codecov
+  - npm run test
+  - npm run coverage
