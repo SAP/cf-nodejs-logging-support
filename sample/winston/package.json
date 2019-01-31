@@ -1,0 +1,26 @@
+{
+    "name": "winston-sample",
+    "version": "1.0.1",
+    "description": "Sample Node.js app",
+    "main": "web.js",
+    "license": "Apache-2.0",
+    "scripts": {
+        "test": "echo \"Error: no test specified\" && exit 1"
+    },
+    "keywords": [
+        "example",
+        "node.js",
+        "cloudfoundry",
+        "winston"
+    ],
+    "author": "Nicklas Dohrn, Christian Dinse",
+    "dependencies": {
+        "express": "latest",
+        "winston": "latest",
+        "cf-nodejs-logging-support": "latest"
+    },
+    "repository": "https://github.com/SAP/cf-nodejs-logging-support/tree/master/sample/winston",
+    "engines": {
+        "node": ">=4.0.0"
+    }
+}

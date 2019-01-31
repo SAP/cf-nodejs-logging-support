@@ -1,6 +1,6 @@
 # Node.js Logging Support for Cloud Foundry   
 
-[![Version npm](https://img.shields.io/npm/v/cf-nodejs-logging-support.svg?style=flat-square)](https://www.npmjs.com/package/cf-nodejs-logging-support)[![npm Downloads](https://img.shields.io/npm/dm/cf-nodejs-logging-support.svg?style=flat-square)](https://www.npmjs.com/package/cf-nodejs-logging-support)[![Build Status](https://img.shields.io/travis/SAP/cf-nodejs-logging-support/master.svg?style=flat-square)](https://travis-ci.org/SAP/cf-nodejs-logging-support)
+[![Version npm](https://img.shields.io/npm/v/cf-nodejs-logging-support.svg?style=flat-square)](https://www.npmjs.com/package/cf-nodejs-logging-support)[![npm Downloads](https://img.shields.io/npm/dm/cf-nodejs-logging-support.svg?style=flat-square)](https://www.npmjs.com/package/cf-nodejs-logging-support)[![Build Status](https://img.shields.io/travis/SAP/cf-nodejs-logging-support/master.svg?style=flat-square)](https://travis-ci.org/SAP/cf-nodejs-logging-support)[![Code Coverage](https://img.shields.io/codecov/c/github/SAP/cf-nodejs-logging-support.svg?style=flat-square)](https://codecov.io/gh/SAP/cf-nodejs-logging-support)
 
 ## Summary
 
@@ -202,7 +202,7 @@ var winston = require('winston');
 
 var app = express();
 
-var logger = new(winston.Logger)({
+var logger = winston.createLogger({
     // Bind transport to winston
     transports: [log.winstonTransport]
 });
@@ -270,5 +270,5 @@ This will replace the value of the previously empty msg field for network logs w
 
 ## Sample Apps
 
-  * [Express Sample](https://github.com/SAP/cf-nodejs-logging-support/blob/master/sample/cf-nodejs-shoutboard-express)
-  * [Restify Sample](https://github.com/SAP/cf-nodejs-logging-support/blob/master/sample/cf-nodejs-shoutboard-restify)
+  * [Express & Restify Sample](https://github.com/SAP/cf-nodejs-logging-support/blob/master/sample/cf-nodejs-shoutboard)
+  * [Winston Sample](https://github.com/SAP/cf-nodejs-logging-support/blob/master/sample/winston)
