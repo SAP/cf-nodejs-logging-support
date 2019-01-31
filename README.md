@@ -106,7 +106,7 @@ logMessage("info", "Hello World");
 // ... "msg":"Hello World" ...
 ```
 
-With addtional numeric value
+With additional numeric value
 ```js
 logMessage("info", "Listening on port %d", 5000); 
 // ... "msg":"Listening on port 5000" ...
