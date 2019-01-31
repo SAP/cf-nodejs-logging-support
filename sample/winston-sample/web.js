@@ -1,12 +1,12 @@
 var express = require('express');
-var log = require('cf-nodejs-logging-support');
+var log = require('../../index.js');
 var winston = require('winston');
 
 var app = express();
 
 var logger = winston.createLogger({
     // Bind transport to winston
-    transports: [log.winstonTransport]
+    transports: [log.createWinstonTransport()]
 });
 
 app.get('/', function (req, res) {

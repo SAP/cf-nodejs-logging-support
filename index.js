@@ -39,13 +39,19 @@ exports.logMessage = function (args) {
     effectiveLogger.logMessage.apply(this, arguments);
 };
 
-exports.winstonTransport = function () {
-    var transport = require("./cf-nodejs-logging-support-winston/winston-transport");
-
-
-    transport.setCoreLogger(coreLogger);
-    return transport.getWinstonTransport();
-}();
+exports.createWinstonTransport = function (options) {
+    try {
+        if (!options) {
+            options = {
+                level: 'info'
+            };
+        }
+        options.coreLogger = coreLogger;
+        return require("./cf-nodejs-logging-support-winston/winston-transport").createTransport(options);
+    } catch(e) {
+        throw "Unable to create winston transport: " + e.message;
+    }
+};
 
 exports.getCorrelationObject = function () {
     return effectiveLogger.getCorrelationObject();
