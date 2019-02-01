@@ -10,11 +10,9 @@ var jwt = require('jsonwebtoken');
 var fs = require('fs');
 
 describe('Test log-core', function () {
-
-    var core = null;
     describe('Test init function', function () {
         var defHeader, envAdress;
-
+        var core = null;
         before(function () {
             core = rewire("../cf-nodejs-logging-support-core/log-core.js");
             defHeader = core.__get__("dynLogLevelDefaultHeader");
@@ -31,6 +29,7 @@ describe('Test log-core', function () {
     });
 
     describe('Test reduceFields', function () {
+        var core = null;
         var testConfig = [
             {
                 name: "test-field-a",
@@ -83,6 +82,7 @@ describe('Test log-core', function () {
     });
 
     describe('Test prepareInitDummy', function () {
+        var core = null;
         var testConfig = [
             {
                 name: "test-field-a",
@@ -125,6 +125,7 @@ describe('Test log-core', function () {
     });
 
     describe('Test setConfig assignments', function () {
+        var core = null;
         var testConfig = [
             {
                 name: "test-field-a",
@@ -192,6 +193,7 @@ describe('Test log-core', function () {
     });
 
     describe('Test reduceFields assignments', function () {
+        var core = null;
         var testConfig = [
             {
                 name: "test-field-a",
@@ -230,6 +232,7 @@ describe('Test log-core', function () {
     });
 
     describe('Test setConfig environment var switches', function () {
+        var core = null;
         var coreConfig = null;
         var testConfig;
 
@@ -320,6 +323,7 @@ describe('Test log-core', function () {
 
 
     describe('Test validateObject', function () {
+        var core = null;
 
         before(function () {
             core = importFresh("../cf-nodejs-logging-support-core/log-core.js");
@@ -351,6 +355,7 @@ describe('Test log-core', function () {
     });
 
     describe('Test setLoggingLevel', function () {
+        var core = null;
 
         before(function () {
             core = importFresh("../cf-nodejs-logging-support-core/log-core.js");
@@ -370,6 +375,7 @@ describe('Test log-core', function () {
 
 
     describe('Test log output', function () {
+        var core = null;
 
         var write;
         var clock;
@@ -461,6 +467,7 @@ describe('Test log-core', function () {
 
 
     describe('Test sendLog', function () {
+        var core = null;
         var logMeta;
         var sendLog;
 
@@ -506,6 +513,7 @@ describe('Test log-core', function () {
     });
 
     describe('Test getCorrelationId', function () {
+        var core = null;
         var logObject = null;
         var getCorrelationId = null;
 
@@ -545,6 +553,7 @@ describe('Test log-core', function () {
     });
 
     describe('Test setCorrelationId', function () {
+        var core = null;
         var logObject = null;
         var setCorrelationId = null;
         var testRequest;
@@ -593,6 +602,7 @@ describe('Test log-core', function () {
     });
 
     describe('Test getCorrelationObject', function () {
+        var core = null;
         var logObject = null;
         var getCorrelationObject;
         var uuid;
@@ -632,6 +642,7 @@ describe('Test log-core', function () {
 
 
     describe('Test logMessage', function () {
+        var core = null;
 
         var logObject = null;
         var log = null;
@@ -793,6 +804,7 @@ describe('Test log-core', function () {
     });
 
     describe('Test init', function () {
+        var core = null;
 
         var header;
         var defaultHeader;
@@ -839,6 +851,7 @@ describe('Test log-core', function () {
     });
 
     describe('Test initLog', function () {
+        var core = null;
         var logObject;
         var clock;
         var inherit = {};
@@ -961,6 +974,7 @@ describe('Test log-core', function () {
     });
 
     describe('Test overrideField', function () {
+        var core = null;
         var values = {};
         var overrideField = null;
 
@@ -999,6 +1013,7 @@ describe('Test log-core', function () {
     });
 
     describe('test DynamicLogLevel', function () {
+        var core = null;
         var req;
         var levels;
 
@@ -1030,6 +1045,7 @@ describe('Test log-core', function () {
     });
 
     describe('Test DynlogLevel', function () {
+        var core = null;
 
         var header;
         var defaultHeader;
