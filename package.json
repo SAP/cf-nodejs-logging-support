@@ -31,7 +31,7 @@
     "mocha": "^4.1.0",
     "mock-require": "^2.0.2",
     "node-mocks-http": "^1.7.0",
-    "rewire": "^4.0.1",
+    "rewire": "^3.0.2",
     "sinon": "^6.1.5",
     "winston": "^2.4.4",
     "codecov": "^3.1.0"
