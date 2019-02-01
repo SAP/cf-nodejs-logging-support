@@ -6,14 +6,14 @@ const CfNodejsLoggingSupportLogger = class CfNodejsLoggingSupportLogger extends 
         super(options);
         this.name = 'CfNodejsLoggingSupportLogger';
         this.level = options.level || 'info';
-        this.coreLogger = options.coreLogger;
-      }
-    
+        this.logMessage = options.logMessage;
+    }
+
     log(info) {
         if (!!info[SPLAT]) {
-            this.coreLogger.logMessage.apply(this, [info.level, info.message, ...info[SPLAT]]);
+            this.logMessage.apply(this, [info.level, info.message, ...info[SPLAT]]);
         } else {
-            this.coreLogger.logMessage(info.level, info.message);
+            this.logMessage(info.level, info.message);
         }
     }
 }

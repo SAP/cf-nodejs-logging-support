@@ -1,55 +1,53 @@
-const importFresh = require('import-fresh');
-var chai = require("chai");
-var logger = importFresh("../index.js");
-var sinon = require("sinon");
-var assert = chai.assert;
-var should = chai.should();
-var Module = require('module');
+const { SPLAT } = require('triple-beam');
 var rewire = require('rewire');
 
 
-describe('Test winston.js', function () {
+describe('Test winston-transport.js', function () {
     describe('Test functionality', function () {
 
-        var obj;
+        var transport;
+        var logger = rewire("../index.js");
+        var catchedArgs;
+
         before(function () {
-            obj = logger.createWinstonTransport();
-            clock = sinon.useFakeTimers();
-        });
-        after(function () {
-            clock.restore();
+            logger.__set__("logMessage", function() {
+                catchedArgs = Array.prototype.slice.call(arguments);
+            });
+
+            transport = logger.createWinstonTransport();
         });
 
-        it('Test loglevel defined logging', function () {
+        after(function () {
+
+        });
+
+        it('Test log method (simple message)', function () {
            
             var info = {};
             info.level = "error";
             info.message = "test"
 
-            obj.log(info);
+            transport.log(info);
 
-          /*  var jsonObj = JSON.parse(obj.formatter(options));
-            assert.property(jsonObj, "level");
-            jsonObj.level.should.equal("info");*/
-        });
-    });
-
-    describe('Test correct missing fallback', function () {
-
-        var origRequire = Module.prototype.require;
-        before(function () {
-            Module.prototype.require = function () {
-            var args = Array.prototype.slice.call(arguments);
-                if (args[0] === "winston") {
-                    throw "error";
-                }
-                return origRequire.apply(this, arguments);
-            }
-            logger = rewire("../index.js");
-        });
-        after(function () {
-            Module.prototype.require = origRequire;
+            catchedArgs.length.should.equal(2);
+            catchedArgs[0].should.equal("error");
+            catchedArgs[1].should.equal("test");
         });
 
+        it('Test log method (message with additional variables)', function () {
+           
+            var info = {};
+            info.level = "error";
+            info.message = "test %d %s"
+            info[SPLAT] = [42, "abc"]
+
+            transport.log(info);
+
+            catchedArgs.length.should.equal(4);
+            catchedArgs[0].should.equal("error");
+            catchedArgs[1].should.equal("test %d %s");
+            catchedArgs[2].should.equal(42);
+            catchedArgs[3].should.equal("abc");
+        });
     });
 });

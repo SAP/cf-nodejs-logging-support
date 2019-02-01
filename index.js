@@ -45,7 +45,7 @@ exports.createWinstonTransport = function (options) {
             level: 'info'
         };
     }
-    options.coreLogger = coreLogger;
+    options.logMessage = logMessage;
     return require("./cf-nodejs-logging-support-winston/winston-transport").createTransport(options);
 };
 
