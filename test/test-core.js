@@ -1,3 +1,4 @@
+"use strict"
 const importFresh = require('import-fresh');
 var chai = require("chai");
 var assert = chai.assert;
@@ -230,6 +231,7 @@ describe('Test log-core', function () {
 
     describe('Test setConfig environment var switches', function () {
         var coreConfig = null;
+        var testConfig;
 
         before(function () {
             core = rewire("../cf-nodejs-logging-support-core/log-core.js");
@@ -546,11 +548,12 @@ describe('Test log-core', function () {
         var logObject = null;
         var setCorrelationId = null;
         var testRequest;
+        var uuid = require('uuid/v4');
+        var testId;
 
         before(function () {
             core = rewire("../cf-nodejs-logging-support-core/log-core.js");
             core.setConfig(importFresh("../config.js").config);
-            uuid = require("uuid/v4");
             setCorrelationId = core.__get__("setCorrelationId");
         });
 
@@ -592,18 +595,19 @@ describe('Test log-core', function () {
     describe('Test getCorrelationObject', function () {
         var logObject = null;
         var getCorrelationObject;
+        var uuid;
 
         before(function () {
             core = rewire("../cf-nodejs-logging-support-core/log-core.js");
             core.setConfig(importFresh("../config.js").config);
-            uuid = require("uuid/v4");
             getCorrelationObject = core.__get__("getCorrelationObject");
+            uuid = require('uuid/v4');
         });
 
         it('Test correct new object', function () {
             var obj = getCorrelationObject();
             obj.logObject.correlation_id.should.be.a("string");
-            correlation_id = obj.logObject.correlation_id;
+            var correlation_id = obj.logObject.correlation_id;
             obj.getCorrelationId().should.equal(correlation_id);
             obj.setCorrelationId(uuid());
             obj.getCorrelationId().should.not.equal(correlation_id);
@@ -620,7 +624,7 @@ describe('Test log-core', function () {
             obj.logObject.correlation_id.should.be.a("string");
             obj.getCorrelationId().should.equal(old.logObject.correlation_id);
             obj.setCorrelationId(uuid());
-            obj.getCorrelationId().should.not.equal(correlation_id);
+            obj.getCorrelationId().should.not.equal(old.logObject.correlation_id);
         });
 
 
@@ -1006,7 +1010,6 @@ describe('Test log-core', function () {
         });
 
         beforeEach(function () {
-            values = {};
             req = {};
             core.bindLogFunctions(req);
         });
@@ -1043,7 +1046,6 @@ describe('Test log-core', function () {
                 }
             });
             verifyAndDecodeJWT = core.__get__("verifyAndDecodeJWT");
-            bindDynLogLevel = core.__get__("dynLogLevelDefaultHeader");
             getLogLevelFromName = core.__get__("getLogLevelFromName");
             envHeaderVariable = core.__get__("envDynLogHeader");
             process.env[envHeaderVariable] = null;
@@ -1083,21 +1085,21 @@ describe('Test log-core', function () {
 
             var private_correct = fs.readFileSync("./test/jwtRS256_correct.key").toString('utf8');
             var private_wrong = fs.readFileSync("./test/jwtRS256_wrong.key").toString('utf8');
-            var public = fs.readFileSync("./test/jwtRS256.key.pub").toString('utf8');
-            var public_missing_desc = fs.readFileSync("./test/jwtRS256_missing_desc.key.pub").toString('utf8');
+            var public_key = fs.readFileSync("./test/jwtRS256.key.pub").toString('utf8');
+            var public_key_missing_desc = fs.readFileSync("./test/jwtRS256_missing_desc.key.pub").toString('utf8');
 
-            token_correct = jwt.sign({ "level": "error" }, private_correct, { algorithm: 'RS256' });
-            token_wrong = jwt.sign({ "level": "error" }, private_wrong, { algorithm: 'RS256' });
+            var token_correct = jwt.sign({ "level": "error" }, private_correct, { algorithm: 'RS256' });
+            var token_wrong = jwt.sign({ "level": "error" }, private_wrong, { algorithm: 'RS256' });
 
-            var res = verifyAndDecodeJWT(token_correct, public);
+            var res = verifyAndDecodeJWT(token_correct, public_key);
             res.level.should.equal("error");
-            res = verifyAndDecodeJWT(token_wrong, public);
+            res = verifyAndDecodeJWT(token_wrong, public_key);
             assert.isNull(res);
 
             res = null;
-            res = verifyAndDecodeJWT(token_correct, public_missing_desc);
+            res = verifyAndDecodeJWT(token_correct, public_key_missing_desc);
             res.level.should.equal("error");
-            res = verifyAndDecodeJWT(token_wrong, public_missing_desc);
+            res = verifyAndDecodeJWT(token_wrong, public_key_missing_desc);
             assert.isNull(res);
 
         });
