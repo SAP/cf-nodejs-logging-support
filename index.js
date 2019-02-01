@@ -40,24 +40,20 @@ exports.logMessage = function (args) {
 };
 
 exports.createWinstonTransport = function (options) {
-    try {
-        if (!options) {
-            options = {
-                level: 'info'
-            };
-        }
-        options.coreLogger = coreLogger;
-        return require("./cf-nodejs-logging-support-winston/winston-transport").createTransport(options);
-    } catch(e) {
-        throw "Unable to create winston transport: " + e.message;
+    if (!options) {
+        options = {
+            level: 'info'
+        };
     }
+    options.coreLogger = coreLogger;
+    return require("./cf-nodejs-logging-support-winston/winston-transport").createTransport(options);
 };
 
 exports.getCorrelationObject = function () {
     return effectiveLogger.getCorrelationObject();
 };
 
-exports.setLogPattern = function(args) {
+exports.setLogPattern = function (args) {
     effectiveLogger.setLogPattern.apply(this, arguments);
 };
 exports.overrideNetworkField = function (args) {
