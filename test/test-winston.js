@@ -51,9 +51,5 @@ describe('Test winston.js', function () {
             Module.prototype.require = origRequire;
         });
 
-        it('Test correct empty object', function () {
-            obj = logger.winstonTransport;
-            assert.isNull(obj);
-        });
     });
 });

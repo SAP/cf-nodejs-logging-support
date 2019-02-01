@@ -1,3 +1,4 @@
+"use strict"
 const importFresh = require('import-fresh');
 var chai = require("chai");
 var assert = chai.assert;
@@ -9,13 +10,10 @@ var jwt = require('jsonwebtoken');
 var fs = require('fs');
 
 describe('Test log-core', function () {
-
-    var core = null;
     describe('Test init function', function () {
         var defHeader, envAdress;
-
+        var core = rewire("../cf-nodejs-logging-support-core/log-core.js");
         before(function () {
-            core = rewire("../cf-nodejs-logging-support-core/log-core.js");
             defHeader = core.__get__("dynLogLevelDefaultHeader");
             envAdress = core.__get__("envDynLogHeader");
         });
@@ -30,6 +28,7 @@ describe('Test log-core', function () {
     });
 
     describe('Test reduceFields', function () {
+        var core = rewire("../cf-nodejs-logging-support-core/log-core.js");
         var testConfig = [
             {
                 name: "test-field-a",
@@ -60,7 +59,6 @@ describe('Test log-core', function () {
         var logObj
         var reduceFields;
         before(function () {
-            core = rewire("../cf-nodejs-logging-support-core/log-core.js");
             reduceFields = core.__get__("reduceFields");
         });
 
@@ -82,6 +80,7 @@ describe('Test log-core', function () {
     });
 
     describe('Test prepareInitDummy', function () {
+        var core = rewire("../cf-nodejs-logging-support-core/log-core.js");
         var testConfig = [
             {
                 name: "test-field-a",
@@ -106,7 +105,6 @@ describe('Test log-core', function () {
         var logObj;
         var prepareDummy;
         before(function () {
-            core = rewire("../cf-nodejs-logging-support-core/log-core.js");
             prepareDummy = core.__get__("prepareInitDummy");
         });
 
@@ -124,6 +122,7 @@ describe('Test log-core', function () {
     });
 
     describe('Test setConfig assignments', function () {
+        var core = null;
         var testConfig = [
             {
                 name: "test-field-a",
@@ -191,6 +190,7 @@ describe('Test log-core', function () {
     });
 
     describe('Test reduceFields assignments', function () {
+        var core = null;
         var testConfig = [
             {
                 name: "test-field-a",
@@ -229,10 +229,11 @@ describe('Test log-core', function () {
     });
 
     describe('Test setConfig environment var switches', function () {
+        var core = rewire("../cf-nodejs-logging-support-core/log-core.js");
         var coreConfig = null;
+        var testConfig;
 
         before(function () {
-            core = rewire("../cf-nodejs-logging-support-core/log-core.js");
             core.__set__({
                 "prepareInitDummy": function (config) {
                     coreConfig = config;
@@ -318,9 +319,9 @@ describe('Test log-core', function () {
 
 
     describe('Test validateObject', function () {
+        var core = rewire("../cf-nodejs-logging-support-core/log-core.js");
 
         before(function () {
-            core = importFresh("../cf-nodejs-logging-support-core/log-core.js");
             core.setConfig(importFresh("../config.js").config);
         });
 
@@ -349,9 +350,9 @@ describe('Test log-core', function () {
     });
 
     describe('Test setLoggingLevel', function () {
+        var core = rewire("../cf-nodejs-logging-support-core/log-core.js");
 
         before(function () {
-            core = importFresh("../cf-nodejs-logging-support-core/log-core.js");
             core.setConfig(importFresh("../config.js").config);
         });
 
@@ -368,6 +369,7 @@ describe('Test log-core', function () {
 
 
     describe('Test log output', function () {
+        var core = null;
 
         var write;
         var clock;
@@ -459,11 +461,11 @@ describe('Test log-core', function () {
 
 
     describe('Test sendLog', function () {
+        var core = rewire("../cf-nodejs-logging-support-core/log-core.js");
         var logMeta;
         var sendLog;
 
         before(function () {
-            core = rewire("../cf-nodejs-logging-support-core/log-core.js");
             core.__set__({
                 "writeLogToConsole": function (obj) {
                     logMeta = obj;
@@ -504,11 +506,11 @@ describe('Test log-core', function () {
     });
 
     describe('Test getCorrelationId', function () {
+        var core = rewire("../cf-nodejs-logging-support-core/log-core.js");
         var logObject = null;
         var getCorrelationId = null;
 
         before(function () {
-            core = rewire("../cf-nodejs-logging-support-core/log-core.js");
             core.__set__({
                 "sendLog": function (level, logObj) {
                     logObject = logObj;
@@ -543,14 +545,15 @@ describe('Test log-core', function () {
     });
 
     describe('Test setCorrelationId', function () {
+        var core = rewire("../cf-nodejs-logging-support-core/log-core.js");
         var logObject = null;
         var setCorrelationId = null;
         var testRequest;
+        var uuid = require('uuid/v4');
+        var testId;
 
         before(function () {
-            core = rewire("../cf-nodejs-logging-support-core/log-core.js");
             core.setConfig(importFresh("../config.js").config);
-            uuid = require("uuid/v4");
             setCorrelationId = core.__get__("setCorrelationId");
         });
 
@@ -590,20 +593,21 @@ describe('Test log-core', function () {
     });
 
     describe('Test getCorrelationObject', function () {
+        var core = rewire("../cf-nodejs-logging-support-core/log-core.js");
         var logObject = null;
         var getCorrelationObject;
+        var uuid;
 
         before(function () {
-            core = rewire("../cf-nodejs-logging-support-core/log-core.js");
             core.setConfig(importFresh("../config.js").config);
-            uuid = require("uuid/v4");
             getCorrelationObject = core.__get__("getCorrelationObject");
+            uuid = require('uuid/v4');
         });
 
         it('Test correct new object', function () {
             var obj = getCorrelationObject();
             obj.logObject.correlation_id.should.be.a("string");
-            correlation_id = obj.logObject.correlation_id;
+            var correlation_id = obj.logObject.correlation_id;
             obj.getCorrelationId().should.equal(correlation_id);
             obj.setCorrelationId(uuid());
             obj.getCorrelationId().should.not.equal(correlation_id);
@@ -620,7 +624,7 @@ describe('Test log-core', function () {
             obj.logObject.correlation_id.should.be.a("string");
             obj.getCorrelationId().should.equal(old.logObject.correlation_id);
             obj.setCorrelationId(uuid());
-            obj.getCorrelationId().should.not.equal(correlation_id);
+            obj.getCorrelationId().should.not.equal(old.logObject.correlation_id);
         });
 
 
@@ -628,12 +632,12 @@ describe('Test log-core', function () {
 
 
     describe('Test logMessage', function () {
+        var core = rewire("../cf-nodejs-logging-support-core/log-core.js");
 
         var logObject = null;
         var log = null;
 
         before(function () {
-            core = rewire("../cf-nodejs-logging-support-core/log-core.js");
             core.__set__({
                 "sendLog": function (logObj) {
                     logObject = logObj;
@@ -789,13 +793,13 @@ describe('Test log-core', function () {
     });
 
     describe('Test init', function () {
+        var core = rewire("../cf-nodejs-logging-support-core/log-core.js");
 
         var header;
         var defaultHeader;
         var envHeaderVariable;
 
         beforeEach(function () {
-            core = rewire("../cf-nodejs-logging-support-core/log-core.js");
             core.__set__({
                 "writeLogToConsole": function (obj) {
                     logMeta = obj;
@@ -835,6 +839,7 @@ describe('Test log-core', function () {
     });
 
     describe('Test initLog', function () {
+        var core = rewire("../cf-nodejs-logging-support-core/log-core.js");
         var logObject;
         var clock;
         var inherit = {};
@@ -851,7 +856,6 @@ describe('Test log-core', function () {
                 "instance_index": "42"
             });
             process.env.CF_INSTANCE_IP = "42";
-            core = rewire("../cf-nodejs-logging-support-core/log-core.js");
             core.setConfig(importFresh("../config.js").config);
             clock = sinon.useFakeTimers();
         });
@@ -957,12 +961,12 @@ describe('Test log-core', function () {
     });
 
     describe('Test overrideField', function () {
+        var core = rewire("../cf-nodejs-logging-support-core/log-core.js");
         var values = {};
         var overrideField = null;
 
         beforeEach(function () {
             values = {};
-            core = rewire("../cf-nodejs-logging-support-core/log-core.js");
             core.__set__({
                 "fixedValues": values
             });
@@ -995,18 +999,17 @@ describe('Test log-core', function () {
     });
 
     describe('test DynamicLogLevel', function () {
+        var core = rewire("../cf-nodejs-logging-support-core/log-core.js");
         var req;
         var levels;
 
         before(function () {
-            core = rewire("../cf-nodejs-logging-support-core/log-core.js");
             levels = core.__get__("loggingLevels");
             core.__set__("sendLog", function (level, logObject, dynamicLogLevel) {
             });
         });
 
         beforeEach(function () {
-            values = {};
             req = {};
             core.bindLogFunctions(req);
         });
@@ -1027,6 +1030,7 @@ describe('Test log-core', function () {
     });
 
     describe('Test DynlogLevel', function () {
+        var core = rewire("../cf-nodejs-logging-support-core/log-core.js");
 
         var header;
         var defaultHeader;
@@ -1034,8 +1038,7 @@ describe('Test log-core', function () {
         var getLogLevelFromName;
         var verifyAndDecodeJWT;
 
-        beforeEach(function () {
-            core = rewire("../cf-nodejs-logging-support-core/log-core.js");
+        before(function () {
             core.__set__({
                 "writeLogToConsole": function (obj) {
                     logMeta = obj;
@@ -1043,7 +1046,6 @@ describe('Test log-core', function () {
                 }
             });
             verifyAndDecodeJWT = core.__get__("verifyAndDecodeJWT");
-            bindDynLogLevel = core.__get__("dynLogLevelDefaultHeader");
             getLogLevelFromName = core.__get__("getLogLevelFromName");
             envHeaderVariable = core.__get__("envDynLogHeader");
             process.env[envHeaderVariable] = null;
@@ -1083,21 +1085,21 @@ describe('Test log-core', function () {
 
             var private_correct = fs.readFileSync("./test/jwtRS256_correct.key").toString('utf8');
             var private_wrong = fs.readFileSync("./test/jwtRS256_wrong.key").toString('utf8');
-            var public = fs.readFileSync("./test/jwtRS256.key.pub").toString('utf8');
-            var public_missing_desc = fs.readFileSync("./test/jwtRS256_missing_desc.key.pub").toString('utf8');
+            var public_key = fs.readFileSync("./test/jwtRS256.key.pub").toString('utf8');
+            var public_key_missing_desc = fs.readFileSync("./test/jwtRS256_missing_desc.key.pub").toString('utf8');
 
-            token_correct = jwt.sign({ "level": "error" }, private_correct, { algorithm: 'RS256' });
-            token_wrong = jwt.sign({ "level": "error" }, private_wrong, { algorithm: 'RS256' });
+            var token_correct = jwt.sign({ "level": "error" }, private_correct, { algorithm: 'RS256' });
+            var token_wrong = jwt.sign({ "level": "error" }, private_wrong, { algorithm: 'RS256' });
 
-            var res = verifyAndDecodeJWT(token_correct, public);
+            var res = verifyAndDecodeJWT(token_correct, public_key);
             res.level.should.equal("error");
-            res = verifyAndDecodeJWT(token_wrong, public);
+            res = verifyAndDecodeJWT(token_wrong, public_key);
             assert.isNull(res);
 
             res = null;
-            res = verifyAndDecodeJWT(token_correct, public_missing_desc);
+            res = verifyAndDecodeJWT(token_correct, public_key_missing_desc);
             res.level.should.equal("error");
-            res = verifyAndDecodeJWT(token_wrong, public_missing_desc);
+            res = verifyAndDecodeJWT(token_wrong, public_key_missing_desc);
             assert.isNull(res);
 
         });
