@@ -1,40 +1,23 @@
-var core;
+const Transport = require('winston-transport');
+const { SPLAT } = require('triple-beam');
 
-var setCoreLogger = function (coreLogger) {
-    core = coreLogger;
-};
-var getWinstonTransport = function () {
-    var winston;
-    try {
-        winston = require("winston");
-    } catch (e) {
-        return null
-    }
-    var winstonTransport = new(winston.transports.Console)({
-        timestamp: function () {
-            return Date.now();
-        },
-        level: "info",
-        formatter: function (options) {
-            // Return string will be passed to winston logger.
-            var logObject = core.initLog();
-            if (options != null) {
-                if (options.level != null) {
-                    logObject.level = options.level;
-                }
-                logObject.msg = (undefined !== options.message ? options.message : '');
-
-                logObject.type = "log";
-
-                if (core.validObject(options.meta)) {
-                    logObject.custom_fields = options.meta;
-                }
-            }
-            return JSON.stringify(logObject);
+const CfNodejsLoggingSupportLogger = class CfNodejsLoggingSupportLogger extends Transport {
+    constructor(options) {
+        super(options);
+        this.name = 'CfNodejsLoggingSupportLogger';
+        this.level = options.level || 'info';
+        this.coreLogger = options.coreLogger;
+      }
+    
+    log(info) {
+        if (!!info[SPLAT]) {
+            this.coreLogger.logMessage.apply(this, [info.level, info.message, ...info[SPLAT]]);
+        } else {
+            this.coreLogger.logMessage(info.level, info.message);
         }
-    });
-    return winstonTransport;
+    }
 }
 
-exports.setCoreLogger = setCoreLogger;
-exports.getWinstonTransport = getWinstonTransport;
+exports.createTransport = function (options) {
+    return new CfNodejsLoggingSupportLogger(options);
+}

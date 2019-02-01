@@ -217,10 +217,8 @@ describe('Test index.js', function () {
         });
 
         it('Test winstonTransport: ', function () {
-            var obj = logger.winstonTransport;
+            var obj = logger.createWinstonTransport();
             assert.typeOf(obj, "object");
-            assert.typeOf(obj.timestamp, "function");
-            assert.typeOf(obj.formatter, "function");
         });
 
         it('Test setLogPattern: ' , function () {
