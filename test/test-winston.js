@@ -1,5 +1,7 @@
 const { SPLAT } = require('triple-beam');
 var rewire = require('rewire');
+var chai = require("chai");
+chai.should();
 
 
 describe('Test winston-transport.js', function () {
@@ -10,7 +12,7 @@ describe('Test winston-transport.js', function () {
         var catchedArgs;
 
         before(function () {
-            logger.__set__("logMessage", function() {
+            logger.__set__("effectiveLogger.logMessage", function() {
                 catchedArgs = Array.prototype.slice.call(arguments);
             });
 

@@ -197,7 +197,7 @@ req.setDynamicLoggingLevel("verbose");
 This logging tool can be used in conjunction with Winston. Logging via Winston transport is limited to custom logs. Network activity can not be tracked automatically. Example:
 ```js
 var express = require('express');
-var log = require('../../index.js');
+var log = require('cf-nodejs-logging-support');
 var winston = require('winston');
 
 var app = express();
