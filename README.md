@@ -10,6 +10,7 @@ For details on the concepts and log formats, please look at the sibling project 
 
 #### Version 2.0 introduced logging without Winston and changed custom fields to be parsed and reported as strings regardless of original type.
 #### Version 3.0 introduced dynamic log levels, sensitive data reduction and a redesigned field configuration system
+#### Version 4.0 changed winston transport api
 
 ## Features
 
