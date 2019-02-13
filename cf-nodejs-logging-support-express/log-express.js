@@ -10,7 +10,7 @@ var setCoreLogger = function (coreLogger) {
 
 var setConfig = function (config) {
     core.setConfig(config);
-}
+};
 
 // Set the minimum logging level. Messages with a lower level, will not be forwarded. (Levels: error, warn, info, verbose, debug, silly)
 var setLoggingLevel = function (level) {
@@ -80,12 +80,12 @@ var logNetwork = function (req, res, next) {
         core.handleConfigDefaults(configEntry, logObject, fallbacks);
     }
 
-    for (var key in fallbacks) {
-        logObject[key] = fallbacks[key](req, res, logObject);
+    for (var kFallback in fallbacks) {
+        logObject[kFallback] = fallbacks[kFallback](req, res, logObject);
     }
 
-    for (var key in selfReferences) {
-        logObject[key] = logObject[selfReferences[key]];
+    for (var kSelfReference in selfReferences) {
+        logObject[kSelfReference] = logObject[selfReferences[kSelfReference]];
     }
 
     // Replace all set fields, which are marked to be reduced, with a placeholder (defined in log-core.js)
@@ -133,12 +133,12 @@ var logNetwork = function (req, res, next) {
                 core.handleConfigDefaults(configEntry, logObject, fallbacks);
             }
 
-            for (var key in fallbacks) {
-                logObject[key] = fallbacks[key](req, res, logObject);
+            for (var kFallback in fallbacks) {
+                logObject[kFallback] = fallbacks[kFallback](req, res, logObject);
             }
 
-            for (var key in selfReferences) {
-                logObject[key] = logObject[selfReferences[key]];
+            for (var kSelfReference in selfReferences) {
+                logObject[kSelfReference] = logObject[selfReferences[kSelfReference]];
             }
 
             //override values with predefined values
@@ -167,11 +167,11 @@ var setLogPattern = function (pattern) {
 // Provides a context object, which allows message logging and uses correlationId from its parent request.
 var getCorrelationObject = function () {
     return core.getCorrelationObject();
-}
+};
 
 var overrideField = function (field, value) {
     return core.overrideField(field, value);
-}
+};
 
 exports.overrideField = overrideField;
 exports.setCoreLogger = setCoreLogger;

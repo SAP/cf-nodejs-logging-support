@@ -16,8 +16,8 @@ const CfNodejsLoggingSupportLogger = class CfNodejsLoggingSupportLogger extends 
             this.logMessage(info.level, info.message);
         }
     }
-}
+};
 
 exports.createTransport = function (options) {
     return new CfNodejsLoggingSupportLogger(options);
-}
+};

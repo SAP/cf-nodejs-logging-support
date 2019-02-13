@@ -4,7 +4,7 @@ var fs = require('fs');
 
 const levels = [
     "error", "warn", "info", "verbose", "debug", "silly"
-]
+];
 
 const emailRegex = /^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/g;
 
@@ -46,7 +46,7 @@ program
             console.log("Using private key from --key option.\n");
         } else {
             // Nice to have: KeyPair generation
-            console.log("Error: Generating keypairs on-the-fly is currently not supported by this script. Please provide a private key by using the --key or --keyfile option.")
+            console.log("Error: Generating keypairs on-the-fly is currently not supported by this script. Please provide a private key by using the --key or --keyfile option.");
             return;
         }
 
