@@ -12,7 +12,7 @@ var pub = redis.createClient();
 var sub = redis.createClient();
 
 // setup redis publisher and subscriber
-sub.subscribe('message', 'sync');
+sub.subscribe("message", "sync");
 pub.on("connect", redisConnectionHandler);
 sub.on("connect", redisConnectionHandler);
 pub.on("end", redisEndHandler);
@@ -29,23 +29,23 @@ app.use(express.json());
 // inserts the logger in the server network queue, so each time a https request is recieved, it is will get logged.
 app.use(log.logNetwork);
 
-app.use('/', express.static(__dirname + '/public'));
+app.use("/", express.static(__dirname + "/public"));
 
 // setup CF port
 var port = Number(process.env.VCAP_APP_PORT || 8080);
 app.listen(port, function () {
     //write a message using the logMessage method of the logger.
-    log.logMessage('info', 'listening on port: %d', port);
+    log.logMessage("info", "listening on port: %d", port);
 });
 
 // create a json object and send it as custom log with the given logger.
 var stats = {};
 stats.node_version = process.version;
-log.logMessage('info', 'Runtime statistics', stats);
+log.logMessage("info", "Runtime statistics", stats);
 
 
 // handling post messages
-app.post('/post_message', function (req, res) {
+app.post("/post_message", function (req, res) {
     var msg = {
         "name": req.body.name,
         "time": req.body.time,
@@ -53,10 +53,10 @@ app.post('/post_message', function (req, res) {
         "timestamp": (new Date()).getTime()
     };
 
-    req.logMessage('info', `received message from '${msg.name}': ${msg.message}`);
+    req.logMessage("info", `received message from '${msg.name}': ${msg.message}`);
 
     if (redisRunning) {
-        pub.publish('message', JSON.stringify(msg));
+        pub.publish("message", JSON.stringify(msg));
     } else {
         pushLocal(msg);
     }
@@ -64,7 +64,7 @@ app.post('/post_message', function (req, res) {
 });
 
 // handling post updates
-app.post('/post_update', function (req, res) {
+app.post("/post_update", function (req, res) {
     var timestamp = req.body.start;
     var lastSync = req.body.lastSync;
     sendCumulativeMessages(timestamp, lastSync, res);
@@ -138,17 +138,17 @@ function getCumulativeMessages(timestamp, clientSync) {
 }
 
 // handle redis error 
-function redisErrorHandler(err) {
+function redisErrorHandler() {
     if (redisRunning) {
-        log.logMessage('error', 'redis error occured!');
+        log.logMessage("error", "redis error occured!");
     }
     redisRunning = false;
 }
 
 // handle redis end 
-function redisEndHandler(err) {
+function redisEndHandler() {
     if (redisRunning) {
-        log.logMessage('info', 'redis disconnected!');
+        log.logMessage("info", "redis disconnected!");
     }
     redisRunning = false;
 }
@@ -156,17 +156,17 @@ function redisEndHandler(err) {
 // handle redis connect
 function redisConnectionHandler() {
     if (!redisRunning) {
-        log.logMessage('info', 'redis connected!');
+        log.logMessage("info", "redis connected!");
     }
     redisRunning = true;
-    sub.subscribe('message', 'sync');
+    sub.subscribe("message", "sync");
     synchronize();
 }
 
 // synchronizes messages after redis reconnect between server Instances
 function synchronize() {
     if (syncPointer != -1) {
-        log.logMessage('verbose', 'redis synchronization!');
+        log.logMessage("verbose", "redis synchronization!");
         var syncMessage = {};
         syncMessage.data = messages.splice(syncPointer, messages.length - syncPointer);
         setTimeout(function () {

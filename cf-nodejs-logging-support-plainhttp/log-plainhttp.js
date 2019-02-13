@@ -79,13 +79,11 @@ var logNetwork = function (req, res) {
 
     core.bindLogFunctions(req);
 
-    var start = Date.now();
-
-    res.on('finish', function () {
+    res.on("finish", function () {
         finishLog();
     });
 
-    res.on('header', function () {
+    res.on("header", function () {
         finishLog();
     });
 

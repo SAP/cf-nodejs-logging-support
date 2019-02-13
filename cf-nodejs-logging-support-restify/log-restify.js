@@ -87,7 +87,7 @@ var logNetwork = function (req, res, next) {
 
     core.bindLogFunctions(req);
 
-    res.on('finish', function () {
+    res.on("finish", function () {
 
 
         var postConfig = core.getPostLogConfig();
@@ -139,7 +139,7 @@ var logNetwork = function (req, res, next) {
 };
 
 // Logs message and custom fields
-var logMessage = function (args) {
+var logMessage = function () {
     core.logMessage.apply(this, arguments);
 };
 

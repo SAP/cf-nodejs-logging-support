@@ -1,7 +1,7 @@
-var util = require('util');
-var os = require('os');
-var uuid = require('uuid/v4');
-var jwt = require('jsonwebtoken');
+var util = require("util");
+var os = require("os");
+var uuid = require("uuid/v4");
+var jwt = require("jsonwebtoken");
 
 const envDynLogHeader = "DYN_LOG_HEADER";
 const envDynLogKey = "DYN_LOG_LEVEL_KEY";
@@ -12,12 +12,12 @@ const reductedPlaceholder = "redacted";
 const nsPerSec = 1e9;
 const logType = "log";
 const loggingLevels = {
-    'error': 0,
-    'warn': 1,
-    'info': 2,
-    'verbose': 3,
-    'debug': 4,
-    'silly': 5
+    "error": 0,
+    "warn": 1,
+    "info": 2,
+    "verbose": 3,
+    "debug": 4,
+    "silly": 5
 };
 
 var fixedValues = {};
@@ -32,6 +32,7 @@ var preLogConfig = [];
 var postLogConfig = [];
 
 var dynLogLevelHeader = dynLogLevelDefaultHeader;
+var dynLogLevelKey;
 
 // Initializes the core logger, including setup of environment var defined settings
 var init = function () {
@@ -43,7 +44,7 @@ var init = function () {
         dynLogLevelHeader = dynLogLevelDefaultHeader;
     }
 
-    // Read dyn log level key from environemt var.
+    // Read dyn log level key from environment var.
     dynLogLevelKey = process.env[envDynLogKey];
 };
 
@@ -134,7 +135,7 @@ var writeLogToConsole = function (logObject) {
             var rest = pattern.split(patternDivider);
             var value;
             //iterates over split custom pattern, where n%3=0 is text outside the marked fields and n%3=2 are the fields to be replaced (inside {{}}), n elem rest.
-            for (i = 0; i < (rest.length - 1) / 3; i++) {
+            for (var i = 0; i < (rest.length - 1) / 3; i++) {
                 output += rest[i * 3];
                 value = logObject[rest[2 + i * 3]];
                 if (value != null) {
@@ -149,7 +150,7 @@ var writeLogToConsole = function (logObject) {
             output += rest[rest.length - 1];
         }
     } else {
-        output = (undefined !== logObject && validObject(logObject)) ? JSON.stringify(logObject) : '';
+        output = (undefined !== logObject && validObject(logObject)) ? JSON.stringify(logObject) : "";
     }
 
     stdout.write(output + os.EOL);
@@ -188,8 +189,6 @@ var initLog = function () {
 
 var prepareInitDummy = function (coreConfig) {
     var obj = {};
-
-
     var fallbacks = [];
     var selfReferences = [];
     var configEntry;
@@ -236,9 +235,9 @@ var resolveNestedVariable = function (root, path) {
     var rootObj;
 
     // if root is a string => parse it to an object. Otherwise => use it directly as object.
-    if (typeof root === 'string') {
+    if (typeof root === "string") {
         rootObj = JSON.parse(root);
-    } else if (typeof root === 'object') {
+    } else if (typeof root === "object") {
         rootObj = root;
     } else {
         return null;
@@ -298,7 +297,6 @@ var setLogPattern = function (p) {
 var logMessage = function () {
     var args = Array.prototype.slice.call(arguments);
 
-    var dynamicLogLevel = this.dynamicLogLevel;
     var logObject;
     var level = args[0];
 
@@ -313,7 +311,7 @@ var logMessage = function () {
 
     args.shift();
 
-    if (typeof args[args.length - 1] === 'object') {
+    if (typeof args[args.length - 1] === "object") {
         if (validObject(args[args.length - 1])) {
             customFields = args[args.length - 1];
         }
@@ -338,7 +336,7 @@ var logMessage = function () {
         logObject.custom_fields = customFields.constructor == Array ? [] : {};
         for (var key in customFields) {
             if ((typeof customFields[key]) == "string") {
-                logObject.custom_fields[key] = customFields[key];              
+                logObject.custom_fields[key] = customFields[key];
             } else {
                 logObject.custom_fields[key] = JSON.stringify(customFields[key]);
             }

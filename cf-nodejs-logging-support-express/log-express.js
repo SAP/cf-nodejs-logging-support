@@ -1,8 +1,5 @@
 // Log network activity for express applications
-
-var uuid = require("uuid/v4");
 var core;
-var fixedValues = [];
 
 var setCoreLogger = function (coreLogger) {
     core = coreLogger;
@@ -94,11 +91,11 @@ var logNetwork = function (req, res, next) {
     req.logObject = logObject;
     core.bindLogFunctions(req);
 
-    res.on('finish', function () {
+    res.on("finish", function () {
         finishLog();
     });
 
-    res.on('header', function () {
+    res.on("header", function () {
         finishLog();
     });
 
