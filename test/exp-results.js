@@ -27,7 +27,7 @@ exports.getLogMessage = function () {
         "request_size_b": -1,
         "remote_host": "-",
         "remote_port": "-",
-        "remote_user": "-",
+        "remote_user": "test_user",
         "x_forwarded_for": "",
         "protocol": "HTTP",
         "remote_ip": "-",

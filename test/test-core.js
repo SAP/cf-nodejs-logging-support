@@ -1071,8 +1071,7 @@ describe('Test log-core', function () {
         });
 
         it("test getLogLevelFromName", function () {
-
-            res = getLogLevelFromName("error");
+            var res = getLogLevelFromName("error");
             res.should.equal(0);
             res = getLogLevelFromName("test123");
             assert.isNull(res);
@@ -1082,7 +1081,6 @@ describe('Test log-core', function () {
         });
 
         it("test verifyAndDecodeJWT", function () {
-
             var private_correct = fs.readFileSync("./test/jwtRS256_correct.key").toString('utf8');
             var private_wrong = fs.readFileSync("./test/jwtRS256_wrong.key").toString('utf8');
             var public_key = fs.readFileSync("./test/jwtRS256.key.pub").toString('utf8');

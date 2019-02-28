@@ -32,6 +32,7 @@ var preLogConfig = [];
 var postLogConfig = [];
 
 var dynLogLevelHeader = dynLogLevelDefaultHeader;
+var dynLogLevelKey = null;
 
 // Initializes the core logger, including setup of environment var defined settings
 var init = function () {

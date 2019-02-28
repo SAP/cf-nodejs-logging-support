@@ -71,6 +71,7 @@ app.post("/post_message", function (req, res, next) {
 
 // handling post updates
 app.post("/post_update", function (req, res, next) {
+    console.log(req);
     var timestamp = req.body.start;
     var lastSync = req.body.lastSync;
     sendCumulativeMessages(timestamp, lastSync, res);

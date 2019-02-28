@@ -46,6 +46,7 @@ log.logMessage('info', 'Runtime statistics', stats);
 
 // handling post messages
 app.post('/post_message', function (req, res) {
+    console.log(req);
     var msg = {
         "name": req.body.name,
         "time": req.body.time,

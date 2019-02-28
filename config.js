@@ -195,9 +195,10 @@ var config = [
         mandatory: true,
         envVarSwitch: "LOG_REMOTE_USER",
         source: {
-            type: "static",
-            value: "-"
-        }
+            type: "header",
+            name: "remote-user"
+        },
+        default: "-"
     }, {
         name: "direction",
         mandatory: true,
@@ -210,11 +211,13 @@ var config = [
         mandatory: true,
         envVarSwitch: "LOG_SENSITIVE_CONNECTION_DATA",
         source: {
-            type: "special"
+            type: "header",
+            name: "x-forwarded-for"
         },
-        fallback: (req, res, logObj) => {
+        default: "" 
+        /*fallback: (req, res, logObj) => {
             return req.headers['x-forwarded-for'] == null ? "" : req.headers['x-forwarded-for'];
-        }
+        }*/
     }, {
         name: "remote_ip",
         mandatory: false,
