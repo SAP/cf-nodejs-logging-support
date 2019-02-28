@@ -12,7 +12,7 @@ var pub = redis.createClient();
 var sub = redis.createClient();
 
 // setup redis publisher and subscriber
-sub.subscribe('message', 'sync');
+sub.subscribe("message", "sync");
 pub.on("connect", redisConnectionHandler);
 sub.on("connect", redisConnectionHandler);
 pub.on("end", redisEndHandler);
@@ -29,7 +29,7 @@ log.setLoggingLevel("info");
 // setup serving of static files
 app.get("/*", restify.plugins.serveStatic({
     directory: "./public",
-    default: 'index.html'
+    default: "index.html"
 }));
 
 // insert the logger as middleware to log each request.
@@ -42,14 +42,14 @@ app.use(restify.plugins.bodyParser({ mapParams: true }));
 var port = Number(process.env.VCAP_APP_PORT || 8080);
 app.listen(port, function () {
     //write a message using the logMessage method of the logger.
-    log.logMessage('info', 'listening on port: %d', port);
+    log.logMessage("info", "listening on port: %d", port);
 });
 
 
 // create a json object and send it as custom log with the given logger.
 var stats = {};
 stats.node_version = process.version;
-log.logMessage('info', 'Runtime statistics', stats);
+log.logMessage("info", "Runtime statistics", stats);
 
 // handling post messages
 app.post("/post_message", function (req, res, next) {
@@ -60,8 +60,10 @@ app.post("/post_message", function (req, res, next) {
         "timestamp": (new Date()).getTime()
     };
 
+    req.logMessage("info", `received message from '${msg.name}': ${msg.message}`);
+
     if (redisRunning) {
-        pub.publish('message', JSON.stringify(msg));
+        pub.publish("message", JSON.stringify(msg));
     } else {
         pushLocal(msg);
     }
@@ -148,7 +150,7 @@ function getCumulativeMessages(timestamp, clientSync) {
 // handle redis error 
 function redisErrorHandler(err) {
     if (redisRunning) {
-        log.logMessage('error', 'redis error occured!');
+        log.logMessage("error", "redis error occured!");
     }
     redisRunning = false;
 }
@@ -156,7 +158,7 @@ function redisErrorHandler(err) {
 // handle redis end 
 function redisEndHandler(err) {
     if (redisRunning) {
-        log.logMessage('info', 'redis disconnected!');
+        log.logMessage("info", "redis disconnected!");
     }
     redisRunning = false;
 }
@@ -164,10 +166,10 @@ function redisEndHandler(err) {
 // handle redis connect
 function redisConnectionHandler() {
     if (!redisRunning) {
-        log.logMessage('info', 'redis connected!');
+        log.logMessage("info", "redis connected!");
     }
     redisRunning = true;
-    sub.subscribe('message', 'sync');
+    sub.subscribe("message", "sync");
     synchronize();
 }
 
@@ -175,7 +177,7 @@ function redisConnectionHandler() {
 // synchronize messages after redis reconnect between server instances
 function synchronize() {
     if (syncPointer != -1) {
-        log.logMessage('verbose', 'redis synchronization!');
+        log.logMessage("verbose", "redis synchronization!");
         var syncMessage = {};
         syncMessage.data = messages.splice(syncPointer, messages.length - syncPointer);
         setTimeout(function () {

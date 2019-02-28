@@ -1,6 +1,6 @@
 {
   "name": "cf-nodejs-logging-support",
-  "version": "3.0.14",
+  "version": "4.0.0",
   "description": "Logging tool for Cloud Foundry",
   "keywords": [
     "logging",
@@ -26,7 +26,12 @@
   "devDependencies": {
     "chai": "^4.1.2",
     "codecov": "^3.1.0",
-    "eslint": "^5.12.1",
+    "eslint": "^5.13.0",
+    "eslint-config-standard": "^12.0.0",
+    "eslint-plugin-import": "^2.16.0",
+    "eslint-plugin-node": "^8.0.1",
+    "eslint-plugin-promise": "^4.0.1",
+    "eslint-plugin-standard": "^4.0.0",
     "import-fresh": "^2.0.0",
     "istanbul": "^0.4.4",
     "mocha": "^4.1.0",

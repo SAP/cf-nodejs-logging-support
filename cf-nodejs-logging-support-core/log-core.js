@@ -1,7 +1,7 @@
-var util = require('util');
-var os = require('os');
-var uuid = require('uuid/v4');
-var jwt = require('jsonwebtoken');
+var util = require("util");
+var os = require("os");
+var uuid = require("uuid/v4");
+var jwt = require("jsonwebtoken");
 
 const envDynLogHeader = "DYN_LOG_HEADER";
 const envDynLogKey = "DYN_LOG_LEVEL_KEY";
@@ -12,12 +12,12 @@ const reductedPlaceholder = "redacted";
 const nsPerSec = 1e9;
 const logType = "log";
 const loggingLevels = {
-    'error': 0,
-    'warn': 1,
-    'info': 2,
-    'verbose': 3,
-    'debug': 4,
-    'silly': 5
+    "error": 0,
+    "warn": 1,
+    "info": 2,
+    "verbose": 3,
+    "debug": 4,
+    "silly": 5
 };
 
 var fixedValues = {};
@@ -32,7 +32,11 @@ var preLogConfig = [];
 var postLogConfig = [];
 
 var dynLogLevelHeader = dynLogLevelDefaultHeader;
+<<<<<<< HEAD
 var dynLogLevelKey = null;
+=======
+var dynLogLevelKey;
+>>>>>>> 04c54fc8ee52e8c39e926b07bfdc30034a9d65bb
 
 // Initializes the core logger, including setup of environment var defined settings
 var init = function () {
@@ -44,13 +48,13 @@ var init = function () {
         dynLogLevelHeader = dynLogLevelDefaultHeader;
     }
 
-    // Read dyn log level key from environemt var.
+    // Read dyn log level key from environment var.
     dynLogLevelKey = process.env[envDynLogKey];
-}
+};
 
 var setConfig = function (config) {
     precompileConfig(config);
-}
+};
 
 var precompileConfig = function (config) {
     var coreConfig = [];
@@ -90,15 +94,15 @@ var precompileConfig = function (config) {
 
     var logObject = prepareInitDummy(coreConfig);
     initDummy = JSON.stringify(logObject);
-}
+};
 
 var getPreLogConfig = function () {
     return preLogConfig;
-}
+};
 
 var getPostLogConfig = function () {
     return postLogConfig;
-}
+};
 
 var handleConfigDefaults = function (configEntry, logObject, fallbacks) {
     if (configEntry.mandatory && logObject[configEntry.name] == null) {
@@ -108,7 +112,7 @@ var handleConfigDefaults = function (configEntry, logObject, fallbacks) {
             fallbacks[configEntry.name] = configEntry.fallback;
         }
     }
-}
+};
 
 // Replace all fields, which are marked to be reduced and do not equal to their default value, empty or "-", to reductedPlaceholder.
 var reduceFields = function (config, logObject) {
@@ -124,7 +128,7 @@ var reduceFields = function (config, logObject) {
             logObject[configEntry.name] = reductedPlaceholder;
         }
     }
-}
+};
 
 // Stringify and log given object to console. If a custom pattern is set, the referenced object fields are used to replace the references.
 var writeLogToConsole = function (logObject) {
@@ -135,7 +139,7 @@ var writeLogToConsole = function (logObject) {
             var rest = pattern.split(patternDivider);
             var value;
             //iterates over split custom pattern, where n%3=0 is text outside the marked fields and n%3=2 are the fields to be replaced (inside {{}}), n elem rest.
-            for (i = 0; i < (rest.length - 1) / 3; i++) {
+            for (var i = 0; i < (rest.length - 1) / 3; i++) {
                 output += rest[i * 3];
                 value = logObject[rest[2 + i * 3]];
                 if (value != null) {
@@ -150,11 +154,11 @@ var writeLogToConsole = function (logObject) {
             output += rest[rest.length - 1];
         }
     } else {
-        output = (undefined !== logObject && validObject(logObject)) ? JSON.stringify(logObject) : '';
+        output = (undefined !== logObject && validObject(logObject)) ? JSON.stringify(logObject) : "";
     }
 
     stdout.write(output + os.EOL);
-}
+};
 
 // Sets the minimum logging level. Messages with a lower level will not be forwarded. (Levels: error, warn, info, verbose, debug, silly)
 var setLoggingLevel = function (level) {
@@ -162,8 +166,9 @@ var setLoggingLevel = function (level) {
         logLevelInt = loggingLevels[level];
         return true;
     }
-    return false
-}
+    return false;
+};
+
 // Gets the minimum logging level. (Levels: error, warn, info, verbose, debug, silly)
 var getLoggingLevel = function () {
     for (var key in loggingLevels) {
@@ -188,8 +193,6 @@ var initLog = function () {
 
 var prepareInitDummy = function (coreConfig) {
     var obj = {};
-
-
     var fallbacks = [];
     var selfReferences = [];
     var configEntry;
@@ -213,12 +216,12 @@ var prepareInitDummy = function (coreConfig) {
         handleConfigDefaults(configEntry, obj, fallbacks);
     }
 
-    for (var key in fallbacks) {
-        obj[key] = fallbacks[key](obj);
+    for (var kFallback in fallbacks) {
+        obj[kFallback] = fallbacks[kFallback](obj);
     }
 
-    for (var key in selfReferences) {
-        obj[key] = obj[selfReferences[key]];
+    for (var kSelfReference in selfReferences) {
+        obj[kSelfReference] = obj[selfReferences[kSelfReference]];
     }
 
     reduceFields(coreConfig, obj);
@@ -236,9 +239,9 @@ var resolveNestedVariable = function (root, path) {
     var rootObj;
 
     // if root is a string => parse it to an object. Otherwise => use it directly as object.
-    if (typeof root === 'string') {
+    if (typeof root === "string") {
         rootObj = JSON.parse(root);
-    } else if (typeof root === 'object') {
+    } else if (typeof root === "object") {
         rootObj = root;
     } else {
         return null;
@@ -257,7 +260,7 @@ var resolveNestedVariable = function (root, path) {
 
     // return the resolved value, if path is empty.
     return value;
-}
+};
 
 var checkLoggingLevel = function (level, dynamicLogLevel) {
     var threshold;
@@ -268,7 +271,7 @@ var checkLoggingLevel = function (level, dynamicLogLevel) {
         threshold = logLevelInt; // use global log level
     }
     return (threshold >= loggingLevels[level]);
-}
+};
 
 // Writes the given log file to stdout
 var sendLog = function (logObject) {
@@ -298,13 +301,13 @@ var setLogPattern = function (p) {
 var logMessage = function () {
     var args = Array.prototype.slice.call(arguments);
 
-    var dynamicLogLevel = this.dynamicLogLevel;
-
+    var logObject;
     var level = args[0];
+
     if (!checkLoggingLevel(level, this.dynamicLogLevel)) {
         return false;
     } else {
-        var logObject = initLog();
+        logObject = initLog();
         logObject.level = level;
     }
 
@@ -312,7 +315,7 @@ var logMessage = function () {
 
     args.shift();
 
-    if (typeof args[args.length - 1] === 'object') {
+    if (typeof args[args.length - 1] === "object") {
         if (validObject(args[args.length - 1])) {
             customFields = args[args.length - 1];
         }
@@ -336,10 +339,10 @@ var logMessage = function () {
     if (customFields != null) {
         logObject.custom_fields = customFields.constructor == Array ? [] : {};
         for (var key in customFields) {
-            if (!((typeof customFields[key]) == "string")) {
-                logObject.custom_fields[key] = JSON.stringify(customFields[key]);
-            } else {
+            if ((typeof customFields[key]) == "string") {
                 logObject.custom_fields[key] = customFields[key];
+            } else {
+                logObject.custom_fields[key] = JSON.stringify(customFields[key]);
             }
         }
     }
@@ -369,7 +372,7 @@ var setCorrelationId = function (correlationId) {
         }
     }
     return false;
-}
+};
 
 var bindLogFunctions = function (req) {
     req.logMessage = logMessage;
@@ -377,7 +380,7 @@ var bindLogFunctions = function (req) {
     req.setCorrelationId = setCorrelationId;
     req.getCorrelationObject = getCorrelationObject;
     req.setDynamicLoggingLevel = setDynamicLoggingLevel;
-}
+};
 
 
 var validObject = function (obj) {
@@ -402,19 +405,19 @@ var getCorrelationObject = function () {
     }
     bindLogFunctions(newContext);
     return newContext;
-}
+};
 
 // Sets the dynamic log level for the request to the given level
 var setDynamicLoggingLevel = function (levelName) {
     var context = this;
     context.dynamicLogLevel = getLogLevelFromName(levelName);
-}
+};
 
 var writeStaticFields = function (logObject) {
     for (var key in fixedValues) {
         logObject[key] = fixedValues[key];
     }
-}
+};
 
 // overrides Values in ALL Network logs (will impact log parsing, so use with caution!), returns true if field is set.
 var overrideField = function (field, value) {
@@ -428,18 +431,18 @@ var overrideField = function (field, value) {
         }
     }
     return false;
-}
+};
 
 // Get the name of the dynamic log level header
 var getDynLogLevelHeaderName = function () {
     return dynLogLevelHeader;
-}
+};
 
 // Gets the log level number from a given level name
 var getLogLevelFromName = function (levelName) {
     if (levelName == null) return null;
     return (loggingLevels[levelName.toLowerCase()] != undefined) ? loggingLevels[levelName.toLowerCase()] : null;
-}
+};
 
 // Binds the Loglevel extracted from JWT token to the given req
 var bindDynLogLevel = function (token, req) {
@@ -449,8 +452,7 @@ var bindDynLogLevel = function (token, req) {
     if (payload) {
         req.dynamicLogLevel = getLogLevelFromName(payload.level);
     }
-
-}
+};
 
 // Verifies the given JWT and returns its payload.
 var verifyAndDecodeJWT = function (token, key) {
@@ -466,7 +468,7 @@ var verifyAndDecodeJWT = function (token, key) {
     } catch (err) {
         return null; // token expired or invalid
     }
-}
+};
 
 
 exports.checkLoggingLevel = checkLoggingLevel;

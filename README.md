@@ -1,6 +1,6 @@
 # Node.js Logging Support for Cloud Foundry   
 
-[![Version npm](https://img.shields.io/npm/v/cf-nodejs-logging-support.svg?style=flat-square)](https://www.npmjs.com/package/cf-nodejs-logging-support)[![npm Downloads](https://img.shields.io/npm/dm/cf-nodejs-logging-support.svg?style=flat-square)](https://www.npmjs.com/package/cf-nodejs-logging-support)[![Build Status](https://img.shields.io/travis/SAP/cf-nodejs-logging-support/master.svg?style=flat-square)](https://travis-ci.org/SAP/cf-nodejs-logging-support)[![Code Coverage](https://img.shields.io/codecov/c/github/SAP/cf-nodejs-logging-support.svg?style=flat-square)](https://codecov.io/gh/SAP/cf-nodejs-logging-support)
+[![Version npm](https://img.shields.io/npm/v/cf-nodejs-logging-support.svg?style=flat-square)](https://www.npmjs.com/package/cf-nodejs-logging-support)[![npm Downloads](https://img.shields.io/npm/dm/cf-nodejs-logging-support.svg?style=flat-square)](https://www.npmjs.com/package/cf-nodejs-logging-support)[![Build Status](https://img.shields.io/travis/SAP/cf-nodejs-logging-support/v4.0.0.svg?style=flat-square)](https://travis-ci.org/SAP/cf-nodejs-logging-support)[![Code Coverage](https://img.shields.io/codecov/c/github/SAP/cf-nodejs-logging-support.svg?style=flat-square)](https://codecov.io/gh/SAP/cf-nodejs-logging-support)
 
 ## Summary
 
@@ -10,6 +10,7 @@ For details on the concepts and log formats, please look at the sibling project 
 
 #### Version 2.0 introduced logging without Winston and changed custom fields to be parsed and reported as strings regardless of original type.
 #### Version 3.0 introduced dynamic log levels, sensitive data reduction and a redesigned field configuration system
+#### Version 4.0 changed winston transport api
 
 ## Features
 
@@ -197,7 +198,7 @@ req.setDynamicLoggingLevel("verbose");
 This logging tool can be used in conjunction with Winston. Logging via Winston transport is limited to custom logs. Network activity can not be tracked automatically. Example:
 ```js
 var express = require('express');
-var log = require('../../index.js');
+var log = require('cf-nodejs-logging-support');
 var winston = require('winston');
 
 var app = express();

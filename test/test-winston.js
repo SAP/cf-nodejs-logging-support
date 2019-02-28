@@ -1,16 +1,18 @@
 const { SPLAT } = require('triple-beam');
 var rewire = require('rewire');
+var chai = require("chai");
+chai.should();
 
 
 describe('Test winston-transport.js', function () {
-    describe('Test functionality', function () {
+    describe('Test parameter forwarding', function () {
 
         var transport;
         var logger = rewire("../index.js");
         var catchedArgs;
 
         before(function () {
-            logger.__set__("logMessage", function() {
+            logger.__set__("effectiveLogger.logMessage", function() {
                 catchedArgs = Array.prototype.slice.call(arguments);
             });
 
@@ -48,6 +50,26 @@ describe('Test winston-transport.js', function () {
             catchedArgs[1].should.equal("test %d %s");
             catchedArgs[2].should.equal(42);
             catchedArgs[3].should.equal("abc");
+        });
+    });
+
+    describe('Test option initialization', function () {
+
+        var logger = require("../index.js");
+
+        it('Test default initialization', function () {
+            var transport = logger.createWinstonTransport();
+            transport.level.should.equal("info");
+        });
+
+        it('Test custom initialization', function () {
+            var transport = logger.createWinstonTransport({level: "error"});
+            transport.level.should.equal("error");
+        });
+
+        it('Test incomplete initialization', function () {
+            var transport = logger.createWinstonTransport({});
+            transport.level.should.equal("info");
         });
     });
 });
