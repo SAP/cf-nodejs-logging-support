@@ -49,6 +49,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
             };
             xhttp.open("POST", "post_message", true);
+            if(name) {
+                xhttp.setRequestHeader("remote-user",name);
+            }
             xhttp.setRequestHeader("Content-type", "application/json");
 
             var data = {};

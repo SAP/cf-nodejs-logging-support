@@ -60,7 +60,8 @@ describe('Test Complete', function () {
         }
         req = httpMock.createRequest({
             headers: {
-                "X-CorrelationID": "uuid-Dummy"
+                "X-CorrelationID": "uuid-Dummy",
+                "remote-user": "test_user"
             }
         });
         res = httpMock.createResponse();

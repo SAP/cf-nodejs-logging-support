@@ -44,7 +44,12 @@ stats.node_version = process.version;
 log.logMessage("info", "Runtime statistics", stats);
 
 // handling post messages
+<<<<<<< HEAD
+app.post('/post_message', function (req, res) {
+    console.log(req);
+=======
 app.post("/post_message", function (req, res) {
+>>>>>>> 04c54fc8ee52e8c39e926b07bfdc30034a9d65bb
     var msg = {
         "name": req.body.name,
         "time": req.body.time,

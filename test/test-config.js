@@ -8,7 +8,7 @@ chai.should();
 describe('Test log-express', function () {
 
     var core = null;
-    var expressLogger;
+    var httpLogger;
     beforeEach(function () {
         // Set env vars to enable logging of sensitive data
         process.env.LOG_SENSITIVE_CONNECTION_DATA = true;
@@ -16,9 +16,9 @@ describe('Test log-express', function () {
         process.env.LOG_REFERER = true;
 
         core = importFresh("../cf-nodejs-logging-support-core/log-core.js");
-        expressLogger = importFresh("../cf-nodejs-logging-support-express/log-express.js");
-        expressLogger.setCoreLogger(core);
-        expressLogger.setConfig(importFresh("../config.js").config);
+        httpLogger = importFresh("../cf-nodejs-logging-support-plainhttp/log-plainhttp.js");
+        httpLogger.setCoreLogger(core);
+        httpLogger.setConfig(importFresh("../config.js").config);
     });
 
     describe('Test logNetwork', function () {
@@ -63,7 +63,7 @@ describe('Test log-express', function () {
                 count++;
             };
 
-            expressLogger.logNetwork(req, res, next);
+            httpLogger.logNetwork(req, res, next);
             fireLog();
             fireLog();
 
@@ -73,16 +73,25 @@ describe('Test log-express', function () {
         it('Test x_forwarded_for', function () {
             req.headers = {};
             req.headers['x-forwarded-for'] = "testingHeader";
-            expressLogger.logNetwork(req, res, next);
+            httpLogger.logNetwork(req, res, next);
             fireLog();
 
             logObject.x_forwarded_for.should.equal("testingHeader");
         });
 
+        it('Test remote_user', function () {
+            req.headers = {};
+            req.headers['remote-user'] = "testingName";
+            httpLogger.logNetwork(req, res, next);
+            fireLog();
+
+            logObject.remote_user.should.equal("testingName");
+        });
+
         it('Test connection data propagation', function() {
             req.connection.remoteAddress  = "1.2.3.4";
             req.connection.remotePort = 8080;
-            expressLogger.logNetwork(req, res, next);
+            httpLogger.logNetwork(req, res, next);
             fireLog();
             logObject.remote_host.should.equal("1.2.3.4");
             logObject.remote_port.should.equal("8080");
@@ -92,14 +101,14 @@ describe('Test log-express', function () {
         
         it('Test HTTP header propagation', function () {
             req.httpVersion = "1.2";
-            expressLogger.logNetwork(req, res, next);
+            httpLogger.logNetwork(req, res, next);
             fireLog();
             logObject.protocol.should.equal("HTTP/1.2");
 
         });
 
         it('Test default values', function () {
-            expressLogger.logNetwork(req, res, next);
+            httpLogger.logNetwork(req, res, next);
             fireLog();
 
             logObject.request_id.should.equal("-");
@@ -131,7 +140,7 @@ describe('Test log-express', function () {
         })
 
         it("Testing overrideField method propagation", function () {
-            assert.isTrue(expressLogger.overrideField("msg", "test"));
+            assert.isTrue(httpLogger.overrideField("msg", "test"));
             testObject["msg"].should.equal("test");
         });
 
@@ -147,11 +156,11 @@ describe('Test log-express', function () {
         });
 
         it("Test Logging level", function () {
-            expressLogger.setLoggingLevel("error");
+            httpLogger.setLoggingLevel("error");
             level.should.equal("error");
-            expressLogger.setLoggingLevel("log");
+            httpLogger.setLoggingLevel("log");
             level.should.equal("log");
-            expressLogger.setLoggingLevel("test");
+            httpLogger.setLoggingLevel("test");
             level.should.equal("test");
         });
     });
