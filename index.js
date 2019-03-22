@@ -39,6 +39,8 @@ exports.logMessage = function (args) {
     effectiveLogger.logMessage.apply(this, arguments);
 };
 
+coreLogger.bindConvenienceMethods(exports);
+
 exports.createWinstonTransport = function (options) {
     if (!options) {
         options = {

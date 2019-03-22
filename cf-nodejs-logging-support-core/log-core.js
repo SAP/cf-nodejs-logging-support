@@ -10,6 +10,7 @@ const dynLogLevelDefaultHeader = "SAP-LOG-LEVEL";
 const reductedPlaceholder = "redacted";
 
 const nsPerSec = 1e9;
+
 const logType = "log";
 const loggingLevels = {
     "error": 0,
@@ -19,10 +20,19 @@ const loggingLevels = {
     "debug": 4,
     "silly": 5
 };
+var logLevelInt = 2;
+var convinientLogFunctions = [];
+for (var key in loggingLevels) {
+    convinientLogFunctions[key] = function (bKey) {
+        return function () {
+            var args = [bKey, ...arguments];
+            logMessage.apply(this, args);
+        }
+    }(key);
+}
 
 var fixedValues = {};
 var initDummy = "{}";
-var logLevelInt = 2;
 var pattern = null;
 var stdout = process.stdout;
 var patternDivider = /((?:\{\{)([^\}\{]+)(?:\}\}))/g;
@@ -370,14 +380,49 @@ var setCorrelationId = function (correlationId) {
     return false;
 };
 
-var bindLogFunctions = function (req) {
-    req.logMessage = logMessage;
-    req.getCorrelationId = getCorrelationId;
-    req.setCorrelationId = setCorrelationId;
-    req.getCorrelationObject = getCorrelationObject;
-    req.setDynamicLoggingLevel = setDynamicLoggingLevel;
+var bindLogFunctions = function (logObj) {
+    logObj.logMessage = logMessage;
+    logObj.getCorrelationId = getCorrelationId;
+    logObj.setCorrelationId = setCorrelationId;
+    logObj.setDynamicLoggingLevel = setDynamicLoggingLevel;
 };
 
+var bindLogFunctionsToReq = function (req) {
+    req.getCorrelationObject = getCorrelationObject;
+    bindLogFunctions(req);
+    generateLogger(req);
+}
+
+var generateLogger = function (req) {
+    req.logger = {};
+    req.logger.logObject = req.logObject;
+    bindLogFunctions(req.logger);
+    bindConvenienceMethods(req.logger);
+}
+
+var bindLogFunctionsToCorrelationObj = function (logObj) {
+    bindConvenienceMethods(logObj);
+    bindLogFunctions(logObj);
+}
+
+var bindConvenienceMethods = function (logObj) {
+    for (var key in convinientLogFunctions) {
+        logObj[key] = convinientLogFunctions[key];
+    }
+}
+
+var getCorrelationObject = function () {
+    var context = this;
+    if (context.logObject != null && context.logger != null) {
+        return context.logger;
+    } else {
+        var newContext = {};
+        newContext.logObject = {};
+        newContext.logObject.correlation_id = uuid();
+        bindLogFunctionsToCorrelationObj(newContext);
+        return newContext;
+    }
+};
 
 var validObject = function (obj) {
     if (obj === null || obj === undefined) {
@@ -388,19 +433,6 @@ var validObject = function (obj) {
         return false;
     }
     return true;
-};
-
-var getCorrelationObject = function () {
-    var context = this;
-    var newContext = {};
-    newContext.logObject = {};
-    if (context.logObject != null) {
-        newContext.logObject.correlation_id = context.logObject.correlation_id;
-    } else {
-        newContext.logObject.correlation_id = uuid();
-    }
-    bindLogFunctions(newContext);
-    return newContext;
 };
 
 // Sets the dynamic log level for the request to the given level
@@ -479,7 +511,7 @@ exports.sendLog = sendLog;
 exports.logMessage = logMessage;
 exports.validObject = validObject;
 exports.setLogPattern = setLogPattern;
-exports.bindLogFunctions = bindLogFunctions;
+exports.bindLogFunctionsToReq = bindLogFunctionsToReq;
 exports.getCorrelationObject = getCorrelationObject;
 exports.setConfig = setConfig;
 exports.getPostLogConfig = getPostLogConfig;
@@ -487,3 +519,4 @@ exports.getPreLogConfig = getPreLogConfig;
 exports.handleConfigDefaults = handleConfigDefaults;
 exports.getDynLogLevelHeaderName = getDynLogLevelHeaderName;
 exports.bindDynLogLevel = bindDynLogLevel;
+exports.bindConvenienceMethods = bindConvenienceMethods;

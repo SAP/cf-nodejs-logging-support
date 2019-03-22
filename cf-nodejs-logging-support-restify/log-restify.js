@@ -85,7 +85,7 @@ var logNetwork = function (req, res, next) {
 
     req.logObject = logObject;
 
-    core.bindLogFunctions(req);
+    core.bindLogFunctionsToReq(req);
 
     res.on("finish", function () {
 

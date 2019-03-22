@@ -89,7 +89,7 @@ var logNetwork = function (req, res, next) {
     core.reduceFields(preConfig, logObject);
 
     req.logObject = logObject;
-    core.bindLogFunctions(req);
+    core.bindLogFunctionsToReq(req);
 
     res.on("finish", function () {
         finishLog();

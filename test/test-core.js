@@ -597,10 +597,20 @@ describe('Test log-core', function () {
         var logObject = null;
         var getCorrelationObject;
         var uuid;
+        var oldLogMessage;
+        var level;
+        var levels;
 
         before(function () {
             core.setConfig(importFresh("../config.js").config);
             getCorrelationObject = core.__get__("getCorrelationObject");
+            oldLogMessage = core.__get__("logMessage");
+            levels = core.__get__("loggingLevels");
+            core.__set__("logMessage",function() {
+                console.log(arguments);
+                level = arguments[0];
+                oldLogMessage(arguments);
+            })
             uuid = require('uuid/v4');
         });
 
@@ -613,18 +623,26 @@ describe('Test log-core', function () {
             obj.getCorrelationId().should.not.equal(correlation_id);
         });
 
-        it('Test correct correlation to old object', function () {
-            var old = {
-                logObject: {
-                    correlation_id: uuid()
-                }
-            };
-            old.getCorrelationObject = getCorrelationObject;
-            var obj = old.getCorrelationObject(old);
-            obj.logObject.correlation_id.should.be.a("string");
-            obj.getCorrelationId().should.equal(old.logObject.correlation_id);
-            obj.setCorrelationId(uuid());
-            obj.getCorrelationId().should.not.equal(old.logObject.correlation_id);
+        it('Test correct correlation to req object', function () {
+            var req = {};
+            req.logObject = {};
+            core.bindLogFunctionsToReq(req);
+            req.setCorrelationId(uuid());
+            var obj1 = req.getCorrelationObject();
+            var obj2 = req.getCorrelationObject();
+            req.getCorrelationId().should.equal(obj1.getCorrelationId());
+            obj2.setCorrelationId(uuid());
+            obj2.getCorrelationId().should.equal(obj1.getCorrelationId());
+            
+            obj2.getCorrelationId().should.equal(req.getCorrelationId());
+        });
+
+        it('test convenience Methods', function() {
+            var obj = getCorrelationObject();
+            for(var lvl in levels) {
+                obj[lvl]("test");
+                level.should.equal(lvl);
+            }
         });
 
 
@@ -1011,7 +1029,7 @@ describe('Test log-core', function () {
 
         beforeEach(function () {
             req = {};
-            core.bindLogFunctions(req);
+            core.bindLogFunctionsToReq(req);
         });
 
         it("test setDynamicLogLevel", function () {
