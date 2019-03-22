@@ -43,7 +43,6 @@ var stats = {};
 stats.node_version = process.version;
 log.logMessage("info", "Runtime statistics", stats);
 
-
 // handling post messages
 app.post("/post_message", function (req, res) {
     var msg = {

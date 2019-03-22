@@ -129,8 +129,8 @@ var reduceFields = function (config, logObject) {
 // Stringify and log given object to console. If a custom pattern is set, the referenced object fields are used to replace the references.
 var writeLogToConsole = function (logObject) {
     var output = "";
-    if (null != pattern) {
-        if (undefined !== logObject && logObject != null) {
+    if (pattern != null) {
+        if (logObject !== undefined && logObject != null) {
             output = "";
             var rest = pattern.split(patternDivider);
             var value;
@@ -150,7 +150,7 @@ var writeLogToConsole = function (logObject) {
             output += rest[rest.length - 1];
         }
     } else {
-        output = (undefined !== logObject && validObject(logObject)) ? JSON.stringify(logObject) : "";
+        output = (logObject !== undefined && validObject(logObject)) ? JSON.stringify(logObject) : "";
     }
 
     stdout.write(output + os.EOL);
