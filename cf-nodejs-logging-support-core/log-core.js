@@ -412,9 +412,8 @@ var bindConvenienceMethods = function (logObj) {
 }
 
 var getCorrelationObject = function () {
-    var context = this;
-    if (context.logObject != null && context.logger != null) {
-        return context.logger;
+    if (this.logObject != null && this.logger != null) {
+        return this.logger;
     } else {
         var newContext = {};
         newContext.logObject = {};
