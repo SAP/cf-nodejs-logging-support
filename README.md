@@ -9,7 +9,7 @@ This is a collection of support libraries for node.js applications running on Cl
 For details on the concepts and log formats, please look at the sibling project for [java logging support](https://github.com/SAP/cf-java-logging-support).
 
 #### Version 2.0 introduced logging without Winston and changed custom fields to be parsed and reported as strings regardless of original type.
-#### Version 3.0 introduced dynamic log levels, sensitive data reduction and a redesigned field configuration system
+#### Version 3.0 introduced dynamic log level thresholds, sensitive data reduction and a redesigned field configuration system
 #### Version 4.0 changed winston transport api
 
 ## Features
@@ -17,7 +17,7 @@ For details on the concepts and log formats, please look at the sibling project 
   * Network logging (http requests) for CloudFoundry
   * Custom message logging
   * Logging levels
-  * Dynamic logging level (per request)
+  * Dynamic logging level threshold (per request)
   * Extendable field configuration
   * Sensitive data reduction
   * Can be bound to [Winston](https://github.com/winstonjs/winston) as transport 
@@ -147,16 +147,16 @@ In order to activate normal logging for all or some of these fields, you have to
 
 This behavior matches with the corresponding mechanism in the [CF Java Logging Support](https://github.com/SAP/cf-java-logging-support/wiki/Overview#logging-sensitive-user-data) library.
 
-### Dynamic log levels
-Sometimes it is useful to change the logging level for a specific request. This can be achieved by dynamic log levels set by a special header field or directly inside the corresponding request handler. 
+### Dynamic logging level threshold
+Sometimes it is useful to change the logging level threshold for a specific request. This can be achieved using a special header field or setting directly within the corresponding request handler. Changing the logging level threshold only affects the presence of logs but not their individual logging levels.
 
-#### Change log level via header field
-You can change the log level for a specific request by providing a JSON Web Token ([JWT](https://de.wikipedia.org/wiki/JSON_Web_Token)) via the request header. This way it is not necessary to redeploy your app for every log level change.
+#### Change logging level threshold via header field
+You can change the logging level threshold for a specific request by providing a JSON Web Token ([JWT](https://de.wikipedia.org/wiki/JSON_Web_Token)) via the request header. This way it is not necessary to redeploy your app for every logging level change.
 
 ##### 1 Creating a JWT
-JWTs are signed claims, which consists of a header, a payload and a signature. You can create JWTs by using the [TokenCreator](https://github.com/SAP/cf-nodejs-logging-support/tree/master/tools/token-creator) from the tools folder.
+JWTs are signed claims, which consist of a header, a payload and a signature. You can create JWTs by using the [TokenCreator](https://github.com/SAP/cf-nodejs-logging-support/tree/master/tools/token-creator) from the tools folder.
 
-Basically, JWTs are signed with RSA or HMAC signing algorithms. But we decided to support RDA algorithms (RS256, RS384 and RS512) only. In contrast to HMAC algorithms (HS256, HS384 and HS512), RSA algorithms are asymmetric and therefore require key pairs (public and private key).
+Basically, JWTs are signed using RSA or HMAC signing algorithms. But we decided to support RSA algorithms (RS256, RS384 and RS512) only. In contrast to HMAC algorithms (HS256, HS384 and HS512), RSA algorithms are asymmetric and therefore require key pairs (public and private key).
 
 The tool mentioned above takes a log level, creates a key pair and signs the resulting JWT with the private key. The payload of a JWT looks like this:
 ```
@@ -179,16 +179,16 @@ DYN_LOG_LEVEL_KEY: <your public key>
 Redeploy your app after setting up the environment variable. 
 
 ##### 3 Attaching JWTs to requests
-Provide the created JWTs via a header field named 'SAP-LOG-LEVEL'. The logging level will be set to the provided level for the request (and also corresponding custom log messages). 
+Provide the created JWTs via a header field named 'SAP-LOG-LEVEL'. The logging level threshold will be set to the provided level for the request (and also corresponding custom log messages). 
 
-Note: If the provided JWT cannot be verified, is expired or contains an invalid logging level, the library ignores it and uses the global logging level.
+Note: If the provided JWT cannot be verified, is expired or contains an invalid logging level, the library ignores it and uses the global logging level threshold.
 
-If you want to use another header name for the JWT, you can specify it via an enviroment variable:
+If you want to use another header name for the JWT, you can specify it using an enviroment variable:
 ```
 DYN_LOG_HEADER: MY-HEADER-FIELD
 ```
 
-#### Change log level within request handler
+#### Change logging level threshold within request handlers
 You can also change the log level for all requests of a specific request handler by calling:
 ```js
 req.setDynamicLoggingLevel("verbose");
