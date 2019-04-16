@@ -729,13 +729,13 @@ describe('Test log-core', function () {
             }));
         });
 
-        it("Test custom fields log output (array)", function () {
+        it("Test custom fields log output (convert array to object)", function () {
             log("info", "Test", [
                 1, "123", { "field": "values" }
             ]);
 
             logObject.msg.should.equal('Test');
-            JSON.stringify(logObject.custom_fields).should.equal('["1","123","{\\"field\\":\\"values\\"}"]');
+            JSON.stringify(logObject.custom_fields).should.equal('{"0":"1","1":"123","2":"{\\"field\\":\\"values\\"}"}');
         });
 
         it("Test custom fields log type consistency (objects)", function () {

@@ -343,7 +343,7 @@ var logMessage = function () {
     logObject.type = logType;
 
     if (customFields != null) {
-        logObject.custom_fields = customFields.constructor == Array ? [] : {};
+        logObject.custom_fields = {};
         for (var key in customFields) {
             if ((typeof customFields[key]) == "string") {
                 logObject.custom_fields[key] = customFields[key];
@@ -450,7 +450,7 @@ var writeStaticFields = function (logObject) {
 var overrideField = function (field, value) {
     if (field != null && typeof field == "string") {
         if (value == undefined || value == null) {
-            fixedValues[field] = null;
+            fixedValues[field] = undefined;
             return true;
         } else {
             fixedValues[field] = value;

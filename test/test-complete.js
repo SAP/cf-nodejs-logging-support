@@ -42,7 +42,7 @@ describe('Test Complete', function () {
     process.stdout.write = process.stdout.write.override(
         function (obj) {
             store = obj;
-            this.superFunction(obj);
+            //this.superFunction(obj);
         }
     );
     before(function () {
@@ -69,7 +69,6 @@ describe('Test Complete', function () {
         log.overrideNetworkField("msg","testmessage");
         log.logNetwork(req, res, () => {});
         res.end("ok");
-        console.log(store);
         assert.deepEqual(JSON.parse(store),results.getLogMessage());
     });
 });

@@ -44,14 +44,14 @@ app.use(log.logNetwork);
 
 app.get('/', function (req, res) {
     // Context bound custom message
-    req.logMessage("info", "Hello World will be sent");
+    req.logger.info("Hello World will be sent");
     
     res.send('Hello World');
 });
 app.listen(3000);
 
 // Formatted log message free of request context
-log.logMessage("info", "Server is listening on port %d", 3000);
+log.info("Server is listening on port %d", 3000);
 ```
 
 ### Other Server Libraries
@@ -83,14 +83,14 @@ const server = http.createServer((req, res) => {
     log.logNetwork(req, res);
     
     // Context bound custom message
-    req.logMessage("info", "request bound information:", {
+    req.logger.info("request bound information:", {
         "some": "info"
     });
     res.end('ok');
 });
 server.listen(3000);
 // Formatted log message free of request context
-log.logMessage("info", "Server is listening on port %d", 3000);
+log.info("Server is listening on port %d", 3000);
 ```
 
 ### Custom Messages
@@ -132,6 +132,24 @@ logMessage("info", "Test data %j", {"field" :"value"}, {});
 // ... "msg":"Test data {\"field\": \"value\"}" ...
 ```
 
+### Convenience Methods
+
+Instead of using logMessage(...), you could also use:
+
+| Standard                                       | Convenient                        |
+|------------------------------------------------|-----------------------------------|
+| ```log.logMessage("info",...)```               | ```log.info(...)```               |
+| ```req.logMessage("info",...)```               | ```req.logger.info(...)```        |
+| ```correlationObject.logMessage("info",...)``` | ```correlationObject.info(...)``` |
+
+The convenience methods are currently only available for the common node.js logging levels:
+- error
+- warn
+- info
+- verbose
+- debug
+- silly
+
 ### Sensitive data redaction
 Version 3.0.0 and above implements a sensitive data redaction system, which deactivates the logging of sensitive fields. The field will contain 'redacted' instead of the original content.
 
@@ -144,6 +162,7 @@ In order to activate normal logging for all or some of these fields, you have to
 | ```LOG_SENSITIVE_CONNECTION_DATA: true``` | activates the fields remote_ip, remote_host, remote_port, x_forwarded_for |
 | ```LOG_REMOTE_USER: true```               | activates the field remote_user                                           |
 | ```LOG_REFERER: true```                   | activates the field referer                                               |
+
 
 This behavior matches with the corresponding mechanism in the [CF Java Logging Support](https://github.com/SAP/cf-java-logging-support/wiki/Overview#logging-sensitive-user-data) library.
 
@@ -266,7 +285,13 @@ Possibility to tailor logs to your needs, you can for example change the msg fie
 ```js
 log.overrideNetworkField("msg", YOUR_CUSTOM_MSG);
 ```
-This will replace the value of the previously empty msg field for network logs with YOUR_CUSTOM_MSG.
+This will replace the value of the previously not existing msg field for network logs with YOUR_CUSTOM_MSG.
+If the overridden field is already existing, it will be overridden by YOUR_CUSTOM_MSG for ALL subsequent network logs, until you 
+remove the override with:
+```js
+log.overrideNetworkField("msg", null);
+```
+If you use this override feature in conjunction with a log parser, make sure you will not violate any parsing rules.
 
 
 ## Sample Apps
