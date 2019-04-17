@@ -1,4 +1,4 @@
-# cf-nodejs-shoutboard-express
+# cf-nodejs-shoutboard
 This app demonstrates the logging functionality by providing an online shoutbox, which synchronizes messages between clients. There is an express and a restify implementation available.
 
 ## Installation on CloudFoundry
