@@ -607,7 +607,6 @@ describe('Test log-core', function () {
             oldLogMessage = core.__get__("logMessage");
             levels = core.__get__("loggingLevels");
             core.__set__("logMessage",function() {
-                console.log(arguments);
                 level = arguments[0];
                 oldLogMessage(arguments);
             })

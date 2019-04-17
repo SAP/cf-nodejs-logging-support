@@ -415,13 +415,17 @@ var getCorrelationObject = function () {
     if (this.logObject != null && this.logger != null) {
         return this.logger;
     } else {
-        var newContext = {};
-        newContext.logObject = {};
-        newContext.logObject.correlation_id = uuid();
-        bindLogFunctionsToCorrelationObj(newContext);
-        return newContext;
+        return createCorrelationObject();
     }
 };
+
+var createCorrelationObject = function () {
+    var newContext = {};
+    newContext.logObject = {};
+    newContext.logObject.correlation_id = uuid();
+    bindLogFunctionsToCorrelationObj(newContext);
+    return newContext;
+}
 
 var validObject = function (obj) {
     if (obj === null || obj === undefined) {
@@ -511,7 +515,8 @@ exports.logMessage = logMessage;
 exports.validObject = validObject;
 exports.setLogPattern = setLogPattern;
 exports.bindLogFunctionsToReq = bindLogFunctionsToReq;
-exports.getCorrelationObject = getCorrelationObject;
+exports.getCorrelationObject = util.deprecate(getCorrelationObject, "the function getCorrelationObject is deprecated. use log.createCorrelationObject instead.");
+exports.createCorrelationObject = createCorrelationObject;
 exports.setConfig = setConfig;
 exports.getPostLogConfig = getPostLogConfig;
 exports.getPreLogConfig = getPreLogConfig;

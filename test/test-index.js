@@ -161,6 +161,11 @@ describe('Test index.js', function () {
             logger.getCorrelationObject().test.should.equal(obj.test);
         });
 
+        it('Test createCorrelationObject: ', function () {
+            logger.createCorrelationObject().logObject.correlation_id.should.not.equal(null);
+            logger.createCorrelationObject().logObject.correlation_id.should.not.equal(logger.createCorrelationObject().logObject.correlation_id);
+        });
+
         it('Test logMessage: ', function () {
             var message = "testLevel";
             logger.logMessage(message);
