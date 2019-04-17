@@ -11,6 +11,7 @@ For details on the concepts and log formats, please look at the sibling project 
 #### Version 2.0 introduced logging without Winston and changed custom fields to be parsed and reported as strings regardless of original type.
 #### Version 3.0 introduced dynamic log level thresholds, sensitive data reduction and a redesigned field configuration system
 #### Version 4.0 changed winston transport api
+#### Version 5.0 introduced convenient logging methods
 
 ## Features
 
@@ -56,7 +57,7 @@ log.info("Server is listening on port %d", 3000);
 
 ### Other Server Libraries
 
-The logging library defaults to express middleware behaviour, but it can be forced to work with other Server libraries as well:
+The logging library defaults to express middleware behaviour, but it can be forced to work with other server libraries as well:
 #### With restify:
 ```js
 var restify = require('restify');
@@ -93,62 +94,101 @@ server.listen(3000);
 log.info("Server is listening on port %d", 3000);
 ```
 
-### Custom Messages
+### Request Logs
 
-Use the logMessage(...) function to log custom messages with a given logging level. It is also possible to use the standard format placeholders equivalent to the [util.format](https://nodejs.org/api/util.html#util_util_format_format) method.
-
-Custom messages may be called on two objects:
-- If you want to keep track of a request with custom messages, you want to call req.logMessage(...) so the correct correlation_id and request_id will be added to this log.
-- If you want to write request independent custom messages, you want to call log.logMessage(...) so no further context tracking will be added.
-
-Simple message
-```js
-logMessage("info", "Hello World"); 
-// ... "msg":"Hello World" ...
+The library can be attached as middleware to log all incoming requests as follows:
+```
+app.use(log.logNetwork);
 ```
 
-With additional numeric value
-```js
-logMessage("info", "Listening on port %d", 5000); 
-// ... "msg":"Listening on port 5000" ...
+When using a plain Node.js http server it is necessary to call the middleware method directly:
+```
+http.createServer((req, res) => {
+  log.logNetwork(req, res);
+  ...
+});
 ```
 
-With additional string values
-```js
-logMessage("info", "This %s a %s", "is", "test"); 
-// ... "msg":"This is a test" ...
-```
 
-With custom fields added to custom_fields field. Keep in mind that the last argument is handled as custom_fields object, if it is an object.
-```js
-logMessage("info", "Test data %j", {"field" :"value"}); 
-// ... "msg":"Test data %j" 
-// ... "custom_fields": {"field": "value"} ...
-```
+### Custom Logs
 
-With json object forced to be embedded in to the message (nothing will be added to custom_fields).
-```js
-logMessage("info", "Test data %j", {"field" :"value"}, {}); 
-// ... "msg":"Test data {\"field\": \"value\"}" ...
-```
+In addition to request logging this library also supports logging custom messages. Following common node.js logging levels are supported:
 
-### Convenience Methods
-
-Instead of using logMessage(...), you could also use:
-
-| Standard                                       | Convenient                        |
-|------------------------------------------------|-----------------------------------|
-| ```log.logMessage("info",...)```               | ```log.info(...)```               |
-| ```req.logMessage("info",...)```               | ```req.logger.info(...)```        |
-| ```correlationObject.logMessage("info",...)``` | ```correlationObject.info(...)``` |
-
-The convenience methods are currently only available for the common node.js logging levels:
 - error
 - warn
 - info
 - verbose
 - debug
 - silly
+
+There are so called *convenient methods* for all supported logging levels, which can be called to log a message using the corresponding level. It is also possible to use standard format placeholders equivalent to the [util.format](https://nodejs.org/api/util.html#util_util_format_format) method.
+
+Simple message
+```js
+info("Hello World"); 
+// ... "msg":"Hello World" ...
+```
+
+With additional numeric value
+```js
+info("Listening on port %d", 5000); 
+// ... "msg":"Listening on port 5000" ...
+```
+
+With additional string values
+```js
+info("This %s a %s", "is", "test"); 
+// ... "msg":"This is a test" ...
+```
+
+With custom fields added to custom_fields field. Keep in mind that the last argument is handled as custom_fields object, if it is an object.
+```js
+info("Test data %j", {"field" :"value"}); 
+// ... "msg":"Test data %j" 
+// ... "custom_fields": {"field": "value"} ...
+```
+
+With json object forced to be embedded in to the message (nothing will be added to custom_fields).
+```js
+info("Test data %j", {"field" :"value"}, {}); 
+// ... "msg":"Test data {\"field\": \"value\"}" ...
+```
+
+In some cases you might want to dynamically read the actual logging level from a variable. Instead of using switch...case expressions you can simply use following method:
+```js
+var level = "debug";
+logMessage(level, "Hello World"); 
+// ... "msg":"Hello World" ...
+```
+
+
+### Logging contexts
+
+In general there are two types of logging contexts: global and request contexts.
+
+#### Global context
+Each application has a *global* context, which has no correlation to specific requests. Use the globally defined ```log``` object to log messages in *global* context:
+
+```js
+var log = require("cf-nodejs-logging-support");
+...
+log.info("Server is listening on port %d", 3000);
+```
+
+#### Request context
+The library adds context bound functions to request objects, if the library has been attached as middleware (see ). Use the locally defined ```req.logger``` object to log messages in *request* context:
+
+```js
+app.get('/', function (req, res) {
+    req.logger.info("This message is request correlated");
+    ...
+});
+```
+
+In addition to a message logged using the *global* context these messages will automatically include following request correlated fields:
+- correlation_id
+- request_id
+
 
 ### Sensitive data redaction
 Version 3.0.0 and above implements a sensitive data redaction system, which deactivates the logging of sensitive fields. The field will contain 'redacted' instead of the original content.
@@ -170,7 +210,7 @@ This behavior matches with the corresponding mechanism in the [CF Java Logging S
 Sometimes it is useful to change the logging level threshold for a specific request. This can be achieved using a special header field or setting directly within the corresponding request handler. Changing the logging level threshold only affects the presence of logs but not their individual logging levels.
 
 #### Change logging level threshold via header field
-You can change the logging level threshold for a specific request by providing a JSON Web Token ([JWT](https://de.wikipedia.org/wiki/JSON_Web_Token)) via the request header. This way it is not necessary to redeploy your app for every logging level change.
+You can change the logging level threshold for a specific request by providing a JSON Web Token ([JWT](https://de.wikipedia.org/wiki/JSON_Web_Token)) via the request header. This way it is not necessary to redeploy your app for every logging level threshold change.
 
 ##### 1 Creating a JWT
 JWTs are signed claims, which consist of a header, a payload and a signature. You can create JWTs by using the [TokenCreator](https://github.com/SAP/cf-nodejs-logging-support/tree/master/tools/token-creator) from the tools folder.
@@ -214,7 +254,7 @@ req.setDynamicLoggingLevel("verbose");
 ```
 
 ### Winston Transport
-This logging tool can be used in conjunction with Winston. Logging via Winston transport is limited to custom logs. Network activity can not be tracked automatically. Example:
+This logging library can be used in conjunction with Winston. Logging via Winston transport is limited to custom logs. Network activity can not be tracked automatically. Example:
 ```js
 var express = require('express');
 var log = require('cf-nodejs-logging-support');
@@ -238,7 +278,7 @@ logger.log("info", "Server is listening on port %d", 3000);
 ```
 
 ### Request correlation_id
-In order to get the correlation_id of an request, you can use the following call.
+In order to get the correlation_id of a request, you can use the following method:
 ```js
 app.get('/', function (req, res) {
     // Call to context bound function
@@ -259,18 +299,12 @@ app.get('/', function (req, res) {
 ```
 
 ### Correlation context objects
-As stated above the ```req``` acts as context preserving object and provides context bound functions like ```logMessage(...)```. In some cases you might want to create new context objects in order to create logs in context of other incoming data events (e.g. RabbitMQ). To do so you can use
+As stated above the ```req.logger``` acts as context preserving object and provides context bound functions like ```info(...)```. In some cases you might want to create new context objects in order to create logs in context of other incoming data events (e.g. RabbitMQ). To do so you can use
 ```
-var ctx = log.getCorrelationObject();
+var ctx = log.createCorrelationObject();
 ctx.logMessage(...);
 ``` 
-at any time to create new context objects. Custom context objects are provided with a newly generated correlation_id.
-
-Another usecase for this functionality is forwarding the context object of a request to other functions. Imagine a request handler that calls function ```foo()``` which should log messages in context of the original request. Instead of providing the ```req``` object to ```foo()``` it is a cleaner solution to create a new context object which retains the original correlation_id by calling: 
-```
-var ctx = req.getCorrelationObject();
-foo(ctx);
-```
+any time to create new context objects. Custom context objects are provided with a newly generated correlation_id.
 
 If you want to provide your own correlation_id, you can use the ```ctx.setCorrelationId(<id>)``` method.
 
