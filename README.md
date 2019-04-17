@@ -253,30 +253,6 @@ You can also change the log level for all requests of a specific request handler
 req.setDynamicLoggingLevel("verbose");
 ```
 
-### Winston Transport
-This logging library can be used in conjunction with Winston. Logging via Winston transport is limited to custom logs. Network activity can not be tracked automatically. Example:
-```js
-var express = require('express');
-var log = require('cf-nodejs-logging-support');
-var winston = require('winston');
-
-var app = express();
-
-var logger = winston.createLogger({
-    // Bind transport to winston
-    transports: [log.createWinstonTransport()]
-});
-
-app.get('/', function (req, res) {
-    res.send('Hello World');
-});
-
-app.listen(3000);
-
-// Messages will now be logged exactly as demonstrated by the Custom Messages paragraph
-logger.log("info", "Server is listening on port %d", 3000);
-```
-
 ### Request correlation_id
 In order to get the correlation_id of a request, you can use the following method:
 ```js
@@ -327,6 +303,29 @@ log.overrideNetworkField("msg", null);
 ```
 If you use this override feature in conjunction with a log parser, make sure you will not violate any parsing rules.
 
+### Winston Transport
+This logging library can be used in conjunction with Winston. Logging via Winston transport is limited to custom logs. Network activity can not be tracked automatically. Example:
+```js
+var express = require('express');
+var log = require('cf-nodejs-logging-support');
+var winston = require('winston');
+
+var app = express();
+
+var logger = winston.createLogger({
+    // Bind transport to winston
+    transports: [log.createWinstonTransport()]
+});
+
+app.get('/', function (req, res) {
+    res.send('Hello World');
+});
+
+app.listen(3000);
+
+// Messages will now be logged exactly as demonstrated by the Custom Messages paragraph
+logger.log("info", "Server is listening on port %d", 3000);
+```
 
 ## Sample Apps
 
