@@ -154,7 +154,7 @@ info("Test data %j", {"field" :"value"}, {});
 // ... "msg":"Test data {\"field\": \"value\"}" ...
 ```
 
-In some cases you might want to dynamically read the actual logging level from a variable. Instead of using switch...case expressions you can simply use following method:
+In some cases you might want to set the actual logging level from a variable. Instead of using conditional expressions you can simply use following method, which also supports format features described above.
 ```js
 var level = "debug";
 logMessage(level, "Hello World"); 
@@ -164,7 +164,7 @@ logMessage(level, "Hello World");
 
 ### Logging contexts
 
-In general there are two types of logging contexts: global and request contexts.
+In general there are two types of logging contexts: *global* and *request* contexts.
 
 #### Global context
 Each application has a *global* context, which has no correlation to specific requests. Use the globally defined ```log``` object to log messages in *global* context:
