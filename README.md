@@ -97,12 +97,12 @@ log.info("Server is listening on port %d", 3000);
 ### Request Logs
 
 The library can be attached as middleware to log all incoming requests as follows:
-```
+```js
 app.use(log.logNetwork);
 ```
 
 When using a plain Node.js http server it is necessary to call the middleware method directly:
-```
+```js
 http.createServer((req, res) => {
   log.logNetwork(req, res);
   ...
@@ -218,7 +218,7 @@ JWTs are signed claims, which consist of a header, a payload and a signature. Yo
 Basically, JWTs are signed using RSA or HMAC signing algorithms. But we decided to support RSA algorithms (RS256, RS384 and RS512) only. In contrast to HMAC algorithms (HS256, HS384 and HS512), RSA algorithms are asymmetric and therefore require key pairs (public and private key).
 
 The tool mentioned above takes a log level, creates a key pair and signs the resulting JWT with the private key. The payload of a JWT looks like this:
-```
+```js
 {
   "issuer": "<valid e-mail address>",
   "level": "debug",
@@ -276,7 +276,7 @@ app.get('/', function (req, res) {
 
 ### Correlation context objects
 As stated above the ```req.logger``` acts as context preserving object and provides context bound functions like ```info(...)```. In some cases you might want to create new context objects in order to create logs in context of other incoming data events (e.g. RabbitMQ). To do so you can use
-```
+```js
 var ctx = log.createCorrelationObject();
 ctx.logMessage(...);
 ``` 
