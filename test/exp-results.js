@@ -11,6 +11,7 @@ exports.getLogMessage = function () {
         "organization_id": "-",
         "organization_name": "-",
         "space_name": "-",
+        "tenant_id": "-",
         "space_id": "-",
         "container_id": "-",
         "logger": "nodejs-logger",

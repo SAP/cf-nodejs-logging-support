@@ -333,6 +333,7 @@ var logMessage = function () {
     var req = this;
     if (req.logObject != null) {
         logObject.correlation_id = req.logObject.correlation_id;
+        logObject.tenant_id = req.logObject.tenant_id;
         if (req.logObject.request_id != null) {
             logObject.request_id = req.logObject.request_id;
         }
