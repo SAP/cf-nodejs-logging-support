@@ -807,6 +807,18 @@ describe('Test log-core', function () {
             logObject.msg.should.equal("Test");
             logObject.correlation_id.should.equal("123");
         });
+
+        
+        it("Test correctly bound tenant id", function () {
+            var testRequest = {};
+            testRequest.logObject = {
+                "tenant_id": "789"
+            };
+            testRequest.log = log;
+            testRequest.log("info", "Test");
+            logObject.msg.should.equal("Test");
+            logObject.tenant_id.should.equal("789");
+        });
     });
 
     describe('Test init', function () {

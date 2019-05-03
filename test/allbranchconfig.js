@@ -280,6 +280,14 @@ var config = [
             return uuid();
         }
     }, {
+        name: "tenant_id",
+        mandatory: true,
+        source: {
+            type: "header",
+            name: "tenantid"
+        },
+        default: "-"
+    }, {
         name: "level",
         mandatory: true,
         source:{

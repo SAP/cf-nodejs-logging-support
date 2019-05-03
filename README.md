@@ -188,6 +188,7 @@ app.get('/', function (req, res) {
 In addition to a message logged using the *global* context these messages will automatically include following request correlated fields:
 - correlation_id
 - request_id
+- tenant_id
 
 
 ### Sensitive data redaction
