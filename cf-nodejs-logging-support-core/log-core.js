@@ -330,12 +330,14 @@ var logMessage = function () {
 
     var msg = util.format.apply(util, args);
 
-    var req = this;
-    if (req.logObject != null) {
-        logObject.correlation_id = req.logObject.correlation_id;
-        logObject.tenant_id = req.logObject.tenant_id;
-        if (req.logObject.request_id != null) {
-            logObject.request_id = req.logObject.request_id;
+    var ctx = this;
+    if (ctx.logObject != null) {
+        logObject.correlation_id = ctx.logObject.correlation_id;
+        if (ctx.logObject.tenant_id != null) {
+            logObject.tenant_id = ctx.logObject.tenant_id;
+        }
+        if (ctx.logObject.request_id != null) {
+            logObject.request_id = ctx.logObject.request_id;
         }
     }
 
@@ -360,10 +362,10 @@ var logMessage = function () {
 
 //getCorrelationId returns the current correlation id for the req this is called on
 var getCorrelationId = function () {
-    var req = this;
-    if (req.logObject != null) {
-        if (req.logObject.correlation_id != null) {
-            return req.logObject.correlation_id;
+    var ctx = this;
+    if (ctx.logObject != null) {
+        if (ctx.logObject.correlation_id != null) {
+            return ctx.logObject.correlation_id;
         }
     }
     return null;
@@ -371,10 +373,10 @@ var getCorrelationId = function () {
 
 //setCorrelationId sets the Correlation_id for the request this is called on. Checks i the id is a correct uuid-v4. Returns true if set, false otherwise
 var setCorrelationId = function (correlationId) {
-    var req = this;
-    if (req.logObject != null) {
+    var ctx = this;
+    if (ctx.logObject != null) {
         if (uuidCheck.exec(correlationId)) {
-            req.logObject.correlation_id = correlationId;
+            ctx.logObject.correlation_id = correlationId;
             return true;
         }
     }
@@ -478,7 +480,6 @@ var getLogLevelFromName = function (levelName) {
 
 // Binds the Loglevel extracted from JWT token to the given req
 var bindDynLogLevel = function (token, req) {
-
     var payload = verifyAndDecodeJWT(token, dynLogLevelKey);
 
     if (payload) {
