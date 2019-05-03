@@ -112,6 +112,7 @@ describe('Test log-express', function () {
             fireLog();
 
             logObject.request_id.should.equal("-");
+            logObject.tenant_id.should.equal("-");
             logObject.request.should.equal("-");
             logObject.method.should.equal("-");
             logObject.request_size_b.should.equal(-1);
