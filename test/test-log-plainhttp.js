@@ -88,6 +88,10 @@ describe('Test log-plainhttp', function () {
 
             req.connection = {};
             req.headers = {};
+            req.getHeader = function (header) {
+                header = header.toLocaleLowerCase();
+                return this.headers[header];
+            }
 
 
             res = {};
@@ -116,7 +120,7 @@ describe('Test log-plainhttp', function () {
 
         describe('Test correlation_id', function () {
             it('Test X-CorrelationID', function () {
-                req.headers["X-CorrelationID"] = "correctID";
+                req.headers["x-correlationid"] = "correctID";
 
                 httpLogger.logNetwork(req, res, next);
                 fireLog();
@@ -135,7 +139,7 @@ describe('Test log-plainhttp', function () {
             });
 
             it('Test X-CorrelationID vs x-vcap-request-id', function () {
-                req.headers["X-CorrelationID"] = "correctID";
+                req.headers["x-correlationid"] = "correctID";
                 req.headers["x-vcap-request-id"] = "wrongID";
 
                 httpLogger.logNetwork(req, res, next);

@@ -42,7 +42,7 @@ describe('Test Complete', function () {
     process.stdout.write = process.stdout.write.override(
         function (obj) {
             store = obj;
-            //this.superFunction(obj);
+            this.superFunction(obj);
         }
     );
     before(function () {

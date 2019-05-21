@@ -5,7 +5,7 @@ var assert = chai.assert;
 
 
 chai.should();
-describe('Test log-express', function () {
+describe('Test config', function () {
 
     var core = null;
     var httpLogger;
@@ -36,9 +36,10 @@ describe('Test log-express', function () {
             next = function () {};
 
             req = {};
-            req.header = function () {
-                return null;
+            req.header = function (header) {
+                return this.headers[header];
             };
+            req.getHeader = req.header;
 
             req.connection = {};
             req.headers = {};

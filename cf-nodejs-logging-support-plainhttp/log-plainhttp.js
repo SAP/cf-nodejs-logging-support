@@ -28,6 +28,10 @@ var logNetwork = function (req, res) {
     if (req.headers == null) {
         req.headers = {};
     }
+    
+    if (typeof req.getHeader != "function") {
+        req.getHeader = () => { return null; };
+    }
 
     var token = req.headers[core.getDynLogLevelHeaderName()];
     core.bindDynLogLevel(token, req);
@@ -41,7 +45,7 @@ var logNetwork = function (req, res) {
 
         switch (configEntry.source.type) {
             case "header":
-                logObject[configEntry.name] = req.headers[configEntry.source.name];
+                logObject[configEntry.name] = req.getHeader(configEntry.source.name);
                 break;
             case "static":
                 logObject[configEntry.name] = configEntry.source.value;
