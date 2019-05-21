@@ -277,7 +277,7 @@ var config = [
         mandatory: true,
         source: {
             type: "header",
-            name: "X-CorrelationID"
+            name: "x-correlationid"
         },
         fallback: (req, res, logObject) => {
             return uuid();

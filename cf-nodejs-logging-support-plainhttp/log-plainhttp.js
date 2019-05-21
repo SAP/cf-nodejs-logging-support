@@ -30,7 +30,9 @@ var logNetwork = function (req, res) {
     }
     
     if (typeof req.getHeader != "function") {
-        req.getHeader = () => { return null; };
+        req.getHeader = function (header) {
+            return this.headers[header.toLocaleLowerCase()]; 
+        };
     }
 
     var token = req.headers[core.getDynLogLevelHeaderName()];
