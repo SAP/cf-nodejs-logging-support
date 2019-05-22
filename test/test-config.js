@@ -36,10 +36,6 @@ describe('Test config', function () {
             next = function () {};
 
             req = {};
-            req.header = function (header) {
-                return this.headers[header];
-            };
-            req.getHeader = req.header;
 
             req.connection = {};
             req.headers = {};
@@ -97,7 +93,16 @@ describe('Test config', function () {
             logObject.remote_host.should.equal("1.2.3.4");
             logObject.remote_port.should.equal("8080");
         });
+        
+        it('Test correlation_id fallback', function () {
+            req.headers["x-vcap-request-id"] = "test123";
+            httpLogger.logNetwork(req, res, next);
+            fireLog();
 
+            logObject.request_id.should.equal("test123");
+            logObject.correlation_id.should.equal("test123");
+
+        });
         
         
         it('Test HTTP header propagation', function () {
