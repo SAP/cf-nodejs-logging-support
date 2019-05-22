@@ -280,7 +280,7 @@ var config = [
             name: "x-correlationid"
         },
         fallback: (req, res, logObject) => {
-            return uuid();
+            return (logObject.request_id != null && logObject.request_id != "-") ? logObject.request_id : uuid();
         }
     }, {
         name: "tenant_id",
