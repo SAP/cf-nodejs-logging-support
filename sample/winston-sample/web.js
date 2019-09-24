@@ -11,6 +11,7 @@ var logger = winston.createLogger({
 
 app.get('/', function (req, res) {
     res.send('Hello World');
+    logger.log("info", "Received request");
 });
 
 app.listen(3000);

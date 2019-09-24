@@ -29,11 +29,15 @@ describe('Test winston-transport.js', function () {
             info.level = "error";
             info.message = "test"
 
-            transport.log(info);
+            var called = false;
+            var callback = () => {called = true}
+
+            transport.log(info, callback);
 
             catchedArgs.length.should.equal(2);
             catchedArgs[0].should.equal("error");
             catchedArgs[1].should.equal("test");
+            called.should.equal(true)
         });
 
         it('Test log method (message with additional variables)', function () {
@@ -43,13 +47,17 @@ describe('Test winston-transport.js', function () {
             info.message = "test %d %s"
             info[SPLAT] = [42, "abc"]
 
-            transport.log(info);
+            var called = false;
+            var callback = () => {called = true}
+
+            transport.log(info, callback);
 
             catchedArgs.length.should.equal(4);
             catchedArgs[0].should.equal("error");
             catchedArgs[1].should.equal("test %d %s");
             catchedArgs[2].should.equal(42);
             catchedArgs[3].should.equal("abc");
+            called.should.equal(true)
         });
     });
 

@@ -9,12 +9,18 @@ const CfNodejsLoggingSupportLogger = class CfNodejsLoggingSupportLogger extends 
         this.logMessage = options.logMessage;
     }
 
-    log(info) {
+    log(info, callback) {
+        setImmediate(() => {
+            this.emit('logged',info);
+        });
+        
         if (info[SPLAT]) {
             this.logMessage.apply(this, [info.level, info.message, ...info[SPLAT]]);
         } else {
             this.logMessage(info.level, info.message);
         }
+
+        callback();
     }
 };
 
