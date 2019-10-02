@@ -460,6 +460,65 @@ describe('Test log-core', function () {
     });
 
 
+    describe('Test custom log sink', function () {
+        var core = null;
+
+        var write;
+        var clock;
+        var output;
+        var level;
+
+        before(function () {
+            core = rewire("../cf-nodejs-logging-support-core/log-core.js");
+            write = core.__get__("writeLogToConsole");
+            core.setConfig(importFresh("../config.js").config);
+            clock = sinon.useFakeTimers();
+        });
+
+        beforeEach(function() {
+            core.setSinkFunction(function(lvl, out) {
+                level = lvl;
+                output = out;
+            });
+        })
+
+        after(function () {
+            clock.restore();
+        });
+
+        afterEach(function () {
+            core.setLogPattern(null);
+            core.setSinkFunction(null);
+        });
+
+        it("Test log writing in (default) json mode to custom log sink", function () {
+            var data = {
+                test: "abc",
+                level: "warn"
+            };
+
+            write(data);
+            output.should.equal(JSON.stringify(data));
+            level.should.equal("warn");
+        });
+
+        it("Test  log writing in pattern mode with correct keys to custom log sink", function () {
+            var data = {
+                text: "abc",
+                number: 21,
+                obj: {
+                    "id": 42
+                },
+                level: "info"
+            };
+
+            core.setLogPattern("Test: {{text}} {{number}} {{obj}}");
+            write(data)
+            output.should.equal('Test: abc 21 ' + JSON.stringify(data.obj));
+            level.should.equal("info");
+        });
+    });
+
     describe('Test sendLog', function () {
         var core = rewire("../cf-nodejs-logging-support-core/log-core.js");
         var logMeta;

@@ -8,6 +8,7 @@ var next = null;
 var field = null;
 var value = null;
 var loggingLevel = null;
+var sinkFunction = null;
 var messageArgs = null;
 var logPattern = null;
 var originalRequire = Module.prototype.require;
@@ -35,8 +36,11 @@ describe('Test index.js', function () {
                     "setLoggingLevel": function (level) {
                         loggingLevel = level;
                     },
+                    "setSinkFunction": function (fct) {
+                        sinkFunction = fct;
+                    },
                     "logMessage": function (args) {
-                        messageArgs = args;
+                        messageArgs = arguments;
                     },
                     "getCorrelationObject": function () {
                         return {
@@ -64,6 +68,9 @@ describe('Test index.js', function () {
                     },
                     "setLoggingLevel": function (level) {
                         loggingLevel = level;
+                    },
+                    "setSinkFunction": function (fct) {
+                        sinkFunction = fct;
                     },
                     "logMessage": function (args) {
                         messageArgs = args;
@@ -93,6 +100,9 @@ describe('Test index.js', function () {
                     },
                     "setLoggingLevel": function (level) {
                         loggingLevel = level;
+                    },
+                    "setSinkFunction": function (fct) {
+                        sinkFunction = fct;
                     },
                     "logMessage": function (args) {
                         messageArgs = args;
@@ -147,6 +157,18 @@ describe('Test index.js', function () {
             loggingLevel.should.equal(level);
         });
 
+        it('Test setSinkFunction: ', function () {
+            var fct = (level, output) => {};
+            logger.setSinkFunction(fct);
+            sinkFunction.should.equal(fct);
+            logger.forceLogger("restify");
+            logger.setSinkFunction(fct);
+            sinkFunction.should.equal(fct);
+            logger.forceLogger("plainhttp");
+            logger.setSinkFunction(fct);
+            sinkFunction.should.equal(fct);
+        });
+
         it('Test getCorrelationObject: ', function () {
             var obj = {};
             obj.test = "express";
@@ -169,7 +191,8 @@ describe('Test index.js', function () {
         it('Test logMessage: ', function () {
             var message = "testLevel";
             logger.logMessage(message);
-            message.should.equal(message);
+            messageArgs.length.should.equal(1);
+            messageArgs[0].should.equal("testLevel");
         });
 
         it('Test overrideNetworkField', function () {

@@ -22,39 +22,58 @@ describe('Test log-express', function () {
     });
 
     describe('Test linkings', function () {
-        var callCounter;
+        var countSendLog;
+        var countSetLoggingLevel;
+        var countSetSinkFunction;
+        var countInitLog;
+        var countLogMessage;
+
         beforeEach(function () {
-            callCounter = 0;
+            countSendLog = 0;
+            countSetLoggingLevel = 0;
+            countSetSinkFunction = 0;
+            countInitLog = 0;
+            countLogMessage = 0;
+
             core.sendLog = function () {
-                callCounter++;
+                countSendLog++;
             };
             core.setLoggingLevel = function () {
-                callCounter++;
+                countSetLoggingLevel++;
             };
+            core.setSinkFunction = function () {
+                countSetSinkFunction++;
+            };
+
             core.initBack = core.initLog;
             core.initLog = function () {
-                callCounter++;
+                countInitLog++;
                 return {};
             };
 
             core.logMessage = {};
             core.logMessage.apply = function () {
-                callCounter++;
+                countLogMessage++;
             };
         });
-        afterEach(function () {
 
+        afterEach(function () {
             core.initLog = core.initBack;
         })
 
         it("Test linking setLoggingLevel", function () {
             expressLogger.setLoggingLevel("test");
-            assert.equal(callCounter, 1);
+            assert.equal(countSetLoggingLevel, 1);
+        });
+
+        it("Test linking setSinkFunction", function () {
+            expressLogger.setSinkFunction("test");
+            assert.equal(countSetSinkFunction, 1);
         });
 
         it("Test linking logMessage", function () {
             expressLogger.logMessage("test");
-            assert.equal(callCounter, 1);
+            assert.equal(countLogMessage, 1);
         });
 
         it("Test linking logNetwork", function () {
@@ -66,7 +85,8 @@ describe('Test log-express', function () {
             };
             expressLogger.logNetwork(req, res, function () {});
             fireLog();
-            assert.equal(callCounter, 2);
+            assert.equal(countInitLog, 1);
+            assert.equal(countSendLog, 1);
         });
     });
 

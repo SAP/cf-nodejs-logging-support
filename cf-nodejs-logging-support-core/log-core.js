@@ -44,6 +44,8 @@ var postLogConfig = [];
 var dynLogLevelHeader = dynLogLevelDefaultHeader;
 var dynLogLevelKey = null;
 
+var customSinkFunc = null;
+
 // Initializes the core logger, including setup of environment var defined settings
 var init = function () {
     // Read dyn. log level header name from environment var
@@ -139,9 +141,12 @@ var reduceFields = function (config, logObject) {
 // Stringify and log given object to console. If a custom pattern is set, the referenced object fields are used to replace the references.
 var writeLogToConsole = function (logObject) {
     var output = "";
+    var level = "";
     if (pattern != null) {
         if (logObject !== undefined && logObject != null) {
             output = "";
+            level = logObject.level;
+
             var rest = pattern.split(patternDivider);
             var value;
             //iterates over split custom pattern, where n%3=0 is text outside the marked fields and n%3=2 are the fields to be replaced (inside {{}}), n elem rest.
@@ -160,10 +165,19 @@ var writeLogToConsole = function (logObject) {
             output += rest[rest.length - 1];
         }
     } else {
-        output = (logObject !== undefined && validObject(logObject)) ? JSON.stringify(logObject) : "";
+        if (logObject !== undefined && validObject(logObject)) {
+            output =  JSON.stringify(logObject);
+            level = logObject.level;
+        }
     }
 
-    stdout.write(output + os.EOL);
+    if (customSinkFunc) {
+        // call custom sink function
+        customSinkFunc(level, output);
+    } else {
+        // default to stdout
+        stdout.write(output + os.EOL);
+    }
 };
 
 // Sets the minimum logging level. Messages with a lower level will not be forwarded. (Levels: error, warn, info, verbose, debug, silly)
@@ -183,6 +197,15 @@ var getLoggingLevel = function () {
         }
     }
 };
+
+// Sets the given function as log sink. Following arguments will be passed to the sink function: level, output
+var setSinkFunction = function(f) {
+    if (f && typeof f === "function") {
+        customSinkFunc = f;
+    } else {
+        customSinkFunc = null;
+    }
+}
 
 // Initializes an empty log object
 var initLog = function () {
@@ -526,3 +549,4 @@ exports.handleConfigDefaults = handleConfigDefaults;
 exports.getDynLogLevelHeaderName = getDynLogLevelHeaderName;
 exports.bindDynLogLevel = bindDynLogLevel;
 exports.bindConvenienceMethods = bindConvenienceMethods;
+exports.setSinkFunction = setSinkFunction;

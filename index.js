@@ -13,6 +13,10 @@ exports.setLoggingLevel = function (level) {
     effectiveLogger.setLoggingLevel(level);
 };
 
+exports.setSinkFunction = function (func) {
+    effectiveLogger.setSinkFunction(func);
+};
+
 exports.forceLogger = function (name) {
     switch (name) {
         //insert your custom framework logger here

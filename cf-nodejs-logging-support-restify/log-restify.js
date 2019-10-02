@@ -15,6 +15,11 @@ var setLoggingLevel = function (level) {
     core.setLoggingLevel(level);
 };
 
+// Sets the given function as log sink. Following arguments will be passed to the sink function: level, output
+var setSinkFunction = function (f) {
+    core.setSinkFunction(f);
+};
+
 // Logs requests and responses
 var logNetwork = function (req, res, next) {
     var logObject = core.initLog();
@@ -159,6 +164,7 @@ var overrideField = function (field, value) {
 exports.overrideField = overrideField;
 exports.setCoreLogger = setCoreLogger;
 exports.setLoggingLevel = setLoggingLevel;
+exports.setSinkFunction = setSinkFunction;
 exports.logNetwork = logNetwork;
 exports.logMessage = logMessage;
 exports.setLogPattern = setLogPattern;
