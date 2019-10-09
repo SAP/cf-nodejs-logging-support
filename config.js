@@ -53,21 +53,23 @@ var config = [
             value: "[NODEJS]"
         }
     }, {
-        name: "organization_id",
-        mandatory: true,
-        core: true,
-        source: {
-            type: "static",
-            value: "-"
-        }
-    }, {
         name: "organization_name",
         mandatory: true,
         core: true,
         source: {
-            type: "static",
-            value: "-"
-        }
+            type: "nested-env",
+            path: ["VCAP_APPLICATION", "organization_name"]
+        },
+        default: "-"
+    }, {
+        name: "organization_id",
+        mandatory: true,
+        core: true,
+        source: {
+            type: "nested-env",
+            path: ["VCAP_APPLICATION", "organization_id"]
+        },
+        default: "-"
     }, {
         name: "space_name",
         mandatory: true,
@@ -214,7 +216,7 @@ var config = [
             type: "header",
             name: "x-forwarded-for"
         },
-        default: "" 
+        default: ""
         /*fallback: (req, res, logObj) => {
             return req.headers['x-forwarded-for'] == null ? "" : req.headers['x-forwarded-for'];
         }*/
@@ -293,7 +295,7 @@ var config = [
     }, {
         name: "level",
         mandatory: true,
-        source:{
+        source: {
             type: "static",
             value: "info"
         }

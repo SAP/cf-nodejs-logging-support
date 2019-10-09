@@ -475,8 +475,8 @@ describe('Test log-core', function () {
             clock = sinon.useFakeTimers();
         });
 
-        beforeEach(function() {
-            core.setSinkFunction(function(lvl, out) {
+        beforeEach(function () {
+            core.setSinkFunction(function (lvl, out) {
                 level = lvl;
                 output = out;
             });
@@ -665,7 +665,7 @@ describe('Test log-core', function () {
             getCorrelationObject = core.__get__("getCorrelationObject");
             oldLogMessage = core.__get__("logMessage");
             levels = core.__get__("loggingLevels");
-            core.__set__("logMessage",function() {
+            core.__set__("logMessage", function () {
                 level = arguments[0];
                 oldLogMessage(arguments);
             })
@@ -691,13 +691,13 @@ describe('Test log-core', function () {
             req.getCorrelationId().should.equal(obj1.getCorrelationId());
             obj2.setCorrelationId(uuid());
             obj2.getCorrelationId().should.equal(obj1.getCorrelationId());
-            
+
             obj2.getCorrelationId().should.equal(req.getCorrelationId());
         });
 
-        it('test convenience Methods', function() {
+        it('test convenience Methods', function () {
             var obj = getCorrelationObject();
-            for(var lvl in levels) {
+            for (var lvl in levels) {
                 obj[lvl]("test");
                 level.should.equal(lvl);
             }
@@ -867,7 +867,7 @@ describe('Test log-core', function () {
             logObject.correlation_id.should.equal("123");
         });
 
-        
+
         it("Test correctly bound tenant id", function () {
             var testRequest = {};
             testRequest.logObject = {
@@ -930,34 +930,24 @@ describe('Test log-core', function () {
         var core = rewire("../cf-nodejs-logging-support-core/log-core.js");
         var logObject;
         var clock;
-        var inherit = {};
 
         before(function () {
-            inherit.VCAP_APPLICATION = process.env.VCAP_APPLICATION;
-            inherit.CF_INSTANCE_IP = process.env.CF_INSTANCE_IP;
-            process.env.VCAP_APPLICATION = JSON.stringify({
-                "application_id": "123456789",
-                "application_name": "correct_name",
-                "instance_index": "42",
-                "space_name": "correct_name",
-                "space_id": "123456789",
-                "instance_index": "42"
-            });
-            process.env.CF_INSTANCE_IP = "42";
-            core.setConfig(importFresh("../config.js").config);
             clock = sinon.useFakeTimers();
         });
 
         beforeEach(function () {
             process.env.VCAP_APPLICATION = JSON.stringify({
-                "application_id": "123456789",
-                "application_name": "correct_name",
+                "application_id": "123456",
+                "application_name": "test_app_name",
                 "instance_index": "42",
-                "space_name": "correct_name",
-                "space_id": "123456789",
-                "instance_index": "42"
+                "space_name": "test_space_name",
+                "space_id": "234567",
+                "instance_index": "43",
+                "organization_name": "test_org_name",
+                "organization_id": "345678"
             });
-            process.env.CF_INSTANCE_IP = "42";
+            process.env.CF_INSTANCE_IP = "45";
+            core.setConfig(importFresh("../config.js").config);
             logObject = null;
         });
 
@@ -986,37 +976,47 @@ describe('Test log-core', function () {
         // Write values from process.env.VCAP_APPLICATION
         it('Test component_id: ', function () {
             logObject = core.initLog();
-            logObject.component_id.should.equal("123456789");
+            logObject.component_id.should.equal("123456");
         });
 
         it('Test component_name: ', function () {
             logObject = core.initLog();
-            logObject.component_name.should.equal("correct_name");
+            logObject.component_name.should.equal("test_app_name");
         });
 
         it('Test component_instance: ', function () {
             logObject = core.initLog();
-            logObject.component_instance.should.equal("42");
+            logObject.component_instance.should.equal("43");
         });
 
         it('Test space_name: ', function () {
             logObject = core.initLog();
-            logObject.space_name.should.equal("correct_name");
+            logObject.space_name.should.equal("test_space_name");
         });
 
         it('Test space_id: ', function () {
             logObject = core.initLog();
-            logObject.space_id.should.equal("123456789");
+            logObject.space_id.should.equal("234567");
+        });
+
+        it('Test organization_name: ', function () {
+            logObject = core.initLog();
+            logObject.organization_name.should.equal("test_org_name");
+        });
+
+        it('Test organization_id: ', function () {
+            logObject = core.initLog();
+            logObject.organization_id.should.equal("345678");
         });
 
         it('Test source_instance: ', function () {
             logObject = core.initLog();
-            logObject.source_instance.should.equal("42");
+            logObject.source_instance.should.equal("43");
         });
 
         it('Test container_id: ', function () {
             logObject = core.initLog();
-            logObject.container_id.should.equal("42");
+            logObject.container_id.should.equal("45");
         });
 
 
@@ -1036,6 +1036,8 @@ describe('Test log-core', function () {
             logObject.component_instance.should.equal("0");
             logObject.space_name.should.equal("-");
             logObject.space_id.should.equal("-");
+            logObject.organization_name.should.equal("-");
+            logObject.organization_id.should.equal("-");
             logObject.source_instance.should.equal("0");
             logObject.container_id.should.equal("-");
         });
