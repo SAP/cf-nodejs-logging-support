@@ -4,3 +4,4 @@ sample
 coverage
 .vscode/*
 .travis.yml
+.nyc_output

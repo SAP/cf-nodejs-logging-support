@@ -217,9 +217,6 @@ var config = [
             name: "x-forwarded-for"
         },
         default: ""
-        /*fallback: (req, res, logObj) => {
-            return req.headers['x-forwarded-for'] == null ? "" : req.headers['x-forwarded-for'];
-        }*/
     }, {
         name: "remote_ip",
         mandatory: false,

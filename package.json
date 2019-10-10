@@ -21,29 +21,22 @@
   },
   "dependencies": {
     "jsonwebtoken": "^8.5.1",
-    "uuid": "^3.3.2"
+    "uuid": "^3.3.3"
   },
   "devDependencies": {
     "chai": "^4.2.0",
-    "codecov": "^3.5.0",
-    "eslint": "^5.16.0",
-    "eslint-config-standard": "^12.0.0",
-    "eslint-plugin-import": "^2.17.3",
-    "eslint-plugin-node": "^9.1.0",
-    "eslint-plugin-promise": "^4.1.1",
-    "eslint-plugin-standard": "^4.0.0",
-    "import-fresh": "^3.0.0",
-    "istanbul": "^0.4.5",
-    "mocha": "^6.1.4",
+    "import-fresh": "^3.1.0",
+    "mocha": "^6.2.1",
     "mock-require": "^3.0.3",
-    "node-mocks-http": "^1.7.6",
+    "node-mocks-http": "^1.8.0",
+    "nyc": "^14.1.1",
     "rewire": "^4.0.1",
-    "sinon": "^7.3.2",
+    "sinon": "^7.5.0",
     "winston": "^3.2.1",
     "winston-transport": "^4.3.0"
   },
   "scripts": {
-    "test": "istanbul cover node_modules/mocha/bin/_mocha -- --timeout 10000",
-    "coverage": "codecov"
+    "test": "mocha -- --timeout 10000",
+    "coverage": "nyc --reporter=lcov --reporter=text-summary npm run test"
   }
 }
