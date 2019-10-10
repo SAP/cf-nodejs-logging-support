@@ -27,7 +27,7 @@ for (var key in loggingLevels) {
         return function () {
             var args = [bKey, ...arguments];
             logMessage.apply(this, args);
-        }
+        };
     }(key);
 }
 
@@ -205,7 +205,7 @@ var setSinkFunction = function(f) {
     } else {
         customSinkFunc = null;
     }
-}
+};
 
 // Initializes an empty log object
 var initLog = function () {
@@ -417,25 +417,25 @@ var bindLogFunctionsToReq = function (req) {
     req.getCorrelationObject = getCorrelationObject;
     bindLogFunctions(req);
     generateLogger(req);
-}
+};
 
 var generateLogger = function (req) {
     req.logger = {};
     req.logger.logObject = req.logObject;
     bindLogFunctions(req.logger);
     bindConvenienceMethods(req.logger);
-}
+};
 
 var bindLogFunctionsToCorrelationObj = function (logObj) {
     bindConvenienceMethods(logObj);
     bindLogFunctions(logObj);
-}
+};
 
 var bindConvenienceMethods = function (logObj) {
     for (var key in convinientLogFunctions) {
         logObj[key] = convinientLogFunctions[key];
     }
-}
+};
 
 var getCorrelationObject = function () {
     if (this.logObject != null && this.logger != null) {
@@ -451,7 +451,7 @@ var createCorrelationObject = function () {
     newContext.logObject.correlation_id = uuid();
     bindLogFunctionsToCorrelationObj(newContext);
     return newContext;
-}
+};
 
 var validObject = function (obj) {
     if (obj === null || obj === undefined) {
