@@ -233,7 +233,7 @@ var prepareInitDummy = function (coreConfig) {
                 obj[configEntry.name] = process.env[configEntry.source.name];
                 break;
             case "nested-env":
-                obj[configEntry.name] = resolveNestedVariable(process.env, configEntry.source.path);
+                obj[configEntry.name] = resolveNestedVariable(process.env, configEntry.source.path.slice());
                 break;
             case "static":
                 obj[configEntry.name] = configEntry.source.value;
