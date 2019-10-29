@@ -75,7 +75,7 @@ var logNetwork = function (req, res, next) {
     // Replace all set fields, which are marked to be reduced, with a placeholder (defined in log-core.js)
     core.reduceFields(preConfig, logObject);
 
-    core.bindLoggerToReq(req, logObject);
+    core.bindLoggerToRequest(req, logObject);
 
     var token = req.header(core.getDynLogLevelHeaderName());
     core.bindDynLogLevel(token, req.logger);
@@ -128,14 +128,14 @@ var logNetwork = function (req, res, next) {
             }
 
             // write custom fields (from context and global context)
-            core.writeCustomFields(logObject, req, {});
+            core.writeCustomFields(logObject, req.logger, {});
 
             //override values with predefined values
             core.writeStaticFields(logObject);
 
             // Replace all set fields, which are marked to be reduced, with a placeholder (defined in log-core.js)
             core.reduceFields(postConfig, logObject);
-            if (core.checkLoggingLevel(logObject.level, req.logger.dynamicLogLevel))
+            if (core.checkLoggingLevel(logObject.level, req.logger.dynamicLogLevelInt))
                 core.sendLog(logObject);
             logSent = true;
         }
