@@ -166,7 +166,7 @@ var writeLogToConsole = function (logObject) {
         }
     } else {
         if (logObject !== undefined && validObject(logObject)) {
-            output =  JSON.stringify(logObject);
+            output = JSON.stringify(logObject);
             level = logObject.level;
         }
     }
@@ -199,7 +199,7 @@ var getLoggingLevel = function () {
 };
 
 // Sets the given function as log sink. Following arguments will be passed to the sink function: level, output
-var setSinkFunction = function(f) {
+var setSinkFunction = function (f) {
     if (f && typeof f === "function") {
         customSinkFunc = f;
     } else {
@@ -340,13 +340,13 @@ var logMessage = function () {
         logObject.level = level;
     }
 
-    var customFields = null;
-
     args.shift();
 
+
+    var customFieldsFromArgs = {};
     if (typeof args[args.length - 1] === "object") {
         if (validObject(args[args.length - 1])) {
-            customFields = args[args.length - 1];
+            customFieldsFromArgs = args[args.length - 1];
         }
         args.pop();
     }
@@ -354,6 +354,8 @@ var logMessage = function () {
     var msg = util.format.apply(util, args);
 
     var ctx = this;
+    var customFieldsFromCtx = {};
+
     if (ctx.logObject != null) {
         logObject.correlation_id = ctx.logObject.correlation_id;
         if (ctx.logObject.tenant_id != null) {
@@ -362,13 +364,17 @@ var logMessage = function () {
         if (ctx.logObject.request_id != null) {
             logObject.request_id = ctx.logObject.request_id;
         }
+        if (validObject(ctx.logObject.custom_fields)) {
+            customFieldsFromCtx = ctx.logObject.custom_fields;
+        }
     }
 
     logObject.msg = msg;
-
     logObject.type = logType;
 
-    if (customFields != null) {
+    var customFields = Object.assign({}, customFieldsFromCtx, customFieldsFromArgs);
+
+    if (Object.keys(customFields).length > 0) {
         logObject.custom_fields = {};
         for (var key in customFields) {
             if ((typeof customFields[key]) == "string") {
@@ -406,22 +412,28 @@ var setCorrelationId = function (correlationId) {
     return false;
 };
 
-var bindLogFunctions = function (logObj) {
-    logObj.logMessage = logMessage;
-    logObj.getCorrelationId = getCorrelationId;
-    logObj.setCorrelationId = setCorrelationId;
-    logObj.setDynamicLoggingLevel = setDynamicLoggingLevel;
+// setCustomFields sets custom fields, which will be added to each message logged using the corresponding context.
+var setCustomFields = function (customFields) {
+    var ctx = this;
+    if (ctx.logObject != null && validObject(customFields)) {
+        ctx.logObject.custom_fields = customFields;
+        return true;
+    }
+    return false;
+};
+
+// Sets the dynamic log level to the given level
+var setDynamicLoggingLevel = function (levelName) {
+    var ctx = this;
+    ctx.dynamicLogLevel = getLogLevelFromName(levelName);
 };
 
 var bindLogFunctionsToReq = function (req) {
     req.getCorrelationObject = getCorrelationObject;
-    bindLogFunctions(req);
-    generateLogger(req);
-};
-
-var generateLogger = function (req) {
     req.logger = {};
     req.logger.logObject = req.logObject;
+
+    bindLogFunctions(req);
     bindLogFunctions(req.logger);
     bindConvenienceMethods(req.logger);
 };
@@ -429,6 +441,14 @@ var generateLogger = function (req) {
 var bindLogFunctionsToCorrelationObj = function (logObj) {
     bindConvenienceMethods(logObj);
     bindLogFunctions(logObj);
+};
+
+var bindLogFunctions = function (logObj) {
+    logObj.logMessage = logMessage;
+    logObj.getCorrelationId = getCorrelationId;
+    logObj.setCorrelationId = setCorrelationId;
+    logObj.setDynamicLoggingLevel = setDynamicLoggingLevel;
+    logObj.setCustomFields = setCustomFields;
 };
 
 var bindConvenienceMethods = function (logObj) {
@@ -445,12 +465,18 @@ var getCorrelationObject = function () {
     }
 };
 
-var createCorrelationObject = function () {
-    var newContext = {};
-    newContext.logObject = {};
-    newContext.logObject.correlation_id = uuid();
-    bindLogFunctionsToCorrelationObj(newContext);
-    return newContext;
+var createCorrelationObject = function (customFields) {
+    var ctx = {};
+    ctx.logObject = {};
+    ctx.logObject.correlation_id = uuid();
+
+    bindLogFunctionsToCorrelationObj(ctx);
+
+    if (customFields) {
+        ctx.setCustomFields(customFields);
+    }
+
+    return ctx;
 };
 
 var validObject = function (obj) {
@@ -462,12 +488,6 @@ var validObject = function (obj) {
         return false;
     }
     return true;
-};
-
-// Sets the dynamic log level for the request to the given level
-var setDynamicLoggingLevel = function (levelName) {
-    var context = this;
-    context.dynamicLogLevel = getLogLevelFromName(levelName);
 };
 
 var writeStaticFields = function (logObject) {

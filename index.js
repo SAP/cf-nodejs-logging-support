@@ -59,8 +59,8 @@ exports.getCorrelationObject = function () {
     return effectiveLogger.getCorrelationObject();
 };
 
-exports.createCorrelationObject = function () {
-    return coreLogger.createCorrelationObject();
+exports.createCorrelationObject = function (customFields) {
+    return coreLogger.createCorrelationObject(customFields);
 };
 
 exports.setLogPattern = function (args) {
