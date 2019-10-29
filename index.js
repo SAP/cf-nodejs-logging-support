@@ -7,14 +7,17 @@ coreLogger.init();
 effectiveLogger = require("./cf-nodejs-logging-support-express/log-express");
 defaultConfig = require("./config.js");
 effectiveLogger.setCoreLogger(coreLogger);
-effectiveLogger.setConfig(defaultConfig.config);
 
+coreLogger.setConfig(defaultConfig.config);
+
+// Set the minimum logging level. Messages with a lower level, will not be forwarded. (Levels: error, warn, info, verbose, debug, silly)
 exports.setLoggingLevel = function (level) {
-    effectiveLogger.setLoggingLevel(level);
+    coreLogger.setLoggingLevel(level);
 };
 
+// Sets the given function as log sink. Following arguments will be passed to the sink function: level, output
 exports.setSinkFunction = function (func) {
-    effectiveLogger.setSinkFunction(func);
+    coreLogger.setSinkFunction(func);
 };
 
 exports.forceLogger = function (name) {
@@ -30,7 +33,6 @@ exports.forceLogger = function (name) {
             effectiveLogger = require("./cf-nodejs-logging-support-express/log-express");
     }
     effectiveLogger.setCoreLogger(coreLogger);
-    effectiveLogger.setConfig(defaultConfig.config);
 };
 
 
@@ -40,7 +42,7 @@ exports.logNetwork = function (req, res, next) {
 
 
 exports.logMessage = function (args) {
-    effectiveLogger.logMessage.apply(this, arguments);
+    coreLogger.logMessage.apply(this, arguments);
 };
 
 coreLogger.bindConvenienceMethods(exports);
@@ -55,17 +57,17 @@ exports.createWinstonTransport = function (options) {
     return require("./cf-nodejs-logging-support-winston/winston-transport").createTransport(options);
 };
 
-exports.getCorrelationObject = function () {
-    return effectiveLogger.getCorrelationObject();
+exports.createLogger = function (customFields) {
+    return coreLogger.createLogger(customFields);
 };
 
-exports.createCorrelationObject = function (customFields) {
-    return coreLogger.createCorrelationObject(customFields);
+exports.setCustomFields = function (customFields) {
+    return coreLogger.setCustomFields(customFields);
 };
 
 exports.setLogPattern = function (args) {
-    effectiveLogger.setLogPattern.apply(this, arguments);
+    coreLogger.setLogPattern.apply(this, arguments);
 };
-exports.overrideNetworkField = function (args) {
-    effectiveLogger.overrideField.apply(this, arguments);
+exports.overrideNetworkField = function (field, value) {
+    return coreLogger.overrideField(field, value);
 };

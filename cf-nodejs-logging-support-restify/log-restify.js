@@ -6,20 +6,6 @@ var setCoreLogger = function (coreLogger) {
     core = coreLogger;
 };
 
-var setConfig = function (config) {
-    core.setConfig(config);
-};
-
-// Set the minimum logging level. Messages with a lower level, will not be forwarded. (Levels: error, warn, info, verbose, debug, silly)
-var setLoggingLevel = function (level) {
-    core.setLoggingLevel(level);
-};
-
-// Sets the given function as log sink. Following arguments will be passed to the sink function: level, output
-var setSinkFunction = function (f) {
-    core.setSinkFunction(f);
-};
-
 // Logs requests and responses
 var logNetwork = function (req, res, next) {
     var logObject = core.initLog();
@@ -42,8 +28,6 @@ var logNetwork = function (req, res, next) {
         };
     }
 
-    var token = req.header(core.getDynLogLevelHeaderName());
-    core.bindDynLogLevel(token, req);
 
     var fallbacks = [];
     var selfReferences = [];
@@ -88,9 +72,11 @@ var logNetwork = function (req, res, next) {
     // Replace all set fields, which are marked to be reduced, with a placeholder (defined in log-core.js)
     core.reduceFields(preConfig, logObject);
 
-    req.logObject = logObject;
+    core.bindLoggerToReq(req, logObject);
 
-    core.bindLogFunctionsToReq(req);
+
+    var token = req.header(core.getDynLogLevelHeaderName());
+    core.bindDynLogLevel(token, req.logger);
 
     res.on("finish", function () {
 
@@ -130,44 +116,21 @@ var logNetwork = function (req, res, next) {
             logObject[kSelfReference] = logObject[selfReferences[kSelfReference]];
         }
 
+        // write custom fields (from context and global context)
+        core.writeCustomFields(logObject, req, {});
+
         //override values with predefined values
         core.writeStaticFields(logObject);
 
         // Replace all set fields, which are marked to be reduced, with a placeholder (defined in log-core.js)
         core.reduceFields(postConfig, logObject);
 
-        if (core.checkLoggingLevel(logObject.level, req.dynamicLogLevel))
+        if (core.checkLoggingLevel(logObject.level, req.logger.dynamicLogLevel))
             core.sendLog(logObject);
     });
 
     next();
 };
 
-// Logs message and custom fields
-var logMessage = function () {
-    core.logMessage.apply(this, arguments);
-};
-
-var setLogPattern = function (pattern) {
-    core.setLogPattern(pattern);
-};
-
-// Provides a context object, which allows message logging and uses correlationId from its parent request.
-var getCorrelationObject = function () {
-    return core.getCorrelationObject();
-};
-
-var overrideField = function (field, value) {
-    return core.overrideField(field, value);
-};
-
-exports.overrideField = overrideField;
 exports.setCoreLogger = setCoreLogger;
-exports.setLoggingLevel = setLoggingLevel;
-exports.setSinkFunction = setSinkFunction;
-exports.logNetwork = logNetwork;
 exports.logMessage = logMessage;
-exports.setLogPattern = setLogPattern;
-exports.getCorrelationObject = getCorrelationObject;
-exports.overrideField = overrideField;
-exports.setConfig = setConfig;
