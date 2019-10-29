@@ -381,25 +381,6 @@ describe('Test log-plainhttp', function () {
         });
     });
 
-    describe('Test correlation object', function () {
-
-        var testObject = {
-            test: "123"
-        }
-
-        beforeEach(function () {
-            core.getCorrelationObject = function () {
-                return testObject;
-            };
-        })
-
-        it("Testing getCorrelationObject method propagation", function () {
-            httpLogger.getCorrelationObject().test.should.equal(testObject.test);
-        });
-    });
-
-
-
     describe('Test overrideField', function () {
 
         var testObject = {};

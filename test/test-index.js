@@ -42,11 +42,6 @@ describe('Test index.js', function () {
                     "logMessage": function (args) {
                         messageArgs = arguments;
                     },
-                    "getCorrelationObject": function () {
-                        return {
-                            test: "express"
-                        };
-                    },
                     "overrideField": function (field1, value1) {
                         field = field1;
                         value = value1;
@@ -75,11 +70,6 @@ describe('Test index.js', function () {
                     "logMessage": function (args) {
                         messageArgs = args;
                     },
-                    "getCorrelationObject": function () {
-                        return {
-                            test: "restify"
-                        };
-                    },
                     "overrideField": function (field1, value1) {
                         field = field1;
                         value = value1;
@@ -106,11 +96,6 @@ describe('Test index.js', function () {
                     },
                     "logMessage": function (args) {
                         messageArgs = args;
-                    },
-                    "getCorrelationObject": function () {
-                        return {
-                            test: "plainhttp"
-                        };
                     },
                     "overrideField": function (field1, value1) {
                         field = field1;
@@ -167,20 +152,6 @@ describe('Test index.js', function () {
             logger.forceLogger("plainhttp");
             logger.setSinkFunction(fct);
             sinkFunction.should.equal(fct);
-        });
-
-        it('Test getCorrelationObject: ', function () {
-            var obj = {};
-            obj.test = "express";
-            logger.getCorrelationObject().test.should.equal(obj.test);
-
-            logger.forceLogger("restify");
-            obj.test = "restify";
-            logger.getCorrelationObject().test.should.equal(obj.test);
-
-            logger.forceLogger("plainhttp");
-            obj.test = "plainhttp";
-            logger.getCorrelationObject().test.should.equal(obj.test);
         });
 
         it('Test createCorrelationObject: ', function () {

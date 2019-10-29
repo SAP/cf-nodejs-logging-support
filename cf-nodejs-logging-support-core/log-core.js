@@ -32,6 +32,7 @@ for (var key in loggingLevels) {
 }
 
 var fixedValues = {};
+var globalCustomFields = {};
 var initDummy = "{}";
 var pattern = null;
 var stdout = process.stdout;
@@ -45,6 +46,7 @@ var dynLogLevelHeader = dynLogLevelDefaultHeader;
 var dynLogLevelKey = null;
 
 var customSinkFunc = null;
+
 
 // Initializes the core logger, including setup of environment var defined settings
 var init = function () {
@@ -353,26 +355,31 @@ var logMessage = function () {
 
     var msg = util.format.apply(util, args);
 
-    var ctx = this;
-    var customFieldsFromCtx = {};
+    var logger = this;
 
-    if (ctx.logObject != null) {
-        logObject.correlation_id = ctx.logObject.correlation_id;
-        if (ctx.logObject.tenant_id != null) {
-            logObject.tenant_id = ctx.logObject.tenant_id;
+    if (logger.logObject != null) {
+        logObject.correlation_id = logger.logObject.correlation_id;
+        if (logger.logObject.tenant_id != null) {
+            logObject.tenant_id = logger.logObject.tenant_id;
         }
-        if (ctx.logObject.request_id != null) {
-            logObject.request_id = ctx.logObject.request_id;
-        }
-        if (validObject(ctx.logObject.custom_fields)) {
-            customFieldsFromCtx = ctx.logObject.custom_fields;
+        if (logger.logObject.request_id != null) {
+            logObject.request_id = logger.logObject.request_id;
         }
     }
+
 
     logObject.msg = msg;
     logObject.type = logType;
 
-    var customFields = Object.assign({}, customFieldsFromCtx, customFieldsFromArgs);
+    writeCustomFields(logObject, logger, customFieldsFromArgs);
+
+    sendLog(logObject);
+    return true;
+};
+
+var writeCustomFields = function(logObject, logger, additionalFields) {
+    var fieldsFromLogger = extractCustomFieldsFromLogger(logger);
+    var customFields = Object.assign({}, fieldsFromLogger, additionalFields);
 
     if (Object.keys(customFields).length > 0) {
         logObject.custom_fields = {};
@@ -385,16 +392,31 @@ var logMessage = function () {
         }
     }
 
-    sendLog(logObject);
-    return true;
-};
+}
+
+var extractCustomFieldsFromLogger = function(logger) {
+    var fields = {};
+
+    if (logger.parent) {
+        fields = extractCustomFieldsFromLogger(logger.parent);
+    } else {
+        fields = globalCustomFields;
+    }
+
+    if (validObject(logger.customFields)) {
+        fields = Object.assign(fields, logger.customFields);
+    }
+
+    return fields;
+}
+
 
 //getCorrelationId returns the current correlation id for the req this is called on
 var getCorrelationId = function () {
-    var ctx = this;
-    if (ctx.logObject != null) {
-        if (ctx.logObject.correlation_id != null) {
-            return ctx.logObject.correlation_id;
+    var logger = this;
+    if (logger.logObject != null) {
+        if (logger.logObject.correlation_id != null) {
+            return logger.logObject.correlation_id;
         }
     }
     return null;
@@ -402,10 +424,10 @@ var getCorrelationId = function () {
 
 //setCorrelationId sets the Correlation_id for the request this is called on. Checks i the id is a correct uuid-v4. Returns true if set, false otherwise
 var setCorrelationId = function (correlationId) {
-    var ctx = this;
-    if (ctx.logObject != null) {
+    var logger = this;
+    if (logger.logObject != null) {
         if (uuidCheck.exec(correlationId)) {
-            ctx.logObject.correlation_id = correlationId;
+            logger.logObject.correlation_id = correlationId;
             return true;
         }
     }
@@ -414,9 +436,13 @@ var setCorrelationId = function (correlationId) {
 
 // setCustomFields sets custom fields, which will be added to each message logged using the corresponding context.
 var setCustomFields = function (customFields) {
-    var ctx = this;
-    if (ctx.logObject != null && validObject(customFields)) {
-        ctx.logObject.custom_fields = customFields;
+    var logger = this;
+    if (validObject(customFields)) {
+        if (logger.logObject != null) {
+            logger.customFields = customFields;
+        } else {
+            globalCustomFields = customFields;
+        }
         return true;
     }
     return false;
@@ -424,18 +450,26 @@ var setCustomFields = function (customFields) {
 
 // Sets the dynamic log level to the given level
 var setDynamicLoggingLevel = function (levelName) {
-    var ctx = this;
-    ctx.dynamicLogLevel = getLogLevelFromName(levelName);
+    var logger = this;
+    logger.dynamicLogLevel = getLogLevelFromName(levelName);
 };
 
-var bindLogFunctionsToReq = function (req) {
-    req.getCorrelationObject = getCorrelationObject;
-    req.logger = {};
-    req.logger.logObject = req.logObject;
+var bindLoggerToReq = function (req, logObject) {
+    req.logger = {
+        logObject: logObject,
+        customFields: {}
+    };
 
-    bindLogFunctions(req);
     bindLogFunctions(req.logger);
     bindConvenienceMethods(req.logger);
+
+    req.getLogger = function() {
+        return this.logger;
+    };
+
+    req.createLogger = function(customFields) {
+        return req.logger.createLogger(customFields)
+    };
 };
 
 var bindLogFunctionsToCorrelationObj = function (logObj) {
@@ -449,6 +483,7 @@ var bindLogFunctions = function (logObj) {
     logObj.setCorrelationId = setCorrelationId;
     logObj.setDynamicLoggingLevel = setDynamicLoggingLevel;
     logObj.setCustomFields = setCustomFields;
+    logObj.createLogger = createLogger;
 };
 
 var bindConvenienceMethods = function (logObj) {
@@ -457,26 +492,27 @@ var bindConvenienceMethods = function (logObj) {
     }
 };
 
-var getCorrelationObject = function () {
-    if (this.logObject != null && this.logger != null) {
-        return this.logger;
+var createLogger = function (customFields) {
+    var logger = {};
+
+    if (this.logObject != null) {
+        logger.logObject = this.logObject;
+        logger.customFields = {};
+        logger.parent = this;
     } else {
-        return createCorrelationObject();
+        logger.logObject = {
+            correlation_id: uuid()
+        };
+        logger.customFields = {};
     }
-};
 
-var createCorrelationObject = function (customFields) {
-    var ctx = {};
-    ctx.logObject = {};
-    ctx.logObject.correlation_id = uuid();
-
-    bindLogFunctionsToCorrelationObj(ctx);
+    bindLogFunctionsToCorrelationObj(logger);
 
     if (customFields) {
-        ctx.setCustomFields(customFields);
+        logger.setCustomFields(customFields);
     }
 
-    return ctx;
+    return logger;
 };
 
 var validObject = function (obj) {
@@ -521,12 +557,12 @@ var getLogLevelFromName = function (levelName) {
     return (loggingLevels[levelName.toLowerCase()] != undefined) ? loggingLevels[levelName.toLowerCase()] : null;
 };
 
-// Binds the Loglevel extracted from JWT token to the given req
-var bindDynLogLevel = function (token, req) {
+// Binds the Loglevel extracted from JWT token to the given request logger
+var bindDynLogLevel = function (token, logger) {
     var payload = verifyAndDecodeJWT(token, dynLogLevelKey);
 
     if (payload) {
-        req.dynamicLogLevel = getLogLevelFromName(payload.level);
+        logger.dynamicLogLevel = getLogLevelFromName(payload.level);
     }
 };
 
@@ -546,7 +582,6 @@ var verifyAndDecodeJWT = function (token, key) {
     }
 };
 
-
 exports.checkLoggingLevel = checkLoggingLevel;
 exports.init = init;
 exports.overrideField = overrideField;
@@ -559,10 +594,10 @@ exports.sendLog = sendLog;
 exports.logMessage = logMessage;
 exports.validObject = validObject;
 exports.setLogPattern = setLogPattern;
-exports.bindLogFunctionsToReq = bindLogFunctionsToReq;
-exports.getCorrelationObject = util.deprecate(getCorrelationObject, "the function getCorrelationObject is deprecated. use log.createCorrelationObject instead.");
-exports.createCorrelationObject = createCorrelationObject;
+exports.bindLoggerToReq = bindLoggerToReq;
+exports.createLogger = createLogger;
 exports.setConfig = setConfig;
+exports.setCustomFields = setCustomFields;
 exports.getPostLogConfig = getPostLogConfig;
 exports.getPreLogConfig = getPreLogConfig;
 exports.handleConfigDefaults = handleConfigDefaults;
@@ -570,3 +605,4 @@ exports.getDynLogLevelHeaderName = getDynLogLevelHeaderName;
 exports.bindDynLogLevel = bindDynLogLevel;
 exports.bindConvenienceMethods = bindConvenienceMethods;
 exports.setSinkFunction = setSinkFunction;
+exports.writeCustomFields = writeCustomFields;
