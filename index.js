@@ -61,6 +61,10 @@ exports.createLogger = function (customFields) {
     return coreLogger.createLogger(customFields);
 };
 
+exports.registerCustomFields = function(fieldNames) {
+    return coreLogger.registerCustomFields(fieldNames)
+};
+
 exports.setCustomFields = function (customFields) {
     return coreLogger.setCustomFields(customFields);
 };

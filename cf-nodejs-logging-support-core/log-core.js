@@ -27,6 +27,7 @@ var initDummy = "{}";
 
 var fixedValues = {};
 var globalCustomFields = {};
+var registeredCustomFields = [];
 
 var pattern = null;
 var patternDivider = /((?:\{\{)([^\}\{]+)(?:\}\}))/g;
@@ -40,6 +41,7 @@ var dynLogLevelHeader;
 var dynLogLevelKey;
 
 var customSinkFunc;
+
 var convenientLogFunctions = [];
 
 
@@ -396,20 +398,26 @@ var logMessage = function () {
 // Read custom fields from provided logger and add them to the provided logObject.
 // If additionalFields contains fields, that already exist, these fields will be overwritten.
 var writeCustomFields = function (logObject, logger, additionalFields) {
-    var fieldsFromLogger = extractCustomFieldsFromLogger(logger);
-    var customFields = Object.assign({}, fieldsFromLogger, additionalFields);
+    var providedFields = Object.assign({}, extractCustomFieldsFromLogger(logger), additionalFields);
 
-    if (Object.keys(customFields).length > 0) {
-        logObject.custom_fields = {};
-        for (var key in customFields) {
-            if ((typeof customFields[key]) == "string") {
-                logObject.custom_fields[key] = customFields[key];
-            } else {
-                logObject.custom_fields[key] = JSON.stringify(customFields[key]);
-            }
+    var customFields = {};
+    for (var key in providedFields) {
+        // Skip unregistered fields
+        if (!registeredCustomFields.includes(key)) continue;
+
+        var value = providedFields[key];
+
+        // Write value to customFields object. Stringify, if necessary.
+        if ((typeof value) == "string") {
+            customFields[key] = value;
+        } else {
+            customFields[key] = JSON.stringify(value);
         }
     }
 
+    if (Object.keys(customFields).length > 0) {
+        logObject.custom_fields = customFields;
+    }
 }
 
 // Recursive method, which reads provided custom fields from the given logger, its parent loggers
@@ -454,7 +462,7 @@ var setCorrelationId = function (correlationId) {
     return false;
 };
 
-// setCustomFields sets custom fields, which will be added to each message logged using the corresponding context.
+// Sets custom fields, which will be added to each message logged using the corresponding context.
 var setCustomFields = function (customFields) {
     var logger = this;
     if (isValidObject(customFields)) {
@@ -466,6 +474,27 @@ var setCustomFields = function (customFields) {
         return true;
     }
     return false;
+};
+
+// Registers a (white)list of allowed custom field names
+var registerCustomFields = function (fieldNames) {
+
+    registeredCustomFields = [];
+
+    if (!Array.isArray(fieldNames)) return false;
+
+    var list = [];
+    for (var name of fieldNames) {
+        if (typeof name != "string") {
+            return false;
+        } else {
+            list.push(name);
+        }
+    }
+
+    // copy without references
+    registeredCustomFields = JSON.parse(JSON.stringify(list));
+    return true;
 };
 
 // Sets the dynamic log level to the given level
@@ -634,6 +663,7 @@ exports.writeStaticFields = writeStaticFields;
 exports.createLogger = createLogger;
 exports.logMessage = logMessage;
 exports.getLoggingLevel = getLoggingLevel;
+exports.registerCustomFields = registerCustomFields;
 exports.setConfig = setConfig;
 exports.setCustomFields = setCustomFields;
 exports.setLoggingLevel = setLoggingLevel;
