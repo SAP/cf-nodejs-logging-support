@@ -18,7 +18,7 @@ describe('Test config', function () {
         core = importFresh("../cf-nodejs-logging-support-core/log-core.js");
         httpLogger = importFresh("../cf-nodejs-logging-support-plainhttp/log-plainhttp.js");
         httpLogger.setCoreLogger(core);
-        httpLogger.setConfig(importFresh("../config.js").config);
+        core.setConfig(importFresh("../config.js").config);
     });
 
     describe('Test logNetwork', function () {
@@ -133,42 +133,5 @@ describe('Test config', function () {
         });
 
 
-    });
-
-    describe('Test overrideField', function () {
-
-        var testObject = {};
-
-        beforeEach(function () {
-            core.overrideField = function (field, value) {
-                testObject[field] = value;
-                return true;
-            };
-        })
-
-        it("Testing overrideField method propagation", function () {
-            assert.isTrue(httpLogger.overrideField("msg", "test"));
-            testObject["msg"].should.equal("test");
-        });
-
-    });
-
-    describe('Test setLoggingLevel', function () {
-        var level = null;
-
-        beforeEach(function () {
-            core.setLoggingLevel = function (lvl) {
-                level = lvl;
-            };
-        });
-
-        it("Test Logging level", function () {
-            httpLogger.setLoggingLevel("error");
-            level.should.equal("error");
-            httpLogger.setLoggingLevel("log");
-            level.should.equal("log");
-            httpLogger.setLoggingLevel("test");
-            level.should.equal("test");
-        });
     });
 });

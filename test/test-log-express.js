@@ -18,7 +18,7 @@ describe('Test log-express', function () {
         core = importFresh("../cf-nodejs-logging-support-core/log-core.js");
         expressLogger = importFresh("../cf-nodejs-logging-support-express/log-express.js");
         expressLogger.setCoreLogger(core);
-        expressLogger.setConfig(importFresh("./allbranchconfig.js").config);
+        core.setConfig(importFresh("./allbranchconfig.js").config);
     });
 
     describe('Test linkings', function () {

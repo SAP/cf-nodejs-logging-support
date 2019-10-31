@@ -18,7 +18,7 @@ describe('Test log-restify', function () {
         core = importFresh("../cf-nodejs-logging-support-core/log-core.js");
         restifyLogger = importFresh("../cf-nodejs-logging-support-restify/log-restify.js");
         restifyLogger.setCoreLogger(core);
-        restifyLogger.setConfig(importFresh("./allbranchconfig.js").config);
+        setConfig.setConfig(importFresh("./allbranchconfig.js").config);
     });
 
 

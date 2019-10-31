@@ -18,7 +18,7 @@ describe('Test log-plainhttp', function () {
         core = importFresh("../cf-nodejs-logging-support-core/log-core.js");
         httpLogger = importFresh("../cf-nodejs-logging-support-plainhttp/log-plainhttp");
         httpLogger.setCoreLogger(core);
-        httpLogger.setConfig(importFresh("./allbranchconfig.js").config);
+        core.setConfig(importFresh("./allbranchconfig.js").config);
     });
 
     describe('Test linkings', function () {

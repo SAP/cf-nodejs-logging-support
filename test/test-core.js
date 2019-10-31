@@ -14,8 +14,8 @@ describe('Test log-core', function () {
         var defHeader, envAdress;
         var core = rewire("../cf-nodejs-logging-support-core/log-core.js");
         before(function () {
-            defHeader = core.__get__("dynLogLevelDefaultHeader");
-            envAdress = core.__get__("envDynLogHeader");
+            defHeader = core.__get__("DEFAULT_DYN_LOG_LEVEL_HEADER");
+            envAdress = core.__get__("ENV_DYN_LOG_HEADER");
         });
 
         it('Test correct reading from process.env', function () {
@@ -326,14 +326,14 @@ describe('Test log-core', function () {
         });
 
         it('Test equals method: ', function () {
-            core.validObject(null).should.equal(false);
-            core.validObject(undefined).should.equal(false);
-            core.validObject({}).should.equal(false);
-            core.validObject("test").should.equal(false);
-            core.validObject(1).should.equal(false);
-            core.validObject(1.0).should.equal(false);
-            core.validObject(0).should.equal(false);
-            core.validObject({
+            core.isValidObject(null).should.equal(false);
+            core.isValidObject(undefined).should.equal(false);
+            core.isValidObject({}).should.equal(false);
+            core.isValidObject("test").should.equal(false);
+            core.isValidObject(1).should.equal(false);
+            core.isValidObject(1.0).should.equal(false);
+            core.isValidObject(0).should.equal(false);
+            core.isValidObject({
                 "test": "hallo"
             }).should.equal(true);
         });
@@ -344,7 +344,7 @@ describe('Test log-core', function () {
             var b = {};
             a.b = b;
             b.a = a;
-            core.validObject(a).should.equal(true);
+            core.isValidObject(a).should.equal(true);
         });
 
     });
@@ -651,20 +651,20 @@ describe('Test log-core', function () {
         });
     });
 
-    describe('Test getCorrelationObject', function () {
+    describe('Test createLogger/getLogger', function () {
         var core = rewire("../cf-nodejs-logging-support-core/log-core.js");
-        var logObject = null;
-        var getCorrelationObject;
+        var createLogger;
         var uuid;
         var oldLogMessage;
         var level;
         var levels;
 
         before(function () {
+            core.init();
             core.setConfig(importFresh("../config.js").config);
-            getCorrelationObject = core.__get__("getCorrelationObject");
+            createLogger = core.__get__("createLogger");
             oldLogMessage = core.__get__("logMessage");
-            levels = core.__get__("loggingLevels");
+            levels = core.__get__("LOGGING_LEVELS");
             core.__set__("logMessage", function () {
                 level = arguments[0];
                 oldLogMessage(arguments);
@@ -672,8 +672,8 @@ describe('Test log-core', function () {
             uuid = require('uuid/v4');
         });
 
-        it('Test correct new object', function () {
-            var obj = getCorrelationObject();
+        it('Test correct new logger', function () {
+            var obj = createLogger();
             obj.logObject.correlation_id.should.be.a("string");
             var correlation_id = obj.logObject.correlation_id;
             obj.getCorrelationId().should.equal(correlation_id);
@@ -683,27 +683,23 @@ describe('Test log-core', function () {
 
         it('Test correct correlation to req object', function () {
             var req = {};
-            req.logObject = {};
-            core.bindLogFunctionsToReq(req);
-            req.setCorrelationId(uuid());
-            var obj1 = req.getCorrelationObject();
-            var obj2 = req.getCorrelationObject();
-            req.getCorrelationId().should.equal(obj1.getCorrelationId());
+            core.bindLoggerToRequest(req, {});
+            req.logger.setCorrelationId(uuid());
+            var obj1 = req.getLogger();
+            var obj2 = req.getLogger();
+            req.logger.getCorrelationId().should.equal(obj1.getCorrelationId());
             obj2.setCorrelationId(uuid());
             obj2.getCorrelationId().should.equal(obj1.getCorrelationId());
-
-            obj2.getCorrelationId().should.equal(req.getCorrelationId());
+            obj2.getCorrelationId().should.equal(req.logger.getCorrelationId());
         });
 
         it('test convenience Methods', function () {
-            var obj = getCorrelationObject();
+            var obj = createLogger();
             for (var lvl in levels) {
                 obj[lvl]("test");
                 level.should.equal(lvl);
             }
         });
-
-
     });
 
 
@@ -712,6 +708,7 @@ describe('Test log-core', function () {
 
         var logObject = null;
         var log = null;
+        var registerCustomFields = null;
 
         before(function () {
             core.__set__({
@@ -722,6 +719,7 @@ describe('Test log-core', function () {
             core.setConfig(importFresh("../config.js").config);
 
             log = core.__get__("logMessage");
+            registerCustomFields = core.__get__("registerCustomFields");
         });
 
         it("Test simple log", function () {
@@ -777,6 +775,9 @@ describe('Test log-core', function () {
         });
 
         it("Test custom fields log output (object)", function () {
+
+            registerCustomFields(["field"]);
+
             log("info", "Test", {
                 "field": "value"
             });
@@ -788,6 +789,8 @@ describe('Test log-core', function () {
         });
 
         it("Test custom fields log output (convert array to object)", function () {
+            registerCustomFields(["0", "1", "2"]);
+           
             log("info", "Test", [
                 1, "123", { "field": "values" }
             ]);
@@ -824,6 +827,8 @@ describe('Test log-core', function () {
         });
 
         it("Test parameter and custom fields log", function () {
+            registerCustomFields(["string", "int", "obj"]);
+
             log("info", "Test %s", "abc", {
                 "string": "text",
                 "int": 0,
@@ -837,6 +842,24 @@ describe('Test log-core', function () {
                 "string": "text",
                 "int": "0",
                 "obj": "{\"test\":\"value\"}"
+            }));
+        });
+
+        
+        it("Test unregistered custom fields log", function () {
+            registerCustomFields(["int"]);
+
+            log("info", "Test %s", "abc", {
+                "string": "text",
+                "int": 0,
+                "obj": {
+                    "test": "value"
+                }
+            });
+
+            logObject.msg.should.equal('Test abc');
+            JSON.stringify(logObject.custom_fields).should.equal(JSON.stringify({
+                "int": "0",
             }));
         });
 
@@ -895,8 +918,8 @@ describe('Test log-core', function () {
                 }
             });
             core.setConfig(importFresh("../config.js").config);
-            defaultHeader = core.__get__("dynLogLevelDefaultHeader");
-            envHeaderVariable = core.__get__("envDynLogHeader");
+            defaultHeader = core.__get__("DEFAULT_DYN_LOG_LEVEL_HEADER");
+            envHeaderVariable = core.__get__("ENV_DYN_LOG_HEADER");
             process.env[envHeaderVariable] = null;
         });
 
@@ -1094,28 +1117,28 @@ describe('Test log-core', function () {
         var levels;
 
         before(function () {
-            levels = core.__get__("loggingLevels");
-            core.__set__("sendLog", function (level, logObject, dynamicLogLevel) {
+            levels = core.__get__("LOGGING_LEVELS");
+            core.__set__("sendLog", function (logObject) {
             });
         });
 
         beforeEach(function () {
             req = {};
-            core.bindLogFunctionsToReq(req);
+            core.bindLoggerToRequest(req, {});
         });
 
         it("test setDynamicLogLevel", function () {
-            req.setDynamicLoggingLevel("error");
-            assert.equal(req.dynamicLogLevel, levels["error"]);
-            req.setDynamicLoggingLevel("info");
-            assert.equal(req.dynamicLogLevel, levels["info"]);
+            req.logger.setDynamicLoggingLevel("error");
+            assert.equal(req.logger.dynamicLogLevelInt, levels["error"]);
+            req.logger.setDynamicLoggingLevel("info");
+            assert.equal(req.logger.dynamicLogLevelInt, levels["info"]);
         })
 
         it("test logMessage with dynamicLogLevel", function () {
-            req.setDynamicLoggingLevel("info");
-            assert.isTrue(req.logMessage("info", "will go through"));
-            req.setDynamicLoggingLevel("error");
-            assert.isFalse(req.logMessage("info", "will not go through"));
+            req.logger.setDynamicLoggingLevel("info");
+            assert.isTrue(req.logger.logMessage("info", "will go through"));
+            req.logger.setDynamicLoggingLevel("error");
+            assert.isFalse(req.logger.logMessage("info", "will not go through"));
         });
     });
 
@@ -1137,7 +1160,7 @@ describe('Test log-core', function () {
             });
             verifyAndDecodeJWT = core.__get__("verifyAndDecodeJWT");
             getLogLevelFromName = core.__get__("getLogLevelFromName");
-            envHeaderVariable = core.__get__("envDynLogHeader");
+            envHeaderVariable = core.__get__("ENV_DYN_LOG_HEADER");
             process.env[envHeaderVariable] = null;
         });
 
@@ -1153,11 +1176,11 @@ describe('Test log-core', function () {
                     }
                 }
             });
-            var req = {};
-            core.bindDynLogLevel(null, req);
-            assert.isUndefined(req.dynamicLogLevel);
-            core.bindDynLogLevel(1, req);
-            req.dynamicLogLevel.should.equal(0);
+            var req = {logger : {}};
+            core.bindDynLogLevel(null, req.logger);
+            assert.isUndefined(req.logger.dynamicLogLevelInt);
+            core.bindDynLogLevel(1, req.logger);
+            req.logger.dynamicLogLevelInt.should.equal(0);
         });
 
         it("test getLogLevelFromName", function () {

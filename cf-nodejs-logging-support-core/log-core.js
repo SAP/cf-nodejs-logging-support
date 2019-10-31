@@ -593,7 +593,7 @@ var writeStaticFields = function (logObject) {
     }
 };
 
-// overrides Values in ALL Network logs (will impact log parsing, so use with caution!), returns true if field is set.
+// overrides values in ALL network logs (will impact log parsing, so use with caution!), returns true if field is set.
 var overrideField = function (field, value) {
     if (field != null && typeof field == "string") {
         if (value == undefined || value == null) {
@@ -652,19 +652,20 @@ exports.getDynLogLevelHeaderName = getDynLogLevelHeaderName;
 exports.getPostLogConfig = getPostLogConfig;
 exports.getPreLogConfig = getPreLogConfig;
 exports.handleConfigDefaults = handleConfigDefaults;
+exports.isValidObject = isValidObject;
 exports.init = init;
 exports.initLog = initLog;
 exports.reduceFields = reduceFields;
 exports.sendLog = sendLog;
 exports.writeCustomFields = writeCustomFields;
 exports.writeStaticFields = writeStaticFields;
+exports.setConfig = setConfig;
 
 // external api methods
 exports.createLogger = createLogger;
 exports.logMessage = logMessage;
 exports.getLoggingLevel = getLoggingLevel;
 exports.registerCustomFields = registerCustomFields;
-exports.setConfig = setConfig;
 exports.setCustomFields = setCustomFields;
 exports.setLoggingLevel = setLoggingLevel;
 exports.setLogPattern = setLogPattern;

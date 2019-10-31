@@ -1,6 +1,7 @@
 const importFresh = require('import-fresh');
 var chai = require("chai");
 var Module = require('module');
+
 var linking = null;
 var req = null;
 var res = null;
@@ -11,10 +12,11 @@ var loggingLevel = null;
 var sinkFunction = null;
 var messageArgs = null;
 var logPattern = null;
+var customFields = null;
+var registeredFields = null;
+
 var originalRequire = Module.prototype.require;
-
-
-var logger = importFresh("../index.js");
+var logger;
 var assert = chai.assert;
 chai.should();
 
@@ -27,67 +29,42 @@ describe('Test index.js', function () {
                 linking = "express";
                 return {
                     "setCoreLogger": function () {},
-                    "setConfig": function () {},
                     "logNetwork": function (req1, res1, next1) {
                         req = req1;
                         res = res1;
                         next = next1;
-                    },
-                    "setLoggingLevel": function (level) {
-                        loggingLevel = level;
-                    },
-                    "setSinkFunction": function (fct) {
-                        sinkFunction = fct;
-                    },
-                    "logMessage": function (args) {
-                        messageArgs = arguments;
-                    },
-                    "overrideField": function (field1, value1) {
-                        field = field1;
-                        value = value1;
-                    },
-                    "setLogPattern": function (pattern) {
-                        logPattern = pattern
-                    } 
+                    }
                 };
             }
-            if (args[0] === "./cf-nodejs-logging-support-restify/log-restify") {
+            else if (args[0] === "./cf-nodejs-logging-support-restify/log-restify") {
                 linking = "restify";
                 return {
                     "setCoreLogger": function () {},
-                    "setConfig": function () {},
                     "logNetwork": function (req1, res1, next1) {
                         req = req1;
                         res = res1;
                         next = next1;
-                    },
-                    "setLoggingLevel": function (level) {
-                        loggingLevel = level;
-                    },
-                    "setSinkFunction": function (fct) {
-                        sinkFunction = fct;
-                    },
-                    "logMessage": function (args) {
-                        messageArgs = args;
-                    },
-                    "overrideField": function (field1, value1) {
-                        field = field1;
-                        value = value1;
-                    },
-                    "setLogPattern": function (pattern) {
-                        logPattern = pattern
-                    } 
+                    }
                 };
             }
-            if (args[0] === "./cf-nodejs-logging-support-plainhttp/log-plainhttp") {
+            else if (args[0] === "./cf-nodejs-logging-support-plainhttp/log-plainhttp") {
                 linking = "plainhttp";
                 return {
                     "setCoreLogger": function () {},
-                    "setConfig": function () {},
                     "logNetwork": function (req1, res1) {
                         req = req1;
                         res = res1;
+                    }
+                };
+            }
+           else if (args[0] === "./cf-nodejs-logging-support-core/log-core") {
+                return {
+                    "init": function() {},
+                    "bindConvenienceMethods": function() {},
+                    "createLogger": function(fields) { 
+                        customFields = fields;
                     },
+                    "setConfig": function () {},
                     "setLoggingLevel": function (level) {
                         loggingLevel = level;
                     },
@@ -95,7 +72,7 @@ describe('Test index.js', function () {
                         sinkFunction = fct;
                     },
                     "logMessage": function (args) {
-                        messageArgs = args;
+                        messageArgs = Array.prototype.slice.call(arguments);
                     },
                     "overrideField": function (field1, value1) {
                         field = field1;
@@ -103,11 +80,19 @@ describe('Test index.js', function () {
                     },
                     "setLogPattern": function (pattern) {
                         logPattern = pattern;
-                    } 
-                };
+                    },
+                    "setCustomFields": function(fields) {
+                        customFields = fields;
+                    }, 
+                    "registerCustomFields": function(fieldNames) {
+                        registeredFields = fieldNames;
+                    }, 
+                }
             }
             return originalRequire.apply(this, arguments);
         };
+
+        logger = importFresh("../index.js");
     });
 
     beforeEach(function () {
@@ -117,7 +102,7 @@ describe('Test index.js', function () {
     after(function () {
         Module.prototype.require = origRequire;
     });
-    describe('setLoggingLevel', function () {
+    describe('Test parameter forwarding', function () {
 
         it('Test forceLogger: ', function () {
             logger.forceLogger("express");
@@ -154,9 +139,10 @@ describe('Test index.js', function () {
             sinkFunction.should.equal(fct);
         });
 
-        it('Test createCorrelationObject: ', function () {
-            logger.createCorrelationObject().logObject.correlation_id.should.not.equal(null);
-            logger.createCorrelationObject().logObject.correlation_id.should.not.equal(logger.createCorrelationObject().logObject.correlation_id);
+        it('Test createLogger: ', function () {
+            var fields = {a: "1", b: "2"};
+            logger.createLogger(fields);
+            customFields.should.eql({a: "1", b: "2"});
         });
 
         it('Test logMessage: ', function () {
@@ -216,8 +202,10 @@ describe('Test index.js', function () {
         });
 
         it('Test winstonTransport: ', function () {
-          /*  var obj = logger.createWinstonTransport();
-            assert.typeOf(obj, "object");*/
+            var obj = logger.createWinstonTransport({level: "debug"});
+            assert.typeOf(obj, "object");
+            obj.constructor.name.should.equal("CfNodejsLoggingSupportLogger");
+            obj.level.should.equal("debug");
         });
 
         it('Test setLogPattern: ' , function () {
@@ -234,6 +222,30 @@ describe('Test index.js', function () {
             logger.setLogPattern(pattern + "plain");
             logPattern.should.equal(pattern + "plain");
         });
+
+
+        it('Test setCustomFields: ' , function () {
+           logger.setCustomFields({a: "3", b: "4"});
+           customFields.should.eql({a: "3", b: "4"});
+
+           logger.setCustomFields({c: "5"});
+           customFields.should.eql({c: "5"});
+
+           logger.setCustomFields({});
+           customFields.should.eql({});
+        });
+
+        it('Test registerCustomFields: ' , function () {
+            logger.registerCustomFields({a: "3", b: "4"});
+            registeredFields.should.eql({a: "3", b: "4"});
+ 
+            logger.registerCustomFields({c: "5"});
+            registeredFields.should.eql({c: "5"});
+ 
+            logger.registerCustomFields({});
+            registeredFields.should.eql({});
+         });
+
 
     });
 });
