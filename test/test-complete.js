@@ -22,6 +22,16 @@ describe('Test Complete', function () {
     process.env.LOG_REMOTE_USER = true;
     process.env.LOG_REFERER = true;
 
+    process.env.VCAP_APPLICATION = JSON.stringify({
+        application_id: "test-app-id",
+        application_name: "test-app-name",
+        instance_index: "7",
+        organization_id: "test-org-id",
+        organization_name: "test-org-name",
+        space_id: "test-space-id",
+        space_name: "test-space-name"
+    });
+
     var log = importFresh("../index");
     var results = require("./exp-results");
 
@@ -60,8 +70,8 @@ describe('Test Complete', function () {
         }
         req = httpMock.createRequest({
             headers: {
-                "X-CorrelationID": "uuid-Dummy",
-                "remote-user": "test_user"
+                "X-CorrelationID": "test-correlation-id",
+                "remote-user": "test-user"
             }
         });
         res = httpMock.createResponse();

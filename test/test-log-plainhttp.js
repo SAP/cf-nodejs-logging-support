@@ -23,26 +23,14 @@ describe('Test log-plainhttp', function () {
 
     describe('Test linkings', function () {
         var countSendLog;
-        var countSetLoggingLevel;
-        var countSetSinkFunction;
         var countInitLog;
-        var countLogMessage;
 
         beforeEach(function () {
             countSendLog = 0;
-            countSetLoggingLevel = 0;
-            countSetSinkFunction = 0;
             countInitLog = 0;
-            countLogMessage = 0;
 
             core.sendLog = function () {
                 countSendLog++;
-            };
-            core.setLoggingLevel = function () {
-                countSetLoggingLevel++;
-            };
-            core.setSinkFunction = function () {
-                countSetSinkFunction++;
             };
 
             core.initBack = core.initLog;
@@ -50,31 +38,11 @@ describe('Test log-plainhttp', function () {
                 countInitLog++;
                 return {};
             };
-
-            core.logMessage = {};
-            core.logMessage.apply = function () {
-                countLogMessage++;
-            };
         });
 
         afterEach(function () {
             core.initLog = core.initBack;
         })
-
-        it("Test linking setLoggingLevel", function () {
-            httpLogger.setLoggingLevel("test");
-            assert.equal(countSetLoggingLevel, 1);
-        });
-
-        it("Test linking setSinkFunction", function () {
-            httpLogger.setSinkFunction("test");
-            assert.equal(countSetSinkFunction, 1);
-        });
-
-        it("Test linking logMessage", function () {
-            httpLogger.logMessage("test");
-            assert.equal(countLogMessage, 1);
-        });
 
         it("Test linking logNetwork", function () {
             var req = {};
@@ -349,96 +317,16 @@ describe('Test log-plainhttp', function () {
         });
 
         it("Test log ommitting per loging Level", function () {
-            httpLogger.setLoggingLevel("error");
+            core.setLoggingLevel("error");
             httpLogger.logNetwork(req, res, next);
             fireLog();
             assert.isNull(logObject);
-            httpLogger.setLoggingLevel("info");
+            core.setLoggingLevel("info");
             httpLogger.logNetwork(req, res, next);
             fireLog();
             assert.isNotNull(logObject);
         });
 
 
-    });
-
-    describe('Test setLoggingLevel', function () {
-        var level = null;
-
-        beforeEach(function () {
-            core.setLoggingLevel = function (lvl) {
-                level = lvl;
-            };
-        });
-
-        it("Test Logging level", function () {
-            httpLogger.setLoggingLevel("error");
-            level.should.equal("error");
-            httpLogger.setLoggingLevel("log");
-            level.should.equal("log");
-            httpLogger.setLoggingLevel("test");
-            level.should.equal("test");
-        });
-    });
-
-    describe('Test overrideField', function () {
-
-        var testObject = {};
-
-        beforeEach(function () {
-            core.overrideField = function (field, value) {
-                testObject[field] = value;
-                return true;
-            };
-        })
-
-        it("Testing overrideField method propagation", function () {
-            assert.isTrue(httpLogger.overrideField("msg", "test"));
-            testObject["msg"].should.equal("test");
-        });
-
-    });
-
-    describe('Test logMessage', function () {
-        var expThat = null;
-        var expArg = null;
-
-
-        beforeEach(function () {
-            core.logMessage = {};
-            core.logMessage.apply = function (that, arg) {
-                expArg = arg;
-                expThat = that;
-            };
-        });
-
-        it("Test arg conservation", function () {
-            httpLogger.logMessage("test", "this", {
-                "totally": "random"
-            });
-            expArg[0].should.equal("test");
-            expArg[1].should.equal("this");
-            assert.property(expArg[2], "totally");
-            assert.equal(expArg[2].totally, "random");
-            assert.equal(expArg[3], undefined);
-        });
-    });
-
-    describe('Test setLogPattern', function () {
-        var pattern = null;
-
-
-        beforeEach(function () {
-            core.setLogPattern = function (p) {
-                pattern = p;
-            };
-        });
-
-        it("Test pattern conservation", function () {
-            httpLogger.setLogPattern("{{hallo}} - {{welt}}");
-
-            pattern.should.equal("{{hallo}} - {{welt}}");
-
-        });
     });
 });
