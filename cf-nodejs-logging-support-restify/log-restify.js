@@ -133,4 +133,4 @@ var logNetwork = function (req, res, next) {
 };
 
 exports.setCoreLogger = setCoreLogger;
-exports.logMessage = logMessage;
+exports.logNetwork = logNetwork;
