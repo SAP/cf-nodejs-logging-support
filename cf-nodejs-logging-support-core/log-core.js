@@ -465,7 +465,7 @@ var setCorrelationId = function (correlationId) {
 // Sets custom fields, which will be added to each message logged using the corresponding context.
 var setCustomFields = function (customFields) {
     var logger = this;
-    if (isValidObject(customFields)) {
+    if (isValidObject(customFields, true)) {
         if (logger.logObject != null) {
             logger.customFields = customFields;
         } else {
@@ -575,12 +575,12 @@ var createLogger = function (customFields) {
 };
 
 // checks if the given argument is a non-empty instance of Object
-var isValidObject = function (obj) {
+var isValidObject = function (obj, canBeEmpty) {
     if (obj === null || obj === undefined) {
         return false;
-    } else if (Object.keys(obj).length === 0 && obj.constructor === Object) {
-        return false;
     } else if (typeof obj !== "object") {
+        return false;
+    } else if (!canBeEmpty && Object.keys(obj).length === 0) {
         return false;
     }
     return true;
