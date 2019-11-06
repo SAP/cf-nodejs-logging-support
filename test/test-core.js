@@ -86,7 +86,7 @@ describe('Test log-core', function () {
         before(function () {
             prepareDummy = core.__get__("prepareInitDummy");
         });
-        
+
         it('Test fallbacks:', function () {
 
             var testConfig = [
@@ -108,7 +108,7 @@ describe('Test log-core', function () {
                         return obj["test-field-a"] * 2;
                     }
                 }
-    
+
             ]
 
             var expected = {
@@ -135,7 +135,7 @@ describe('Test log-core', function () {
                         type: "nested-env",
                         path: ["FIELD", "c"]
                     }
-                },{
+                }, {
                     name: "test-field-d",
                     core: true,
                     mandatory: true,
@@ -582,7 +582,7 @@ describe('Test log-core', function () {
             sendLog({
                 "field": "value"
             });
-            JSON.stringify(logMeta).should.equal('{"field":"value"}');
+            logMeta.should.eql({ field: "value" });
         });
 
         it('Test complex json output', function () {
@@ -599,7 +599,7 @@ describe('Test log-core', function () {
                     }]
                 }
             });
-            JSON.stringify(logMeta).should.equal('{"field1":"value","field2":42,"field3":47.11,"field4":{"innerField":73,"innerArray":[{"arrayField1":1},{"arrayField2":2}]}}');
+            logMeta.should.eql({ field1: "value", field2: 42, field3: 47.11, field4: { innerField: 73, innerArray: [{ arrayField1: 1 }, { arrayField2: 2 }] } });
         });
     });
 
@@ -731,9 +731,9 @@ describe('Test log-core', function () {
 
         it('Test correct new logger (inherited) with additional custom fields', function () {
             var parent = createLogger();
-            var obj = parent.createLogger({"test-field-a": 42});
+            var obj = parent.createLogger({ "test-field-a": 42 });
             obj.logObject.should.equal(parent.logObject);
-            obj.customFields.should.eql({"test-field-a": 42});
+            obj.customFields.should.eql({ "test-field-a": 42 });
             obj.parent.should.equal(parent);
         });
 
@@ -741,12 +741,31 @@ describe('Test log-core', function () {
             var req = {};
             core.bindLoggerToRequest(req, {});
             req.logger.setCorrelationId(uuid());
-            var obj1 = req.getLogger();
-            var obj2 = req.getLogger();
-            req.logger.getCorrelationId().should.equal(obj1.getCorrelationId());
-            obj2.setCorrelationId(uuid());
-            obj2.getCorrelationId().should.equal(obj1.getCorrelationId());
-            obj2.getCorrelationId().should.equal(req.logger.getCorrelationId());
+
+            var logger1 = req.getLogger();
+            var logger2 = req.getLogger();
+            var logger3 = req.createLogger();
+
+            // check correlation id inheritance
+            logger1.getCorrelationId().should.equal(req.logger.getCorrelationId());
+            
+            // set a new correlation id using logger2
+            logger2.setCorrelationId(uuid());
+
+            // check reverse propagation
+            req.logger.getCorrelationId().should.equal(logger2.getCorrelationId());
+            logger1.getCorrelationId().should.equal(logger2.getCorrelationId());
+
+            // check inheritance
+            logger3.getCorrelationId().should.equal(logger2.getCorrelationId());
+
+            // set a new correlation id using logger3
+            logger3.setCorrelationId(uuid());
+
+            // check reverse propagation
+            req.logger.getCorrelationId().should.equal(logger3.getCorrelationId());
+            logger1.getCorrelationId().should.equal(logger3.getCorrelationId());
+            logger2.getCorrelationId().should.equal(logger3.getCorrelationId());
         });
 
         it('test convenience Methods', function () {
@@ -758,70 +777,79 @@ describe('Test log-core', function () {
         });
     });
 
-    describe('Test custom fields registration and setter', function() {
+    describe('Test custom fields registration and setter', function () {
         var core = rewire("../cf-nodejs-logging-support-core/log-core.js");
 
-        before(function() {
+        before(function () {
 
         });
 
-        describe('Test custom fields registration', function() {
-            it("Test null array", function() {
+        describe('Test custom fields registration', function () {
+            it("Test null array", function () {
                 core.registerCustomFields(null).should.equal(false);
                 core.__get__("registeredCustomFields").should.eql([]);
             });
 
-            it("Test empty array", function() {
+            it("Test empty array", function () {
                 core.registerCustomFields([]).should.equal(true);
                 core.__get__("registeredCustomFields").should.eql([]);
             });
 
-            it("Test valid array fields", function() {
+            it("Test valid array fields", function () {
                 core.registerCustomFields(["test-field-a", "test-field-b"]).should.equal(true);
                 core.__get__("registeredCustomFields").should.eql(["test-field-a", "test-field-b"]);
             });
 
-            it("Test invalid array fields", function() {
+            it("Test invalid array fields", function () {
                 core.registerCustomFields(["test-field-a", 4711]).should.equal(false);
                 core.__get__("registeredCustomFields").should.eql([]);
             });
         });
 
-        describe('Test custom fields setter (global)', function() {
-            it("Test null object", function() {
+        describe('Test custom fields setter (global)', function () {
+            it("Test null object", function () {
                 core.setCustomFields(null).should.equal(false);
             });
 
-            it("Test empty", function() {
-                core.setCustomFields({}).should.equal(false);
+            it("Test empty", function () {
+                core.setCustomFields({}).should.equal(true);
                 core.__get__("globalCustomFields").should.eql({});
             });
 
-            it("Test valid fields", function() {
-                core.setCustomFields({"test-field-a": 42, "test-field-b": "test"}).should.equal(true);
-                core.__get__("globalCustomFields").should.eql({"test-field-a": 42, "test-field-b": "test"});
+            it("Test valid fields", function () {
+                core.setCustomFields({ "test-field-a": 42, "test-field-b": "test" }).should.equal(true);
+                core.__get__("globalCustomFields").should.eql({ "test-field-a": 42, "test-field-b": "test" });
+            });
+
+            it("Test empty/clearing", function () {
+                core.setCustomFields({ "test-field-a": "a" });
+                core.__get__("globalCustomFields").should.eql({ "test-field-a": "a" });
+                core.setCustomFields({}).should.equal(true);
+                core.__get__("globalCustomFields").should.eql({});
             });
         });
 
-        describe('Test custom fields setter (logger)', function() {
+        describe('Test custom fields setter (logger)', function () {
             var logger;
 
             beforeEach(function () {
                 logger = core.createLogger();
             });
 
-            it("Test null object", function() {
+            it("Test null object", function () {
                 logger.setCustomFields(null).should.equal(false);
             });
 
-            it("Test empty", function() {
-                logger.setCustomFields({}).should.equal(false);
-                logger.customFields.should.eql({});
+            it("Test valid fields", function () {
+                logger.setCustomFields({ "test-field-a": 42, "test-field-b": "test" }).should.equal(true);
+                logger.customFields.should.eql({ "test-field-a": 42, "test-field-b": "test" });
             });
 
-            it("Test valid fields", function() {
-                logger.setCustomFields({"test-field-a": 42, "test-field-b": "test"}).should.equal(true);
-                logger.customFields.should.eql({"test-field-a": 42, "test-field-b": "test"});
+            it("Test empty/clearing", function () {
+                logger.setCustomFields({ "test-field-a": "a" });
+                logger.customFields.should.eql({ "test-field-a": "a" });
+                logger.setCustomFields({}).should.equal(true);
+                logger.customFields.should.eql({});
             });
         });
     });
@@ -832,6 +860,7 @@ describe('Test log-core', function () {
         var logObject = null;
         var log = null;
         var registerCustomFields = null;
+        var setCustomFields = null;
 
         before(function () {
             core.__set__({
@@ -841,8 +870,9 @@ describe('Test log-core', function () {
             });
             core.setConfig(importFresh("../config.js").config);
 
-            log = core.__get__("logMessage");
-            registerCustomFields = core.__get__("registerCustomFields");
+            log = core.logMessage;
+            registerCustomFields = core.registerCustomFields;
+            setCustomFields = core.setCustomFields;
         });
 
         it("Test simple log", function () {
@@ -908,21 +938,73 @@ describe('Test log-core', function () {
             });
 
             logObject.msg.should.equal('Test');
-            JSON.stringify(logObject.custom_fields).should.equal(JSON.stringify({
+            logObject.custom_fields.should.eql({
                 "fieldA": "valueA",
                 "fieldC": "valueC"
-            }));
+            });
         });
 
         it("Test custom fields log output (convert array to object)", function () {
             registerCustomFields(["0", "1", "2"]);
-           
+
             log("info", "Test", [
                 1, "123", { "field": "values" }
             ]);
 
             logObject.msg.should.equal('Test');
-            JSON.stringify(logObject.custom_fields).should.equal('{"0":"1","1":"123","2":"{\\"field\\":\\"values\\"}"}');
+            logObject.custom_fields.should.eql({ "0": "1", "1": "123", "2": "{\"field\":\"values\"}" });
+        });
+
+        it("Test custom fields inheritance", function () {
+            // Register fields
+            registerCustomFields(["fieldA", "fieldB", "fieldC"]);
+
+            // Set global custom fields
+            setCustomFields({ fieldA: "a", fieldB: "b" });
+
+            // Create logger and overwrite global custom field
+            var loggerA = core.createLogger({ fieldA: "c" });
+
+            // Create logger (child of loggerA) and overwrite/add fields
+            var loggerB = loggerA.createLogger();
+            loggerB.setCustomFields({ fieldA: "d", fieldC: "c" });
+
+            // Create logger (child of loggerA) and add unregistered field
+            var loggerC = loggerA.createLogger();
+            loggerC.setCustomFields({ fieldU: "u" });
+
+            // global fields only
+            log("info", "Test", {});
+            logObject.msg.should.equal('Test');
+            logObject.custom_fields.should.eql({
+                "fieldA": "a",
+                "fieldB": "b"
+            });
+
+            // loggerA fields and non-overwritten global fields
+            loggerA.logMessage("info", "Test", {});
+            logObject.msg.should.equal('Test');
+            logObject.custom_fields.should.eql({
+                "fieldA": "c",
+                "fieldB": "b"
+            });
+
+            // loggerB fields and inherited loggerA and global fields
+            loggerB.logMessage("info", "Test", {});
+            logObject.msg.should.equal('Test');
+            logObject.custom_fields.should.eql({
+                "fieldA": "d",
+                "fieldB": "b",
+                "fieldC": "c"
+            });
+
+            // inherited loggerA/global fields and NOT unknown field 'fieldU'
+            loggerC.logMessage("info", "Test", {});
+            logObject.msg.should.equal('Test');
+            logObject.custom_fields.should.eql({
+                "fieldA": "c",
+                "fieldB": "b"
+            });
         });
 
         it("Test custom fields log type consistency (objects)", function () {
@@ -964,14 +1046,14 @@ describe('Test log-core', function () {
             });
 
             logObject.msg.should.equal('Test abc');
-            JSON.stringify(logObject.custom_fields).should.equal(JSON.stringify({
+            logObject.custom_fields.should.eql({
                 "string": "text",
                 "int": "0",
                 "obj": "{\"test\":\"value\"}"
-            }));
+            });
         });
 
-        
+
         it("Test unregistered custom fields log", function () {
             registerCustomFields(["int"]);
 
@@ -984,9 +1066,9 @@ describe('Test log-core', function () {
             });
 
             logObject.msg.should.equal('Test abc');
-            JSON.stringify(logObject.custom_fields).should.equal(JSON.stringify({
+            logObject.custom_fields.should.eql({
                 "int": "0",
-            }));
+            });
         });
 
         it("Test logLevel catch", function () {
@@ -1302,7 +1384,7 @@ describe('Test log-core', function () {
                     }
                 }
             });
-            var req = {logger : {}};
+            var req = { logger: {} };
             core.bindDynLogLevel(null, req.logger);
             assert.isUndefined(req.logger.dynamicLogLevelInt);
             core.bindDynLogLevel(1, req.logger);
