@@ -331,7 +331,7 @@ In order to get the correlation_id of a request, you can use the following metho
 ```js
 app.get('/', function (req, res) {
     // Call to context bound function
-    var id = req.getCorrelationId();
+    var id = req.logger.getCorrelationId();
     
     res.send('Hello World');
 });
@@ -341,21 +341,11 @@ It is also possible to change the correlation_id:
 ```js
 app.get('/', function (req, res) {
     // Call to context bound function
-    req.setCorrelationId(YOUR_CUSTOM_CORRELATION_ID);
+    req.logger.setCorrelationId(YOUR_CUSTOM_CORRELATION_ID);
     
     res.send('Hello World');
 });
 ```
-
-### Correlation context objects
-As stated above the ```req.logger``` acts as context preserving object and provides context bound functions like ```info(...)```. In some cases you might want to create new context objects in order to create logs in context of other incoming data events (e.g. RabbitMQ). To do so you can use
-```js
-var ctx = log.createCorrelationObject();
-ctx.logMessage(...);
-``` 
-any time to create new context objects. Custom context objects are provided with a newly generated correlation_id.
-
-If you want to provide your own correlation_id, you can use the ```ctx.setCorrelationId(<id>)``` method.
 
 ### Human readable output
 Setup an output pattern to get a human-readable output instead of json. Use '{{' and '}}' to print log parameters.
