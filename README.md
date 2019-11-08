@@ -12,6 +12,8 @@ For details on the concepts and log formats, please look at the sibling project 
 #### Version 3.0 introduced dynamic log level thresholds, sensitive data reduction and a redesigned field configuration system
 #### Version 4.0 changed winston transport api
 #### Version 5.0 introduced convenient logging methods
+#### Version 6.0 added contextual loggers and custom field registration
+
 
 ## Features
 
@@ -84,9 +86,7 @@ const server = http.createServer((req, res) => {
     log.logNetwork(req, res);
     
     // Context bound custom message
-    req.logger.info("request bound information:", {
-        "some": "info"
-    });
+    req.logger.info("request bound information:");
     res.end('ok');
 });
 server.listen(3000);
@@ -141,7 +141,7 @@ info("This %s a %s", "is", "test");
 // ... "msg":"This is a test" ...
 ```
 
-With custom fields added to custom_fields field. Keep in mind that the last argument is handled as custom_fields object, if it is an object.
+With custom fields added to custom_fields field. Keep in mind that the last argument is handled as custom_fields object, if it is an object. As version 6.0.0 custom fields have to registered before writing them.
 ```js
 info("Test data %j", {"field" :"value"}); 
 // ... "msg":"Test data %j" 
