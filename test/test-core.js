@@ -713,7 +713,11 @@ describe('Test log-core', function () {
 
         it('Test correct new logger', function () {
             var obj = createLogger();
-            assert.isNull(obj.getCorrelationId());
+            obj.logObject.correlation_id.should.be.a("string");
+            var correlation_id = obj.logObject.correlation_id;
+            obj.getCorrelationId().should.equal(correlation_id);
+            obj.setCorrelationId(uuid());
+            obj.getCorrelationId().should.not.equal(correlation_id);
             obj.customFields.should.eql({});
         });
 
@@ -735,7 +739,8 @@ describe('Test log-core', function () {
 
         it('Test correct correlation to req object', function () {
             var req = {};
-            core.bindLoggerToRequest(req, {correlation_id: uuid()});
+            core.bindLoggerToRequest(req, {});
+            req.logger.setCorrelationId(uuid());
 
             var logger1 = req.getLogger();
             var logger2 = req.getLogger();

@@ -52,7 +52,7 @@ app.post("/post_message", function (req, res) {
         "timestamp": (new Date()).getTime()
     };
 
-    req.logger.info(`received message from '${msg.name}': ${msg.message}`);
+    req.logMessage("info", `received message from '${msg.name}': ${msg.message}`);
 
     if (redisRunning) {
         pub.publish("message", JSON.stringify(msg));
