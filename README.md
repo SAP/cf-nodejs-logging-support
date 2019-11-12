@@ -330,22 +330,24 @@ req.setDynamicLoggingLevel("verbose");
 In order to get the correlation_id of a request, you can use the following method:
 ```js
 app.get('/', function (req, res) {
-    // Call to context bound function
+    // Get correlation_id from logger bound to request
     var id = req.logger.getCorrelationId();
     
     res.send('Hello World');
 });
 ```
 
-It is also possible to change the correlation_id:
+It is also possible to change the correlation_id to a valid UUIDv4:
 ```js
 app.get('/', function (req, res) {
-    // Call to context bound function
-    req.logger.setCorrelationId(YOUR_CUSTOM_CORRELATION_ID);
+    // Set correlation_id via logger bound to request
+    req.logger.setCorrelationId("cbc2654f-1c35-45d0-96fc-f32efac20986");
     
     res.send('Hello World');
 });
 ```
+
+Be aware that changing the correlation_id for a logger, will also affect ancestor and descendant loggers within the same request context, especially the network log for this request will contain the new correlation_id.
 
 ### Human readable output
 Setup an output pattern to get a human-readable output instead of json. Use '{{' and '}}' to print log parameters.
