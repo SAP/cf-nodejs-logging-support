@@ -12,6 +12,8 @@ For details on the concepts and log formats, please look at the sibling project 
 #### Version 3.0 introduced dynamic log level thresholds, sensitive data reduction and a redesigned field configuration system
 #### Version 4.0 changed winston transport api
 #### Version 5.0 introduced convenient logging methods
+#### Version 6.0 added contextual loggers and custom field registration
+
 
 ## Features
 
@@ -84,9 +86,7 @@ const server = http.createServer((req, res) => {
     log.logNetwork(req, res);
     
     // Context bound custom message
-    req.logger.info("request bound information:", {
-        "some": "info"
-    });
+    req.logger.info("request bound information:");
     res.end('ok');
 });
 server.listen(3000);
@@ -110,9 +110,9 @@ http.createServer((req, res) => {
 ```
 
 
-### Custom Logs
+### Message Logs
 
-In addition to request logging this library also supports logging custom messages. Following common node.js logging levels are supported:
+In addition to request logging this library also supports logging application messages. Following common node.js logging levels are supported:
 
 - error
 - warn
@@ -141,7 +141,7 @@ info("This %s a %s", "is", "test");
 // ... "msg":"This is a test" ...
 ```
 
-With custom fields added to custom_fields field. Keep in mind that the last argument is handled as custom_fields object, if it is an object.
+With custom fields added to custom_fields field. Keep in mind that the last argument is handled as custom_fields object, if it is an object. As version 6.0.0 custom fields have to registered before writing them. See custom fields section.
 ```js
 info("Test data %j", {"field" :"value"}); 
 // ... "msg":"Test data %j" 
@@ -160,8 +160,6 @@ var level = "debug";
 logMessage(level, "Hello World"); 
 // ... "msg":"Hello World" ...
 ```
-
-
 ### Logging contexts
 
 In general there are two types of logging contexts: *global* and *request* contexts.
@@ -189,6 +187,80 @@ In addition to a message logged using the *global* context these messages will a
 - correlation_id
 - request_id
 - tenant_id
+
+### Child loggers
+You can create child loggers, which share the context of their parent (global or reqest).
+```js
+app.get('/', function (req, res) {
+    var logger = req.logger.createLogger(); // equivalent to req.createLogger();
+    ...
+    logger.logMessage("This message is request correlated, but logged with a child logger");
+});
+```
+
+The main reason, why you probably want to use child loggers, is that they can have an their own set of custom fields, that will be added to each message.
+```js
+var logger = req.logger.createLogger(); 
+logger.setCustomFields({"field-a" :"value"})
+// OR
+var logger = req.logger.createLogger({"field-a" :"value"}); 
+```
+
+
+### Custom fields
+Custom fields are basically additional key-value pairs added to the logs. As of version 6.0.0 you have to register custom fields, before you can write them. This can be done, by calling following global method:
+```js
+log.registerCustomFields(["field-a", "field-b", "field-c"]);
+```
+
+You can now log messages and attach a key-value object as stated in the Message Logs section.
+```js
+logger.info("My log message", {"field-a" :"value"}); 
+```
+
+Another way of adding custom fields to log messages, is to set them for a logger instance. All logs, that are logged by this logger, contain the specified custom fields and values. 
+```js
+logger.setCustomFields({"field-a": "value"})
+logger.info("My log message"); 
+```
+
+You can also set custom fields globally, by calling the same function on the global `log` instance. All logs, including request logs, will now contain the specified custom fields and values.
+```js
+log.setCustomFields({"field-b": "test"});
+```
+
+When using child loggers, the custom fields of the parent logger will be inherited. In case you set a field for a child logger, that is already set for the parent logger, the value of the child logger will be used.
+
+Example for custom field inheritance:
+```js
+// Register all custom fields, that can occure.
+log.registerCustomFields(["field-a", "field-b", "field-c"]);
+
+// Set some fields, that should be added to all messages
+log.setCustomFields({"field-a": "1"});
+log.info("test");
+// ... "custom_fields": {"field-a": "1"} ...
+
+
+// Define a child logger, that adds another field
+var loggerA = log.createLogger({"field-b": "2"});
+loggerA.info("test");
+// ... "custom_fields": {"field-a": "1", "field-b": "2"} ...
+
+// Define a child logger, that overwrites one field
+var loggerB = log.createLogger({"field-a": "3"});
+loggerB.info("test");
+// ... "custom_fields": {"field-a": "3", "field-b": "2"} ...
+
+// Request correlated logger instances inherit global custom fields and can overwrite them as well.
+app.get('/', function (req, res) {
+    req.logger.setCustomFields({"field-b": "4", "field-c": "5"});
+    req.logger.info("test");
+    // ... "custom_fields": {"field-a": "1", "field-b": "4", "field-c": "5"} ...
+});
+
+```
+
 
 
 ### Sensitive data redaction
@@ -259,7 +331,7 @@ In order to get the correlation_id of a request, you can use the following metho
 ```js
 app.get('/', function (req, res) {
     // Call to context bound function
-    var id = req.getCorrelationId();
+    var id = req.logger.getCorrelationId();
     
     res.send('Hello World');
 });
@@ -269,21 +341,11 @@ It is also possible to change the correlation_id:
 ```js
 app.get('/', function (req, res) {
     // Call to context bound function
-    req.setCorrelationId(YOUR_CUSTOM_CORRELATION_ID);
+    req.logger.setCorrelationId(YOUR_CUSTOM_CORRELATION_ID);
     
     res.send('Hello World');
 });
 ```
-
-### Correlation context objects
-As stated above the ```req.logger``` acts as context preserving object and provides context bound functions like ```info(...)```. In some cases you might want to create new context objects in order to create logs in context of other incoming data events (e.g. RabbitMQ). To do so you can use
-```js
-var ctx = log.createCorrelationObject();
-ctx.logMessage(...);
-``` 
-any time to create new context objects. Custom context objects are provided with a newly generated correlation_id.
-
-If you want to provide your own correlation_id, you can use the ```ctx.setCorrelationId(<id>)``` method.
 
 ### Human readable output
 Setup an output pattern to get a human-readable output instead of json. Use '{{' and '}}' to print log parameters.
