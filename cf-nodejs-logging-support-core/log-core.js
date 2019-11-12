@@ -439,7 +439,7 @@ var extractCustomFieldsFromLogger = function (logger) {
 }
 
 
-//getCorrelationId returns the current correlation id for the req this is called on
+//getCorrelationId returns the current correlation id for the logger this is called on
 var getCorrelationId = function () {
     var logger = this;
     if (logger.logObject != null) {
@@ -450,7 +450,7 @@ var getCorrelationId = function () {
     return null;
 };
 
-//setCorrelationId sets the Correlation_id for the request this is called on. Checks i the id is a correct uuid-v4. Returns true if set, false otherwise
+//setCorrelationId sets the Correlation_id for the logger this is called on. Checks i the id is a correct uuid-v4. Returns true if set, false otherwise
 var setCorrelationId = function (correlationId) {
     var logger = this;
     if (logger.logObject != null) {

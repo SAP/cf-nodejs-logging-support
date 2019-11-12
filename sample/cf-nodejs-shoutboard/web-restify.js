@@ -42,14 +42,14 @@ app.use(restify.plugins.bodyParser({ mapParams: true }));
 var port = Number(process.env.VCAP_APP_PORT || 8080);
 app.listen(port, function () {
     //write a message using the logMessage method of the logger.
-    log.logMessage("info", "listening on port: %d", port);
+    log.info("listening on port: %d", port);
 });
 
 
 // create a json object and send it as custom log with the given logger.
 var stats = {};
 stats.node_version = process.version;
-log.logMessage("info", "Runtime statistics", stats);
+log.info("Runtime statistics", stats);
 
 // handling post messages
 app.post("/post_message", function (req, res, next) {
@@ -60,7 +60,7 @@ app.post("/post_message", function (req, res, next) {
         "timestamp": (new Date()).getTime()
     };
 
-    req.logMessage("info", `received message from '${msg.name}': ${msg.message}`);
+    req.logger.info(`received message from '${msg.name}': ${msg.message}`);
 
     if (redisRunning) {
         pub.publish("message", JSON.stringify(msg));
