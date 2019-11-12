@@ -378,7 +378,7 @@ A custom sink function should have two arguments: `level` und `output`. You can 
 Note: If a custom sink function is set, the library will no longer output messages to the default sink (stdout).
 
 ### Winston Transport
-This logging library can be used in conjunction with Winston. Logging via Winston transport is limited to custom logs. Network activity can not be tracked automatically. Example:
+This logging library can be used in conjunction with Winston. Logging via Winston transport is limited to message logs. Network activity can not be tracked automatically. Example:
 ```js
 var express = require('express');
 var log = require('cf-nodejs-logging-support');
@@ -397,7 +397,7 @@ app.get('/', function (req, res) {
 
 app.listen(3000);
 
-// Messages will now be logged exactly as demonstrated by the Custom Messages paragraph
+// Messages will now be logged exactly as demonstrated by the message logs paragraph
 logger.log("info", "Server is listening on port %d", 3000);
 ```
 
