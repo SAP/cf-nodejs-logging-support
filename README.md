@@ -94,7 +94,7 @@ server.listen(3000);
 log.info("Server is listening on port %d", 3000);
 ```
 
-### Request Logs
+### Request logs
 
 The library can be attached as middleware to log all incoming requests as follows:
 ```js
@@ -110,7 +110,7 @@ http.createServer((req, res) => {
 ```
 
 
-### Message Logs
+### Message logs
 
 In addition to request logging this library also supports logging application messages. Following common node.js logging levels are supported:
 
@@ -141,7 +141,7 @@ info("This %s a %s", "is", "test");
 // ... "msg":"This is a test" ...
 ```
 
-With custom fields added to custom_fields field. Keep in mind that the last argument is handled as custom_fields object, if it is an object. As version 6.0.0 custom fields have to registered before writing them. See custom fields section.
+With custom fields added to custom_fields field. Keep in mind that the last argument is handled as custom_fields object, if it is an object. As version 6.0.0 custom fields have to registered before writing them. See Custom fields section.
 ```js
 info("Test data %j", {"field" :"value"}); 
 // ... "msg":"Test data %j" 
@@ -174,7 +174,7 @@ log.info("Server is listening on port %d", 3000);
 ```
 
 #### Request context
-The library adds context bound functions to request objects, if the library has been attached as middleware (see ). Use the locally defined ```req.logger``` object to log messages in *request* context:
+The library adds context bound functions to request objects, if the library has been attached as middleware. Use the locally defined ```req.logger``` object to log messages in *request* context:
 
 ```js
 app.get('/', function (req, res) {
@@ -198,7 +198,7 @@ app.get('/', function (req, res) {
 });
 ```
 
-The main reason, why you probably want to use child loggers, is that they can have an their own set of custom fields, that will be added to each message.
+The main reason why you probably want to use child loggers is, that they can have their own set of custom fields, which will be added to each message.
 ```js
 var logger = req.logger.createLogger(); 
 logger.setCustomFields({"field-a" :"value"})
@@ -213,7 +213,7 @@ Custom fields are basically additional key-value pairs added to the logs. As of 
 log.registerCustomFields(["field-a", "field-b", "field-c"]);
 ```
 
-You can now log messages and attach a key-value object as stated in the Message Logs section.
+You can now log messages and attach a key-value object as stated in the message logs section.
 ```js
 logger.info("My log message", {"field-a" :"value"}); 
 ```
@@ -229,7 +229,7 @@ You can also set custom fields globally, by calling the same function on the glo
 log.setCustomFields({"field-b": "test"});
 ```
 
-When using child loggers, the custom fields of the parent logger will be inherited. In case you set a field for a child logger, that is already set for the parent logger, the value of the child logger will be used.
+When using child loggers, the custom fields of the parent logger will be inherited. In case you have set a field for a child logger, that is already set for the parent logger, the value of the child logger will be used.
 
 Example for custom field inheritance:
 ```js
@@ -378,7 +378,7 @@ A custom sink function should have two arguments: `level` und `output`. You can 
 Note: If a custom sink function is set, the library will no longer output messages to the default sink (stdout).
 
 ### Winston Transport
-This logging library can be used in conjunction with Winston. Logging via Winston transport is limited to custom logs. Network activity can not be tracked automatically. Example:
+This logging library can be used in conjunction with Winston. Logging via Winston transport is limited to message logs. Network activity can not be tracked automatically. Example:
 ```js
 var express = require('express');
 var log = require('cf-nodejs-logging-support');
@@ -397,7 +397,7 @@ app.get('/', function (req, res) {
 
 app.listen(3000);
 
-// Messages will now be logged exactly as demonstrated by the Custom Messages paragraph
+// Messages will now be logged exactly as demonstrated by the message logs paragraph
 logger.log("info", "Server is listening on port %d", 3000);
 ```
 
