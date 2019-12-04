@@ -12,7 +12,7 @@ describe('Test winston-transport.js', function () {
         var catchedArgs;
 
         before(function () {
-            logger.__set__("effectiveLogger.logMessage", function() {
+            logger.__set__("coreLogger.logMessage", function() {
                 catchedArgs = Array.prototype.slice.call(arguments);
             });
 
