@@ -53,7 +53,7 @@ exports.createWinstonTransport = function (options) {
             level: 'info'
         };
     }
-    options.logMessage = effectiveLogger.logMessage;
+    options.logMessage = coreLogger.logMessage;
     return require("./cf-nodejs-logging-support-winston/winston-transport").createTransport(options);
 };
 
