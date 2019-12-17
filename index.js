@@ -15,6 +15,10 @@ exports.setLoggingLevel = function (level) {
     coreLogger.setLoggingLevel(level);
 };
 
+exports.getLoggingLevel = function() {
+    return coreLogger.getLoggingLevel();
+}
+
 // Sets the given function as log sink. Following arguments will be passed to the sink function: level, output
 exports.setSinkFunction = function (func) {
     coreLogger.setSinkFunction(func);
@@ -43,6 +47,10 @@ exports.logNetwork = function (req, res, next) {
 
 exports.logMessage = function (args) {
     coreLogger.logMessage.apply(this, arguments);
+};
+
+exports.isLogLevel = function (level) {
+    return coreLogger.isLogLevel(level)
 };
 
 coreLogger.bindConvenienceMethods(exports);

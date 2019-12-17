@@ -43,6 +43,7 @@ var dynLogLevelKey;
 var customSinkFunc;
 
 var convenientLogFunctions = [];
+var convenientLevelFunctions = [];
 
 
 // Initializes the core logger, including setup of environment var defined settings
@@ -63,11 +64,22 @@ var init = function () {
         convenientLogFunctions[key] = function (bKey) {
             return function () {
                 var args = [bKey, ...arguments];
-                logMessage.apply(this, args);
+                return logMessage.apply(this, args);
+            };
+        }(key);
+
+        convenientLevelFunctions["is" + capitalize(key)] = function (bKey) {
+            return function () {
+                var args = [bKey];
+                return isLogLevel.apply(this, args);
             };
         }(key);
     }
 };
+
+var capitalize = function (text) {
+    return text.charAt(0).toUpperCase() + text.slice(1);
+}
 
 var setConfig = function (config) {
     precompileConfig(config);
@@ -196,22 +208,36 @@ var writeLogToConsole = function (logObject) {
     }
 };
 
-// Sets the minimum logging level. Messages with a lower level will not be forwarded. (Levels: error, warn, info, verbose, debug, silly)
+// Sets the minimum logging level of current logger or global. Messages with a lower level will not be forwarded. 
+// (Levels: error, warn, info, verbose, debug, silly)
 var setLoggingLevel = function (level) {
-    if (LOGGING_LEVELS[level] != undefined) {
-        logLevelInt = LOGGING_LEVELS[level];
+    var logger = this;
+    var levelInt = getLogLevelFromName(level);
+
+    // decide if logger is child logger or global
+    if (logger.logObject != null) {
+        // set to null is valid => use ancestor logging level again
+        logger.dynamicLogLevelInt = levelInt
         return true;
+    } else if (level != null) {
+        logLevelInt = levelInt;
+        return true;
+    } else {
+        return false;
     }
-    return false;
 };
 
-// Gets the minimum logging level. (Levels: error, warn, info, verbose, debug, silly)
+// Gets the minimum logging level of current logger or global. (Levels: error, warn, info, verbose, debug, silly)
 var getLoggingLevel = function () {
+    var level = extractLoggingLevelFromLogger(this)
+
     for (var key in LOGGING_LEVELS) {
-        if (LOGGING_LEVELS[key] == logLevelInt) {
+        if (LOGGING_LEVELS[key] == level) {
             return key;
         }
     }
+
+    return null;
 };
 
 // Sets the given function as log sink. Following arguments will be passed to the sink function: level, output
@@ -308,19 +334,6 @@ var resolveNestedVariable = function (root, path) {
     return value;
 };
 
-// Checks wether the given level passes the global logging level threshold. If a dynamic log level threshold 
-// is provided, it will be used instead of the global logging level threshold
-var checkLoggingLevel = function (level, dynamicLogLevelInt) {
-    var threshold;
-
-    if (dynamicLogLevelInt != null) {
-        threshold = dynamicLogLevelInt; // use dynamic log level
-    } else {
-        threshold = logLevelInt; // use global log level
-    }
-    return (threshold >= LOGGING_LEVELS[level]);
-};
-
 // Writes the given log file to stdout/sink
 var sendLog = function (logObject) {
     writeLogToConsole(logObject);
@@ -350,10 +363,11 @@ var setLogPattern = function (p) {
 var logMessage = function () {
     var args = Array.prototype.slice.call(arguments);
 
+    var logger = this;
     var logObject;
     var level = args[0];
 
-    if (!checkLoggingLevel(level, this.dynamicLogLevelInt)) {
+    if (!checkLoggingLevel(level, logger)) {
         return false;
     } else {
         logObject = initLog();
@@ -372,8 +386,6 @@ var logMessage = function () {
     }
 
     var msg = util.format.apply(util, args);
-
-    var logger = this;
 
     if (logger.logObject != null) {
         logObject.correlation_id = logger.logObject.correlation_id;
@@ -394,6 +406,10 @@ var logMessage = function () {
     sendLog(logObject);
     return true;
 };
+
+var isLogLevel = function (level) {
+    return checkLoggingLevel(level, this);
+}
 
 // Read custom fields from provided logger and add them to the provided logObject.
 // If additionalFields contains fields, that already exist, these fields will be overwritten.
@@ -420,6 +436,26 @@ var writeCustomFields = function (logObject, logger, additionalFields) {
     }
 }
 
+// Checks wether the given level passes the logging level threshold extracted from the given logger or its 
+// ancestors.
+var checkLoggingLevel = function (level, logger) {
+    var threshold = extractLoggingLevelFromLogger(logger);
+    return (threshold >= LOGGING_LEVELS[level]);
+};
+
+// Recursive method, which reads the logging level threshold from the given logger or the closest ancestor 
+// having a logging level threshold set. If there is not ancestor and no threshold available, the global logging 
+// level threshold is returned.
+var extractLoggingLevelFromLogger = function (logger) {
+    if (logger && logger.dynamicLogLevelInt != null) {
+        return logger.dynamicLogLevelInt;
+    } else if (logger && logger.parent) {
+        return extractLoggingLevelFromLogger(logger.parent);
+    } else {
+        return logLevelInt;
+    }
+};
+
 // Recursive method, which reads provided custom fields from the given logger, its parent loggers
 // and global custom fields variable, with descending priority
 var extractCustomFieldsFromLogger = function (logger) {
@@ -436,7 +472,7 @@ var extractCustomFieldsFromLogger = function (logger) {
     }
 
     return fields;
-}
+};
 
 
 //getCorrelationId returns the current correlation id for the logger this is called on
@@ -497,12 +533,6 @@ var registerCustomFields = function (fieldNames) {
     return true;
 };
 
-// Sets the dynamic log level to the given level
-var setDynamicLoggingLevel = function (levelName) {
-    var logger = this;
-    logger.dynamicLogLevelInt = getLogLevelFromName(levelName);
-};
-
 // Adds a logger instance to the provided request and assigns all required fields and api methods
 var bindLoggerToRequest = function (req, logObject) {
     req.logger = {
@@ -525,9 +555,12 @@ var bindLoggerToRequest = function (req, logObject) {
 // Add api methods to logger object
 var bindLogFunctions = function (logger) {
     logger.logMessage = logMessage;
+    logger.isLogLevel = isLogLevel;
     logger.getCorrelationId = getCorrelationId;
     logger.setCorrelationId = setCorrelationId;
-    logger.setDynamicLoggingLevel = setDynamicLoggingLevel;
+    logger.setDynamicLoggingLevel = setLoggingLevel; // deprecated
+    logger.setLoggingLevel = setLoggingLevel;
+    logger.getLoggingLevel = getLoggingLevel;
     logger.setCustomFields = setCustomFields;
     logger.createLogger = createLogger;
 };
@@ -536,6 +569,10 @@ var bindLogFunctions = function (logger) {
 var bindConvenienceMethods = function (logger) {
     for (var key in convenientLogFunctions) {
         logger[key] = convenientLogFunctions[key];
+    }
+
+    for (var key in convenientLevelFunctions) {
+        logger[key] = convenientLevelFunctions[key];
     }
 };
 
@@ -664,6 +701,7 @@ exports.setConfig = setConfig;
 // external api methods
 exports.createLogger = createLogger;
 exports.logMessage = logMessage;
+exports.isLogLevel = isLogLevel;
 exports.getLoggingLevel = getLoggingLevel;
 exports.registerCustomFields = registerCustomFields;
 exports.setCustomFields = setCustomFields;

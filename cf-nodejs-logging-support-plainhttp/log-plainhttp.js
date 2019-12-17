@@ -129,7 +129,7 @@ var logNetwork = function (req, res) {
             // Replace all set fields, which are marked to be reduced, with a placeholder (defined in log-core.js)
             core.reduceFields(postConfig, logObject);
 
-            if (core.checkLoggingLevel(logObject.level, req.logger.dynamicLogLevelInt))
+            if (core.checkLoggingLevel(logObject.level, req.logger))
                 core.sendLog(logObject);
             logSent = true;
         }
