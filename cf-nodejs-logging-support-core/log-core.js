@@ -77,10 +77,6 @@ var init = function () {
     }
 };
 
-var capitalize = function (text) {
-    return text.charAt(0).toUpperCase() + text.slice(1);
-}
-
 var setConfig = function (config) {
     precompileConfig(config);
 };
@@ -411,6 +407,99 @@ var isLogLevel = function (level) {
     return checkLoggingLevel(level, this);
 }
 
+//setCorrelationId sets the Correlation_id for the logger this is called on. Checks i the id is a correct uuid-v4. Returns true if set, false otherwise
+var setCorrelationId = function (correlationId) {
+    var logger = this;
+    if (logger.logObject != null) {
+        if (uuidCheck.exec(correlationId)) {
+            logger.logObject.correlation_id = correlationId;
+            return true;
+        }
+    }
+    return false;
+};
+
+//getCorrelationId returns the current correlation id for the logger this is called on
+var getCorrelationId = function () {
+    var logger = this;
+    if (logger.logObject != null) {
+        if (logger.logObject.correlation_id != null) {
+            return logger.logObject.correlation_id;
+        }
+    }
+    return null;
+};
+
+// Registers a (white)list of allowed custom field names
+var registerCustomFields = function (fieldNames) {
+
+    registeredCustomFields = [];
+
+    if (!Array.isArray(fieldNames)) return false;
+
+    var list = [];
+    for (var name of fieldNames) {
+        if (typeof name != "string") {
+            return false;
+        } else {
+            list.push(name);
+        }
+    }
+
+    // copy without references
+    registeredCustomFields = JSON.parse(JSON.stringify(list));
+    return true;
+};
+
+// Sets custom fields, which will be added to each message logged using the corresponding context.
+var setCustomFields = function (customFields) {
+    var logger = this;
+    if (isValidObject(customFields, true)) {
+        if (logger.logObject != null) {
+            logger.customFields = customFields;
+        } else {
+            globalCustomFields = customFields;
+        }
+        return true;
+    }
+    return false;
+};
+
+// Create a new logger for message logs
+var createLogger = function (customFields) {
+    var logger = {};
+
+    // Check if the method was call on a logger instance
+    if (this.logObject != null) {
+        logger.customFields = {};
+
+        // assign reference to logObject of parent logger
+        logger.logObject = this.logObject;
+
+        // assign parent (required to inherit custom fields)
+        logger.parent = this;
+    } else {
+        logger.customFields = {};
+
+        // create a new logObject including a correlation id and assign
+        // it to the logger.
+        logger.logObject = {
+            correlation_id: uuid()
+        };
+    }
+
+    // bind api functions
+    bindConvenienceMethods(logger);
+    bindLogFunctions(logger);
+
+    // assign custom fields, if provided
+    if (customFields) {
+        logger.setCustomFields(customFields);
+    }
+
+    return logger;
+};
+
 // Read custom fields from provided logger and add them to the provided logObject.
 // If additionalFields contains fields, that already exist, these fields will be overwritten.
 var writeCustomFields = function (logObject, logger, additionalFields) {
@@ -419,17 +508,21 @@ var writeCustomFields = function (logObject, logger, additionalFields) {
     var customFields = {};
     for (var key in providedFields) {
         // Skip unregistered fields
-        if (!registeredCustomFields.includes(key)) continue;
 
         var value = providedFields[key];
 
         // Write value to customFields object. Stringify, if necessary.
-        if ((typeof value) == "string") {
+        if ((typeof value) != "string") {
+            value = JSON.stringify(value);
+        }
+
+        if (registeredCustomFields.includes(key)) {
             customFields[key] = value;
-        } else {
-            customFields[key] = JSON.stringify(value);
+        } else if (logObject[key] == null && key != "custom_fields") {
+            logObject[key] = value;
         }
     }
+
 
     if (Object.keys(customFields).length > 0) {
         logObject.custom_fields = customFields;
@@ -472,65 +565,6 @@ var extractCustomFieldsFromLogger = function (logger) {
     }
 
     return fields;
-};
-
-
-//getCorrelationId returns the current correlation id for the logger this is called on
-var getCorrelationId = function () {
-    var logger = this;
-    if (logger.logObject != null) {
-        if (logger.logObject.correlation_id != null) {
-            return logger.logObject.correlation_id;
-        }
-    }
-    return null;
-};
-
-//setCorrelationId sets the Correlation_id for the logger this is called on. Checks i the id is a correct uuid-v4. Returns true if set, false otherwise
-var setCorrelationId = function (correlationId) {
-    var logger = this;
-    if (logger.logObject != null) {
-        if (uuidCheck.exec(correlationId)) {
-            logger.logObject.correlation_id = correlationId;
-            return true;
-        }
-    }
-    return false;
-};
-
-// Sets custom fields, which will be added to each message logged using the corresponding context.
-var setCustomFields = function (customFields) {
-    var logger = this;
-    if (isValidObject(customFields, true)) {
-        if (logger.logObject != null) {
-            logger.customFields = customFields;
-        } else {
-            globalCustomFields = customFields;
-        }
-        return true;
-    }
-    return false;
-};
-
-// Registers a (white)list of allowed custom field names
-var registerCustomFields = function (fieldNames) {
-
-    registeredCustomFields = [];
-
-    if (!Array.isArray(fieldNames)) return false;
-
-    var list = [];
-    for (var name of fieldNames) {
-        if (typeof name != "string") {
-            return false;
-        } else {
-            list.push(name);
-        }
-    }
-
-    // copy without references
-    registeredCustomFields = JSON.parse(JSON.stringify(list));
-    return true;
 };
 
 // Adds a logger instance to the provided request and assigns all required fields and api methods
@@ -576,40 +610,6 @@ var bindConvenienceMethods = function (logger) {
     }
 };
 
-// Create a new logger for message logs
-var createLogger = function (customFields) {
-    var logger = {};
-
-    // Check if the method was call on a logger instance
-    if (this.logObject != null) {
-        logger.customFields = {};
-
-        // assign reference to logObject of parent logger
-        logger.logObject = this.logObject;
-
-        // assign parent (required to inherit custom fields)
-        logger.parent = this;
-    } else {
-        logger.customFields = {};
-
-        // create a new logObject including a correlation id and assign
-        // it to the logger.
-        logger.logObject = {
-            correlation_id: uuid()
-        };
-    }
-
-    // bind api functions
-    bindConvenienceMethods(logger);
-    bindLogFunctions(logger);
-
-    // assign custom fields, if provided
-    if (customFields) {
-        logger.setCustomFields(customFields);
-    }
-
-    return logger;
-};
 
 // checks if the given argument is a non-empty instance of Object
 var isValidObject = function (obj, canBeEmpty) {
@@ -678,6 +678,11 @@ var verifyAndDecodeJWT = function (token, key) {
     } catch (err) {
         return null; // token expired or invalid
     }
+};
+
+// replaces the first character of the given string with its uppercase version
+var capitalize = function (text) {
+    return text.charAt(0).toUpperCase() + text.slice(1);
 };
 
 // internal api methods used by effective loggers
