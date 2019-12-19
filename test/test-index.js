@@ -68,6 +68,12 @@ describe('Test index.js', function () {
                     "setLoggingLevel": function (level) {
                         loggingLevel = level;
                     },
+                    "getLoggingLevel": function () {
+                        return loggingLevel;
+                    },
+                    "isLoggingLevel": function (level) {
+                        return level == "passLevel";
+                    },
                     "setSinkFunction": function (fct) {
                         sinkFunction = fct;
                     },
@@ -125,6 +131,20 @@ describe('Test index.js', function () {
             logger.forceLogger("plainhttp");
             logger.setLoggingLevel(level);
             loggingLevel.should.equal(level);
+        });
+
+        it('Test getLoggingLevel: ', function () {
+            var loggingLevel = "testLevel";
+            logger.getLoggingLevel().should.equal(loggingLevel);
+            logger.forceLogger("restify");
+            logger.getLoggingLevel().should.equal(loggingLevel);
+            logger.forceLogger("plainhttp");
+            logger.getLoggingLevel().should.equal(loggingLevel);
+        });
+
+        it('Test isLoggingLevel: ', function () {
+            logger.isLoggingLevel("passLevel").should.equal(true);
+            logger.isLoggingLevel("noPassLevel").should.equal(false);
         });
 
         it('Test setSinkFunction: ', function () {

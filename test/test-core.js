@@ -790,11 +790,22 @@ describe('Test log-core', function () {
             logger2.getCorrelationId().should.equal(logger3.getCorrelationId());
         });
 
-        it('test convenience Methods', function () {
-            var obj = createLogger();
+        it('test convenience log methods', function () {
+            var logger = createLogger();
             for (var lvl in levels) {
-                obj[lvl]("test");
+                assert.isNotNull(logger[lvl]);
+                logger[lvl]("test");
                 level.should.equal(lvl);
+            }
+        });
+
+        it('test convenience level severity methods', function () {
+            var logger = createLogger();
+            logger.setLoggingLevel("verbose");
+            for (var lvl in levels) {
+                var methodName = "is" + lvl.charAt(0).toUpperCase() + lvl.slice(1);
+                assert.isNotNull(logger[methodName]);
+                assert.equal(logger[methodName](), levels[lvl] <= levels["verbose"]);
             }
         });
     });
