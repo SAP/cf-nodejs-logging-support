@@ -45,12 +45,12 @@ exports.logNetwork = function (req, res, next) {
 };
 
 
-exports.logMessage = function (args) {
+exports.logMessage = function () {
     coreLogger.logMessage.apply(this, arguments);
 };
 
-exports.isLogLevel = function (level) {
-    return coreLogger.isLogLevel(level)
+exports.isLoggingLevel = function (level) {
+    return coreLogger.isLoggingLevel(level);
 };
 
 coreLogger.bindConvenienceMethods(exports);

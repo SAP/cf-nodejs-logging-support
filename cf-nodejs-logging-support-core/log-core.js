@@ -71,7 +71,7 @@ var init = function () {
         convenientLevelFunctions["is" + capitalize(key)] = function (bKey) {
             return function () {
                 var args = [bKey];
-                return isLogLevel.apply(this, args);
+                return isLoggingLevel.apply(this, args);
             };
         }(key);
     }
@@ -411,7 +411,7 @@ var logMessage = function () {
     return true;
 };
 
-var isLogLevel = function (level) {
+var isLoggingLevel = function (level) {
     return checkLoggingLevel(level, this);
 }
 
@@ -597,7 +597,7 @@ var bindLoggerToRequest = function (req, logObject) {
 // Add api methods to logger object
 var bindLogFunctions = function (logger) {
     logger.logMessage = logMessage;
-    logger.isLogLevel = isLogLevel;
+    logger.isLoggingLevel = isLoggingLevel;
     logger.getCorrelationId = getCorrelationId;
     logger.setCorrelationId = setCorrelationId;
     logger.setDynamicLoggingLevel = setLoggingLevel; // deprecated
@@ -714,7 +714,7 @@ exports.setConfig = setConfig;
 // external api methods
 exports.createLogger = createLogger;
 exports.logMessage = logMessage;
-exports.isLogLevel = isLogLevel;
+exports.isLoggingLevel = isLoggingLevel;
 exports.getLoggingLevel = getLoggingLevel;
 exports.registerCustomFields = registerCustomFields;
 exports.setCustomFields = setCustomFields;
