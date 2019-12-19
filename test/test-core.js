@@ -395,7 +395,7 @@ describe('Test log-core', function () {
             core.setConfig(importFresh("../config.js").config);
         });
 
-        it("Test settingLoggingLevel", function () {
+        it("Test setLoggingLevel global", function () {
             core.setLoggingLevel("error");
             core.getLoggingLevel().should.equal("error");
             core.setLoggingLevel("info");
@@ -403,8 +403,33 @@ describe('Test log-core', function () {
             core.setLoggingLevel("warn");
             core.getLoggingLevel().should.equal("warn");
             assert.isFalse(core.setLoggingLevel("something"));
+            assert.isFalse(core.setLoggingLevel(null));
+        });
+
+        it("Test setLoggingLevel of child logger", function () {
+            // set global level
+            core.setLoggingLevel("error");
+
+            var loggerA = core.createLogger()
+            loggerA.setLoggingLevel("warn");
+            loggerA.getLoggingLevel().should.equal("warn");
+
+            var loggerB = loggerA.createLogger()
+            loggerB.setLoggingLevel("debug");
+            loggerB.getLoggingLevel().should.equal("debug");
+
+            // after setting to null, global level should be used
+            loggerB.setLoggingLevel(null);
+            loggerB.getLoggingLevel().should.equal("warn");
+
+            loggerA.setLoggingLevel(null);
+            loggerB.getLoggingLevel().should.equal("error");
+            loggerB.getLoggingLevel().should.equal("error");
+
+            assert.isFalse(loggerA.setLoggingLevel("something"));
         });
     });
+
 
 
     describe('Test log output', function () {
@@ -412,15 +437,12 @@ describe('Test log-core', function () {
 
         var write;
         var clock;
-        var origStdout;
         var output;
 
         before(function () {
             core = rewire("../cf-nodejs-logging-support-core/log-core.js");
             write = core.__get__("writeLogToConsole");
             core.setConfig(importFresh("../config.js").config);
-
-            origStdout = process.stdout.write;
 
             core.__set__({
                 "stdout": {

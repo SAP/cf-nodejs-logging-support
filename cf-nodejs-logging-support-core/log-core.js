@@ -204,11 +204,17 @@ var writeLogToConsole = function (logObject) {
     }
 };
 
-// Sets the minimum logging level of current logger or global. Messages with a lower level will not be forwarded. 
+// Sets the minimum logging level of current logger or global. The logging level of child loggers
+// can be set to null in order to use ancestors logging level again.
 // (Levels: error, warn, info, verbose, debug, silly)
 var setLoggingLevel = function (level) {
     var logger = this;
     var levelInt = getLogLevelFromName(level);
+
+    // reject unsupported level name
+    if (level != null && levelInt == null) {
+        return false;
+    }
 
     // decide if logger is child logger or global
     if (logger.logObject != null) {
@@ -216,9 +222,11 @@ var setLoggingLevel = function (level) {
         logger.dynamicLogLevelInt = levelInt
         return true;
     } else if (level != null) {
+        // set global logging level
         logLevelInt = levelInt;
         return true;
     } else {
+        // global logging level cannot be set to null
         return false;
     }
 };
