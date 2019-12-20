@@ -23,8 +23,11 @@ sub.on("error", redisErrorHandler);
 // force logger to run restify version. (default is express, forcing express is also legal)
 log.forceLogger("restify");
 
-// set the minimum logging level
+// set the logging level threshold
 log.setLoggingLevel("info");
+
+// register names of custom fields
+log.registerCustomFields(["node_version", "pid", "platform"])
 
 // setup serving of static files
 app.get("/*", restify.plugins.serveStatic({
@@ -38,29 +41,30 @@ app.use(log.logNetwork);
 // parse body json params
 app.use(restify.plugins.bodyParser({ mapParams: true }));
 
-// setup CF port
+// set port and run server
 var port = Number(process.env.VCAP_APP_PORT || 8080);
 app.listen(port, function () {
-    //write a message using the logMessage method of the logger.
     log.info("listening on port: %d", port);
 });
 
-
-// create a json object and send it as custom log with the given logger.
-var stats = {};
-stats.node_version = process.version;
-log.info("Runtime statistics", stats);
+// log some custom fields
+var stats = {
+    node_version: process.version,
+    pid: process.pid,
+    platform: process.platform,
+};
+log.info("runtime statistics", stats);
 
 // handling post messages
 app.post("/post_message", function (req, res, next) {
     var msg = {
-        "name": req.body.name,
-        "time": req.body.time,
-        "message": req.body.message,
-        "timestamp": (new Date()).getTime()
+        name: req.body.name,
+        time: req.body.time,
+        message: req.body.message,
+        timestamp: (new Date()).getTime()
     };
 
-    req.logger.info(`received message from '${msg.name}': ${msg.message}`);
+    req.logger.info("received message from %s", msg.name);
 
     if (redisRunning) {
         pub.publish("message", JSON.stringify(msg));
@@ -73,7 +77,6 @@ app.post("/post_message", function (req, res, next) {
 
 // handling post updates
 app.post("/post_update", function (req, res, next) {
-    console.log(req);
     var timestamp = req.body.start;
     var lastSync = req.body.lastSync;
     sendCumulativeMessages(timestamp, lastSync, res);
@@ -110,7 +113,7 @@ function mergeMessages(data) {
     }
 }
 
-// push messages to local backup storages during redis free periods (can as well serve as permanent redis free pushing option)
+// push messages to local backup storage during redis free periods (can serve as permanent redis free pushing option as well)
 function pushLocal(data) {
     if (syncPointer == -1)
         syncPointer = messages.length;
