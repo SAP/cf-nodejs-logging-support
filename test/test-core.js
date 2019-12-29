@@ -404,6 +404,18 @@ describe('Test log-core', function () {
             core.getLoggingLevel().should.equal("warn");
             assert.isFalse(core.setLoggingLevel("something"));
         });
+        
+        it("Test settingLoggingLevel with Upper and lower cases", function () {
+            core.setLoggingLevel("erRor");
+            core.getLoggingLevel().should.equal("error");
+            core.setLoggingLevel("INFO");
+            core.getLoggingLevel().should.equal("info");
+            core.setLoggingLevel("Warn");
+            core.getLoggingLevel().should.equal("warn");
+            core.setLoggingLevel("DEBUG");
+            core.getLoggingLevel().should.equal("debug");
+        }); 
+        
     });
 
 
