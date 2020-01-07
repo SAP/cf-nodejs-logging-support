@@ -206,6 +206,20 @@ logger.setCustomFields({"field-a" :"value"})
 var logger = req.logger.createLogger({"field-a" :"value"}); 
 ```
 
+### Check log severity level
+In some cases it can be useful to check if messages with a specific severity level would be logged. You can check if a logging level is active as follows:
+
+```js
+var isInfoActive = log.isLoggingLevel("info");
+if (isInfoActive) {
+ log.info("message logged with severity 'info'");
+}
+```
+
+This can be useful, if preparing log messages requires some additional processing. It is also possible to call convenience methods:
+```js
+var isDebugActive = log.isDebug();
+```
 
 ### Custom fields
 Custom fields are basically additional key-value pairs added to the logs. As of version 6.0.0 you have to register custom fields, before you can write them. This can be done, by calling following global method:
