@@ -216,7 +216,7 @@ if (isInfoActive) {
 }
 ```
 
-This can be useful, if preparing log messages requires some additional processing. It is also possible to call convenience methods:
+This can be useful, if preparing log messages requires some additional processing. There are convenient methods available for this feature:
 ```js
 var isDebugActive = log.isDebug();
 ```
