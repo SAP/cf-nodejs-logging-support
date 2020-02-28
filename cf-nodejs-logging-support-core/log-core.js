@@ -9,7 +9,7 @@ const DEFAULT_DYN_LOG_LEVEL_HEADER = "SAP-LOG-LEVEL";
 
 const REDUCED_PLACEHOLDER = "redacted";
 
-const NS_PER_SEC = 1e9;
+const NS_PER_MS = 1e6;
 
 const LOG_TYPE = "log";
 const LOGGING_LEVELS = {
@@ -255,15 +255,14 @@ var setSinkFunction = function (f) {
 
 // Initializes an empty log object
 var initLog = function () {
-
-    var time = process.hrtime();
     var logObject = JSON.parse(initDummy);
 
-    logObject.written_at = (new Date()).toJSON();
-    logObject.written_ts = time[0] * NS_PER_SEC + time[1];
+    var now = new Date();
+
+    logObject.written_at = now.toJSON();
+    logObject.written_ts = now.getTime() * NS_PER_MS;
 
     return logObject;
-
 };
 
 // Creates a base log object, which contains all static and env var based fields.

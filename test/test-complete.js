@@ -56,7 +56,8 @@ describe('Test Complete', function () {
         }
     );
     before(function () {
-        clock = sinon.useFakeTimers();
+        // set clock to 2017-01-01T00:00:00.000Z
+        clock = sinon.useFakeTimers({now: 1483228800000});
     });
 
     after(function () {
@@ -65,9 +66,6 @@ describe('Test Complete', function () {
     });
 
     it("checking dummy app results", () => {
-        process.hrtime = function () {
-            return [12, 14];
-        }
         req = httpMock.createRequest({
             headers: {
                 "X-CorrelationID": "test-correlation-id",

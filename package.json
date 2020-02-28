@@ -31,7 +31,7 @@
     "node-mocks-http": "^1.8.0",
     "nyc": "^14.1.1",
     "rewire": "^4.0.1",
-    "sinon": "^7.5.0",
+    "sinon": "^9.0.0",
     "winston": "^3.2.1",
     "winston-transport": "^4.3.0"
   },

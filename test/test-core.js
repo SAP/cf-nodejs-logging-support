@@ -1196,7 +1196,8 @@ describe('Test log-core', function () {
         var clock;
 
         before(function () {
-            clock = sinon.useFakeTimers();
+            // set clock to 2017-01-01T00:00:00.000Z
+            clock = sinon.useFakeTimers({now: 1483228800000});
         });
 
         beforeEach(function () {
@@ -1229,12 +1230,8 @@ describe('Test log-core', function () {
         });
 
         it('Test written_ts: ', function () {
-            process.hrtime = function () {
-                return [12, 14];
-            }
-            var time = process.hrtime();
             logObject = core.initLog();
-            logObject.written_ts.should.equal(time[0] * 1e9 + time[1]);
+            logObject.written_ts.should.equal((new Date()).getTime() * 1e6);
         });
 
         // Write values from process.env.VCAP_APPLICATION

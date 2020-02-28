@@ -15,8 +15,8 @@ exports.getLogMessage = function () {
         "space_id": "test-space-id",
         "container_id": "-",
         "logger": "nodejs-logger",
-        "written_at": "1970-01-01T00:00:00.000Z",
-        "written_ts": 12000000014,
+        "written_at": "2017-01-01T00:00:00.000Z",
+        "written_ts": 1483228800000000000,
         "correlation_id": "test-correlation-id",
         "request_id": "-",
         "type": "request",
@@ -33,10 +33,10 @@ exports.getLogMessage = function () {
         "protocol": "HTTP",
         "remote_ip": "-",
         "response_content_type": "-",
-        "request_received_at": "1970-01-01T00:00:00.000Z",
+        "request_received_at": "2017-01-01T00:00:00.000Z",
         "response_time_ms": 0,
         "direction": "IN",
-        "response_sent_at": "1970-01-01T00:00:00.000Z",
+        "response_sent_at": "2017-01-01T00:00:00.000Z",
         "msg": "testmessage",
         "level": "info"
     };
