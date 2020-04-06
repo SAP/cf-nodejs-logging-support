@@ -20,6 +20,7 @@
     "node": ">=4.0.0"
   },
   "dependencies": {
+    "json-stringify-safe": "^5.0.1",
     "jsonwebtoken": "^8.5.1",
     "uuid": "^3.3.3"
   },

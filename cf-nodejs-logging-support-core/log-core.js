@@ -2,6 +2,7 @@ const util = require("util");
 const os = require("os");
 const uuid = require("uuid/v4");
 const jwt = require("jsonwebtoken");
+const stringifySafe = require('json-stringify-safe');
 
 const ENV_DYN_LOG_HEADER = "DYN_LOG_HEADER";
 const ENV_DYN_LOG_KEY = "DYN_LOG_LEVEL_KEY";
@@ -520,7 +521,7 @@ var writeCustomFields = function (logObject, logger, additionalFields) {
 
         // Write value to customFields object. Stringify, if necessary.
         if ((typeof value) != "string") {
-            value = JSON.stringify(value);
+            value = stringifySafe(value);
         }
 
         if (registeredCustomFields.includes(key)) {

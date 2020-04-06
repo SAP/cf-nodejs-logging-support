@@ -520,7 +520,6 @@ describe('Test log-core', function () {
         });
     });
 
-
     describe('Test custom log sink', function () {
         var core = null;
 
@@ -1054,6 +1053,34 @@ describe('Test log-core', function () {
             assert.isNumber(obj.fieldNumber);
             assert.isObject(obj.fieldObj);
             assert.isArray(obj.fieldArray);
+        });
+
+        it("Test custom fields log type consistency (circular objects)", function () {
+
+            // Register fields
+            registerCustomFields(["fieldA"]);
+
+            var fieldA = {
+                a: 456,
+            }
+
+            var fieldB = {
+                b: 123,
+                a: fieldA
+            }
+
+            // create circular reference a -> b -> a ...
+            fieldA.b = fieldB;
+
+            var obj = {
+                "fieldA": fieldA,
+            };
+
+            log("info", "Test", obj);
+
+            logObject.custom_fields.should.eql({
+                "fieldA": "{\"a\":456,\"b\":{\"b\":123,\"a\":\"[Circular ~]\"}}"
+            });
         });
 
         it("Test custom fields log type consistency (arrays)", function () {
