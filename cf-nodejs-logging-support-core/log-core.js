@@ -14,6 +14,7 @@ const NS_PER_MS = 1e6;
 
 const LOG_TYPE = "log";
 const LOGGING_LEVELS = {
+    "off": -1,
     "error": 0,
     "warn": 1,
     "info": 2,
@@ -62,12 +63,14 @@ var init = function () {
 
     // initialize convenient log level functions (e.g. log.info(...))
     for (var key in LOGGING_LEVELS) {
-        convenientLogFunctions[key] = function (bKey) {
-            return function () {
-                var args = [bKey, ...arguments];
-                return logMessage.apply(this, args);
-            };
-        }(key);
+        if (key != "off") {
+            convenientLogFunctions[key] = function (bKey) {
+                return function () {
+                    var args = [bKey, ...arguments];
+                    return logMessage.apply(this, args);
+                };
+            }(key);
+        }
 
         convenientLevelFunctions["is" + capitalize(key)] = function (bKey) {
             return function () {
@@ -371,7 +374,7 @@ var logMessage = function () {
     var logObject;
     var level = args[0];
 
-    if (!checkLoggingLevel(level, logger)) {
+    if (!checkLoggingLevel(level, logger) || level == "off") { // it is not allowed to log with level 'off'
         return false;
     } else {
         logObject = initLog();
