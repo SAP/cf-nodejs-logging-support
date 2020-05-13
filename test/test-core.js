@@ -663,6 +663,7 @@ describe('Test log-core', function () {
         });
     });
 
+
     describe('Test setCorrelationId', function () {
         var core = rewire("../cf-nodejs-logging-support-core/log-core.js");
         var logObject = null;
@@ -708,6 +709,80 @@ describe('Test log-core', function () {
             testId = uuid();
 
             assert.isFalse(testRequest.setCorrelationId(testId));
+        });
+    });
+
+    describe('Test getTenantId', function () {
+        var core = rewire("../cf-nodejs-logging-support-core/log-core.js");
+        var logObject = null;
+        var getTenantId = null;
+
+        before(function () {
+            core.__set__({
+                "sendLog": function (level, logObj) {
+                    logObject = logObj;
+                }
+            });
+            core.setConfig(importFresh("../config.js").config);
+
+            getTenantId = core.__get__("getTenantId");
+        });
+
+        it('Test correct reading from request', function () {
+            var testRequest = {};
+            testRequest.logObject = {
+                "tenant_id": "456"
+            };
+            testRequest.getTenantId = getTenantId;
+            testRequest.getTenantId().should.equal("456");
+        });
+
+        it('Test correct handling of missing tenant_id', function () {
+            var testRequest = {};
+            testRequest.logObject = {};
+            testRequest.getTenantId = getTenantId;
+            assert.isNull(testRequest.getTenantId());
+        });
+
+        it('Test correct handling of missing logObject', function () {
+            var testRequest = {};
+            testRequest.getTenantId = getTenantId;
+            assert.isNull(testRequest.getTenantId());
+        });
+    });
+
+    describe('Test setTenantId', function () {
+        var core = rewire("../cf-nodejs-logging-support-core/log-core.js");
+        var setTenantId = null;
+        var testRequest;
+        var testId;
+
+        before(function () {
+            core.setConfig(importFresh("../config.js").config);
+            setTenantId = core.__get__("setTenantId");
+        });
+
+        beforeEach(function () {
+
+            testRequest = {};
+            testRequest.setTenantId = setTenantId;
+        });
+
+        it('Test correct writing to request', function () {
+            testRequest.logObject = {
+                "tenant_id": "456"
+            };
+            testId = "789"
+
+
+            assert.isTrue(testRequest.setTenantId(testId));
+            testRequest.logObject.tenant_id.should.equal(testId);
+        });
+
+        it('Test correct handling of missing logObject', function () {
+            testId = "456";
+
+            assert.isFalse(testRequest.setTenantId(testId));
         });
     });
 
