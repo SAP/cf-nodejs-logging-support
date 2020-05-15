@@ -438,6 +438,27 @@ var getCorrelationId = function () {
     return null;
 };
 
+//setTenantId sets the tenant_id for the logger this is called on. Returns true if set, false otherwise
+var setTenantId = function (tenantId) {
+    var logger = this;
+    if (logger.logObject != null) {
+        logger.logObject.tenant_id = tenantId;
+        return true;
+    }
+    return false;
+};
+
+//getTenantId returns the current tenant id for the logger this is called on
+var getTenantId = function () {
+    var logger = this;
+    if (logger.logObject != null) {
+        if (logger.logObject.tenant_id != null) {
+            return logger.logObject.tenant_id;
+        }
+    }
+    return null;
+};
+
 // Registers a (white)list of allowed custom field names
 var registerCustomFields = function (fieldNames) {
 
@@ -600,6 +621,8 @@ var bindLogFunctions = function (logger) {
     logger.isLoggingLevel = isLoggingLevel;
     logger.getCorrelationId = getCorrelationId;
     logger.setCorrelationId = setCorrelationId;
+    logger.setTenantId = setTenantId;
+    logger.getTenantId = getTenantId;
     logger.setDynamicLoggingLevel = setLoggingLevel; // deprecated
     logger.setLoggingLevel = setLoggingLevel;
     logger.getLoggingLevel = getLoggingLevel;

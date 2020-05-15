@@ -363,6 +363,29 @@ app.get('/', function (req, res) {
 
 Be aware that changing the correlation_id for a logger, will also affect ancestor and descendant loggers within the same request context, especially the network log for this request will contain the new correlation_id.
 
+### Request tenant_id
+In order to get the tenant_id of a request, you can use the following method:
+```js
+app.get('/', function (req, res) {
+    // Get correlation_id from logger bound to request
+    var tenantId = req.logger.getTenantId();
+    
+    res.send('Hello World');
+});
+```
+
+It is also possible to change the tenant_id to a value you like:
+```js
+app.get('/', function (req, res) {
+    // Set correlation_id via logger bound to request
+    req.logger.setTenantId("cbc2654f-1c35-45d0-96fc-f32efac20986");
+    
+    res.send('Hello World');
+});
+```
+
+Be aware that changing the tenant_id for a logger, will also affect ancestor and descendant loggers within the same request context, especially the network log for this request will contain the new tenant_id.
+
 ### Human readable output
 Setup an output pattern to get a human-readable output instead of json. Use '{{' and '}}' to print log parameters.
 ```js
