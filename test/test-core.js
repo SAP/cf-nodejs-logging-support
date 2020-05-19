@@ -792,9 +792,13 @@ describe('Test log-core', function () {
         it('test convenience log methods', function () {
             var logger = createLogger();
             for (var lvl in levels) {
-                assert.isNotNull(logger[lvl]);
-                logger[lvl]("test");
-                level.should.equal(lvl);
+                if (lvl == "off") {
+                    assert.isUndefined(logger[lvl]);
+                } else {
+                    assert.isFunction(logger[lvl]);
+                    logger[lvl]("test");
+                    level.should.equal(lvl);   
+                }
             }
         });
 
