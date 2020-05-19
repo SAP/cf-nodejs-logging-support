@@ -39,7 +39,7 @@ var express = require('express');
 var log = require('cf-nodejs-logging-support');
 var app = express();
 
-// Set the minimum logging level (Levels: error, warn, info, verbose, debug, silly)
+// Set the minimum logging level (Levels: off, error, warn, info, verbose, debug, silly)
 log.setLoggingLevel("info");
 
 // Bind to express app
@@ -121,7 +121,7 @@ In addition to request logging this library also supports logging application me
 - debug
 - silly
 
-There are so called *convenient methods* for all supported logging levels, which can be called to log a message using the corresponding level. It is also possible to use standard format placeholders equivalent to the [util.format](https://nodejs.org/api/util.html#util_util_format_format_args) method.
+In addition there is an *off* logging level available, which disables logging output completely. This can come in handy for testing. There are so called *convenient methods* for all supported logging levels, which can be called to log a message using the corresponding level. It is also possible to use standard format placeholders equivalent to the [util.format](https://nodejs.org/api/util.html#util_util_format_format_args) method.
 
 Simple message
 ```js
@@ -314,7 +314,7 @@ The tool mentioned above takes a log level, creates a key pair and signs the res
 }
 ```
 
-This library supports six logging levels: *error*, *warn*, *info*, *verbose*, *debug* and *silly*. Make sure that your JWT specifies one of them in order to work correctly. It is also important to make sure that the JWT has not been expired, when using it. 
+This library supports seven logging levels: *off*, *error*, *warn*, *info*, *verbose*, *debug* and *silly*. Make sure that your JWT specifies one of them in order to work correctly. It is also important to make sure that the JWT has not been expired, when using it. 
 
 ##### 2 Providing the public key
 The logging library will try to verify JWTs attached to incoming requests. In order to do so, the public key (from above) needs to be provided via an environment variable called *DYN_LOG_LEVEL_KEY*:
