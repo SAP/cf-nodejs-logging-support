@@ -1,6 +1,6 @@
 // Nodejs logging support sample app (express version)
 var express = require("express");
-var log = require("../../index");
+var log = require("cf-nodejs-logging-support");
 var redis = require("redis");
 var app = express();
 var redisRunning = false;
@@ -57,8 +57,6 @@ app.post("/post_message", function (req, res) {
         message: req.body.message,
         timestamp: (new Date()).getTime()
     };
-
-    req.logger.setTenantSubdomain("my-subdomain");
 
     req.logger.info("received message from %s", msg.name);
 
