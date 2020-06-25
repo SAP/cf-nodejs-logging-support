@@ -290,6 +290,13 @@ var config = [
         },
         default: "-"
     }, {
+        name: "tenant_subdomain",
+        mandatory: true,
+        source: {
+            type: "static",
+        },
+        default: "-"
+    }, {
         name: "level",
         mandatory: true,
         source: {
