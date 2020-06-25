@@ -399,6 +399,9 @@ var logMessage = function () {
         if (logger.logObject.tenant_id != null) {
             logObject.tenant_id = logger.logObject.tenant_id;
         }
+        if (logger.logObject.tenant_subdomain != null) {
+            logObject.tenant_subdomain = logger.logObject.tenant_subdomain;
+        }
         if (logger.logObject.request_id != null) {
             logObject.request_id = logger.logObject.request_id;
         }

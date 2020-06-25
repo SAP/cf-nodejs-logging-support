@@ -291,12 +291,11 @@ var config = [
         default: "-"
     }, {
         name: "tenant_subdomain",
-        mandatory: false,
-        core: "true",
+        mandatory: true,
         source: {
             type: "static",
-            value: "-"
-        }
+        },
+        default: "-"
     }, {
         name: "level",
         mandatory: true,
