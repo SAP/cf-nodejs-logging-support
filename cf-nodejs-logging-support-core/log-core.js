@@ -462,9 +462,30 @@ var getTenantId = function () {
     return null;
 };
 
+//setTenantSubdomain sets the tenant_subdomain for the logger this is called on. Returns true if set, false otherwise
+var setTenantSubdomain = function (tenantSubdomain) {
+    var logger = this;
+    if (logger.logObject != null) {
+        logger.logObject.tenant_subdomain = tenantSubdomain;
+        return true;
+    }
+    return false;
+};
+
+//getTenantSubdomain returns the current tenant subdomain for the logger this is called on
+var getTenantSubdomain = function () {
+    var logger = this;
+    if (logger.logObject != null) {
+        if (logger.logObject.tenant_subdomain != null) {
+            return logger.logObject.tenant_subdomain;
+        }
+    }
+    return null;
+};
+
 // Registers a (white)list of allowed custom field names
 var registerCustomFields = function (fieldNames) {
-
+    
     registeredCustomFields = [];
 
     if (!Array.isArray(fieldNames)) return false;
@@ -626,6 +647,8 @@ var bindLogFunctions = function (logger) {
     logger.setCorrelationId = setCorrelationId;
     logger.setTenantId = setTenantId;
     logger.getTenantId = getTenantId;
+    logger.setTenantSubdomain = setTenantSubdomain;
+    logger.getTenantSubdomain = getTenantSubdomain;
     logger.setDynamicLoggingLevel = setLoggingLevel; // deprecated
     logger.setLoggingLevel = setLoggingLevel;
     logger.getLoggingLevel = getLoggingLevel;
