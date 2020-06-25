@@ -751,6 +751,45 @@ describe('Test log-core', function () {
         });
     });
 
+    describe('Test getTenantSubdomain', function () {
+        var core = rewire("../cf-nodejs-logging-support-core/log-core.js");
+        var logObject = null;
+        var getTenantSubdomain = null;
+
+        before(function () {
+            core.__set__({
+                "sendLog": function (level, logObj) {
+                    logObject = logObj;
+                }
+            });
+            core.setConfig(importFresh("../config.js").config);
+
+            getTenantSubdomain = core.__get__("getTenantSubdomain");
+        });
+
+        it('Test correct reading from request', function () {
+            var testRequest = {};
+            testRequest.logObject = {
+                "tenant_subdomain": "456"
+            };
+            testRequest.getTenantSubdomain = getTenantSubdomain;
+            testRequest.getTenantSubdomain().should.equal("456");
+        });
+
+        it('Test correct handling of missing tenant_subdomain', function () {
+            var testRequest = {};
+            testRequest.logObject = {};
+            testRequest.getTenantSubdomain = getTenantSubdomain;
+            assert.isNull(testRequest.getTenantSubdomain());
+        });
+
+        it('Test correct handling of missing logObject', function () {
+            var testRequest = {};
+            testRequest.getTenantSubdomain = getTenantSubdomain;
+            assert.isNull(testRequest.getTenantSubdomain());
+        });
+    });
+
     describe('Test setTenantId', function () {
         var core = rewire("../cf-nodejs-logging-support-core/log-core.js");
         var setTenantId = null;
@@ -783,6 +822,41 @@ describe('Test log-core', function () {
             testId = "456";
 
             assert.isFalse(testRequest.setTenantId(testId));
+        });
+    });
+
+    describe('Test setTenantSubdomain', function () {
+        var core = rewire("../cf-nodejs-logging-support-core/log-core.js");
+        var setTenantSubdomain = null;
+        var testRequest;
+        var testSubdomain;
+
+        before(function () {
+            core.setConfig(importFresh("../config.js").config);
+            setTenantSubdomain = core.__get__("setTenantSubdomain");
+        });
+
+        beforeEach(function () {
+
+            testRequest = {};
+            testRequest.setTenantSubdomain = setTenantSubdomain;
+        });
+
+        it('Test correct writing to request', function () {
+            testRequest.logObject = {
+                "tenant_subdomain": "sub_a"
+            };
+            testSubdomain = "sub_b"
+
+
+            assert.isTrue(testRequest.setTenantSubdomain(testSubdomain));
+            testRequest.logObject.tenant_subdomain.should.equal(testSubdomain);
+        });
+
+        it('Test correct handling of missing logObject', function () {
+            testSubdomain = "sub_a";
+
+            assert.isFalse(testRequest.setTenantSubdomain(testSubdomain));
         });
     });
 
