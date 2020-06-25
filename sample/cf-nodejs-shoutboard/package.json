@@ -16,8 +16,8 @@
   "dependencies": {
     "cf-nodejs-logging-support": "latest",
     "express": "^4.17.1",
-    "restify": "^8.4.0",
-    "redis": "^2.8.0"
+    "redis": "^2.8.0",
+    "restify": "^8.5.1"
   },
   "engines": {
     "node": ">=4.0.0"
