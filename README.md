@@ -187,6 +187,7 @@ In addition to a message logged using the *global* context these messages will a
 - correlation_id
 - request_id
 - tenant_id
+- tenant_subdomain
 
 ### Child loggers
 You can create child loggers, which share the context of their parent (global or reqest).
@@ -374,7 +375,7 @@ app.get('/', function (req, res) {
 });
 ```
 
-It is also possible to change the tenant_id to a value you like:
+It is also possible to change the tenant_id to any value:
 ```js
 app.get('/', function (req, res) {
     // Set tenant_id via logger bound to request
@@ -385,6 +386,19 @@ app.get('/', function (req, res) {
 ```
 
 Be aware that changing the tenant_id for a logger, will also affect ancestor and descendant loggers within the same request context, especially the network log for this request will contain the new tenant_id.
+
+### Request tenant_subdomain
+The tenant_subdomain is not determined automatically, instead you can set it per request as follows:
+```js
+app.get('/', function (req, res) {
+    // Set tenant_subdomain via logger bound to request
+    req.logger.setTenantSubdomain("my-subdomain");
+    
+    res.send('Hello World');
+});
+```
+
+Be aware that changing the tenant_subdomain for a logger, will also affect ancestor and descendant loggers within the same request context, especially the network log for this request will contain the new tenant_subdomain.
 
 ### Human readable output
 Setup an output pattern to get a human-readable output instead of json. Use '{{' and '}}' to print log parameters.
