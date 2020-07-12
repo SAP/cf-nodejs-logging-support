@@ -1123,10 +1123,10 @@ describe('Test log-core', function () {
             });
 
             logObject.msg.should.equal('Test');
-            logObject.custom_fields.should.eql({
-                "fieldA": "valueA",
-                "fieldC": "valueC"
-            });
+            logObject["#cf"].string.should.eql([
+                {"k":"fieldA","v":"valueA","n":0},
+                {"k":"fieldC","v":"valueC","n":1}
+            ]);
         });
 
         it("Test custom fields log output (convert array to object)", function () {
@@ -1137,7 +1137,11 @@ describe('Test log-core', function () {
             ]);
 
             logObject.msg.should.equal('Test');
-            logObject.custom_fields.should.eql({ "0": "1", "1": "123", "2": "{\"field\":\"values\"}" });
+            logObject["#cf"].string.should.eql([
+                {"k":"0","v":"1","n":0},
+                {"k":"1","v":"123","n":1},
+                {"k":"2","v":"{\"field\":\"values\"}","n":2}
+            ]);
         });
 
         it("Test custom fields inheritance", function () {
@@ -1161,35 +1165,38 @@ describe('Test log-core', function () {
             // global fields only
             log("info", "Test", {});
             logObject.msg.should.equal('Test');
-            logObject.custom_fields.should.eql({
-                "fieldA": "a",
-                "fieldB": "b"
-            });
+
+
+            logObject["#cf"].string.should.eql([
+                {"k":"fieldA","v":"a","n":0},
+                {"k":"fieldB","v":"b","n":1},
+            ]);
 
             // loggerA fields and non-overwritten global fields
             loggerA.logMessage("info", "Test", {});
             logObject.msg.should.equal('Test');
-            logObject.custom_fields.should.eql({
-                "fieldA": "c",
-                "fieldB": "b"
-            });
+
+            logObject["#cf"].string.should.eql([
+                {"k":"fieldA","v":"c","n":0},
+                {"k":"fieldB","v":"b","n":1},
+            ]);
 
             // loggerB fields and inherited loggerA and global fields
             loggerB.logMessage("info", "Test", {});
             logObject.msg.should.equal('Test');
-            logObject.custom_fields.should.eql({
-                "fieldA": "d",
-                "fieldB": "b",
-                "fieldC": "c"
-            });
+            logObject["#cf"].string.should.eql([
+                {"k":"fieldA","v":"d","n":0},
+                {"k":"fieldB","v":"b","n":1},
+                {"k":"fieldC","v":"c","n":2},
+            ]);
 
             // inherited loggerA/global fields and NOT unknown field 'fieldU'
             loggerC.logMessage("info", "Test", {});
             logObject.msg.should.equal('Test');
-            logObject.custom_fields.should.eql({
-                "fieldA": "c",
-                "fieldB": "b"
-            });
+            logObject["#cf"].string.should.eql([
+                {"k":"fieldA","v":"c","n":0},
+                {"k":"fieldB","v":"b","n":1},
+            ]);
         });
 
         it("Test custom fields log type consistency (objects)", function () {
@@ -1231,9 +1238,9 @@ describe('Test log-core', function () {
 
             log("info", "Test", obj);
 
-            logObject.custom_fields.should.eql({
-                "fieldA": "{\"a\":456,\"b\":{\"b\":123,\"a\":\"[Circular ~]\"}}"
-            });
+            logObject["#cf"].string.should.eql([
+                {"k":"fieldA","v":"{\"a\":456,\"b\":{\"b\":123,\"a\":\"[Circular ~]\"}}","n":0}
+            ]);
         });
 
         it("Test custom fields log type consistency (arrays)", function () {
@@ -1259,11 +1266,12 @@ describe('Test log-core', function () {
             });
 
             logObject.msg.should.equal('Test abc');
-            logObject.custom_fields.should.eql({
-                "string": "text",
-                "int": "0",
-                "obj": "{\"test\":\"value\"}"
-            });
+
+            logObject["#cf"].string.should.eql([
+                {"k":"string","v":"text","n":0},
+                {"k":"int","v":"0","n":1},
+                {"k":"obj","v":"{\"test\":\"value\"}","n":2}
+            ]);
         });
 
 
@@ -1279,9 +1287,9 @@ describe('Test log-core', function () {
             });
 
             logObject.msg.should.equal('Test abc');
-            logObject.custom_fields.should.eql({
-                "int": "0",
-            });
+            logObject["#cf"].string.should.eql([
+                {"k":"int","v":"0","n":0}
+            ]);
         });
 
         it("Test logLevel catch", function () {
