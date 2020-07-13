@@ -588,7 +588,7 @@ var writeCustomFields = function (logObject, logger, additionalFields) {
             temp.string.push({
                 "k": key,
                 "v": customFields[key],
-                "n": counter++
+                "i": counter++
             })
         }
         logObject["#cf"] = temp;

@@ -1124,8 +1124,8 @@ describe('Test log-core', function () {
 
             logObject.msg.should.equal('Test');
             logObject["#cf"].string.should.eql([
-                {"k":"fieldA","v":"valueA","n":0},
-                {"k":"fieldC","v":"valueC","n":1}
+                {"k":"fieldA","v":"valueA","i":0},
+                {"k":"fieldC","v":"valueC","i":1}
             ]);
         });
 
@@ -1138,9 +1138,9 @@ describe('Test log-core', function () {
 
             logObject.msg.should.equal('Test');
             logObject["#cf"].string.should.eql([
-                {"k":"0","v":"1","n":0},
-                {"k":"1","v":"123","n":1},
-                {"k":"2","v":"{\"field\":\"values\"}","n":2}
+                {"k":"0","v":"1","i":0},
+                {"k":"1","v":"123","i":1},
+                {"k":"2","v":"{\"field\":\"values\"}","i":2}
             ]);
         });
 
@@ -1168,8 +1168,8 @@ describe('Test log-core', function () {
 
 
             logObject["#cf"].string.should.eql([
-                {"k":"fieldA","v":"a","n":0},
-                {"k":"fieldB","v":"b","n":1},
+                {"k":"fieldA","v":"a","i":0},
+                {"k":"fieldB","v":"b","i":1},
             ]);
 
             // loggerA fields and non-overwritten global fields
@@ -1177,25 +1177,25 @@ describe('Test log-core', function () {
             logObject.msg.should.equal('Test');
 
             logObject["#cf"].string.should.eql([
-                {"k":"fieldA","v":"c","n":0},
-                {"k":"fieldB","v":"b","n":1},
+                {"k":"fieldA","v":"c","i":0},
+                {"k":"fieldB","v":"b","i":1},
             ]);
 
             // loggerB fields and inherited loggerA and global fields
             loggerB.logMessage("info", "Test", {});
             logObject.msg.should.equal('Test');
             logObject["#cf"].string.should.eql([
-                {"k":"fieldA","v":"d","n":0},
-                {"k":"fieldB","v":"b","n":1},
-                {"k":"fieldC","v":"c","n":2},
+                {"k":"fieldA","v":"d","i":0},
+                {"k":"fieldB","v":"b","i":1},
+                {"k":"fieldC","v":"c","i":2},
             ]);
 
             // inherited loggerA/global fields and NOT unknown field 'fieldU'
             loggerC.logMessage("info", "Test", {});
             logObject.msg.should.equal('Test');
             logObject["#cf"].string.should.eql([
-                {"k":"fieldA","v":"c","n":0},
-                {"k":"fieldB","v":"b","n":1},
+                {"k":"fieldA","v":"c","i":0},
+                {"k":"fieldB","v":"b","i":1},
             ]);
         });
 
@@ -1239,7 +1239,7 @@ describe('Test log-core', function () {
             log("info", "Test", obj);
 
             logObject["#cf"].string.should.eql([
-                {"k":"fieldA","v":"{\"a\":456,\"b\":{\"b\":123,\"a\":\"[Circular ~]\"}}","n":0}
+                {"k":"fieldA","v":"{\"a\":456,\"b\":{\"b\":123,\"a\":\"[Circular ~]\"}}","i":0}
             ]);
         });
 
@@ -1268,9 +1268,9 @@ describe('Test log-core', function () {
             logObject.msg.should.equal('Test abc');
 
             logObject["#cf"].string.should.eql([
-                {"k":"string","v":"text","n":0},
-                {"k":"int","v":"0","n":1},
-                {"k":"obj","v":"{\"test\":\"value\"}","n":2}
+                {"k":"string","v":"text","i":0},
+                {"k":"int","v":"0","i":1},
+                {"k":"obj","v":"{\"test\":\"value\"}","i":2}
             ]);
         });
 
@@ -1288,7 +1288,7 @@ describe('Test log-core', function () {
 
             logObject.msg.should.equal('Test abc');
             logObject["#cf"].string.should.eql([
-                {"k":"int","v":"0","n":0}
+                {"k":"int","v":"0","i":0}
             ]);
         });
 
