@@ -579,19 +579,21 @@ var writeCustomFields = function (logObject, logger, additionalFields) {
         }
     }
 
-
+    //writes custom fields in the correct order and correlates i to the place in registeredCustomFields
     if (Object.keys(customFields).length > 0) {
-        temp = {};
-        temp.string = [];
+        res = {};
+        res.string = [];
         counter = 0;
-        for(var key in customFields) {
-            temp.string.push({
-                "k": key,
-                "v": customFields[key],
-                "i": counter++
-            })
+        for(var i = 0; i < registeredCustomFields.length; i++) {
+            key = registeredCustomFields[i]
+            if(customFields[key])
+                res.string.push({
+                    "k": key,
+                    "v": customFields[key],
+                    "i": i
+                })
         }
-        logObject["#cf"] = temp;
+        logObject["#cf"] = res;
     }
 }
 
