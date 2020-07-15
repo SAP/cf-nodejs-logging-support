@@ -142,10 +142,12 @@ info("This %s a %s", "is", "test");
 ```
 
 With custom fields added to custom_fields field. Keep in mind that the last argument is handled as custom_fields object, if it is an object. As version 6.0.0 custom fields have to registered before writing them. See Custom fields section.
+
+*NOTE: The logged format for custom_fields changed with version 6.4.0 to adopt to changes made to our handling of custom fields*
 ```js
 info("Test data %j", {"field" :"value"}); 
 // ... "msg":"Test data %j" 
-// ... "custom_fields": {"field": "value"} ...
+// ... "#cf": {"string": [{"k":"field","v":"value","n":"0"}]}...
 ```
 
 With json object forced to be embedded in to the message (nothing will be added to custom_fields).
