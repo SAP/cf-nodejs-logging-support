@@ -147,7 +147,7 @@ With custom fields added to custom_fields field. Keep in mind that the last argu
 ```js
 info("Test data %j", {"field" :"value"}); 
 // ... "msg":"Test data %j" 
-// ... "#cf": {"string": [{"k":"field","v":"value","n":"0"}]}...
+// ... "#cf": {"string": [{"k":"field","v":"value","i":"0"}]}...
 ```
 
 With json object forced to be embedded in to the message (nothing will be added to custom_fields).

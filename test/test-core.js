@@ -1274,6 +1274,22 @@ describe('Test log-core', function () {
             ]);
         });
 
+        it("Test custom field order preservation", function () {
+            registerCustomFields(["1", "2", "3"]);
+
+            log.info("Test order", {
+                "1": "1",
+                "3": "3",
+                "2": "2"
+            });
+
+            logObject["#cf"].string.should.eql([
+                {"k":"1","v":"1","i":0},
+                {"k":"2","v":"2","i":1},
+                {"k":"1","v":"3","i":2}
+            ]);
+        });
+
 
         it("Test unregistered custom fields log", function () {
             registerCustomFields(["int"]);
