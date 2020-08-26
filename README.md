@@ -30,6 +30,8 @@ For details on the concepts and log formats, please look at the sibling project 
 ```bashp
 npm install cf-nodejs-logging-support
 ```
+
+[![REUSE status](https://api.reuse.software/badge/github.com/SAP/cf-nodejs-logging-support)](https://api.reuse.software/info/github.com/SAP/cf-nodejs-logging-support)
     
 ## Usage
 
