@@ -1,6 +1,6 @@
 # Node.js Logging Support for Cloud Foundry   
 
-[![Version npm](https://img.shields.io/npm/v/cf-nodejs-logging-support.svg?style=flat-square)](https://www.npmjs.com/package/cf-nodejs-logging-support)[![npm Downloads](https://img.shields.io/npm/dm/cf-nodejs-logging-support.svg?style=flat-square)](https://www.npmjs.com/package/cf-nodejs-logging-support)[![Build Status](https://img.shields.io/travis/SAP/cf-nodejs-logging-support/v4.0.0.svg?style=flat-square)](https://travis-ci.org/SAP/cf-nodejs-logging-support)
+[![Version npm](https://img.shields.io/npm/v/cf-nodejs-logging-support.svg?style=flat-square)](https://www.npmjs.com/package/cf-nodejs-logging-support)[![npm Downloads](https://img.shields.io/npm/dm/cf-nodejs-logging-support.svg?style=flat-square)](https://www.npmjs.com/package/cf-nodejs-logging-support)[![Build Status](https://img.shields.io/travis/SAP/cf-nodejs-logging-support/v4.0.0.svg?style=flat-square)](https://travis-ci.org/SAP/cf-nodejs-logging-support)[![REUSE status](https://api.reuse.software/badge/github.com/SAP/cf-nodejs-logging-support)](https://api.reuse.software/info/github.com/SAP/cf-nodejs-logging-support)
 
 ## Summary
 
@@ -30,8 +30,6 @@ For details on the concepts and log formats, please look at the sibling project 
 ```bashp
 npm install cf-nodejs-logging-support
 ```
-
-[![REUSE status](https://api.reuse.software/badge/github.com/SAP/cf-nodejs-logging-support)](https://api.reuse.software/info/github.com/SAP/cf-nodejs-logging-support)
     
 ## Usage
 
