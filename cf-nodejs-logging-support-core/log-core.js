@@ -44,8 +44,13 @@ var dynLogLevelKey;
 
 var customSinkFunc;
 
+var boundServices;
+
 var convenientLogFunctions = [];
 var convenientLevelFunctions = [];
+
+var defaultCustomEnabled = true;
+var cfCustomEnabled = false;
 
 
 // Initializes the core logger, including setup of environment var defined settings
@@ -78,6 +83,16 @@ var init = function () {
                 return isLoggingLevel.apply(this, args);
             };
         }(key);
+    }
+
+    //Reading bindings from context
+    var boundServices = process.env.VCAP_SERVICES ? JSON.parse(process.env.VCAP_SERVICES) : {};
+    if(boundServices["application-logs"]) {
+        cfCustomEnabled = true;
+        defaultCustomEnabled = false;
+    }
+    if(boundServices["cloud-logs"]) {
+        defaultCustomEnabled = true;
     }
 };
 
@@ -137,6 +152,10 @@ var getPreLogConfig = function () {
 var getPostLogConfig = function () {
     return postLogConfig;
 };
+
+var getBoundServices = function () {
+    return boundServices;
+}
 
 // Assigns default values to empty fields, if defined, OR adds a reference to a configured fallback
 // method otherwise.
@@ -572,15 +591,16 @@ var writeCustomFields = function (logObject, logger, additionalFields) {
             value = stringifySafe(value);
         }
 
-        if (registeredCustomFields.includes(key)) {
-            customFields[key] = value;
-        } else if (logObject[key] == null && key != "custom_fields") {
+        if(registeredCustomFields.includes(key) && defaultCustomEnabled) {
             logObject[key] = value;
+        }
+        if (registeredCustomFields.includes(key) && cfCustomEnabled) {
+            customFields[key] = value;
         }
     }
 
     //writes custom fields in the correct order and correlates i to the place in registeredCustomFields
-    if (Object.keys(customFields).length > 0) {
+    if (Object.keys(customFields).length > 0 && cfCustomEnabled) {
         res = {};
         res.string = [];
         counter = 0;
@@ -716,6 +736,37 @@ var overrideField = function (field, value) {
     return false;
 };
 
+//sets
+var overrideCustomFieldFormat = function(value) {
+    if(typeof value == "string") {
+        switch (value) {
+            case "cf":
+            case "cloudfoundry":
+            case "application-logging":
+                defaultCustomEnabled = false;
+                cfCustomEnabled = true;
+                break;
+            case "all":
+                defaultCustomEnabled = true;
+                cfCustomEnabled = true;
+                break;
+            case "disabled":
+                defaultCustomEnabled = false;
+                cfCustomEnabled = false;
+                break;
+            case "default":
+            case "cloud-logging":
+            default:
+                defaultCustomEnabled = true;
+                cfCustomEnabled = false;
+        }
+    } else {
+        defaultCustomEnabled = true;
+        cfCustomEnabled = false;
+        return false;
+    }
+}
+
 // Get the name of the dynamic log level header
 var getDynLogLevelHeaderName = function () {
     return dynLogLevelHeader;
@@ -786,3 +837,5 @@ exports.setLoggingLevel = setLoggingLevel;
 exports.setLogPattern = setLogPattern;
 exports.setSinkFunction = setSinkFunction;
 exports.overrideField = overrideField;
+exports.overrideCustomFieldFormat = overrideCustomFieldFormat;
+exports.getBoundServices = getBoundServices;

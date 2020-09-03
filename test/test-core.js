@@ -1019,6 +1019,7 @@ describe('Test log-core', function () {
 
             beforeEach(function () {
                 logger = core.createLogger();
+                core.overrideCustomFieldFormat("default");
             });
 
             it("Test null object", function () {
@@ -1045,6 +1046,7 @@ describe('Test log-core', function () {
         var logObject = null;
         var log = null;
         var registerCustomFields = null;
+        var overrideCustomFieldFormat = null;
         var setCustomFields = null;
 
         before(function () {
@@ -1058,7 +1060,12 @@ describe('Test log-core', function () {
             log = core.logMessage;
             registerCustomFields = core.registerCustomFields;
             setCustomFields = core.setCustomFields;
+            overrideCustomFieldFormat = core.overrideCustomFieldFormat;
         });
+
+        beforeEach(function () {
+            overrideCustomFieldFormat("default");
+        })
 
         it("Test simple log", function () {
             log("info", "Test");
@@ -1105,16 +1112,46 @@ describe('Test log-core', function () {
             }, null);
             logObject.msg.should.equal('Test abc 42 {"field":"value"}');
         });
+    });
+    describe("Test custom field logic", function() {
+        var core = rewire("../cf-nodejs-logging-support-core/log-core.js");
 
-        it("Test custom fields log output (number)", function () {
-            log("info", "Test", 42);
+        var logObject = null;
+        var log = null;
+        var registerCustomFields = null;
+        var overrideCustomFieldFormat = null;
+        var setCustomFields = null;
 
-            logObject.msg.should.equal('Test 42');
+        before(function () {
+            core.__set__({
+                "sendLog": function (logObj) {
+                    logObject = logObj;
+                }
+            });
+            core.setConfig(importFresh("../config.js").config);
+
+            log = core.logMessage;
+            registerCustomFields = core.registerCustomFields;
+            setCustomFields = core.setCustomFields;
+            overrideCustomFieldFormat = core.overrideCustomFieldFormat;
         });
+
+        
+        describe("Test cloud foundry format", function() {
+            beforeEach(function () {
+                overrideCustomFieldFormat("disabled");
+            });
+            
+            it("Test custom fields log output (number)", function () {
+                log("info", "Test", 42);
+
+                logObject.msg.should.equal('Test 42');
+            });
 
         it("Test custom fields log output (object)", function () {
             // Register only two of three fields
             registerCustomFields(["fieldA", "fieldC"]);
+            overrideCustomFieldFormat("cf");
 
             log("info", "Test", {
                 "fieldA": "valueA",
@@ -1360,6 +1397,7 @@ describe('Test log-core', function () {
             logObject.msg.should.equal("Test");
             logObject.tenant_id.should.equal("789");
         });
+        });
     });
 
     describe('Test init', function () {
@@ -1380,6 +1418,7 @@ describe('Test log-core', function () {
             defaultHeader = core.__get__("DEFAULT_DYN_LOG_LEVEL_HEADER");
             envHeaderVariable = core.__get__("ENV_DYN_LOG_HEADER");
             process.env[envHeaderVariable] = null;
+            core.overrideCustomFieldFormat("default");
         });
 
         it('test default behaviour', function () {
