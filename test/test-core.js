@@ -1129,7 +1129,6 @@ describe('Test log-core', function () {
                 }
             });
             core.setConfig(importFresh("../config.js").config);
-
             log = core.logMessage;
             registerCustomFields = core.registerCustomFields;
             setCustomFields = core.setCustomFields;
@@ -1139,7 +1138,7 @@ describe('Test log-core', function () {
         
         describe("Test cloud foundry format", function() {
             beforeEach(function () {
-                overrideCustomFieldFormat("disabled");
+                overrideCustomFieldFormat("default");
             });
             
             it("Test custom fields log output (number)", function () {
@@ -1168,6 +1167,7 @@ describe('Test log-core', function () {
 
         it("Test custom fields log output (convert array to object)", function () {
             registerCustomFields(["0", "1", "2"]);
+            overrideCustomFieldFormat("cf");
 
             log("info", "Test", [
                 1, "123", { "field": "values" }
@@ -1181,9 +1181,117 @@ describe('Test log-core', function () {
             ]);
         });
 
+        it("Test binding to cf and cloud logging", function () {
+            registerCustomFields(["a", "b", "c"]);
+            overrideCustomFieldFormat("all");
+
+            log("info", "Test", {
+                    "a": "string",
+                    "b": 1337,
+                    "c": {"nested":"object"}
+                }
+            );
+
+            logObject.msg.should.equal('Test');
+            logObject.a.should.equal("string");
+            logObject.b.should.equal("1337");
+            logObject.c.should.equal("{\"nested\":\"object\"}");
+            logObject["#cf"].string.should.eql([
+                {"k":"a","v":"string","i":0},
+                {"k":"b","v":"1337","i":1},
+                {"k":"c","v":"{\"nested\":\"object\"}","i":2}
+            ]);
+        });
+
+        it("Test binding to cloud logging", function () {
+            registerCustomFields(["a", "b", "c"]);
+            overrideCustomFieldFormat("default");
+
+            log("info", "Test", {
+                    "a": "string",
+                    "b": 1337,
+                    "c": {"nested":"object"}
+                }
+            );
+
+            logObject.msg.should.equal('Test');
+            logObject.a.should.equal("string");
+            logObject.b.should.equal("1337");
+            logObject.c.should.equal("{\"nested\":\"object\"}");
+            assert.equal(logObject["#cf"], null);
+        });
+
+        it("Test disabled custom fields", function () {
+            registerCustomFields(["a", "b", "c"]);
+            overrideCustomFieldFormat("disabled");
+
+            log("info", "Test", {
+                    "a": "string",
+                    "b": 1337,
+                    "c": {"nested":"object"}
+                }
+            );
+
+            logObject.msg.should.equal('Test');
+            assert.equal(logObject.a, null);
+            assert.equal(logObject.b, null);
+            assert.equal(logObject.c, null);
+            assert.equal(logObject["#cf"], null);
+        });
+
+        it("Test reading bindings from context", function () {
+                process.env.VCAP_SERVICES = JSON.stringify({
+                    "application-logs": [
+                        {"plan": "lite"}
+                    ],
+                    "cloud-logs": [
+                        {"plan": "lite"}
+                    ]
+                })
+                core.init();
+            registerCustomFields(["a", "b", "c"]);
+
+            log("info", "Test", {
+                    "a": "string",
+                    "b": 1337,
+                    "c": {"nested":"object"}
+                }
+            );
+
+            logObject.msg.should.equal('Test');
+            logObject.a.should.equal("string");
+            logObject.b.should.equal("1337");
+            logObject.c.should.equal("{\"nested\":\"object\"}");
+            logObject["#cf"].string.should.eql([
+                {"k":"a","v":"string","i":0},
+                {"k":"b","v":"1337","i":1},
+                {"k":"c","v":"{\"nested\":\"object\"}","i":2}
+            ]);
+        });
+
+        it("Test faulty binding string defaulting", function () {
+            process.env.VCAP_SERVICES = '{"application-logs": [{"plan": "lite"}],"cloud-logs": [{"plan": "lite"}]'
+            core.init();
+        registerCustomFields(["a", "b", "c"]);
+
+        log("info", "Test", {
+                "a": "string",
+                "b": 1337,
+                "c": {"nested":"object"}
+            }
+        );
+
+        logObject.msg.should.equal('Test');
+        logObject.a.should.equal("string");
+        logObject.b.should.equal("1337");
+        logObject.c.should.equal("{\"nested\":\"object\"}");
+        assert.equal(logObject["#cf"], null);
+    });
+
         it("Test custom fields inheritance", function () {
             // Register fields
             registerCustomFields(["fieldA", "fieldB", "fieldC"]);
+            overrideCustomFieldFormat("cf");
 
             // Set global custom fields
             setCustomFields({ fieldA: "a", fieldB: "b" });
@@ -1256,6 +1364,7 @@ describe('Test log-core', function () {
 
             // Register fields
             registerCustomFields(["fieldA"]);
+            overrideCustomFieldFormat("cf");
 
             var fieldA = {
                 a: 456,
@@ -1293,6 +1402,7 @@ describe('Test log-core', function () {
 
         it("Test parameter and custom fields log", function () {
             registerCustomFields(["string", "int", "obj"]);
+            overrideCustomFieldFormat("cf");
 
             log("info", "Test %s", "abc", {
                 "string": "text",
@@ -1313,6 +1423,7 @@ describe('Test log-core', function () {
 
         it("Test custom field order preservation", function () {
             registerCustomFields(["1", "2", "3"]);
+            overrideCustomFieldFormat("cf");
 
             log("info","Test order", {
                 "1": "1",
@@ -1329,6 +1440,7 @@ describe('Test log-core', function () {
 
         it("Test custom field number reservation on missing fields", function () {
             registerCustomFields(["1", "2", "3"]);
+            overrideCustomFieldFormat("cf");
 
             log("info","Test order", {
                 "1": "1",
@@ -1344,6 +1456,7 @@ describe('Test log-core', function () {
 
         it("Test unregistered custom fields log", function () {
             registerCustomFields(["int"]);
+            overrideCustomFieldFormat("cf");
 
             log("info", "Test %s", "abc", {
                 "string": "text",

@@ -86,7 +86,7 @@ var init = function () {
     }
 
     //Reading bindings from context
-    var boundServices = process.env.VCAP_SERVICES ? JSON.parse(process.env.VCAP_SERVICES) : {};
+    var boundServices = process.env.VCAP_SERVICES ? JSONparseSave(process.env.VCAP_SERVICES) : {};
     if(boundServices["application-logs"]) {
         cfCustomEnabled = true;
         defaultCustomEnabled = false;
@@ -95,6 +95,16 @@ var init = function () {
         defaultCustomEnabled = true;
     }
 };
+
+var JSONparseSave = function (value) {
+    var tmp;
+    try {
+        tmp = JSON.parse(value);
+    } catch (e) {
+        tmp = {};
+    }
+    return tmp;
+}
 
 var setConfig = function (config) {
     precompileConfig(config);
@@ -736,7 +746,7 @@ var overrideField = function (field, value) {
     return false;
 };
 
-//sets
+//Sets the custom field format by hand. Returns true on correct strings.
 var overrideCustomFieldFormat = function(value) {
     if(typeof value == "string") {
         switch (value) {
@@ -756,10 +766,15 @@ var overrideCustomFieldFormat = function(value) {
                 break;
             case "default":
             case "cloud-logging":
+                defaultCustomEnabled = true;
+                cfCustomEnabled = false;
+                break;
             default:
                 defaultCustomEnabled = true;
                 cfCustomEnabled = false;
+                return false;
         }
+        return true
     } else {
         defaultCustomEnabled = true;
         cfCustomEnabled = false;
