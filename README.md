@@ -141,16 +141,7 @@ info("This %s a %s", "is", "test");
 // ... "msg":"This is a test" ...
 ```
 
-With custom fields added to custom_fields field. Keep in mind that the last argument is handled as custom_fields object, if it is an object. As version 6.0.0 custom fields have to registered before writing them. See Custom fields section.
-
-*NOTE: The logged format for custom_fields changed with version 6.4.0 to adopt to changes made to our handling of custom fields*
-```js
-info("Test data %j", {"field" :"value"}); 
-// ... "msg":"Test data %j" 
-// ... "#cf": {"string": [{"k":"field","v":"value","i":"0"}]}...
-```
-
-With json object forced to be embedded in to the message (nothing will be added to custom_fields).
+if you want json object to be embedded in to the message (nothing will be added to custom_fields).
 ```js
 info("Test data %j", {"field" :"value"}, {}); 
 // ... "msg":"Test data {\"field\": \"value\"}" ...
@@ -162,6 +153,28 @@ var level = "debug";
 logMessage(level, "Hello World"); 
 // ... "msg":"Hello World" ...
 ```
+
+### Custom field usage
+
+You can use the custom field feature to add custom fields to your logs.
+
+Keep in mind that the last argument is handled as custom_fields object, if it is an object.
+```js
+info("Test data", {"field" :"value"}); 
+// ... "msg":"Test data" 
+// ... "field":"value"...
+```
+
+If you use this library with SAP application-logging,
+you need to register your custom fields:
+
+
+```js
+info("Test data", {"field" :"value"}); 
+// ... "msg":"Test data" 
+// ... "#cf": {"string": [{"k":"field","v":"value","i":"0"}]}...
+```
+
 ### Logging contexts
 
 In general there are two types of logging contexts: *global* and *request* contexts.

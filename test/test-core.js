@@ -1113,6 +1113,7 @@ describe('Test log-core', function () {
             logObject.msg.should.equal('Test abc 42 {"field":"value"}');
         });
     });
+
     describe("Test custom field logic", function() {
         var core = rewire("../cf-nodejs-logging-support-core/log-core.js");
 
@@ -1134,11 +1135,9 @@ describe('Test log-core', function () {
             setCustomFields = core.setCustomFields;
             overrideCustomFieldFormat = core.overrideCustomFieldFormat;
         });
-
-        
-        describe("Test cloud foundry format", function() {
             beforeEach(function () {
                 overrideCustomFieldFormat("default");
+                registerCustomFields({});
             });
             
             it("Test custom fields log output (number)", function () {
@@ -1205,6 +1204,23 @@ describe('Test log-core', function () {
 
         it("Test binding to cloud logging", function () {
             registerCustomFields(["a", "b", "c"]);
+            overrideCustomFieldFormat("default");
+
+            log("info", "Test", {
+                    "a": "string",
+                    "b": 1337,
+                    "c": {"nested":"object"}
+                }
+            );
+
+            logObject.msg.should.equal('Test');
+            logObject.a.should.equal("string");
+            logObject.b.should.equal("1337");
+            logObject.c.should.equal("{\"nested\":\"object\"}");
+            assert.equal(logObject["#cf"], null);
+        });
+
+        it("Test no need to register for default custom fields", function () {
             overrideCustomFieldFormat("default");
 
             log("info", "Test", {
@@ -1509,7 +1525,6 @@ describe('Test log-core', function () {
             testRequest.log("info", "Test");
             logObject.msg.should.equal("Test");
             logObject.tenant_id.should.equal("789");
-        });
         });
     });
 

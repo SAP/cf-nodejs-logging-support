@@ -591,29 +591,28 @@ var writeCustomFields = function (logObject, logger, additionalFields) {
     var providedFields = Object.assign({}, extractCustomFieldsFromLogger(logger), additionalFields);
 
     var customFields = {};
+    var value;
     for (var key in providedFields) {
-        // Skip unregistered fields
+        value = providedFields[key];
 
-        var value = providedFields[key];
-
-        // Write value to customFields object. Stringify, if necessary.
+        // Stringify, if necessary.
         if ((typeof value) != "string") {
             value = stringifySafe(value);
         }
 
-        if(registeredCustomFields.includes(key) && defaultCustomEnabled) {
+        if(defaultCustomEnabled)
             logObject[key] = value;
-        }
-        if (registeredCustomFields.includes(key) && cfCustomEnabled) {
+
+        if (cfCustomEnabled)
             customFields[key] = value;
-        }
     }
 
     //writes custom fields in the correct order and correlates i to the place in registeredCustomFields
-    if (Object.keys(customFields).length > 0 && cfCustomEnabled) {
-        res = {};
+    if (Object.keys(customFields).length > 0) {
+        var res = {};
         res.string = [];
         counter = 0;
+        var key;
         for(var i = 0; i < registeredCustomFields.length; i++) {
             key = registeredCustomFields[i]
             if(customFields[key])
@@ -750,8 +749,6 @@ var overrideField = function (field, value) {
 var overrideCustomFieldFormat = function(value) {
     if(typeof value == "string") {
         switch (value) {
-            case "cf":
-            case "cloudfoundry":
             case "application-logging":
                 defaultCustomEnabled = false;
                 cfCustomEnabled = true;
@@ -774,7 +771,7 @@ var overrideCustomFieldFormat = function(value) {
                 cfCustomEnabled = false;
                 return false;
         }
-        return true
+        return true;
     } else {
         defaultCustomEnabled = true;
         cfCustomEnabled = false;
