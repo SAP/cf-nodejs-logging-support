@@ -97,12 +97,13 @@ var init = function () {
 };
 
 var JSONparseSave = function (value) {
-    var tmp;
-    try {
-        tmp = JSON.parse(value);
-    } catch (e) {
-        tmp = {};
-    }
+    var tmp = {};
+    if(process.env.VCAP_SERVICES)
+        try {
+            tmp = JSON.parse(value);
+        } catch (e) {
+            tmp = {};
+        }
     return tmp;
 }
 
