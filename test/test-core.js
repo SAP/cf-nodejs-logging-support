@@ -1148,15 +1148,15 @@ describe('Test log-core', function () {
 
         it("Test custom fields log output (object)", function () {
             // Register only two of three fields
+            overrideCustomFieldFormat("application-logging");
             registerCustomFields(["fieldA", "fieldC"]);
-            overrideCustomFieldFormat("cf");
 
             log("info", "Test", {
                 "fieldA": "valueA",
                 "fieldB": "valueB",
                 "fieldC": "valueC"
             });
-
+            console.log(logObject);
             logObject.msg.should.equal('Test');
             logObject["#cf"].string.should.eql([
                 {"k":"fieldA","v":"valueA","i":0},
@@ -1166,7 +1166,7 @@ describe('Test log-core', function () {
 
         it("Test custom fields log output (convert array to object)", function () {
             registerCustomFields(["0", "1", "2"]);
-            overrideCustomFieldFormat("cf");
+            overrideCustomFieldFormat("application-logging");
 
             log("info", "Test", [
                 1, "123", { "field": "values" }
@@ -1307,7 +1307,7 @@ describe('Test log-core', function () {
         it("Test custom fields inheritance", function () {
             // Register fields
             registerCustomFields(["fieldA", "fieldB", "fieldC"]);
-            overrideCustomFieldFormat("cf");
+            overrideCustomFieldFormat("application-logging");
 
             // Set global custom fields
             setCustomFields({ fieldA: "a", fieldB: "b" });
@@ -1380,7 +1380,7 @@ describe('Test log-core', function () {
 
             // Register fields
             registerCustomFields(["fieldA"]);
-            overrideCustomFieldFormat("cf");
+            overrideCustomFieldFormat("application-logging");
 
             var fieldA = {
                 a: 456,
@@ -1418,7 +1418,7 @@ describe('Test log-core', function () {
 
         it("Test parameter and custom fields log", function () {
             registerCustomFields(["string", "int", "obj"]);
-            overrideCustomFieldFormat("cf");
+            overrideCustomFieldFormat("application-logging");
 
             log("info", "Test %s", "abc", {
                 "string": "text",
@@ -1439,7 +1439,7 @@ describe('Test log-core', function () {
 
         it("Test custom field order preservation", function () {
             registerCustomFields(["1", "2", "3"]);
-            overrideCustomFieldFormat("cf");
+            overrideCustomFieldFormat("application-logging");
 
             log("info","Test order", {
                 "1": "1",
@@ -1456,7 +1456,7 @@ describe('Test log-core', function () {
 
         it("Test custom field number reservation on missing fields", function () {
             registerCustomFields(["1", "2", "3"]);
-            overrideCustomFieldFormat("cf");
+            overrideCustomFieldFormat("application-logging");
 
             log("info","Test order", {
                 "1": "1",
@@ -1472,7 +1472,7 @@ describe('Test log-core', function () {
 
         it("Test unregistered custom fields log", function () {
             registerCustomFields(["int"]);
-            overrideCustomFieldFormat("cf");
+            overrideCustomFieldFormat("application-logging");
 
             log("info", "Test %s", "abc", {
                 "string": "text",
