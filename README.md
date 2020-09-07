@@ -141,7 +141,7 @@ info("This %s a %s", "is", "test");
 // ... "msg":"This is a test" ...
 ```
 
-if you want json object to be embedded in to the message (nothing will be added to custom_fields).
+With an additional json object to be embedded in to the message (nothing will be added to custom_fields).
 ```js
 info("Test data %j", {"field" :"value"}, {}); 
 // ... "msg":"Test data {\"field\": \"value\"}" ...
@@ -165,14 +165,24 @@ info("Test data", {"field" :"value"});
 // ... "field":"value"...
 ```
 
-If you use this library with SAP application-logging,
-you need to register your custom fields:
-
+If you use this library with SAP Application Logging Service,
+you need to register your custom fields.
+This is necessary, because the custom fields will be reported in a fixed order, so they can be ingested correctly in elasticsearch.
 
 ```js
+log.registerCustomFields(["field"]);
 info("Test data", {"field" :"value"}); 
 // ... "msg":"Test data" 
 // ... "#cf": {"string": [{"k":"field","v":"value","i":"0"}]}...
+```
+after version 6.5.0, this library will automatically detect, which logging service you are bound to and will
+set the logging format accordingly.
+
+for local testing purposes, you can still enforce a specific format like this:
+```js
+log.overrideCustomFieldFormat("application-logging");
+possible values: 
+"disabled", "all", "application-logging", "cloud-logging", "default"
 ```
 
 ### Logging contexts
