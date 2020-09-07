@@ -19,6 +19,10 @@ exports.getLoggingLevel = function() {
     return coreLogger.getLoggingLevel();
 }
 
+exports.getBoundServices = function() {
+    return coreLogger.getBoundServices();
+}
+
 // Sets the given function as log sink. Following arguments will be passed to the sink function: level, output
 exports.setSinkFunction = function (func) {
     coreLogger.setSinkFunction(func);
@@ -80,6 +84,11 @@ exports.setCustomFields = function (customFields) {
 exports.setLogPattern = function (args) {
     coreLogger.setLogPattern.apply(this, arguments);
 };
+
 exports.overrideNetworkField = function (field, value) {
     return coreLogger.overrideField(field, value);
+};
+
+exports.overrideCustomFieldFormat = function (value) {
+    return coreLogger.overrideCustomFieldFormat(value);
 };

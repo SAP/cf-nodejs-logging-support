@@ -44,8 +44,13 @@ var dynLogLevelKey;
 
 var customSinkFunc;
 
+var boundServices;
+
 var convenientLogFunctions = [];
 var convenientLevelFunctions = [];
+
+var defaultCustomEnabled = true;
+var cfCustomEnabled = false;
 
 
 // Initializes the core logger, including setup of environment var defined settings
@@ -79,7 +84,28 @@ var init = function () {
             };
         }(key);
     }
+
+    //Reading bindings from context
+    var boundServices = JSONparseSave(process.env.VCAP_SERVICES);
+    if(boundServices["application-logs"]) {
+        cfCustomEnabled = true;
+        defaultCustomEnabled = false;
+    }
+    if(boundServices["cloud-logs"]) {
+        defaultCustomEnabled = true;
+    }
 };
+
+var JSONparseSave = function (value) {
+    var tmp = {};
+    if(value)
+        try {
+            tmp = JSON.parse(value);
+        } catch (e) {
+            tmp = {};
+        }
+    return tmp;
+}
 
 var setConfig = function (config) {
     precompileConfig(config);
@@ -137,6 +163,10 @@ var getPreLogConfig = function () {
 var getPostLogConfig = function () {
     return postLogConfig;
 };
+
+var getBoundServices = function () {
+    return boundServices;
+}
 
 // Assigns default values to empty fields, if defined, OR adds a reference to a configured fallback
 // method otherwise.
@@ -562,28 +592,28 @@ var writeCustomFields = function (logObject, logger, additionalFields) {
     var providedFields = Object.assign({}, extractCustomFieldsFromLogger(logger), additionalFields);
 
     var customFields = {};
+    var value;
     for (var key in providedFields) {
-        // Skip unregistered fields
+        value = providedFields[key];
 
-        var value = providedFields[key];
-
-        // Write value to customFields object. Stringify, if necessary.
+        // Stringify, if necessary.
         if ((typeof value) != "string") {
             value = stringifySafe(value);
         }
 
-        if (registeredCustomFields.includes(key)) {
-            customFields[key] = value;
-        } else if (logObject[key] == null && key != "custom_fields") {
+        if(defaultCustomEnabled)
             logObject[key] = value;
-        }
+
+        if (cfCustomEnabled)
+            customFields[key] = value;
     }
 
     //writes custom fields in the correct order and correlates i to the place in registeredCustomFields
     if (Object.keys(customFields).length > 0) {
-        res = {};
+        var res = {};
         res.string = [];
         counter = 0;
+        var key;
         for(var i = 0; i < registeredCustomFields.length; i++) {
             key = registeredCustomFields[i]
             if(customFields[key])
@@ -716,6 +746,40 @@ var overrideField = function (field, value) {
     return false;
 };
 
+//Sets the custom field format by hand. Returns true on correct strings.
+var overrideCustomFieldFormat = function(value) {
+    if(typeof value == "string") {
+        switch (value) {
+            case "application-logging":
+                defaultCustomEnabled = false;
+                cfCustomEnabled = true;
+                break;
+            case "all":
+                defaultCustomEnabled = true;
+                cfCustomEnabled = true;
+                break;
+            case "disabled":
+                defaultCustomEnabled = false;
+                cfCustomEnabled = false;
+                break;
+            case "default":
+            case "cloud-logging":
+                defaultCustomEnabled = true;
+                cfCustomEnabled = false;
+                break;
+            default:
+                defaultCustomEnabled = true;
+                cfCustomEnabled = false;
+                return false;
+        }
+        return true;
+    } else {
+        defaultCustomEnabled = true;
+        cfCustomEnabled = false;
+        return false;
+    }
+}
+
 // Get the name of the dynamic log level header
 var getDynLogLevelHeaderName = function () {
     return dynLogLevelHeader;
@@ -786,3 +850,5 @@ exports.setLoggingLevel = setLoggingLevel;
 exports.setLogPattern = setLogPattern;
 exports.setSinkFunction = setSinkFunction;
 exports.overrideField = overrideField;
+exports.overrideCustomFieldFormat = overrideCustomFieldFormat;
+exports.getBoundServices = getBoundServices;

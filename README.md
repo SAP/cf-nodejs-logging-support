@@ -141,16 +141,7 @@ info("This %s a %s", "is", "test");
 // ... "msg":"This is a test" ...
 ```
 
-With custom fields added to custom_fields field. Keep in mind that the last argument is handled as custom_fields object, if it is an object. As version 6.0.0 custom fields have to registered before writing them. See Custom fields section.
-
-*NOTE: The logged format for custom_fields changed with version 6.4.0 to adopt to changes made to our handling of custom fields*
-```js
-info("Test data %j", {"field" :"value"}); 
-// ... "msg":"Test data %j" 
-// ... "#cf": {"string": [{"k":"field","v":"value","i":"0"}]}...
-```
-
-With json object forced to be embedded in to the message (nothing will be added to custom_fields).
+With an additional json object to be embedded in to the message (nothing will be added to custom_fields).
 ```js
 info("Test data %j", {"field" :"value"}, {}); 
 // ... "msg":"Test data {\"field\": \"value\"}" ...
@@ -162,6 +153,38 @@ var level = "debug";
 logMessage(level, "Hello World"); 
 // ... "msg":"Hello World" ...
 ```
+
+### Custom field usage
+
+You can use the custom field feature to add custom fields to your logs.
+
+Keep in mind that the last argument is handled as custom_fields object, if it is an object.
+```js
+info("Test data", {"field" :"value"}); 
+// ... "msg":"Test data" 
+// ... "field":"value"...
+```
+
+If you use this library with SAP Application Logging Service,
+you need to register your custom fields.
+This is necessary, because the custom fields will be reported in a fixed order, so they can be ingested correctly in elasticsearch.
+
+```js
+log.registerCustomFields(["field"]);
+info("Test data", {"field" :"value"}); 
+// ... "msg":"Test data" 
+// ... "#cf": {"string": [{"k":"field","v":"value","i":"0"}]}...
+```
+after version 6.5.0, this library will automatically detect, which logging service you are bound to and will
+set the logging format accordingly.
+
+for local testing purposes, you can still enforce a specific format like this:
+```js
+log.overrideCustomFieldFormat("application-logging");
+possible values: 
+"disabled", "all", "application-logging", "cloud-logging", "default"
+```
+
 ### Logging contexts
 
 In general there are two types of logging contexts: *global* and *request* contexts.
