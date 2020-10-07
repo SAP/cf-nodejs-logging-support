@@ -1164,6 +1164,18 @@ describe('Test log-core', function () {
             ]);
         });
 
+        it("Test no #cf field when no content", function () {
+            // Register only two of three fields
+            overrideCustomFieldFormat("application-logging");
+            registerCustomFields(["fieldA", "fieldC"]);
+
+            log("info", "Test", {"layer":"test-layer", "logger":"test-logger"});
+            console.log(logObject);
+            logObject.msg.should.equal('Test');
+
+            assert.equal(logObject["#cf"], null);
+        });
+
         it("Test custom fields log output (convert array to object)", function () {
             registerCustomFields(["0", "1", "2"]);
             overrideCustomFieldFormat("application-logging");

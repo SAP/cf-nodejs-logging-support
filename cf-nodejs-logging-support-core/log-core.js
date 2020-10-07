@@ -609,6 +609,7 @@ var writeCustomFields = function (logObject, logger, additionalFields) {
     }
 
     //writes custom fields in the correct order and correlates i to the place in registeredCustomFields
+    Object.keys(customFields).length
     if (Object.keys(customFields).length > 0) {
         var res = {};
         res.string = [];
@@ -623,7 +624,8 @@ var writeCustomFields = function (logObject, logger, additionalFields) {
                     "i": i
                 })
         }
-        logObject["#cf"] = res;
+        if(res.string.length > 0)
+            logObject["#cf"] = res;
     }
 }
 
