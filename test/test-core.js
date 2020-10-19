@@ -1067,6 +1067,16 @@ describe('Test log-core', function () {
             overrideCustomFieldFormat("default");
         })
 
+
+
+        it('Test timings', function () {
+            log("info","test");
+            var time1 = logObject.written_ts;
+            log("info","test");
+            var time2 = logObject.written_ts;
+            assert.isTrue(time1 < time2);
+        });
+
         it("Test simple log", function () {
             log("info", "Test");
             logObject.msg.should.equal("Test");
@@ -1135,16 +1145,17 @@ describe('Test log-core', function () {
             setCustomFields = core.setCustomFields;
             overrideCustomFieldFormat = core.overrideCustomFieldFormat;
         });
-            beforeEach(function () {
-                overrideCustomFieldFormat("default");
-                registerCustomFields({});
-            });
-            
-            it("Test custom fields log output (number)", function () {
-                log("info", "Test", 42);
 
-                logObject.msg.should.equal('Test 42');
-            });
+        beforeEach(function () {
+            overrideCustomFieldFormat("default");
+            registerCustomFields({});
+        });
+        
+        it("Test custom fields log output (number)", function () {
+            log("info", "Test", 42);
+
+            logObject.msg.should.equal('Test 42');
+        });
 
         it("Test custom fields log output (object)", function () {
             // Register only two of three fields
@@ -1156,7 +1167,6 @@ describe('Test log-core', function () {
                 "fieldB": "valueB",
                 "fieldC": "valueC"
             });
-            console.log(logObject);
             logObject.msg.should.equal('Test');
             logObject["#cf"].string.should.eql([
                 {"k":"fieldA","v":"valueA","i":0},
@@ -1170,7 +1180,6 @@ describe('Test log-core', function () {
             registerCustomFields(["fieldA", "fieldC"]);
 
             log("info", "Test", {"layer":"test-layer", "logger":"test-logger"});
-            console.log(logObject);
             logObject.msg.should.equal('Test');
 
             assert.equal(logObject["#cf"], null);

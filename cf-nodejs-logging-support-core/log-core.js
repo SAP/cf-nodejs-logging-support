@@ -294,8 +294,7 @@ var initLog = function () {
     var now = new Date();
 
     logObject.written_at = now.toJSON();
-    logObject.written_ts = now.getTime() * NS_PER_MS;
-
+    logObject.written_ts = now.getTime() * NS_PER_MS + (process.hrtime()[1] % 1000000);
     return logObject;
 };
 
