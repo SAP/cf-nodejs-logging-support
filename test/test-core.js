@@ -1040,6 +1040,91 @@ describe('Test log-core', function () {
         });
     });
 
+    describe('Test timings', function () {
+        var core = rewire("../cf-nodejs-logging-support-core/log-core.js");
+
+        var logObject = null;
+        var log = null;
+        var registerCustomFields = null;
+        var overrideCustomFieldFormat = null;
+        var setCustomFields = null;
+
+        before(function () {
+            core.__set__({
+                "sendLog": function (logObj) {
+                    logObject = logObj;
+                }
+            });
+            core.setConfig(importFresh("../config.js").config);
+
+            log = core.logMessage;
+            registerCustomFields = core.registerCustomFields;
+            setCustomFields = core.setCustomFields;
+            overrideCustomFieldFormat = core.overrideCustomFieldFormat;
+            process.hrtime = function (){
+                    return [this.hrHigh, this.hrLow];
+                }
+            process.setHrTime = function (high, low){
+                    this.hrHigh = high;
+                    this.hrLow = low;
+                }
+        });
+
+        beforeEach(function () {
+            core.__set__({
+                "lastLow": 0
+            })
+        });
+
+        it('Test normal', function () {
+            //tests behaviour for reasonable timestamps
+            process.setHrTime(1,1000);
+            log("info","test");
+            var time1 = logObject.written_ts;
+            process.setHrTime(1,2000);
+            log("info","test");
+            var time2 = logObject.written_ts;
+            assert.isBelow(time1,time2);
+        });
+
+        it('Test wrong', function () {
+            //testing for one wrong ordered ns timestamp
+            process.setHrTime(1,1000);
+            log("info","test");
+            var time1 = logObject.written_ts;
+            process.setHrTime(1,0);
+            log("info","test");
+            var time2 = logObject.written_ts;
+            assert.isBelow(time1,time2);
+        });
+
+        it('Test overflow', function () {
+            //testing hrtime overflow behaviour
+            process.setHrTime(1,999000);
+            log("info","test");
+            var time1 = logObject.written_ts;
+            process.setHrTime(1,1000000);
+            log("info","test");
+            var time2 = logObject.written_ts;
+            assert.isBelow(time1,time2);
+        });
+
+        it('Test small incremental', function () {
+            //small incremental may result in the same timestamp
+            //this makes sure that they are at least the same or correct
+            process.setHrTime(1,1001);
+            log("info","test");
+            var time1 = logObject.written_ts;
+            process.setHrTime(1,1002);
+            log("info","test");
+            var time2 = logObject.written_ts;
+            process.setHrTime(1,1003);
+            log("info","test");
+            var time3 = logObject.written_ts;
+            assert.isAtLeast(time3,time2);
+        });
+    })
+
     describe('Test logMessage', function () {
         var core = rewire("../cf-nodejs-logging-support-core/log-core.js");
 
@@ -1067,18 +1152,6 @@ describe('Test log-core', function () {
             overrideCustomFieldFormat("default");
         })
 
-        it('Test timings', function () {
-            var timing_runs = 10000
-            var count = 0;
-            for(var i = 0; i < timing_runs; i++){
-                log("info","test");
-                var time1 = logObject.written_ts;
-                log("info","test");
-                var time2 = logObject.written_ts;
-               count += time1 < time2 ? 1:0 ;
-            }
-            assert.equal(timing_runs, count);
-        });
 
         it("Test simple log", function () {
             log("info", "Test");

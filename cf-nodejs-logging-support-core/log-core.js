@@ -52,8 +52,7 @@ var convenientLevelFunctions = [];
 var defaultCustomEnabled = true;
 var cfCustomEnabled = false;
 
-var lastTimestamp = 0;
-
+var lastLow = 0;
 
 // Initializes the core logger, including setup of environment var defined settings
 var init = function () {
@@ -296,13 +295,15 @@ var initLog = function () {
     var now = new Date();
     logObject.written_at = now.toJSON();
 
-    var lower = process.hrtime()[1] % 1000000
-    var higher = now.getTime() * NS_PER_MS
+    var lower = process.hrtime()[1] % NS_PER_MS;
+    var higher = now.getTime() * NS_PER_MS;
 
     logObject.written_ts = higher + lower;
-    if(logObject.written_ts < lastTimestamp)
-        logObject.written_ts += 1000000;
-    lastTimestamp = logObject.written_ts;
+    //This reorders written_ts, if the new timestamp seems to be smaller
+    // due to different rollover times for process.hrtime and now.getTime
+    if(lower < lastLow)
+        logObject.written_ts += NS_PER_MS;
+    lastLow = lower;
     return logObject;
 };
 
