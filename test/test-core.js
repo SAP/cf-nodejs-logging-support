@@ -1087,17 +1087,6 @@ describe('Test log-core', function () {
             assert.isBelow(time1,time2);
         });
 
-        it('Test wrong', function () {
-            //testing for one wrong ordered ns timestamp
-            process.setHrTime(1,1000);
-            log("info","test");
-            var time1 = logObject.written_ts;
-            process.setHrTime(1,0);
-            log("info","test");
-            var time2 = logObject.written_ts;
-            assert.isBelow(time1,time2);
-        });
-
         it('Test overflow', function () {
             //testing hrtime overflow behaviour
             process.setHrTime(1,999000);
