@@ -1067,14 +1067,17 @@ describe('Test log-core', function () {
             overrideCustomFieldFormat("default");
         })
 
-
-
         it('Test timings', function () {
-            log("info","test");
-            var time1 = logObject.written_ts;
-            log("info","test");
-            var time2 = logObject.written_ts;
-            assert.isTrue(time1 < time2);
+            var timing_runs = 10000
+            var count = 0;
+            for(var i = 0; i < timing_runs; i++){
+                log("info","test");
+                var time1 = logObject.written_ts;
+                log("info","test");
+                var time2 = logObject.written_ts;
+               count += time1 < time2 ? 1:0 ;
+            }
+            assert.equal(timing_runs, count);
         });
 
         it("Test simple log", function () {
