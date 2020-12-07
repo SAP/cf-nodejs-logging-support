@@ -232,6 +232,16 @@ logger.setCustomFields({"field-a" :"value"})
 var logger = req.logger.createLogger({"field-a" :"value"}); 
 ```
 
+You can also use this feature from the global logging context like so:
+```js
+log = require("cf-nodejs-logging-support");
+
+var subLogger = log.createLogger(); 
+subLogger.setCustomFields({"field-a" :"value"})
+// OR
+var subLogger = log.createLogger({"field-a" :"value"}); 
+```
+
 ### Check log severity levels
 In some cases it can be useful to check if messages with a specific severity level would be logged. You can check if a logging level is active as follows:
 
