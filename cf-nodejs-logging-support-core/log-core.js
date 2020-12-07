@@ -609,7 +609,7 @@ var writeCustomFields = function (logObject, logger, additionalFields) {
             value = stringifySafe(value);
         }
 
-        if(defaultCustomEnabled)
+        if(defaultCustomEnabled || logObject[key] != null)
             logObject[key] = value;
 
         if (cfCustomEnabled)

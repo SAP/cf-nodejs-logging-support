@@ -1239,6 +1239,23 @@ describe('Test log-core', function () {
             ]);
         });
 
+        it("Test override top level with custom value", function () {
+            // Register only two of three fields
+            overrideCustomFieldFormat("application-logging");
+            registerCustomFields(["fieldA"]);
+
+            log("info", "Test", {
+                "fieldA": "valueA",
+                "layer": "testLayer",
+                "fieldC": "valueC"
+            });
+            logObject.msg.should.equal('Test');
+            logObject.layer.should.equal('testLayer');
+            logObject["#cf"].string.should.eql([
+                {"k":"fieldA","v":"valueA","i":0}
+            ]);
+        });
+
         it("Test no #cf field when no content", function () {
             // Register only two of three fields
             overrideCustomFieldFormat("application-logging");
