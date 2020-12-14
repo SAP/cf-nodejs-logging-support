@@ -15,8 +15,8 @@ describe('Test log-plainhttp', function () {
         process.env.LOG_REMOTE_USER = true;
         process.env.LOG_REFERER = true;
 
-        core = importFresh("../cf-nodejs-logging-support-core/log-core.js");
-        httpLogger = importFresh("../cf-nodejs-logging-support-plainhttp/log-plainhttp");
+        core = importFresh("../core/log-core.js");
+        httpLogger = importFresh("../logger/log-plainhttp");
         httpLogger.setCoreLogger(core);
         core.setConfig(importFresh("./allbranchconfig.js").config);
     });

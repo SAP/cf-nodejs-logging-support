@@ -38,6 +38,7 @@ var uuidCheck = /[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[0-9a-f]{4}-[0-9a-f]{12}/;
 
 var preLogConfig = [];
 var postLogConfig = [];
+var settableConfig = [];
 
 var dynLogLevelHeader;
 var dynLogLevelKey;
@@ -119,6 +120,8 @@ var precompileConfig = function (config) {
     var coreConfig = [];
     preLogConfig = [];
     postLogConfig = [];
+    settableConfig = [];
+
 
     for (var i = 0; i < config.length; i++) {
         var obj = config[i];
@@ -134,6 +137,8 @@ var precompileConfig = function (config) {
 
         if (obj.core) {
             coreConfig.push(obj);
+        } else if (obj.type != null && obj.type == "settable") {
+            settableConfig.push(obj.name);
         } else if (obj.source.type == "time") {
             if (obj.source.pre)
                 preLogConfig.push(obj);
@@ -609,7 +614,7 @@ var writeCustomFields = function (logObject, logger, additionalFields) {
             value = stringifySafe(value);
         }
 
-        if(defaultCustomEnabled || logObject[key] != null)
+        if(defaultCustomEnabled || logObject[key] != null || isSettable(key))
             logObject[key] = value;
 
         if (cfCustomEnabled)
@@ -635,6 +640,14 @@ var writeCustomFields = function (logObject, logger, additionalFields) {
         if(res.string.length > 0)
             logObject["#cf"] = res;
     }
+}
+
+var isSettable = function(key) {
+    if (settableConfig.length == 0) return false;
+    for(var i = 0; i < settableConfig.length; i++) {
+        if(settableConfig[i] == key) return true;
+    }
+    return false;
 }
 
 // Checks wether the given level passes the logging level threshold extracted from the given logger or its 
