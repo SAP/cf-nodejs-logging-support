@@ -12,7 +12,7 @@ var fs = require('fs');
 describe('Test log-core', function () {
     describe('Test init function', function () {
         var defHeader, envAdress;
-        var core = rewire("../cf-nodejs-logging-support-core/log-core.js");
+        var core = rewire("../core/log-core.js");
         before(function () {
             defHeader = core.__get__("DEFAULT_DYN_LOG_LEVEL_HEADER");
             envAdress = core.__get__("ENV_DYN_LOG_HEADER");
@@ -28,7 +28,7 @@ describe('Test log-core', function () {
     });
 
     describe('Test reduceFields', function () {
-        var core = rewire("../cf-nodejs-logging-support-core/log-core.js");
+        var core = rewire("../core/log-core.js");
         var testConfig = [
             {
                 name: "test-field-a",
@@ -80,7 +80,7 @@ describe('Test log-core', function () {
     });
 
     describe('Test prepareInitDummy', function () {
-        var core = rewire("../cf-nodejs-logging-support-core/log-core.js");
+        var core = rewire("../core/log-core.js");
         var logObj;
         var prepareDummy;
         before(function () {
@@ -161,6 +161,57 @@ describe('Test log-core', function () {
     });
 
     describe('Test setConfig assignments', function () {
+        var core = rewire("../core/log-core.js");
+        var logObject = null;
+        var log = null;
+        var testConfig = [
+            {
+                name: "test-field-a",
+                core: true,
+                source: {
+                    type: "static",
+                    value: "42"
+                }
+            },{
+                name: "settable_field",
+                type: "settable"
+            }
+        ]
+
+        before(function () {
+            core.__set__({
+                "sendLog": function (logObj) {
+                    logObject = logObj;
+                }
+            });
+            core.setConfig(testConfig);
+            core.overrideCustomFieldFormat("application-logging");
+            log = core.logMessage;
+        });
+
+        it('Test config assignment (settable): ', function () {
+            log("info","test", {"settable_field":"settable","non_settable":"test"})
+            
+            logObject.settable_field.should.equal("settable");
+            assert.equal(logObject.non_settable, null);
+            
+        });
+
+        it('Test settable propagation: ', function () {
+
+            core.__set__({
+                "prepareInitDummy": function (config) {
+                    config.length.should.equal(1);
+                    config[0].should.equal(testConfig[0]);
+                }
+            })
+
+            core.__get__("settableConfig").should.deep.equal(["settable_field"]);
+            
+        });
+    });
+
+    describe('Test setConfig assignments', function () {
         var core = null;
         var testConfig = [
             {
@@ -195,7 +246,7 @@ describe('Test log-core', function () {
         ]
 
         beforeEach(function () {
-            core = rewire("../cf-nodejs-logging-support-core/log-core.js");
+            core = rewire("../core/log-core.js");
         });
 
         it('Test config assignment (core): ', function () {
@@ -251,7 +302,7 @@ describe('Test log-core', function () {
         ]
 
         beforeEach(function () {
-            core = rewire("../cf-nodejs-logging-support-core/log-core.js");
+            core = rewire("../core/log-core.js");
         });
 
         it('Test config assignment (core): ', function () {
@@ -268,7 +319,7 @@ describe('Test log-core', function () {
     });
 
     describe('Test setConfig environment var switches', function () {
-        var core = rewire("../cf-nodejs-logging-support-core/log-core.js");
+        var core = rewire("../core/log-core.js");
         var coreConfig = null;
         var testConfig;
 
@@ -358,7 +409,7 @@ describe('Test log-core', function () {
 
 
     describe('Test validateObject', function () {
-        var core = rewire("../cf-nodejs-logging-support-core/log-core.js");
+        var core = rewire("../core/log-core.js");
 
         before(function () {
             core.setConfig(importFresh("../config.js").config);
@@ -389,7 +440,7 @@ describe('Test log-core', function () {
     });
 
     describe('Test setLoggingLevel', function () {
-        var core = rewire("../cf-nodejs-logging-support-core/log-core.js");
+        var core = rewire("../core/log-core.js");
 
         before(function () {
             core.setConfig(importFresh("../config.js").config);
@@ -440,7 +491,7 @@ describe('Test log-core', function () {
         var output;
 
         before(function () {
-            core = rewire("../cf-nodejs-logging-support-core/log-core.js");
+            core = rewire("../core/log-core.js");
             write = core.__get__("writeLogToConsole");
             core.setConfig(importFresh("../config.js").config);
 
@@ -529,7 +580,7 @@ describe('Test log-core', function () {
         var level;
 
         before(function () {
-            core = rewire("../cf-nodejs-logging-support-core/log-core.js");
+            core = rewire("../core/log-core.js");
             write = core.__get__("writeLogToConsole");
             core.setConfig(importFresh("../config.js").config);
             clock = sinon.useFakeTimers();
@@ -580,7 +631,7 @@ describe('Test log-core', function () {
     });
 
     describe('Test sendLog', function () {
-        var core = rewire("../cf-nodejs-logging-support-core/log-core.js");
+        var core = rewire("../core/log-core.js");
         var logMeta;
         var sendLog;
 
@@ -625,7 +676,7 @@ describe('Test log-core', function () {
     });
 
     describe('Test getCorrelationId', function () {
-        var core = rewire("../cf-nodejs-logging-support-core/log-core.js");
+        var core = rewire("../core/log-core.js");
         var logObject = null;
         var getCorrelationId = null;
 
@@ -665,7 +716,7 @@ describe('Test log-core', function () {
 
 
     describe('Test setCorrelationId', function () {
-        var core = rewire("../cf-nodejs-logging-support-core/log-core.js");
+        var core = rewire("../core/log-core.js");
         var logObject = null;
         var setCorrelationId = null;
         var testRequest;
@@ -713,7 +764,7 @@ describe('Test log-core', function () {
     });
 
     describe('Test getTenantId', function () {
-        var core = rewire("../cf-nodejs-logging-support-core/log-core.js");
+        var core = rewire("../core/log-core.js");
         var logObject = null;
         var getTenantId = null;
 
@@ -752,7 +803,7 @@ describe('Test log-core', function () {
     });
 
     describe('Test getTenantSubdomain', function () {
-        var core = rewire("../cf-nodejs-logging-support-core/log-core.js");
+        var core = rewire("../core/log-core.js");
         var logObject = null;
         var getTenantSubdomain = null;
 
@@ -791,7 +842,7 @@ describe('Test log-core', function () {
     });
 
     describe('Test setTenantId', function () {
-        var core = rewire("../cf-nodejs-logging-support-core/log-core.js");
+        var core = rewire("../core/log-core.js");
         var setTenantId = null;
         var testRequest;
         var testId;
@@ -826,7 +877,7 @@ describe('Test log-core', function () {
     });
 
     describe('Test setTenantSubdomain', function () {
-        var core = rewire("../cf-nodejs-logging-support-core/log-core.js");
+        var core = rewire("../core/log-core.js");
         var setTenantSubdomain = null;
         var testRequest;
         var testSubdomain;
@@ -861,7 +912,7 @@ describe('Test log-core', function () {
     });
 
     describe('Test createLogger/getLogger', function () {
-        var core = rewire("../cf-nodejs-logging-support-core/log-core.js");
+        var core = rewire("../core/log-core.js");
         var createLogger;
         var uuid;
         var oldLogMessage;
@@ -963,7 +1014,7 @@ describe('Test log-core', function () {
     });
 
     describe('Test custom fields registration and setter', function () {
-        var core = rewire("../cf-nodejs-logging-support-core/log-core.js");
+        var core = rewire("../core/log-core.js");
 
         before(function () {
 
@@ -1041,7 +1092,7 @@ describe('Test log-core', function () {
     });
 
     describe('Test timings', function () {
-        var core = rewire("../cf-nodejs-logging-support-core/log-core.js");
+        var core = rewire("../core/log-core.js");
 
         var logObject = null;
         var log = null;
@@ -1115,7 +1166,7 @@ describe('Test log-core', function () {
     })
 
     describe('Test logMessage', function () {
-        var core = rewire("../cf-nodejs-logging-support-core/log-core.js");
+        var core = rewire("../core/log-core.js");
 
         var logObject = null;
         var log = null;
@@ -1190,7 +1241,7 @@ describe('Test log-core', function () {
     });
 
     describe("Test custom field logic", function() {
-        var core = rewire("../cf-nodejs-logging-support-core/log-core.js");
+        var core = rewire("../core/log-core.js");
 
         var logObject = null;
         var log = null;
@@ -1632,7 +1683,7 @@ describe('Test log-core', function () {
     });
 
     describe('Test init', function () {
-        var core = rewire("../cf-nodejs-logging-support-core/log-core.js");
+        var core = rewire("../core/log-core.js");
 
         var header;
         var defaultHeader;
@@ -1679,7 +1730,7 @@ describe('Test log-core', function () {
     });
 
     describe('Test initLog', function () {
-        var core = rewire("../cf-nodejs-logging-support-core/log-core.js");
+        var core = rewire("../core/log-core.js");
         var logObject;
         var clock;
 
@@ -1773,7 +1824,7 @@ describe('Test log-core', function () {
             delete process.env.VCAP_APPLICATION;
             delete process.env.CF_INSTANCE_IP;
             //resetting inherit memory for fast init
-            var core2 = rewire("../cf-nodejs-logging-support-core/log-core.js");
+            var core2 = rewire("../core/log-core.js");
             core2.__set__("initDummy", null);
             core2.setConfig(importFresh("../config.js").config);
             //rewrite process to old values
@@ -1800,7 +1851,7 @@ describe('Test log-core', function () {
     });
 
     describe('Test overrideField', function () {
-        var core = rewire("../cf-nodejs-logging-support-core/log-core.js");
+        var core = rewire("../core/log-core.js");
         var values = {};
         var overrideField = null;
 
@@ -1838,7 +1889,7 @@ describe('Test log-core', function () {
     });
 
     describe('test DynamicLogLevel', function () {
-        var core = rewire("../cf-nodejs-logging-support-core/log-core.js");
+        var core = rewire("../core/log-core.js");
         var req;
         var levels;
 
@@ -1869,7 +1920,7 @@ describe('Test log-core', function () {
     });
 
     describe('Test DynlogLevel', function () {
-        var core = rewire("../cf-nodejs-logging-support-core/log-core.js");
+        var core = rewire("../core/log-core.js");
 
         var header;
         var defaultHeader;

@@ -25,7 +25,7 @@ describe('Test index.js', function () {
     before(function () {
         Module.prototype.require = function () {
             var args = Array.prototype.slice.call(arguments);
-            if (args[0] === "./cf-nodejs-logging-support-express/log-express") {
+            if (args[0] === "./logger/log-express") {
                 linking = "express";
                 return {
                     "setCoreLogger": function () {},
@@ -36,7 +36,7 @@ describe('Test index.js', function () {
                     }
                 };
             }
-            else if (args[0] === "./cf-nodejs-logging-support-restify/log-restify") {
+            else if (args[0] === "./logger/log-restify") {
                 linking = "restify";
                 return {
                     "setCoreLogger": function () {},
@@ -47,7 +47,7 @@ describe('Test index.js', function () {
                     }
                 };
             }
-            else if (args[0] === "./cf-nodejs-logging-support-plainhttp/log-plainhttp") {
+            else if (args[0] === "./logger/log-plainhttp") {
                 linking = "plainhttp";
                 return {
                     "setCoreLogger": function () {},
@@ -57,7 +57,7 @@ describe('Test index.js', function () {
                     }
                 };
             }
-           else if (args[0] === "./cf-nodejs-logging-support-core/log-core") {
+           else if (args[0] === "./core/log-core") {
                 return {
                     "init": function() {},
                     "bindConvenienceMethods": function() {},

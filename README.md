@@ -454,6 +454,19 @@ log.overrideNetworkField("msg", null);
 ```
 If you use this override feature in conjunction with a log parser, make sure you will not violate any parsing rules.
 
+## Tracing
+### SAP_passport
+example: 
+```
+2a54482a0300e60000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000002a54482a
+```
+
+SAP Passport is an end to end tracing technology used in many SAP products.
+It is a binary format encoded in hex notation.
+Applications can add the whole SAP Passport in this field or give its constituents in the respective fields.
+
+to read up on the possible fields, please look at [fields](https://github.com/SAP/cf-java-logging-support/blob/master/cf-java-logging-support-core/beats/app-logs/docs/fields.asciidoc).
+
 ### Custom sink function
 Per default the library writes output messages to `stdout`. For debugging purposes it can be useful to redirect the output of the library to another sink (e.g. `console.log()`). You can set a custom sink method as follows:
 ```js

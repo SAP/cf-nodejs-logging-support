@@ -15,8 +15,8 @@ describe('Test log-express', function () {
         process.env.LOG_REMOTE_USER = true;
         process.env.LOG_REFERER = true;
 
-        core = importFresh("../cf-nodejs-logging-support-core/log-core.js");
-        expressLogger = importFresh("../cf-nodejs-logging-support-express/log-express.js");
+        core = importFresh("../core/log-core.js");
+        expressLogger = importFresh("../logger/log-express.js");
         expressLogger.setCoreLogger(core);
         core.setConfig(importFresh("./allbranchconfig.js").config);
     });

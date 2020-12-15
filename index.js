@@ -1,11 +1,11 @@
 //loading core logger functionality
-var coreLogger = require("./cf-nodejs-logging-support-core/log-core");
+var coreLogger = require("./core/log-core");
 var effectiveLogger = null;
 
 coreLogger.init();
 
-effectiveLogger = require("./cf-nodejs-logging-support-express/log-express");
-defaultConfig = require("./config.js");
+effectiveLogger = require("./logger/log-express");
+defaultConfig = require("./config");
 effectiveLogger.setCoreLogger(coreLogger);
 
 coreLogger.setConfig(defaultConfig.config);
@@ -32,16 +32,35 @@ exports.forceLogger = function (name) {
     switch (name) {
         //insert your custom framework logger here
         case "restify":
-            effectiveLogger = require("./cf-nodejs-logging-support-restify/log-restify");
+            effectiveLogger = require("./logger/log-restify");
             break;
         case "plainhttp":
-            effectiveLogger = require("./cf-nodejs-logging-support-plainhttp/log-plainhttp");
+            effectiveLogger = require("./logger/log-plainhttp");
             break;
         default:
-            effectiveLogger = require("./cf-nodejs-logging-support-express/log-express");
+            effectiveLogger = require("./logger/log-express");
     }
     effectiveLogger.setCoreLogger(coreLogger);
 };
+
+exports.enableTracing = function (input) {
+    names = [];
+    if (typeof input == "string")
+        names.push(input);
+    else
+        names = input;
+    var config = defaultConfig.config;
+    for(var i in names) {
+        switch (names[i].toLowerCase()) {
+            case "sap_passport":
+                config.push(...require("./trace/sap_passport").config);
+                break;
+            default:
+        }
+    }
+    coreLogger.setConfig(config);
+    return config;
+}
 
 
 exports.logNetwork = function (req, res, next) {
@@ -66,7 +85,7 @@ exports.createWinstonTransport = function (options) {
         };
     }
     options.logMessage = coreLogger.logMessage;
-    return require("./cf-nodejs-logging-support-winston/winston-transport").createTransport(options);
+    return require("./winston/winston-transport").createTransport(options);
 };
 
 exports.createLogger = function (customFields) {

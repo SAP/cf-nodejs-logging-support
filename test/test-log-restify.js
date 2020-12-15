@@ -15,8 +15,8 @@ describe('Test log-restify', function () {
         process.env.LOG_REMOTE_USER = true;
         process.env.LOG_REFERER = true;
 
-        core = importFresh("../cf-nodejs-logging-support-core/log-core.js");
-        restifyLogger = importFresh("../cf-nodejs-logging-support-restify/log-restify.js");
+        core = importFresh("../core/log-core.js");
+        restifyLogger = importFresh("../logger/log-restify.js");
         restifyLogger.setCoreLogger(core);
         core.setConfig(importFresh("./allbranchconfig.js").config);
     });

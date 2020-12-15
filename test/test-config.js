@@ -8,6 +8,7 @@ chai.should();
 describe('Test config', function () {
 
     var core = null;
+    var index = null;
     var httpLogger;
     beforeEach(function () {
         // Set env vars to enable logging of sensitive data
@@ -15,8 +16,9 @@ describe('Test config', function () {
         process.env.LOG_REMOTE_USER = true;
         process.env.LOG_REFERER = true;
 
-        core = importFresh("../cf-nodejs-logging-support-core/log-core.js");
-        httpLogger = importFresh("../cf-nodejs-logging-support-plainhttp/log-plainhttp.js");
+        core = importFresh("../core/log-core.js");
+        httpLogger = importFresh("../logger/log-plainhttp.js");
+        index = importFresh("../index.js");
         httpLogger.setCoreLogger(core);
         core.setConfig(importFresh("../config.js").config);
     });
@@ -74,6 +76,28 @@ describe('Test config', function () {
             fireLog();
 
             logObject.x_forwarded_for.should.equal("testingHeader");
+        });
+
+        it('Test sap_passport', function () {
+            var config = index.enableTracing("sap_passport")
+            core.setConfig(config);
+            req.headers = {};
+            req.headers['sap-passport'] = "testingHeader";
+            httpLogger.logNetwork(req, res, next);
+            fireLog();
+
+            logObject.sap_passport.should.equal("testingHeader");
+        });
+
+        it('Test sap_passport with array', function () {
+            var config = index.enableTracing(["SAP_passport"]);
+            core.setConfig(config);
+            req.headers = {};
+            req.headers['sap-passport'] = "testingHeader";
+            httpLogger.logNetwork(req, res, next);
+            fireLog();
+
+            logObject.sap_passport.should.equal("testingHeader");
         });
 
         it('Test remote_user', function () {
