@@ -43,10 +43,15 @@ exports.forceLogger = function (name) {
     effectiveLogger.setCoreLogger(coreLogger);
 };
 
-exports.enableTracing = function (names) {
+exports.enableTracing = function (input) {
+    names = [];
+    if (typeof input == "string")
+        names.push(input);
+    else
+        names = input;
     var config = defaultConfig.config;
     for(var i in names) {
-        switch (names[i]) {
+        switch (names[i].toLowerCase()) {
             case "sap_passport":
                 config.push(...require("./trace/sap_passport").config);
                 break;

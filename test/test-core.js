@@ -191,8 +191,7 @@ describe('Test log-core', function () {
 
         it('Test config assignment (settable): ', function () {
             log("info","test", {"settable_field":"settable","non_settable":"test"})
-
-            console.log(logObject);
+            
             logObject.settable_field.should.equal("settable");
             assert.equal(logObject.non_settable, null);
             

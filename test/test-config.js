@@ -79,7 +79,18 @@ describe('Test config', function () {
         });
 
         it('Test sap_passport', function () {
-            var config = index.enableTracing(["sap_passport"])
+            var config = index.enableTracing("sap_passport")
+            core.setConfig(config);
+            req.headers = {};
+            req.headers['sap-passport'] = "testingHeader";
+            httpLogger.logNetwork(req, res, next);
+            fireLog();
+
+            logObject.sap_passport.should.equal("testingHeader");
+        });
+
+        it('Test sap_passport with array', function () {
+            var config = index.enableTracing(["SAP_passport"]);
             core.setConfig(config);
             req.headers = {};
             req.headers['sap-passport'] = "testingHeader";
