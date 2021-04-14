@@ -57,6 +57,17 @@ describe('Test index.js', function () {
                     }
                 };
             }
+            else if (args[0] === "./logger/log-connect") {
+                linking = "connect";
+                return {
+                    "setCoreLogger": function () {},
+                    "logNetwork": function (req1, res1, next1) {
+                        req = req1;
+                        res = res1;
+                        next = next1;
+                    }
+                };
+            }
            else if (args[0] === "./core/log-core") {
                 return {
                     "init": function() {},
@@ -117,6 +128,8 @@ describe('Test index.js', function () {
             linking.should.equal("restify");
             logger.forceLogger("plainhttp");
             linking.should.equal("plainhttp");
+            logger.forceLogger("connect");
+            linking.should.equal("connect");
             logger.forceLogger("testing defaulting");
             linking.should.equal("express");
         });
@@ -131,6 +144,9 @@ describe('Test index.js', function () {
             logger.forceLogger("plainhttp");
             logger.setLoggingLevel(level);
             loggingLevel.should.equal(level);
+            logger.forceLogger("connect");
+            logger.setLoggingLevel(level);
+            loggingLevel.should.equal(level);
         });
 
         it('Test getLoggingLevel: ', function () {
@@ -139,6 +155,8 @@ describe('Test index.js', function () {
             logger.forceLogger("restify");
             logger.getLoggingLevel().should.equal(loggingLevel);
             logger.forceLogger("plainhttp");
+            logger.getLoggingLevel().should.equal(loggingLevel);
+            logger.forceLogger("connect");
             logger.getLoggingLevel().should.equal(loggingLevel);
         });
 
@@ -155,6 +173,9 @@ describe('Test index.js', function () {
             logger.setSinkFunction(fct);
             sinkFunction.should.equal(fct);
             logger.forceLogger("plainhttp");
+            logger.setSinkFunction(fct);
+            sinkFunction.should.equal(fct);
+            logger.forceLogger("connect");
             logger.setSinkFunction(fct);
             sinkFunction.should.equal(fct);
         });
@@ -185,6 +206,11 @@ describe('Test index.js', function () {
             value.should.equal(value1);
 
             logger.forceLogger("plainhttp");
+            logger.overrideNetworkField(field1, value1);
+            field.should.equal(field1);
+            value.should.equal(value1);
+
+            logger.forceLogger("connect");
             logger.overrideNetworkField(field1, value1);
             field.should.equal(field1);
             value.should.equal(value1);
@@ -219,6 +245,17 @@ describe('Test index.js', function () {
             logger.logNetwork(obj1, obj2);
             req.should.equal(obj1);
             res.should.equal(obj2);
+
+            logger.forceLogger("connect");
+
+            obj1 = {};
+            obj2 = {};
+            obj3 = {};
+
+            logger.logNetwork(obj1, obj2, obj3);
+            req.should.equal(obj1);
+            res.should.equal(obj2);
+            next.should.equal(obj3);
         });
 
         it('Test winstonTransport: ', function () {
@@ -241,6 +278,10 @@ describe('Test index.js', function () {
             logger.forceLogger("plainhttp");
             logger.setLogPattern(pattern + "plain");
             logPattern.should.equal(pattern + "plain");
+
+            logger.forceLogger("connect");
+            logger.setLogPattern(pattern + "connect");
+            logPattern.should.equal(pattern + "connect");
         });
 
 

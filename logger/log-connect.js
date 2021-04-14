@@ -12,11 +12,6 @@ var logNetwork = function (req, res, next) {
     var logObject = core.initLog();
 
     //rendering the given arguments failsave against missing fields
-    if (typeof req.getHeader != "function") {
-        req.getHeader = function (header) {
-            return this.headers[header.toLocaleLowerCase()]; 
-        };
-    }
     if (req.connection == null) {
         req.connection = {};
     }
@@ -24,13 +19,14 @@ var logNetwork = function (req, res, next) {
         req.headers = {};
     }
 
+    if (typeof req.getHeader != "function") {
+        req.getHeader = function (header) {
+            return this.headers[header.toLocaleLowerCase()]; 
+        };
+    }
+
     if (req.url == null) {
         req.url = req.originalUrl;
-    }
-    if (res.get == null) {
-        res.get = function () {
-            return "";
-        };
     }
 
     var fallbacks = [];
@@ -77,7 +73,7 @@ var logNetwork = function (req, res, next) {
 
     core.bindLoggerToRequest(req, logObject);
 
-    var token = req.getHeader(core.getDynLogLevelHeaderName());
+    var token = req.headers[core.getDynLogLevelHeaderName()];
     core.bindDynLogLevel(token, req.logger);
 
     res.on("finish", function () {
@@ -100,7 +96,8 @@ var logNetwork = function (req, res, next) {
 
                 switch (configEntry.source.type) {
                     case "header":
-                        logObject[configEntry.name] = res.get(configEntry.source.name);
+                        if (res._headers)
+                            logObject[configEntry.name] = res._headers[configEntry.source.name];
                         break;
                     case "field":
                         logObject[configEntry.name] = res[configEntry.source.name];
