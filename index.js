@@ -37,6 +37,9 @@ exports.forceLogger = function (name) {
         case "plainhttp":
             effectiveLogger = require("./logger/log-plainhttp");
             break;
+        case "connect":
+            effectiveLogger = require("./logger/log-connect");
+            break;
         default:
             effectiveLogger = require("./logger/log-express");
     }
