@@ -77,7 +77,7 @@ var logNetwork = function (req, res, next) {
 
     core.bindLoggerToRequest(req, logObject);
 
-    var token = req.header(core.getDynLogLevelHeaderName());
+    var token = req.getHeader(core.getDynLogLevelHeaderName());
     core.bindDynLogLevel(token, req.logger);
 
     res.on("finish", function () {
