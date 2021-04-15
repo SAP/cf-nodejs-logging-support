@@ -193,7 +193,12 @@ describe('Test log-plainhttp', function () {
         });
 
         it('Test response_size_b', function () {
-            res._headers["content-length"] = 4711;
+            res.getHeader = function (field) {
+                if (field == "content-length") {
+                    return 4711;
+                }
+                return null;
+            };
             httpLogger.logNetwork(req, res, next);
             fireLog();
 
@@ -244,7 +249,11 @@ describe('Test log-plainhttp', function () {
         });
 
         it('Test response_content_type', function () {
-            res._headers["content-type"] = "text/html;charset=UTF-8";
+            res.getHeader = function (field) {
+                if (field == "content-type") {
+                    return "text/html;charset=UTF-8";
+                }
+            };
             httpLogger.logNetwork(req, res, next);
             fireLog();
             logObject.response_content_type.should.equal("text/html;charset=UTF-8");

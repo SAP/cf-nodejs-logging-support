@@ -92,8 +92,8 @@ var logNetwork = function (req, res) {
 
                 switch (configEntry.source.type) {
                     case "header":
-                        if (res._headers)
-                            logObject[configEntry.name] = res._headers[configEntry.source.name];
+                        if (res.getHeader)
+                            logObject[configEntry.name] = res.getHeader(configEntry.source.name);
                         break;
                     case "field":
                         logObject[configEntry.name] = res[configEntry.source.name];
