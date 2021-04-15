@@ -14,7 +14,6 @@ For details on the concepts and log formats, please look at the sibling project 
 #### Version 5.0 introduced convenient logging methods
 #### Version 6.0 added contextual loggers and custom field registration
 
-
 ## Features
 
   * Network logging (http requests) for CloudFoundry
@@ -51,47 +50,69 @@ app.get('/', function (req, res) {
     
     res.send('Hello World');
 });
+
 app.listen(3000);
 
-// Formatted log message free of request context
+// Formatted log message without request context
 log.info("Server is listening on port %d", 3000);
 ```
 
-### Other Server Libraries
+### Other Server Frameworks
 
-The logging library defaults to express middleware behaviour, but it can be forced to work with other server libraries as well:
+The logging library defaults to express middleware behaviour, but it can be forced to work with other server frameworks as well:
+
+#### With connect:
+```js
+var connect = require('connect');
+var http = require('http');
+var log = require('cf-nodejs-logging-support');
+
+var app = connect();
+
+// Force logger to run the connect version. (default is express, forcing express is also legal)
+log.forceLogger("connect");
+
+// Add the logger middleware, so each time a request is received, it is will get logged.
+app.use(log.logNetwork);
+
+// Create node.js http server and listen on port
+http.createServer(app).listen(3000);
+
+// Same usage as express logger, see minimal example above
+```
+
 #### With restify:
 ```js
 var restify = require('restify');
 var log = require('cf-nodejs-logging-support');
 var app = restify.createServer();
-//forces logger to run the restify version. (default is express, forcing express is also legal)
+// Force logger to run the restify version. (default is express, forcing express is also legal)
 log.forceLogger("restify");
 
-//insert the logger in the server network queue, so each time a https request is recieved, it is will get logged.
+// Add the logger middleware, so each time a request is received, it is will get logged.
 app.use(log.logNetwork);
 
-//same usage as express logger, see minimal example above
+// Same usage as express logger, see minimal example above
 ```
+
 #### With nodejs http:
 ```js
 var log = require("cf-nodejs-logging-support");
 const http = require('http');
 
-//forces logger to run the http version.
+// Force logger to run the http version.
 log.forceLogger("plainhttp");
 
 const server = http.createServer((req, res) => {
-    //binds logging to the given request for request tracking
+    // Binds logging to the given request for request tracking
     log.logNetwork(req, res);
     
     // Context bound custom message
     req.logger.info("request bound information:");
     res.end('ok');
 });
+
 server.listen(3000);
-// Formatted log message free of request context
-log.info("Server is listening on port %d", 3000);
 ```
 
 ### Request logs
@@ -114,14 +135,14 @@ http.createServer((req, res) => {
 
 In addition to request logging this library also supports logging application messages. Following common node.js logging levels are supported:
 
-- error
-- warn
-- info
-- verbose
-- debug
-- silly
+- `error`
+- `warn`
+- `info`
+- `verbose`
+- `debug`
+- `silly`
 
-In addition there is an *off* logging level available, which disables logging output completely. This can come in handy for testing. There are so called *convenient methods* for all supported logging levels, which can be called to log a message using the corresponding level. It is also possible to use standard format placeholders equivalent to the [util.format](https://nodejs.org/api/util.html#util_util_format_format_args) method.
+In addition there is an `off` logging level available, which disables logging output completely. This can come in handy for testing. There are so called *convenient methods* for all supported logging levels, which can be called to log a message using the corresponding level. It is also possible to use standard format placeholders equivalent to the [util.format](https://nodejs.org/api/util.html#util_util_format_format_args) method.
 
 Simple message
 ```js
@@ -152,37 +173,6 @@ In some cases you might want to set the actual logging level from a variable. In
 var level = "debug";
 logMessage(level, "Hello World"); 
 // ... "msg":"Hello World" ...
-```
-
-### Custom field usage
-
-You can use the custom field feature to add custom fields to your logs.
-
-Keep in mind that the last argument is handled as custom_fields object, if it is an object.
-```js
-info("Test data", {"field" :"value"}); 
-// ... "msg":"Test data" 
-// ... "field":"value"...
-```
-
-If you use this library with SAP Application Logging Service,
-you need to register your custom fields.
-This is necessary, because the custom fields will be reported in a fixed order, so they can be ingested correctly in elasticsearch.
-
-```js
-log.registerCustomFields(["field"]);
-info("Test data", {"field" :"value"}); 
-// ... "msg":"Test data" 
-// ... "#cf": {"string": [{"k":"field","v":"value","i":"0"}]}...
-```
-after version 6.5.0, this library will automatically detect, which logging service you are bound to and will
-set the logging format accordingly.
-
-for local testing purposes, you can still enforce a specific format like this:
-```js
-log.overrideCustomFieldFormat("application-logging");
-possible values: 
-"disabled", "all", "application-logging", "cloud-logging", "default"
 ```
 
 ### Logging contexts
@@ -258,9 +248,26 @@ var isDebugActive = log.isDebug();
 ```
 
 ### Custom fields
-Custom fields are basically additional key-value pairs added to the logs. As of version 6.0.0 you have to register custom fields, before you can write them. This can be done, by calling following global method:
+
+You can use the custom field feature to add custom fields to your logs.
+
+If you use this library with SAP Application Logging Service,
+you need to register your custom fields.
+This is necessary, because the custom fields will be reported in a fixed order, so they can be ingested correctly in elasticsearch.
+
 ```js
-log.registerCustomFields(["field-a", "field-b", "field-c"]);
+log.registerCustomFields(["field"]);
+info("Test data", {"field" :"value"}); 
+// ... "msg":"Test data" 
+// ... "#cf": {"string": [{"k":"field","v":"value","i":"0"}]}...
+```
+As of version 6.5.0, this library will automatically detect, which logging service you are bound to and will set the logging format accordingly.
+
+For local testing purposes, you can still enforce a specific format like this:
+```js
+log.overrideCustomFieldFormat("application-logging");
+possible values: 
+"disabled", "all", "application-logging", "cloud-logging", "default"
 ```
 
 You can now log messages and attach a key-value object as stated in the message logs section.
@@ -310,8 +317,6 @@ app.get('/', function (req, res) {
 });
 
 ```
-
-
 
 ### Sensitive data redaction
 Version 3.0.0 and above implements a sensitive data redaction system, which deactivates the logging of sensitive fields. The field will contain 'redacted' instead of the original content.
