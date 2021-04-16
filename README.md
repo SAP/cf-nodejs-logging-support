@@ -510,4 +510,4 @@ logger.log("info", "Server is listening on port %d", 3000);
 ## Sample Apps
 
   * [Express & Restify Sample](https://github.com/SAP/cf-nodejs-logging-support/blob/master/sample/cf-nodejs-shoutboard)
-  * [Winston Sample](https://github.com/SAP/cf-nodejs-logging-support/blob/master/sample/winston)
+  * [Winston Sample](https://github.com/SAP/cf-nodejs-logging-support/blob/master/sample/winston-sample)
