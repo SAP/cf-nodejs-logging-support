@@ -12,7 +12,12 @@ coreLogger.setConfig(defaultConfig.config);
 
 // Set the minimum logging level. Messages with a lower level, will not be forwarded. (Levels: error, warn, info, verbose, debug, silly)
 exports.setLoggingLevel = function (level) {
-    coreLogger.setLoggingLevel(level);
+    return coreLogger.setLoggingLevel(level);
+};
+
+// Set the  log level of request logs. Logs with a lower level than the current log level will not be forwarded. (Levels: error, warn, info, verbose, debug, silly)
+exports.setRequestLogLevel = function (level) {
+    return coreLogger.setRequestLogLevel(level);
 };
 
 exports.getLoggingLevel = function() {

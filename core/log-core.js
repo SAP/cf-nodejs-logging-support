@@ -24,6 +24,7 @@ const LOGGING_LEVELS = {
 };
 
 var logLevelInt = 2;
+var reqestLogLevel = "info";
 
 var initDummy = "{}";
 
@@ -271,6 +272,15 @@ var setLoggingLevel = function (level) {
     }
 };
 
+var setRequestLogLevel = function(level) {
+    levelInt = getLogLevelFromName(level);
+    if(levelInt != null) {
+        reqestLogLevel = level;
+        return true;
+    }
+    return false;
+}
+
 // Gets the minimum logging level of current logger or global. (Levels: error, warn, info, verbose, debug, silly)
 var getLoggingLevel = function () {
     var level = extractLoggingLevelFromLogger(this)
@@ -311,6 +321,13 @@ var initLog = function () {
     lastTimestamp = logObject.written_ts;
     return logObject;
 };
+
+//Initializes requestLog with reqestLogLevel
+var initRequestLog = function () {
+    var logObject = initLog();
+    logObject.level = reqestLogLevel;
+    return logObject;
+}
 
 // Creates a base log object, which contains all static and env var based fields.
 var prepareInitDummy = function (coreConfig) {
@@ -856,6 +873,7 @@ exports.handleConfigDefaults = handleConfigDefaults;
 exports.isValidObject = isValidObject;
 exports.init = init;
 exports.initLog = initLog;
+exports.initRequestLog = initRequestLog;
 exports.reduceFields = reduceFields;
 exports.sendLog = sendLog;
 exports.writeCustomFields = writeCustomFields;
@@ -870,6 +888,7 @@ exports.getLoggingLevel = getLoggingLevel;
 exports.registerCustomFields = registerCustomFields;
 exports.setCustomFields = setCustomFields;
 exports.setLoggingLevel = setLoggingLevel;
+exports.setRequestLogLevel = setRequestLogLevel;
 exports.setLogPattern = setLogPattern;
 exports.setSinkFunction = setSinkFunction;
 exports.overrideField = overrideField;

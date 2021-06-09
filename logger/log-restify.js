@@ -8,7 +8,7 @@ var setCoreLogger = function (coreLogger) {
 
 // Logs requests and responses
 var logNetwork = function (req, res, next) {
-    var logObject = core.initLog();
+    var logObject = core.initRequestLog();
 
     //rendering the given arguments failsave against missing fields
     if (typeof req.header != "function") {
