@@ -24,7 +24,7 @@ const LOGGING_LEVELS = {
 };
 
 var logLevelInt = 2;
-var reqestLogLevel = "info";
+var requestLogLevel = "info";
 
 var initDummy = "{}";
 
@@ -275,7 +275,7 @@ var setLoggingLevel = function (level) {
 var setRequestLogLevel = function(level) {
     levelInt = getLogLevelFromName(level);
     if(levelInt != null) {
-        reqestLogLevel = level;
+        requestLogLevel = level;
         return true;
     }
     return false;
@@ -322,10 +322,10 @@ var initLog = function () {
     return logObject;
 };
 
-//Initializes requestLog with reqestLogLevel
+//Initializes requestLog with requestLogLevel
 var initRequestLog = function () {
     var logObject = initLog();
-    logObject.level = reqestLogLevel;
+    logObject.level = requestLogLevel;
     return logObject;
 }
 
