@@ -130,6 +130,14 @@ http.createServer((req, res) => {
 });
 ```
 
+#### Request log level
+
+You can set the level, with which request logs will be written:
+
+```js
+log.setRequestLogLevel("verbose");
+```
+the default log level for request logs is ``info``
 
 ### Message logs
 
