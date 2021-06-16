@@ -288,13 +288,6 @@ var config = [
         },
         default: "-"
     }, {
-        name: "level",
-        mandatory: true,
-        source:{
-            type: "static",
-            value: "info"
-        }
-    }, {
         name: "testSpecialPost",
         mandatory: true,
         source:{

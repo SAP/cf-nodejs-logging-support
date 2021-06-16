@@ -33,15 +33,17 @@ describe('Test log-connect', function () {
                 countSendLog++;
             };
 
-            core.initBack = core.initLog;
-            core.initLog = function () {
+            core.initBack = core.initRequestLog;
+            core.initRequestLog = function () {
                 countInitLog++;
-                return {};
+                var obj = {};
+                obj.level = "info";
+                return obj;
             };
         });
 
         afterEach(function () {
-            core.initLog = core.initBack;
+            core.initRequestLog = core.initRequestLog;
         })
 
         it("Test linking logNetwork", function () {
@@ -95,6 +97,14 @@ describe('Test log-connect', function () {
             };
 
             res._headers = {};
+        });
+
+        it('Test request log level changing', function () {
+            core.setRequestLogLevel("warn")    
+            connectLogger.logNetwork(req, res, next);
+            fireLog();
+
+            logObject.level.should.equal("warn");
         });
 
         it('Test anti-duplication mechanism', function () {

@@ -35,15 +35,17 @@ describe('Test log-restify', function () {
                 countSendLog++;
             };
 
-            core.initBack = core.initLog;
-            core.initLog = function () {
+            core.initBack = core.initRequestLog;
+            core.initRequestLog = function () {
                 countInitLog++;
-                return {};
+                var obj = {};
+                obj.level = "info";
+                return obj;
             };
         });
 
         afterEach(function () {
-            core.initLog = core.initBack;
+            core.initLog = core.initRequestLog;
         });
 
         it("Test linking logNetwork", function () {
@@ -106,6 +108,14 @@ describe('Test log-restify', function () {
                 fireLog();
 
                 logObject.correlation_id.should.equal("correctID");
+            });
+
+            it('Test request log level changing', function () {
+                core.setRequestLogLevel("warn")    
+                restifyLogger.logNetwork(req, res, next);
+                fireLog();
+    
+                logObject.level.should.equal("warn");
             });
 
             it('Test generated uuid', function () {

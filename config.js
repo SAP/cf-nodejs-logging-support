@@ -296,13 +296,6 @@ var config = [
             type: "static",
         },
         default: "-"
-    }, {
-        name: "level",
-        mandatory: true,
-        source: {
-            type: "static",
-            value: "info"
-        }
     }
 ];
 
