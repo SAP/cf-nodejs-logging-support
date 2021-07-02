@@ -5,7 +5,7 @@ var effectiveLogger = null;
 coreLogger.init();
 
 effectiveLogger = require("./logger/log-express");
-defaultConfig = require("./config");
+var defaultConfig = require("./config");
 effectiveLogger.setCoreLogger(coreLogger);
 
 coreLogger.setConfig(defaultConfig.config);
