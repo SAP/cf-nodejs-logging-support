@@ -1,12 +1,13 @@
 language: node_js
 node_js:
-  - "13"
+  - "16"
+  - "14"
   - "12"
   - "10"
   - "8" 
 branches:
-  except:
-  - dev
+  only:
+  - master
 script:
   - npm run test
   - npm run coverage
