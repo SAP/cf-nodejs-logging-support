@@ -22,7 +22,7 @@ title: cf-nodejs-logging-support
 description: >- # this means to ignore newlines until "baseurl:"
   Node.js Logging Support for Cloud Foundry provides the creation of structured log messages and the collection of request metrics.
 baseurl: "/cf-nodejs-logging-support" # the subpath of your site, e.g. /blog
-url: "https://sap.github.com" # the base hostname & protocol for your site, e.g. http://example.com
+url: "https://sap.github.io" # the base hostname & protocol for your site, e.g. http://example.com
 
 # Build settings
 markdown: kramdown
