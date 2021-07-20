@@ -9,7 +9,7 @@ has_children: true
 
 ## cf-nodejs-shoutboard
 
-To get a better understanding of how this library can be used to log request and message logs in actual Node.js applications take a look at our [cf-node-shoutboard](https://github.com/SAP/cf-nodejs-logging-support/tree/master/sample/cf-nodejs-shoutboard). 
+To get a better understanding of how this library can be used to write request and message logs in actual Node.js applications take a look at our [cf-node-shoutboard](https://github.com/SAP/cf-nodejs-logging-support/tree/master/sample/cf-nodejs-shoutboard). 
 The application hosts a simple shoutboard and can be deployed on Cloud Foundry. 
 
 ## winston-sample

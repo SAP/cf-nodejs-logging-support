@@ -10,7 +10,7 @@ permalink: /general-usage/message-logs
 {: .no_toc }
 
 In addition to request logging this library also supports logging of application messages. 
-Message logs contain at least some message and also a set of CF metadata. 
+Message logs contain at least some message and also CF metadata. 
 
 <details open markdown="block">
   <summary>
@@ -39,14 +39,14 @@ log.setLoggingLevel("info");
 In addition there is an off logging level available to disable log output completely.
 
 ## Writing message logs
-There are so called *convenient methods* available for all supported logging levels.
+There are so called *convenience methods* available for all supported logging levels.
 These can be called to log a message using the corresponding level. 
 It is also possible to use standard format placeholders equivalent to the [util.format](https://nodejs.org/api/util.html#util_util_format_format_args) method.
 
 You can find several usage examples below demonstrating options to be specified when calling a log method. 
 All methods get called on a `logger` object, which provides a so called *logging context*. 
 You can find more information about logging contexts in the [Logging Contexts](/cf-nodejs-logging-support/general-usage/logging-contexts) chapter.
-In the simplest case, `logger` just equals to the imported `log` module. 
+In the simplest case, `logger` is an instance of imported `log` module. 
 
 - Simple message
 ```js
@@ -91,7 +91,7 @@ if (isInfoActive) {
 }
 ```
 
-There are convenient methods available for this feature:
+There are convenience methods available for this feature:
 ```js
 var isDebugActive = log.isDebug();
 ```

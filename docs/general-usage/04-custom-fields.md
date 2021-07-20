@@ -27,20 +27,25 @@ log.overrideCustomFieldFormat("application-logging");
 // possible values: "disabled", "all", "application-logging", "cloud-logging", "default"
 ```
 
-You can now log messages and attach a key-value object as stated in the [Message Logs](/cf-nodejs-logging-support/general-usage/message-logs) chapter.
+In addition to logging messages as described in [Message Logs](/cf-nodejs-logging-support/general-usage/message-logs) you can attach custom fields as an object of key-value pairs as last parameter:
 ```js
 logger.info("My log message", {"field-a" :"value"}); 
 ```
 
-Another way of adding custom fields to log messages is to set them for a logger instance. 
-All logs, that are logged by this logger, contain the specified custom fields and values. 
+Another way of adding custom fields to messages is to set them for (child) loggers in *global* or *request* context.
+In result messages will contain the custom fields specified to the logger instance in use.
 ```js
 logger.setCustomFields({"field-a": "value"})
 logger.info("My log message"); 
 ```
 
 You can also set custom fields globally by calling the same function on the global `log` instance. 
-All logs, including request logs, will now contain the specified custom fields and values.
+All logs, including request logs and logs by child loggers, will now contain the specified custom fields and values.
 ```js
 log.setCustomFields({"field-b": "test"});
+```
+
+In case you want to remove custom fields from a logger instance you can provide an empty object:
+```js
+logger.setCustomFields({});
 ```

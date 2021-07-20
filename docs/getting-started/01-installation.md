@@ -7,8 +7,7 @@ permalink: /getting-started/installation/
 ---
 
 # Installation
-Latest release versions of our library are ready to be downloaded from [npm](https://www.npmjs.com/package/cf-nodejs-logging-support) and [github](https://github.com/SAP/cf-nodejs-logging-support/releases). 
-Read about requirements and installation steps below.
+The latest release version can be downloaded from [npm](https://www.npmjs.com/package/cf-nodejs-logging-support) and [github](https://github.com/SAP/cf-nodejs-logging-support/releases).
 
 ## Requirements
 

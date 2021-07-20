@@ -16,13 +16,20 @@ app.get('/', function (req, res) {
 });
 ```
 
-The main reason why you probably want to use child loggers is that they can have their own set of custom fields, which will be added to each message:
+There are two reasons why you probably want to use child loggers:
+- Each child logger can have its own set of custom fields, which will be added to each messages:
 ```js
 var logger = req.logger.createLogger(); 
 logger.setCustomFields({"field-a" :"value"})
 // OR
 var logger = req.logger.createLogger({"field-a" :"value"}); 
 ```
+- Child loggers can have a different logging threshold, so you can customize your log output with them:
+```js
+var logger = req.logger.createLogger(); 
+logger.setLoggingLevel("info");
+```
+
 
 You can also create child loggers inheriting from the global logging context like this:
 ```js

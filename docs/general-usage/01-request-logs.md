@@ -21,12 +21,12 @@ Request logs get issued for each handled http/s request and contain information 
 </details>
 
 ## Attaching to server frameworks
-The library can be attached as middleware to log requests as follows:
+The library can be provided as middleware to log requests as follows:
 ```js
 app.use(log.logNetwork);
 ```
 
-When using a plain Node.js http server it is necessary to call the middleware method directly:
+When using a plain Node.js http server it is necessary to call the network logging function directly:
 ```js
 http.createServer((req, res) => {
   log.logNetwork(req, res);
