@@ -1,6 +1,5 @@
 const importFresh = require('import-fresh');
 var chai = require("chai");
-var sinon = require("sinon");
 var assert = chai.assert;
 
 
@@ -14,6 +13,7 @@ describe('Test log-connect', function () {
         process.env.LOG_SENSITIVE_CONNECTION_DATA = true;
         process.env.LOG_REMOTE_USER = true;
         process.env.LOG_REFERER = true;
+        process.env.LOG_SSL_HEADERS = true;
 
         core = importFresh("../core/log-core.js");
         connectLogger = importFresh("../logger/log-connect.js");
@@ -21,21 +21,20 @@ describe('Test log-connect', function () {
         core.setConfig(importFresh("./allbranchconfig.js").config);
     });
 
-    describe('Test linkings', function () {
+    describe('Test binding', function () {
         var countSendLog;
-        var countInitLog;
+        var countInitRequestLog;
 
         beforeEach(function () {
             countSendLog = 0;
-            countInitLog = 0;
+            countInitRequestLog = 0;
 
             core.sendLog = function () {
                 countSendLog++;
             };
 
-            core.initBack = core.initRequestLog;
             core.initRequestLog = function () {
-                countInitLog++;
+                countInitRequestLog++;
                 var obj = {};
                 obj.level = "info";
                 return obj;
@@ -55,7 +54,7 @@ describe('Test log-connect', function () {
             };
             connectLogger.logNetwork(req, res, function () {});
             fireLog();
-            assert.equal(countInitLog, 1);
+            assert.equal(countInitRequestLog, 1);
             assert.equal(countSendLog, 1);
         });
     });
@@ -65,6 +64,8 @@ describe('Test log-connect', function () {
         var logObject = null;
         var req = {};
         var res = {};
+        var reqHeaders = [];
+        var resHeaders = [];
         var next;
 
         beforeEach(function () {
@@ -75,28 +76,32 @@ describe('Test log-connect', function () {
 
             next = function () {};
 
-            req = {};
-
-            req.connection = {};
-
-            req.headers = {};
-            req.getHeader = function (header) {
-                header = header.toLocaleLowerCase();
-                return this.headers[header];
-            }
-
-            res = {};
-            res.on = function (tag, func) {
-                if (tag == 'finish') {
-                    fireLog = func;
+            req = {
+                connection: {},
+                headers: {},
+                getHeader: function (header) {
+                    if (header == null) return;
+                    reqHeaders.push(header)
+                    return "test-header-req"
                 }
             };
 
-            res.get = function () {
-                return null;
+            res = {
+                headers: {},
+                on: function (tag, func) {
+                    if (tag == 'finish') {
+                        fireLog = func;
+                    }
+                },    
+                getHeader: function (header) {
+                    if (header == null) return;
+                    resHeaders.push(header)
+                    return "test-header-res"
+                }
             };
 
-            res._headers = {};
+            reqHeaders = [];
+            resHeaders = [];
         });
 
         it('Test request log level changing', function () {
@@ -121,221 +126,96 @@ describe('Test log-connect', function () {
             count.should.equal(1);
         });
 
-        describe('Test correlation_id', function () {
-            it('Test X-CorrelationID', function () {
-                req.headers["x-correlationid"] = "correctID";
+        describe('Test field handling', function () {
 
+            it('Test "static" field', function () {
                 connectLogger.logNetwork(req, res, next);
                 fireLog();
 
-                logObject.correlation_id.should.equal("correctID");
+                logObject.test_static.should.equal("test-value-static");
             });
 
-            it('Test generated uuid', function () {
+            it('Test "header" field (req)', function () {
+                reqHeaders = [];
                 connectLogger.logNetwork(req, res, next);
                 fireLog();
 
-                var uuid = logObject.correlation_id;
-                var pattern = new RegExp("[0-9a-fA-F]{8}-?[0-9a-fA-F]{4}-?4[0-9a-fA-F]{3}-?[89abAB][0-9a-fA-F]{3}-?[0-9a-fA-F]{12}");
-
-                pattern.test(uuid).should.equals(true);
+                logObject.test_header_req.should.equal("test-header-req");
+                reqHeaders.should.include("test-header-req");
             });
 
-            it('Test X-CorrelationID vs x-vcap-request-id', function () {
-                req.headers["x-correlationid"] = "correctID";
-                req.headers["x-vcap-request-id"] = "wrongID";
-
+            it('Test "header" field (res)', function () {
+                reqHeaders = [];
                 connectLogger.logNetwork(req, res, next);
                 fireLog();
 
-                logObject.correlation_id.should.equal("correctID");
+                logObject.test_header_res.should.equal("test-header-res");
+                resHeaders.should.include("test-header-res");
             });
-        });
 
-        it('Test request_id', function () {
-            req.headers["x-vcap-request-id"] = "correctID";
-
-            connectLogger.logNetwork(req, res, next);
-            fireLog();
-
-            logObject.request_id.should.equal("correctID");
-        });
-
-        it('Test tenant_id', function () {
-            req.headers["tenantid"] = "correctID";
-
-            connectLogger.logNetwork(req, res, next);
-            fireLog();
-
-            logObject.tenant_id.should.equal("correctID");
-        });
-
-        it('Test request', function () {
-            req.originalUrl = "correctUrl";
-
-            connectLogger.logNetwork(req, res, next);
-            fireLog();
-
-            logObject.request.should.equal("correctUrl");
-        });
-
-        it('Test response_status', function () {
-            res.statusCode = 418;
-
-            connectLogger.logNetwork(req, res, next);
-            fireLog();
-
-            logObject.response_status.should.equal(418);
-        });
-
-        it('Test method', function () {
-            req.method = "correctMethod";
-
-            connectLogger.logNetwork(req, res, next);
-            fireLog();
-
-            logObject.method.should.equal("correctMethod");
-        });
-
-        it('Test request_size_b', function () {
-            req.headers["content-length"] = 4711;
-            connectLogger.logNetwork(req, res, next);
-            fireLog();
-
-            logObject.request_size_b.should.equal(4711);
-        });
-
-        it('Test response_size_b', function () {
-            res.getHeader = function (field) {
-                if (field == "content-length") {
-                    return 4711;
-                }
-                return null;
-            };
-            connectLogger.logNetwork(req, res, next);
-            fireLog();
-
-            logObject.response_size_b.should.equal(4711);
-        });
-
-        it('Test remote_host', function () {
-            req.connection = {};
-            req.connection.remoteAddress = "correctAddress";
-            connectLogger.logNetwork(req, res, next);
-            fireLog();
-
-            logObject.remote_host.should.equal("correctAddress");
-        });
-
-        it('Test remote_port', function () {
-            req.connection = {};
-            req.connection.remotePort = "correctPort";
-            connectLogger.logNetwork(req, res, next);
-            fireLog();
-
-            logObject.remote_port.should.equal("correctPort");
-        });
-
-        it('Test x_forwarded_for', function () {
-            req.headers = {};
-            req.headers['x-forwarded-for'] = "testingHeader";
-            connectLogger.logNetwork(req, res, next);
-            fireLog();
-
-            logObject.x_forwarded_for.should.equal("testingHeader");
-        });
-
-        it('Test remote_ip', function () {
-            req.connection.remoteAddress = "correctAddress";
-            connectLogger.logNetwork(req, res, next);
-            fireLog();
-
-            logObject.remote_ip.should.equal("correctAddress");
-        });
-
-        it('Test response_content_type', function () {
-            res.getHeader = function (field) {
-                if (field == "content-type") {
-                    return "text/html;charset=UTF-8";
-                }
-            };
-            connectLogger.logNetwork(req, res, next);
-            fireLog();
-            logObject.response_content_type.should.equal("text/html;charset=UTF-8");
-        });
-
-        it('Test protocol', function () {
-            req.httpVersion = 1.1;
-            connectLogger.logNetwork(req, res, next);
-            fireLog();
-            logObject.protocol.should.equal("HTTP/1.1");
-        });
-
-        describe('Test timings', function () {
-            var clock;
-            before(function () {
-                clock = sinon.useFakeTimers();
-            });
-            after(function () {
-                clock.restore();
-            });
-            it('Test received_at', function () {
+            it('Test "self" field (req)', function () {
                 connectLogger.logNetwork(req, res, next);
                 fireLog();
-                logObject.request_received_at.should.equal((new Date()).toJSON());
+
+                logObject.test_self_req.should.equal("test-header-req");
             });
 
-            it('Test response_sent_at', function () {
+            it('Test "self" field (res)', function () {
                 connectLogger.logNetwork(req, res, next);
-                clock.tick(100);
                 fireLog();
-                logObject.response_sent_at.should.equal((new Date()).toJSON());
+
+                logObject.test_self_res.should.equal("test-header-res");
             });
 
-            it('Test response_time', function () {
+            it('Test "field" field (req)', function () {
+                req["test-field"] = "test-value-field-req";
                 connectLogger.logNetwork(req, res, next);
-                clock.tick(100);
                 fireLog();
 
-                logObject.response_time_ms.should.equal(100);
+                logObject.test_field_req.should.equal("test-value-field-req");
+            });
+
+            it('Test "field" field (res)', function () {
+                res["test-field"] = "test-value-field-res";
                 connectLogger.logNetwork(req, res, next);
-                clock.tick(50);
                 fireLog();
 
-                logObject.response_time_ms.should.equal(50);
+                logObject.test_field_res.should.equal("test-value-field-res");
+            });
+
+            it('Test "time" field (req+res)', function () {
+                connectLogger.logNetwork(req, res, next);
+                fireLog();
+                logObject.test_time.should.equal(3);
+            });
+
+            it('Test "special" field (req)', function () {
+                connectLogger.logNetwork(req, res, next);
+                fireLog();
+                logObject.test_special_req.should.equal("test-value-special-req");  
+            });
+
+            it('Test "special" field (res)', function () {
+                connectLogger.logNetwork(req, res, next);
+                fireLog();
+                logObject.test_special_res.should.equal("test-value-special-res");  
+            });
+
+
+            it('Test defaults (req)', function () {
+                connectLogger.logNetwork(req, res, next);
+                fireLog();
+                logObject.test_defaults_req.should.equal("test-default-req");  
+            });
+
+            it('Test defaults (res)', function () {
+                connectLogger.logNetwork(req, res, next);
+                fireLog();
+                logObject.test_defaults_res.should.equal("test-default-res");  
             });
         });
 
-
-        it('Test static fields', function () {
-            connectLogger.logNetwork(req, res, next);
-            fireLog();
-
-            logObject.type.should.equal("request");
-            logObject.referer.should.equal("-");
-            logObject.remote_user.should.equal("-");
-            logObject.direction.should.equal("IN");
-        });
-
-        it('Test default values', function () {
-            connectLogger.logNetwork(req, res, next);
-            fireLog();
-
-            logObject.request_id.should.equal("-");
-            logObject.tenant_id.should.equal("-");
-            logObject.request.should.equal("-");
-            logObject.method.should.equal("-");
-            logObject.request_size_b.should.equal(-1);
-            logObject.remote_host.should.equal("-");
-            logObject.response_size_b.should.equal(-1);
-            logObject.response_content_type.should.equal("-");
-            logObject.remote_port.should.equal("-");
-            logObject.x_forwarded_for.should.equal("");
-            logObject.protocol.should.equal("HTTP");
-            logObject.response_content_type.should.equal("-");
-        });
-
-        it("Test log ommitting per loging Level", function () {
+        it("Test log omitting per logging Level", function () {
             core.setLoggingLevel("error");
             connectLogger.logNetwork(req, res, next);
             fireLog();
