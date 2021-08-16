@@ -11,7 +11,7 @@ var logNetwork = function (req, res, next) {
 
     var logObject = core.initRequestLog();
 
-    //rendering the given arguments failsave against missing fields
+    //rendering the given arguments failsafe against missing fields
     if (typeof req.header != "function") {
         req.header = function () {
             return "";

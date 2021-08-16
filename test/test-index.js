@@ -121,7 +121,7 @@ describe('Test index.js', function () {
     });
     describe('Test parameter forwarding', function () {
 
-        it('Test forceLogger: ', function () {
+        it('Test forceLogger', function () {
             logger.forceLogger("express");
             linking.should.equal("express");
             logger.forceLogger("restify");
@@ -134,7 +134,7 @@ describe('Test index.js', function () {
             linking.should.equal("express");
         });
 
-        it('Test setLoggingLevel: ', function () {
+        it('Test setLoggingLevel', function () {
             var level = "testLevel";
             logger.setLoggingLevel(level);
             loggingLevel.should.equal(level);
@@ -149,7 +149,7 @@ describe('Test index.js', function () {
             loggingLevel.should.equal(level);
         });
 
-        it('Test getLoggingLevel: ', function () {
+        it('Test getLoggingLevel', function () {
             var loggingLevel = "testLevel";
             logger.getLoggingLevel().should.equal(loggingLevel);
             logger.forceLogger("restify");
@@ -160,12 +160,12 @@ describe('Test index.js', function () {
             logger.getLoggingLevel().should.equal(loggingLevel);
         });
 
-        it('Test isLoggingLevel: ', function () {
+        it('Test isLoggingLevel', function () {
             logger.isLoggingLevel("passLevel").should.equal(true);
             logger.isLoggingLevel("noPassLevel").should.equal(false);
         });
 
-        it('Test setSinkFunction: ', function () {
+        it('Test setSinkFunction', function () {
             var fct = (level, output) => {};
             logger.setSinkFunction(fct);
             sinkFunction.should.equal(fct);
@@ -180,13 +180,13 @@ describe('Test index.js', function () {
             sinkFunction.should.equal(fct);
         });
 
-        it('Test createLogger: ', function () {
+        it('Test createLogger', function () {
             var fields = {a: "1", b: "2"};
             logger.createLogger(fields);
             customFields.should.eql({a: "1", b: "2"});
         });
 
-        it('Test logMessage: ', function () {
+        it('Test logMessage', function () {
             var message = "testLevel";
             logger.logMessage(message);
             messageArgs.length.should.equal(1);
@@ -216,7 +216,7 @@ describe('Test index.js', function () {
             value.should.equal(value1);
         });
 
-        it('Test logNetwork: ', function () {
+        it('Test logNetwork', function () {
             var obj1 = {};
             var obj2 = {};
             var obj3 = {};
@@ -258,14 +258,14 @@ describe('Test index.js', function () {
             next.should.equal(obj3);
         });
 
-        it('Test winstonTransport: ', function () {
+        it('Test winstonTransport', function () {
             var obj = logger.createWinstonTransport({level: "debug"});
             assert.typeOf(obj, "object");
             obj.constructor.name.should.equal("CfNodejsLoggingSupportLogger");
             obj.level.should.equal("debug");
         });
 
-        it('Test setLogPattern: ' , function () {
+        it('Test setLogPattern' , function () {
             var pattern = "testing pattern {{msg}}";
             logger.setLogPattern(pattern);
             logPattern.should.equal(pattern);
@@ -285,7 +285,7 @@ describe('Test index.js', function () {
         });
 
 
-        it('Test setCustomFields: ' , function () {
+        it('Test setCustomFields' , function () {
            logger.setCustomFields({a: "3", b: "4"});
            customFields.should.eql({a: "3", b: "4"});
 
@@ -296,7 +296,7 @@ describe('Test index.js', function () {
            customFields.should.eql({});
         });
 
-        it('Test registerCustomFields: ' , function () {
+        it('Test registerCustomFields' , function () {
             logger.registerCustomFields({a: "3", b: "4"});
             registeredFields.should.eql({a: "3", b: "4"});
  
