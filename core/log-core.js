@@ -115,7 +115,7 @@ var setConfig = function (config) {
 };
 
 
-// Seperate core configuration (processed once, included in network and message logs) and
+// Separate core configuration (processed once, included in network and message logs) and
 // pre and post configuration (processed before and after request handling)
 var precompileConfig = function (config) {
     var coreConfig = [];
@@ -127,9 +127,18 @@ var precompileConfig = function (config) {
     for (var i = 0; i < config.length; i++) {
         var obj = config[i];
 
-        // Check if config field needs a set env var to be enabled. If specified env var does not exist, the resulting log field will be replaced by REDUCED_PLACEHOLDER
+        // Check if config field needs a set env var to be enabled. If specified env var does not exist the log field gets omitted. 
         if (obj.envVarSwitch != null) {
             var val = process.env[obj.envVarSwitch];
+            var pass = (val == "true" || val == "True" || val == "TRUE");
+            if (!pass) {
+                continue; 
+            }
+        }
+
+        // Check if config field needs a set env var to be written as is. If specified env var does not exist the resulting log field will set to REDUCED_PLACEHOLDER.
+        if (obj.envVarRedact != null) {
+            var val = process.env[obj.envVarRedact];
             var pass = (val == "true" || val == "True" || val == "TRUE");
             if (!pass) {
                 obj.reduce = true;
@@ -416,7 +425,7 @@ var setLogPattern = function (p) {
 // Simple
 // logMessage("info", "Hello World"); >> ... "msg":"Hello World" ...
 //
-// With addtional numeric value
+// With additional numeric value
 // logMessage("info", "Listening on port %d", 5000); >> ... "msg":"Listening on port 5000" ...
 //
 // With additional string values
