@@ -28,7 +28,7 @@ var uuid = require("uuid/v4");
  *                          calls method pre(req, res, logObject) when a request arrives. The log field gets set to the returned value.
  *                          calls method post(req, res, logObject) when the response got sent. The log field gets set to the returned value.
  *                     "special": calls the fallback(req, res, logObject) directly and sets the log field to the returned value.
- *   name:          Name for "env", "self", "header" and "field" sources.
+ *   name:          Key name for "env", "self", "header" and "field" sources.
  *   path:          Path for "nested-env" source.
  *   value:         Value for "static" source.
  *   parent:        Parent for "header" and "field" source: Can be "req" to access the request and "res" to access the response.
