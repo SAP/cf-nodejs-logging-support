@@ -70,7 +70,7 @@ describe('Test log-core', function () {
             };
         })
 
-        it('Test correct handling of cases: ', function () {
+        it('Test correct handling of cases', function () {
             reduceFields(testConfig, logObj);
             logObj["test-field-a"].should.not.equal(42);
             logObj["test-field-b"].should.equal("test");
@@ -189,7 +189,7 @@ describe('Test log-core', function () {
             log = core.logMessage;
         });
 
-        it('Test config assignment (settable): ', function () {
+        it('Test config assignment (settable)', function () {
             log("info","test", {"settable_field":"settable","non_settable":"test"})
             
             logObject.settable_field.should.equal("settable");
@@ -197,7 +197,7 @@ describe('Test log-core', function () {
             
         });
 
-        it('Test settable propagation: ', function () {
+        it('Test settable propagation', function () {
 
             core.__set__({
                 "prepareInitDummy": function (config) {
@@ -249,7 +249,7 @@ describe('Test log-core', function () {
             core = rewire("../core/log-core.js");
         });
 
-        it('Test config assignment (core): ', function () {
+        it('Test config assignment (core)', function () {
 
             core.__set__({
                 "prepareInitDummy": function (config) {
@@ -261,7 +261,7 @@ describe('Test log-core', function () {
             core.setConfig(testConfig);
         });
 
-        it('Test config assignment (pre): ', function () {
+        it('Test config assignment (pre)', function () {
             core.setConfig(testConfig);
 
             var config = core.getPreLogConfig();
@@ -270,7 +270,7 @@ describe('Test log-core', function () {
             config[1].should.equal(testConfig[2]);
         });
 
-        it('Test config assignment (post): ', function () {
+        it('Test config assignment (post)', function () {
             core.setConfig(testConfig);
 
             var config = core.getPostLogConfig();
@@ -305,7 +305,7 @@ describe('Test log-core', function () {
             core = rewire("../core/log-core.js");
         });
 
-        it('Test config assignment (core): ', function () {
+        it('Test config assignment (core)', function () {
 
             core.__set__({
                 "prepareInitDummy": function (config) {
@@ -318,7 +318,7 @@ describe('Test log-core', function () {
         });
     });
 
-    describe('Test setConfig environment var switches', function () {
+    describe('Test envVarRedact', function () {
         var core = rewire("../core/log-core.js");
         var coreConfig = null;
         var testConfig;
@@ -331,7 +331,7 @@ describe('Test log-core', function () {
             })
         });
 
-        it('Test unset switch: ', function () {
+        it('Test unset envVarRedact', function () {
             testConfig = [{
                 core: true
             }];
@@ -340,18 +340,106 @@ describe('Test log-core', function () {
             coreConfig[0].should.deep.equal({ core: true });
         });
 
-        it('Test set switch and unset env var: ', function () {
+        it('Test set envVarRedact and unset env var', function () {
             testConfig = [{
                 core: true,
-                envVarSwitch: "LOG_TEST_VAR"
+                envVarRedact: "LOG_TEST_VAR"
             }];
             process.env.LOG_TEST_VAR = undefined
             core.setConfig(testConfig);
             coreConfig.length.should.equal(1);
-            coreConfig[0].should.deep.equal({ core: true, envVarSwitch: "LOG_TEST_VAR", reduce: true });
+            coreConfig[0].should.deep.equal({ core: true, envVarRedact: "LOG_TEST_VAR", reduce: true });
         });
 
-        it('Test set switch and set env var ("true"): ', function () {
+        it('Test set envVarRedact and set env var ("true")', function () {
+            testConfig = [{
+                core: true,
+                envVarRedact: "LOG_TEST_VAR"
+            }];
+            process.env.LOG_TEST_VAR = 'true';
+            core.setConfig(testConfig);
+            coreConfig.length.should.equal(1);
+            coreConfig[0].should.deep.equal({ core: true, envVarRedact: "LOG_TEST_VAR" });
+        });
+
+        it('Test set envVarRedact and set env var ("True")', function () {
+            testConfig = [{
+                core: true,
+                envVarRedact: "LOG_TEST_VAR"
+            }];
+            process.env.LOG_TEST_VAR = 'True';
+            core.setConfig(testConfig);
+            coreConfig.length.should.equal(1);
+            coreConfig[0].should.deep.equal({ core: true, envVarRedact: "LOG_TEST_VAR" });
+        });
+
+        it('Test set envVarRedact and set env var ("true")', function () {
+            testConfig = [{
+                core: true,
+                envVarRedact: "LOG_TEST_VAR"
+            }];
+            process.env.LOG_TEST_VAR = 'TRUE';
+            core.setConfig(testConfig);
+            coreConfig.length.should.equal(1);
+            coreConfig[0].should.deep.equal({ core: true, envVarRedact: "LOG_TEST_VAR" });
+        });
+
+        it('Test set envVarRedact and set env var ("false")', function () {
+            testConfig = [{
+                core: true,
+                envVarRedact: "LOG_TEST_VAR"
+            }];
+            process.env.LOG_TEST_VAR = 'false';
+            core.setConfig(testConfig);
+            coreConfig.length.should.equal(1);
+            coreConfig[0].should.deep.equal({ core: true, envVarRedact: "LOG_TEST_VAR", reduce: true });
+        });
+
+        it('Test set envVarRedact and set env var ("0")', function () {
+            testConfig = [{
+                core: true,
+                envVarRedact: "LOG_TEST_VAR"
+            }];
+            process.env.LOG_TEST_VAR = '0';
+            core.setConfig(testConfig);
+            coreConfig.length.should.equal(1);
+            coreConfig[0].should.deep.equal({ core: true, envVarRedact: "LOG_TEST_VAR", reduce: true });
+        });
+    });
+
+    describe('Test envVarSwitch', function () {
+        var core = rewire("../core/log-core.js");
+        var coreConfig = null;
+        var testConfig;
+
+        before(function () {
+            core.__set__({
+                "prepareInitDummy": function (config) {
+                    coreConfig = config;
+                }
+            })
+        });
+
+        it('Test unset envVarSwitch', function () {
+            testConfig = [{
+                core: true
+            }];
+            core.setConfig(testConfig);
+            coreConfig.length.should.equal(1);
+            coreConfig[0].should.deep.equal({ core: true });
+        });
+
+        it('Test set envVarSwitch and unset env var', function () {
+            testConfig = [{
+                core: true,
+                envVarSwitch: "LOG_TEST_VAR"
+            }];
+            process.env.LOG_TEST_VAR = undefined;
+            core.setConfig(testConfig);
+            coreConfig.length.should.equal(0);
+        });
+
+        it('Test set envVarSwitch and set env var ("true")', function () {
             testConfig = [{
                 core: true,
                 envVarSwitch: "LOG_TEST_VAR"
@@ -362,7 +450,7 @@ describe('Test log-core', function () {
             coreConfig[0].should.deep.equal({ core: true, envVarSwitch: "LOG_TEST_VAR" });
         });
 
-        it('Test set switch and set env var ("True"): ', function () {
+        it('Test set envVarSwitch and set env var ("True")', function () {
             testConfig = [{
                 core: true,
                 envVarSwitch: "LOG_TEST_VAR"
@@ -373,7 +461,7 @@ describe('Test log-core', function () {
             coreConfig[0].should.deep.equal({ core: true, envVarSwitch: "LOG_TEST_VAR" });
         });
 
-        it('Test set switch and set env var ("true"): ', function () {
+        it('Test set envVarSwitch and set env var ("true")', function () {
             testConfig = [{
                 core: true,
                 envVarSwitch: "LOG_TEST_VAR"
@@ -384,26 +472,24 @@ describe('Test log-core', function () {
             coreConfig[0].should.deep.equal({ core: true, envVarSwitch: "LOG_TEST_VAR" });
         });
 
-        it('Test set switch and set env var ("false"): ', function () {
+        it('Test set envVarSwitch and set env var ("false")', function () {
             testConfig = [{
                 core: true,
                 envVarSwitch: "LOG_TEST_VAR"
             }];
             process.env.LOG_TEST_VAR = 'false';
             core.setConfig(testConfig);
-            coreConfig.length.should.equal(1);
-            coreConfig[0].should.deep.equal({ core: true, envVarSwitch: "LOG_TEST_VAR", reduce: true });
+            coreConfig.length.should.equal(0);
         });
 
-        it('Test set switch and set env var ("0"): ', function () {
+        it('Test set envVarSwitch and set env var ("0")', function () {
             testConfig = [{
                 core: true,
                 envVarSwitch: "LOG_TEST_VAR"
             }];
             process.env.LOG_TEST_VAR = '0';
             core.setConfig(testConfig);
-            coreConfig.length.should.equal(1);
-            coreConfig[0].should.deep.equal({ core: true, envVarSwitch: "LOG_TEST_VAR", reduce: true });
+            coreConfig.length.should.equal(0);
         });
     });
 
@@ -415,7 +501,7 @@ describe('Test log-core', function () {
             core.setConfig(importFresh("../config.js").config);
         });
 
-        it('Test equals method: ', function () {
+        it('Test equals method', function () {
             core.isValidObject(null).should.equal(false);
             core.isValidObject(undefined).should.equal(false);
             core.isValidObject({}).should.equal(false);
@@ -428,7 +514,7 @@ describe('Test log-core', function () {
             }).should.equal(true);
         });
 
-        it('Test for cyclic errors: ', function () {
+        it('Test for cyclic errors', function () {
             //cyclic obj test
             var a = {};
             var b = {};
@@ -1759,7 +1845,7 @@ describe('Test log-core', function () {
             clock.restore();
         });
 
-        it('Test written_at: ', function () {
+        it('Test written_at', function () {
             logObject = core.initLog();
             logObject.written_at.should.equal((new Date()).toJSON());
 
@@ -1768,59 +1854,59 @@ describe('Test log-core', function () {
             logObject.written_at.should.not.equal((new Date()).toJSON());
         });
 
-        it('Test written_ts: ', function () {
+        it('Test written_ts', function () {
             logObject = core.initLog();
             logObject.written_ts.should.equal((new Date()).getTime() * 1e6);
         });
 
         // Write values from process.env.VCAP_APPLICATION
-        it('Test component_id: ', function () {
+        it('Test component_id', function () {
             logObject = core.initLog();
             logObject.component_id.should.equal("123456");
         });
 
-        it('Test component_name: ', function () {
+        it('Test component_name', function () {
             logObject = core.initLog();
             logObject.component_name.should.equal("test_app_name");
         });
 
-        it('Test component_instance: ', function () {
+        it('Test component_instance', function () {
             logObject = core.initLog();
             logObject.component_instance.should.equal("43");
         });
 
-        it('Test space_name: ', function () {
+        it('Test space_name', function () {
             logObject = core.initLog();
             logObject.space_name.should.equal("test_space_name");
         });
 
-        it('Test space_id: ', function () {
+        it('Test space_id', function () {
             logObject = core.initLog();
             logObject.space_id.should.equal("234567");
         });
 
-        it('Test organization_name: ', function () {
+        it('Test organization_name', function () {
             logObject = core.initLog();
             logObject.organization_name.should.equal("test_org_name");
         });
 
-        it('Test organization_id: ', function () {
+        it('Test organization_id', function () {
             logObject = core.initLog();
             logObject.organization_id.should.equal("345678");
         });
 
-        it('Test source_instance: ', function () {
+        it('Test source_instance', function () {
             logObject = core.initLog();
             logObject.source_instance.should.equal("43");
         });
 
-        it('Test container_id: ', function () {
+        it('Test container_id', function () {
             logObject = core.initLog();
             logObject.container_id.should.equal("45");
         });
 
 
-        it('Test default values: ', function () {
+        it('Test default values', function () {
             delete process.env.VCAP_APPLICATION;
             delete process.env.CF_INSTANCE_IP;
             //resetting inherit memory for fast init
@@ -1842,7 +1928,7 @@ describe('Test log-core', function () {
             logObject.container_id.should.equal("-");
         });
 
-        it('Test static values: ', function () {
+        it('Test static values', function () {
             logObject = core.initLog();
             logObject.component_type.should.equal("application");
             logObject.layer.should.equal("[NODEJS]");

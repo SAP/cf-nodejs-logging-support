@@ -30,7 +30,6 @@ exports.getLogMessage = function () {
         "remote_host": "-",
         "remote_port": "-",
         "remote_user": "test-user",
-        "x_forwarded_for": "",
         "protocol": "HTTP",
         "remote_ip": "-",
         "response_content_type": "-",
@@ -39,7 +38,19 @@ exports.getLogMessage = function () {
         "direction": "IN",
         "response_sent_at": "2017-01-01T00:00:00.000Z",
         "msg": "testmessage",
-        "level": "info"
+        "level": "info",
+        "x_custom_host": "host-3",
+        "x_forwarded_for": "host-1",
+        "x_forwarded_host": "host-2",
+        "x_forwarded_proto": "https",
+        "x_ssl_client": "-",
+        "x_ssl_client_issuer_dn": "-",
+        "x_ssl_client_notafter": "-",
+        "x_ssl_client_notbefore": "-",
+        "x_ssl_client_session_id": "-",
+        "x_ssl_client_subject_cn": "-",
+        "x_ssl_client_subject_dn": "-",
+        "x_ssl_client_verify": "-"
     };
     return message;
 

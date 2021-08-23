@@ -8,9 +8,11 @@ var setCoreLogger = function (coreLogger) {
 
 // Logs requests and responses
 var logNetwork = function (req, res, next) {
+    var logSent = false;
+
     var logObject = core.initRequestLog();
 
-    //rendering the given arguments failsave against missing fields
+    //rendering the given arguments failsafe against missing fields
     if (typeof req.header != "function") {
         req.header = function () {
             return "";
@@ -27,7 +29,6 @@ var logNetwork = function (req, res, next) {
             return "";
         };
     }
-
 
     var fallbacks = [];
     var selfReferences = [];
@@ -74,59 +75,61 @@ var logNetwork = function (req, res, next) {
 
     core.bindLoggerToRequest(req, logObject);
 
-
     var token = req.header(core.getDynLogLevelHeaderName());
     core.bindDynLogLevel(token, req.logger);
 
     res.on("finish", function () {
 
+        if (!logSent) {
+            var postConfig = core.getPostLogConfig();
+            var fallbacks = [];
+            var selfReferences = [];
+            for (var i = 0; i < postConfig.length; i++) {
+                configEntry = postConfig[i];
 
-        var postConfig = core.getPostLogConfig();
-        var fallbacks = [];
-        var selfReferences = [];
-        for (var i = 0; i < postConfig.length; i++) {
-            configEntry = postConfig[i];
+                switch (configEntry.source.type) {
+                    case "header":
+                        logObject[configEntry.name] = res.get(configEntry.source.name);
+                        break;
+                    case "field":
+                        logObject[configEntry.name] = res[configEntry.source.name];
+                        break;
+                    case "self":
+                        selfReferences[configEntry.name] = configEntry.source.name;
+                        break;
+                    case "time":
+                        logObject[configEntry.name] = configEntry.source.post(req, res, logObject);
+                        break;
+                    case "special":
+                        fallbacks[configEntry.name] = configEntry.fallback;
+                        break;
+                }
 
-            switch (configEntry.source.type) {
-                case "header":
-                    logObject[configEntry.name] = res.get(configEntry.source.name);
-                    break;
-                case "field":
-                    logObject[configEntry.name] = res[configEntry.source.name];
-                    break;
-                case "self":
-                    selfReferences[configEntry.name] = configEntry.source.name;
-                    break;
-                case "time":
-                    logObject[configEntry.name] = configEntry.source.post(req, res, logObject);
-                    break;
-                case "special":
-                    fallbacks[configEntry.name] = configEntry.fallback;
-                    break;
+                core.handleConfigDefaults(configEntry, logObject, fallbacks);
             }
 
-            core.handleConfigDefaults(configEntry, logObject, fallbacks);
+            for (var kFallback in fallbacks) {
+                logObject[kFallback] = fallbacks[kFallback](req, res, logObject);
+            }
+
+            for (var kSelfReference in selfReferences) {
+                logObject[kSelfReference] = logObject[selfReferences[kSelfReference]];
+            }
+
+            // write custom fields (from context and global context)
+            core.writeCustomFields(logObject, req.logger, {});
+
+            //override values with predefined values
+            core.writeStaticFields(logObject);
+
+            // Replace all set fields, which are marked to be reduced, with a placeholder (defined in log-core.js)
+            core.reduceFields(postConfig, logObject);
+
+            if (core.checkLoggingLevel(logObject.level, req.logger))
+                core.sendLog(logObject);
+
+            logSent = true;
         }
-
-        for (var kFallback in fallbacks) {
-            logObject[kFallback] = fallbacks[kFallback](req, res, logObject);
-        }
-
-        for (var kSelfReference in selfReferences) {
-            logObject[kSelfReference] = logObject[selfReferences[kSelfReference]];
-        }
-
-        // write custom fields (from context and global context)
-        core.writeCustomFields(logObject, req.logger, {});
-
-        //override values with predefined values
-        core.writeStaticFields(logObject);
-
-        // Replace all set fields, which are marked to be reduced, with a placeholder (defined in log-core.js)
-        core.reduceFields(postConfig, logObject);
-
-        if (core.checkLoggingLevel(logObject.level, req.logger))
-            core.sendLog(logObject);
     });
 
     next();

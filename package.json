@@ -15,6 +15,7 @@
   "author": {
     "name": "Christian Dinse, Nicklas Dohrn"
   },
+  "homepage": "https://sap.github.io/cf-nodejs-logging-support/",
   "main": "./index.js",
   "engines": {
     "node": ">=8.0.0"

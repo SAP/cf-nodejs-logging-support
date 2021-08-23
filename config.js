@@ -1,5 +1,41 @@
 var uuid = require("uuid/v4");
 
+
+/* FIELD CONFIGURATION 
+ *  
+ * Config description:
+ * 
+ * name:            The name of the field in log output
+ * mandatory:       If true: Use default value OR fallback function result if value is null. If false: omit field, if value is null.
+ * core: If true:   Add field also to message logs
+ * envVarRedact:    If set: 
+ *                      Only log this field, if specified environment variable is set to "true". 
+ *                      If specified environment variable is not set to "true" or not present, field gets omitted. This is also affects 
+ *                      fields marked as mandatory.
+ * envVarRedact:    If set: 
+ *                      Only log this field, if specified environment variable is set to "true". 
+ *                      If specified environment variable is not set to "true" or not present, field gets set to "redacted" if it is not 
+ *                      set to its default value or null.
+ * source:          Source of the field value.
+ *   type:          One of
+ *                     "static": use value from value field.
+ *                     "env": read value from environment variable.
+ *                     "nested-env": read value from environment variable with json object. Select variable and field by specifying a path.
+ *                     "self": copy value from another configured field.
+ *                     "header": read value from request/response header.
+ *                     "field": read value from request/response object.
+ *                     "time": intended to be used for time/duration calculations.
+ *                          calls method pre(req, res, logObject) when a request arrives. The log field gets set to the returned value.
+ *                          calls method post(req, res, logObject) when the response got sent. The log field gets set to the returned value.
+ *                     "special": calls the fallback(req, res, logObject) directly and sets the log field to the returned value.
+ *   name:          Key name for "env", "self", "header" and "field" sources.
+ *   path:          Path for "nested-env" source.
+ *   value:         Value for "static" source.
+ *   parent:        Parent for "header" and "field" source: Can be "req" to access the request and "res" to access the response.
+ *   pre:           Define a pre(req, res, logObject) function for time source.
+ *   post:          Define a post(req, res, logObject) function for time source.
+ */
+
 var config = [
     {
         name: "component_type",
@@ -175,7 +211,7 @@ var config = [
     }, {
         name: "remote_host",
         mandatory: true,
-        envVarSwitch: "LOG_SENSITIVE_CONNECTION_DATA",
+        envVarRedact: "LOG_SENSITIVE_CONNECTION_DATA",
         source: {
             type: "special"
         },
@@ -185,7 +221,7 @@ var config = [
     }, {
         name: "remote_port",
         mandatory: true,
-        envVarSwitch: "LOG_SENSITIVE_CONNECTION_DATA",
+        envVarRedact : "LOG_SENSITIVE_CONNECTION_DATA",
         source: {
             type: "special"
         },
@@ -195,7 +231,7 @@ var config = [
     }, {
         name: "remote_user",
         mandatory: true,
-        envVarSwitch: "LOG_REMOTE_USER",
+        envVarRedact: "LOG_REMOTE_USER",
         source: {
             type: "header",
             name: "remote-user"
@@ -209,18 +245,9 @@ var config = [
             value: "IN"
         }
     }, {
-        name: "x_forwarded_for",
-        mandatory: true,
-        envVarSwitch: "LOG_SENSITIVE_CONNECTION_DATA",
-        source: {
-            type: "header",
-            name: "x-forwarded-for"
-        },
-        default: ""
-    }, {
         name: "remote_ip",
         mandatory: false,
-        envVarSwitch: "LOG_SENSITIVE_CONNECTION_DATA",
+        envVarRedact: "LOG_SENSITIVE_CONNECTION_DATA",
         source: {
             type: "self",
             name: "remote_host"
@@ -265,7 +292,7 @@ var config = [
     }, {
         name: "referer",
         mandatory: true,
-        envVarSwitch: "LOG_REFERER",
+        envVarRedact: "LOG_REFERER",
         source: {
             type: "header",
             name: "referer"
@@ -294,6 +321,110 @@ var config = [
         mandatory: true,
         source: {
             type: "static",
+        },
+        default: "-"
+    }, {
+        name: "x_forwarded_for",
+        mandatory: false,
+        envVarRedact: "LOG_SENSITIVE_CONNECTION_DATA",
+        source: {
+            type: "header",
+            name: "x-forwarded-for"
+        }
+    }, {
+        name: "x_custom_host",
+        mandatory: false,
+        envVarRedact: "LOG_SENSITIVE_CONNECTION_DATA",
+        source: {
+            type: "header",
+            name: "x-custom-host"
+        }
+    }, {
+        name: "x_forwarded_host",
+        mandatory: false,
+        envVarRedact: "LOG_SENSITIVE_CONNECTION_DATA",
+        source: {
+            type: "header",
+            name: "x-forwarded-host"
+        }
+    }, {
+        name: "x_forwarded_proto",
+        mandatory: false,
+        envVarRedact: "LOG_SENSITIVE_CONNECTION_DATA",
+        source: {
+            type: "header",
+            name: "x-forwarded-proto"
+        }
+    }, {
+        name: "x_ssl_client",
+        mandatory: true,
+        envVarSwitch: "LOG_SSL_HEADERS",
+        source: {
+            type: "header",
+            name: "x-ssl-client"
+        },
+        default: "-"
+    }, {
+        name: "x_ssl_client_verify",
+        mandatory: true,
+        envVarSwitch: "LOG_SSL_HEADERS",
+        source: {
+            type: "header",
+            name: "x-ssl-client-verify"
+        },
+        default: "-"
+    }, {
+        name: "x_ssl_client_subject_dn",
+        mandatory: true,
+        envVarSwitch: "LOG_SSL_HEADERS",
+        source: {
+            type: "header",
+            name: "x-ssl-client-subject-dn"
+        },
+        default: "-"
+    }, {
+        name: "x_ssl_client_subject_cn",
+        mandatory: true,
+        envVarSwitch: "LOG_SSL_HEADERS",
+        source: {
+            type: "header",
+            name: "x-ssl-client-subject-cn"
+        },
+        default: "-"
+    }, {
+        name: "x_ssl_client_issuer_dn",
+        mandatory: true,
+        envVarSwitch: "LOG_SSL_HEADERS",
+        source: {
+            type: "header",
+            name: "x-ssl-client-issuer-dn"
+        },
+        default: "-"
+    }, {
+        name: "x_ssl_client_notbefore",
+        mandatory: true,
+        envVarSwitch: "LOG_SSL_HEADERS",
+        source: {
+            type: "header",
+            name: "x-ssl-client-notbefore"
+        },
+        default: "-"
+    }, {
+        name: "x_ssl_client_notafter",
+        mandatory: true,
+        envVarSwitch: "LOG_SSL_HEADERS",
+        source: {
+            type: "header",
+            name: "x-ssl-client-notafter"
+        },
+        default: "-"
+    }, {
+        name: "x_ssl_client_session_id",
+        mandatory: true,
+        envVarSwitch: "LOG_SSL_HEADERS",
+        source: {
+            type: "header",
+            name: "x-ssl-client-session-id"
         },
         default: "-"
     }

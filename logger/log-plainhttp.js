@@ -12,7 +12,7 @@ var logNetwork = function (req, res) {
 
     var logObject = core.initRequestLog();
 
-    //rendering the given arguments failsave against missing fields
+    //rendering the given arguments failsafe against missing fields
     if (req.connection == null) {
         req.connection = {};
     }

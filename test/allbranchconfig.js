@@ -2,311 +2,122 @@ var uuid = require("uuid/v4");
 
 var config = [
     {
-        name: "component_type",
+        name: "test_static",
         mandatory: true,
-        core: true,
         source: {
             type: "static",
-            value: "application"
+            value: "test-value-static"
         }
-    }, {
-        name: "component_id",
+    },
+    {
+        name: "test_header_req",
         mandatory: true,
-        core: true,
         source: {
-            type: "nested-env",
-            path: ["VCAP_APPLICATION", "application_id"]
+            type: "header",
+            name: "test-header-req"
         },
         default: "-"
-    }, {
-        name: "component_name",
+    },
+    {
+        name: "test_header_res",
         mandatory: true,
-        core: true,
         source: {
-            type: "nested-env",
-            path: ["VCAP_APPLICATION", "application_name"]
+            type: "header",
+            name: "test-header-res",
+            parent: "res"
         },
         default: "-"
-    }, {
-        name: "component_instance",
+    },
+    {
+        name: "test_self_req",
         mandatory: true,
-        core: true,
-        source: {
-            type: "nested-env",
-            path: ["VCAP_APPLICATION", "instance_index"]
-        },
-        default: "0"
-    }, {
-        name: "source_instance",
-        mandatory: false,
-        core: true,
         source: {
             type: "self",
-            name: "component_instance"
-        }
-    }, {
-        name: "layer",
-        mandatory: true,
-        core: true,
-        source: {
-            type: "static",
-            value: "[NODEJS]"
-        }
-    }, {
-        name: "organization_id",
-        mandatory: true,
-        core: true,
-        source: {
-            type: "static",
-            value: "-"
-        }
-    }, {
-        name: "organization_name",
-        mandatory: true,
-        core: true,
-        source: {
-            type: "static",
-            value: "-"
-        }
-    }, {
-        name: "space_name",
-        mandatory: true,
-        core: true,
-        source: {
-            type: "nested-env",
-            path: ["VCAP_APPLICATION", "space_name"]
+            name: "test_header_req"
         },
         default: "-"
-    }, {
-        name: "space_id",
+    },
+    {
+        name: "test_self_res",
         mandatory: true,
-        core: true,
         source: {
-            type: "nested-env",
-            path: ["VCAP_APPLICATION", "space_id"]
+            type: "self",
+            name: "test_header_res",
+            parent: "res"
         },
         default: "-"
-    }, {
-        name: "container_id",
-        mandatory: true,
-        core: true,
-        source: {
-            type: "env",
-            name: "CF_INSTANCE_IP"
-        },
-        default: "-"
-    }, {
-        name: "logger",
-        mandatory: true,
-        core: true,
-        source: {
-            type: "static",
-            value: "nodejs-logger"
-        }
-    }, {
-        name: "request_id",
-        mandatory: true,
-        source: {
-            type: "header",
-            name: "x-vcap-request-id"
-        },
-        default: "-"
-    }, {
-        name: "request_size_b",
-        mandatory: true,
-        source: {
-            type: "header",
-            name: "content-length"
-        },
-        default: -1
-    }, {
-        name: "type",
-        mandatory: true,
-        source: {
-            type: "static",
-            value: "request"
-        }
-    }, {
-        name: "request",
+    },
+    {
+        name: "test_field_req",
         mandatory: true,
         source: {
             type: "field",
-            name: "url"
+            name: "test-field"
         },
         default: "-"
-    }, {
-        name: "response_status",
+    },
+    {
+        name: "test_field_res",
         mandatory: true,
         source: {
             type: "field",
-            parent: "res",
-            name: "statusCode"
-        },
-        default: 200
-    }, {
-        name: "method",
-        mandatory: true,
-        source: {
-            type: "field",
-            name: "method"
+            name: "test-field",
+            parent: "res"
         },
         default: "-"
-    }, {
-        name: "response_size_b",
-        mandatory: true,
-        source: {
-            type: "header",
-            parent: "res",
-            name: "content-length"
-        },
-        default: -1
-    }, {
-        name: "response_content_type",
-        mandatory: true,
-        source: {
-            type: "header",
-            parent: "res",
-            name: "content-type"
-        },
-        default: "-"
-
-    }, {
-        name: "remote_host",
-        mandatory: true,
-        envVarSwitch: "LOG_SENSITIVE_CONNECTION_DATA",
-        source: {
-            type: "special"
-        },
-        fallback: (req, res, logObj) => {
-            return req.connection.remoteAddress == null ? "-" : req.connection.remoteAddress;
-        }
-    }, {
-        name: "remote_port",
-        mandatory: true,
-        envVarSwitch: "LOG_SENSITIVE_CONNECTION_DATA",
-        source: {
-            type: "special"
-        },
-        fallback: (req, res, logObj) => {
-            return req.connection.remotePort == null ? "-" : req.connection.remotePort.toString();
-        }
-    }, {
-        name: "remote_user",
-        mandatory: true,
-        envVarSwitch: "LOG_REMOTE_USER",
-        source: {
-            type: "static",
-            value: "-"
-        }
-    }, {
-        name: "direction",
-        mandatory: true,
-        source: {
-            type: "static",
-            value: "IN"
-        }
-    }, {
-        name: "x_forwarded_for",
-        mandatory: true,
-        envVarSwitch: "LOG_SENSITIVE_CONNECTION_DATA",
-        source: {
-            type: "special"
-        },
-        fallback: (req, res, logObj) => {
-            return req.headers['x-forwarded-for'] == null ? "" : req.headers['x-forwarded-for'];
-        }
-    }, {
-        name: "remote_ip",
-        mandatory: false,
-        envVarSwitch: "LOG_SENSITIVE_CONNECTION_DATA",
-        source: {
-            type: "self",
-            name: "remote_host"
-        }
-    }, {
-        name: "request_received_at",
-        mandatory: false,
-        source: {
-            type: "self",
-            name: "written_at"
-        }
-    }, {
-        name: "protocol",
-        mandatory: true,
-        source: {
-            type: "special"
-        },
-        fallback: (req, res, logObj) => {
-            return "HTTP" + (req.httpVersion == null ? "" : "/" + req.httpVersion);
-        }
-    }, {
-        name: "response_time_ms",
+    },
+    {
+        name: "test_time",
         mandatory: true,
         source: {
             type: "time",
-            pre: () => {
-                return Date.now();
+            pre: (req, res, logObj) => {
+                return 1;
             },
             post: (req, res, logObj) => {
-                return Date.now() - logObj.response_time_ms;
+                return 2 + logObj.test_time;
             }
         }
-    }, {
-        name: "response_sent_at",
+    },
+    {
+        name: "test_special_req",
         mandatory: true,
         source: {
-            type: "time",
-            post: (req, res, logObj) => {
-                return (new Date()).toJSON();
-            }
-        }
-    }, {
-        name: "referer",
-        mandatory: true,
-        envVarSwitch: "LOG_REFERER",
-        source: {
-            type: "header",
-            name: "referer"
-        },
-        default: "-"
-    }, {
-        name: "correlation_id",
-        mandatory: true,
-        source: {
-            type: "header",
-            name: "X-CorrelationID"
-        },
-        fallback: (req, res, logObject) => {
-            return uuid();
-        }
-    }, {
-        name: "tenant_id",
-        mandatory: true,
-        source: {
-            type: "header",
-            name: "tenantid"
-        },
-        default: "-"
-    }, {
-        name: "testSpecialPost",
-        mandatory: true,
-        source:{
-            type: "special",
-            parent: "res",
+            type: "special"
         },
         fallback: (req, res, logObj) => {
-            return "res special fallback";
+            return "test-value-special-req";
         }
-    }, {
-        name: "testSelfPost",
+    },
+    {
+        name: "test_special_res",
         mandatory: true,
-        source:{
-            type: "self",
-            parent: "res",
-            name: "testSpecialPost"
+        source: {
+            type: "special",
+            parent: "res"
         },
-        default: "no reference possible"
-    }
+        fallback: (req, res, logObj) => {
+            return "test-value-special-res";
+        }
+    },
+    {
+        name: "test_defaults_req",
+        mandatory: true,
+        source: {
+            type: "field",
+            name: "not-existing-field",
+        },
+        default: "test-default-req"
+    },
+    {
+        name: "test_defaults_res",
+        mandatory: true,
+        source: {
+            type: "field",
+            name: "not-existing-field",
+        },
+        default: "test-default-res"
+    },
 ];
 
 

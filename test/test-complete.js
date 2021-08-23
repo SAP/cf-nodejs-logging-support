@@ -21,6 +21,7 @@ describe('Test Complete', function () {
     process.env.LOG_SENSITIVE_CONNECTION_DATA = true;
     process.env.LOG_REMOTE_USER = true;
     process.env.LOG_REFERER = true;
+    process.env.LOG_SSL_HEADERS = true;
 
     process.env.VCAP_APPLICATION = JSON.stringify({
         application_id: "test-app-id",
@@ -68,8 +69,12 @@ describe('Test Complete', function () {
     it("checking dummy app results", () => {
         req = httpMock.createRequest({
             headers: {
-                "X-CorrelationID": "test-correlation-id",
-                "remote-user": "test-user"
+                "x-correlationid": "test-correlation-id",
+                "remote-user": "test-user",
+                "x-forwarded-for": "host-1",
+                "x-forwarded-host": "host-2",
+                "x-forwarded-proto": "https",
+                "x-custom-host": "host-3"
             }
         });
         res = httpMock.createResponse();
