@@ -1,6 +1,6 @@
 const util = require("util");
 const os = require("os");
-const uuid = require("uuid/v4");
+const { v4: uuid } = require('uuid');
 const jwt = require("jsonwebtoken");
 const stringifySafe = require('json-stringify-safe');
 

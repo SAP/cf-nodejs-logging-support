@@ -16,10 +16,10 @@
   "dependencies": {
     "cf-nodejs-logging-support": "latest",
     "express": "^4.17.1",
-    "redis": "^3.1.1",
+    "redis": "^3.1.2",
     "restify": "^8.5.1"
   },
   "engines": {
-    "node": ">=4.0.0"
+    "node": ">=8.0.0"
   }
 }

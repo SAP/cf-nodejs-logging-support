@@ -806,7 +806,7 @@ describe('Test log-core', function () {
         var logObject = null;
         var setCorrelationId = null;
         var testRequest;
-        var uuid = require('uuid/v4');
+        var { v4: uuid } = require('uuid');
         var testId;
 
         before(function () {
@@ -1000,7 +1000,7 @@ describe('Test log-core', function () {
     describe('Test createLogger/getLogger', function () {
         var core = rewire("../core/log-core.js");
         var createLogger;
-        var uuid;
+        var { v4: uuid } = require('uuid');
         var oldLogMessage;
         var level;
         var levels;
@@ -1014,8 +1014,7 @@ describe('Test log-core', function () {
             core.__set__("logMessage", function () {
                 level = arguments[0];
                 oldLogMessage(arguments);
-            })
-            uuid = require('uuid/v4');
+            });
         });
 
         it('Test correct new logger', function () {
