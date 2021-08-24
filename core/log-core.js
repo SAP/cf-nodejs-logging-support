@@ -89,7 +89,7 @@ var init = function () {
     }
 
     //Reading bindings from context
-    var boundServices = JSONparseSave(process.env.VCAP_SERVICES);
+    var boundServices = parseJSONSafe(process.env.VCAP_SERVICES);
     if(boundServices["application-logs"]) {
         cfCustomEnabled = true;
         defaultCustomEnabled = false;
@@ -99,7 +99,7 @@ var init = function () {
     }
 };
 
-var JSONparseSave = function (value) {
+var parseJSONSafe = function (value) {
     var tmp = {};
     if(value)
         try {
