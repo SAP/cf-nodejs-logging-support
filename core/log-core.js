@@ -1,6 +1,6 @@
 const util = require("util");
 const os = require("os");
-const uuid = require("uuid/v4");
+const { v4: uuid } = require('uuid');
 const jwt = require("jsonwebtoken");
 const stringifySafe = require('json-stringify-safe');
 
@@ -89,7 +89,7 @@ var init = function () {
     }
 
     //Reading bindings from context
-    var boundServices = JSONparseSave(process.env.VCAP_SERVICES);
+    var boundServices = parseJSONSafe(process.env.VCAP_SERVICES);
     if(boundServices["application-logs"]) {
         cfCustomEnabled = true;
         defaultCustomEnabled = false;
@@ -99,7 +99,7 @@ var init = function () {
     }
 };
 
-var JSONparseSave = function (value) {
+var parseJSONSafe = function (value) {
     var tmp = {};
     if(value)
         try {

@@ -1,5 +1,3 @@
-var uuid = require("uuid/v4");
-
 var config = [
     {
         name: "test_static",
