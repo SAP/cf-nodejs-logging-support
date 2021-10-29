@@ -24,9 +24,6 @@ var logNetwork = function (req, res, next) {
         req.headers = {};
     }
 
-    if (req.url == null) {
-        req.url = req.originalUrl;
-    }
     if (res.get == null) {
         res.get = function () {
             return "";

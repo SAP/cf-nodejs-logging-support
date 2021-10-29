@@ -168,7 +168,7 @@ var config = [
         mandatory: true,
         source: {
             type: "field",
-            name: "url"
+            name: "originalUrl"
         },
         default: "-"
     }, {

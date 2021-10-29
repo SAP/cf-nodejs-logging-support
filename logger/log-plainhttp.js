@@ -19,6 +19,8 @@ var logNetwork = function (req, res) {
     if (req.headers == null) {
         req.headers = {};
     }
+
+    req.originalUrl = req.originalUrl || req.url;
     
     if (typeof req.getHeader != "function") {
         req.getHeader = function (header) {
