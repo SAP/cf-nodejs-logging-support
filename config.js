@@ -232,10 +232,15 @@ var config = [
         mandatory: true,
         envVarRedact: "LOG_REMOTE_USER",
         source: {
-            type: "header",
-            name: "remote-user"
+            type: "special",
+            parent: "res", // use "res" to force late evaluation
         },
-        default: "-"
+        fallback: (req, res, logObj) => {
+            if (req.user && req.user.id) {
+                return req.user.id;
+            }
+            return "-"
+        }
     }, {
         name: "direction",
         mandatory: true,
