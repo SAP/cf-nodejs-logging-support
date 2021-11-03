@@ -70,13 +70,15 @@ describe('Test Complete', function () {
         req = httpMock.createRequest({
             headers: {
                 "x-correlationid": "test-correlation-id",
-                "remote-user": "test-user",
                 "x-forwarded-for": "host-1",
                 "x-forwarded-host": "host-2",
                 "x-forwarded-proto": "https",
                 "x-custom-host": "host-3"
             }
         });
+        req.user = {
+            id: "test-user"
+        };
         res = httpMock.createResponse();
         prepare(res);
         log.overrideNetworkField("msg","testmessage");
