@@ -25,10 +25,6 @@ var logNetwork = function (req, res, next) {
         };
     }
 
-    if (req.url == null) {
-        req.url = req.originalUrl;
-    }
-
     var fallbacks = [];
     var selfReferences = [];
     var configEntry;
