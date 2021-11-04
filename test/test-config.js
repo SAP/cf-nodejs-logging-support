@@ -203,11 +203,13 @@ describe('Test config', function () {
 
         it('Test remote_user', function () {
             req.headers = {};
-            req.headers['remote-user'] = "testingName";
+            req.user = {
+                id: "test-user"
+            };
             httpLogger.logNetwork(req, res, next);
             fireLog();
 
-            logObject.remote_user.should.equal("testingName");
+            logObject.remote_user.should.equal("test-user");
         });
 
         it('Test connection data propagation', function() {
