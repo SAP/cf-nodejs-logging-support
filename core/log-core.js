@@ -689,7 +689,7 @@ var checkLoggingLevel = function (level, logger) {
 var extractLoggingLevelFromLogger = function (logger) {
     if (logger && logger.dynamicLogLevelInt != null) {
         return logger.dynamicLogLevelInt;
-    } else if (logger && logger.parent) {
+    } else if (logger && logger.parent && logger.parent !== logger) {
         return extractLoggingLevelFromLogger(logger.parent);
     } else {
         return logLevelInt;
@@ -701,7 +701,7 @@ var extractLoggingLevelFromLogger = function (logger) {
 var extractCustomFieldsFromLogger = function (logger) {
     var fields = {};
 
-    if (logger.parent) {
+    if (logger.parent && logger.parent !== logger) {
         fields = extractCustomFieldsFromLogger(logger.parent);
     } else {
         fields = Object.assign(fields, globalCustomFields);
