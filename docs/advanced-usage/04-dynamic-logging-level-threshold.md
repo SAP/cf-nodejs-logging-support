@@ -29,8 +29,8 @@ Using this feature allows changing the logging level threshold dynamically witho
 
 ### 1 Creating a key-pair
 
-In order to sign and verify JWTs a PEM encoded private key and a matching public key is required.
-You can create a key-pair using following command:
+To sign and verify JWTs a PEM encoded private key and a matching public key is required.
+You can create a key-pair using the following command:
 
 ```sh
 openssl rsa -in private.pem -outform PEM -pubout -out public.pem
@@ -40,7 +40,7 @@ The generated key-pair can be found in `private.pem` and `public.pem` files.
 
 ### 2 Creating a JWT
 
-JWTs are signed claims, which consist of a header, a payload and a signature.
+JWTs are signed claims, which consist of a header, a payload, and a signature.
 They can be signed using RSA or HMAC signing algorithms.
 For this use-case we decided to support RSA algorithms (RS256, RS384 and RS512) only.
 In contrast to HMAC algorithms (HS256, HS384 and HS512), RSA algorithms are asymmetric and therefore require key pairs (public and private key).
@@ -59,9 +59,9 @@ Provide a numeric input for this placeholder.
 
 Provide a valid e-mail address for the `<issuer>` parameter.
 
-Specify one of the seven supported logging levels for the `<level>` argument: *off*, *error*, *warn*, *info*, *verbose*, *debug* and *silly*.
+Specify one of the seven supported logging levels for the `<level>` argument: *off*, *error*, *warn*, *info*, *verbose*, *debug*, and *silly*.
 
-The payload of the created JWT has following structure:
+The payload of the created JWT has the following structure:
 
 ```js
 {
@@ -97,7 +97,7 @@ Redeploy your app after setting the environment variable.
 
 Provide the created JWT via a header field named 'SAP-LOG-LEVEL'. The logging level threshold will be set to the provided level for this request and corresponding custom log messages.
 
-**Note**: If the provided JWT cannot be verified, is expired or contains an invalid logging level, the library ignores it and uses the global logging level threshold.
+**Note**: If the provided JWT cannot be verified, is expired, or contains an invalid logging level, the library ignores it and uses the global logging level threshold.
 
 If you want to use another header name for the JWT, you can specify it using an environment variable:
 
