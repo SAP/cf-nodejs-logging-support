@@ -80,6 +80,23 @@ logger.logMessage(level, "Hello World");
 // ... "msg":"Hello World" ...
 ```
 
+## Logging errors with stack traces
+
+You can append an `Error` object to a message to log its stack trace:
+
+```js
+try {
+  // Code throwing an Error
+} catch (e) {
+  logger.error("Error occurred", e)
+}
+// ... "msg":"Error occurred", "stacktrace": [...] ...
+```
+
+Stack traces get written to the `stacktrace` field of the log and are represented as array of strings.
+If a stack trace exceeds a total size of 55kB, it will therefore not be logged entirely.
+Since the interesting lines of a stack trace are usually situated in its first and in its last part, we will remove as few lines as necessary from its middle part.
+
 ## Checking log severity levels
 It can be useful to check if messages with a specific severity level would be logged. 
 You can check if a logging level is active as follows:
