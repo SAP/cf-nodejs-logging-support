@@ -9,8 +9,8 @@ permalink: /general-usage/message-logs
 # Message Logs
 {: .no_toc }
 
-In addition to request logging this library also supports logging of application messages. 
-Message logs contain at least some message and also CF metadata. 
+In addition to request logging this library also supports logging of application messages.
+Message logs contain at least some message and also CF metadata.
 
 <details open markdown="block">
   <summary>
@@ -22,6 +22,7 @@ Message logs contain at least some message and also CF metadata.
 </details>
 
 ## Logging levels
+
 Following common logging levels are supported:
 
 - `error`
@@ -32,6 +33,7 @@ Following common logging levels are supported:
 - `silly`
 
 Set the minimum logging level for logs as follows:
+
 ```js
 log.setLoggingLevel("info");
 ```
@@ -39,50 +41,55 @@ log.setLoggingLevel("info");
 In addition there is an off logging level available to disable log output completely.
 
 ## Writing message logs
+
 There are so called *convenience methods* available for all supported logging levels.
 These can be called to log a message using the corresponding level. 
 It is also possible to use standard format placeholders equivalent to the [util.format](https://nodejs.org/api/util.html#util_util_format_format_args) method.
 
-You can find several usage examples below demonstrating options to be specified when calling a log method. 
-All methods get called on a `logger` object, which provides a so called *logging context*. 
+You can find several usage examples below demonstrating options to be specified when calling a log method.
+All methods get called on a `logger` object, which provides a so called *logging context*.
 You can find more information about logging contexts in the [Logging Contexts](/cf-nodejs-logging-support/general-usage/logging-contexts) chapter.
-In the simplest case, `logger` is an instance of imported `log` module. 
+In the simplest case, `logger` is an instance of imported `log` module.
 
-- Simple message
-```js
-logger.info("Hello World"); 
-// ... "msg":"Hello World" ...
-```
+- Simple message:
 
-- Message with additional numeric value
-```js
-logger.info("Listening on port %d", 5000); 
-// ... "msg":"Listening on port 5000" ...
-```
+  ```js
+  logger.info("Hello World"); 
+  // ... "msg":"Hello World" ...
+  ```
 
-- Message with additional string values
-```js
-logger.info("This %s a %s", "is", "test"); 
-// ... "msg":"This is a test" ...
-```
+- Message with additional numeric value:
 
-- Message with additional json object to be embedded in to the message
-```js
-logger.info("Test data %j", {"field" :"value"}, {}); 
-// ... "msg":"Test data {\"field\": \"value\"}" ...
-```
+  ```js
+  logger.info("Listening on port %d", 5000); 
+  // ... "msg":"Listening on port 5000" ...
+  ```
 
-In some cases you might want to set the actual logging level from a variable. 
-Instead of using conditional expressions you can simply use following method, which also supports format features described above.
-```js
-var level = "debug";
-logger.logMessage(level, "Hello World"); 
-// ... "msg":"Hello World" ...
-```
+- Message with additional string values:
 
-## Logging errors with stack traces
+  ```js
+  logger.info("This %s a %s", "is", "test"); 
+  // ... "msg":"This is a test" ...
+  ```
 
-You can append an `Error` object to a message to log its stack trace:
+- Message with additional json object to be embedded in to the message:
+
+  ```js
+  logger.info("Test data %j", {"field" :"value"}, {}); 
+  // ... "msg":"Test data {\"field\": \"value\"}" ...
+  ```
+
+- In case you want to set the actual logging level from a variable, you can use following method, which also supports format features described above:
+
+  ```js
+  var level = "debug";
+  logger.logMessage(level, "Hello World"); 
+  // ... "msg":"Hello World" ...
+  ```
+
+## Logging stack traces
+
+For logging stack traces as part of an error message you can append the `Error` object as follows:
 
 ```js
 try {
@@ -93,12 +100,13 @@ try {
 // ... "msg":"Error occurred", "stacktrace": [...] ...
 ```
 
-Stack traces get written to the `stacktrace` field of the log and are represented as array of strings.
+Stack traces get written to the `stacktrace` field of the log and are represented as an array of strings.
 If a stack trace exceeds a total size of 55kB, it will therefore not be logged entirely.
 Since the interesting lines of a stack trace are usually situated in its first and in its last part, we will remove as few lines as necessary from its middle part.
 
 ## Checking log severity levels
-It can be useful to check if messages with a specific severity level would be logged. 
+
+It can be useful to check if messages with a specific severity level would be logged.
 You can check if a logging level is active as follows:
 
 ```js
@@ -109,6 +117,7 @@ if (isInfoActive) {
 ```
 
 There are convenience methods available for this feature:
+
 ```js
 var isDebugActive = log.isDebug();
 ```
