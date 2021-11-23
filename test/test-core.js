@@ -525,6 +525,56 @@ describe('Test log-core', function () {
 
     });
 
+    describe('Test isErrorWithStacktrace', function () {
+        var core = rewire("../core/log-core.js");
+        var isErrorWithStacktrace;
+
+        before(function () {
+            core.setConfig(importFresh("../config.js").config);
+            isErrorWithStacktrace = core.__get__("isErrorWithStacktrace")
+        });
+
+        it('Test if isErrorWithStacktrace classifies errors correctly', function () {
+            isErrorWithStacktrace(new Error("test-message")).should.equal(true);
+        });
+
+        it('Test if isErrorWithStacktrace classifies other values correctly', function () {
+            isErrorWithStacktrace(null).should.equal(false);
+            isErrorWithStacktrace(undefined).should.equal(false);
+            isErrorWithStacktrace({}).should.equal(false);
+        });
+    });
+
+    describe('Test prepareStacktrace', function () {
+        var core = rewire("../core/log-core.js");
+        var prepareStacktrace;
+
+        before(function () {
+            core.setConfig(importFresh("../config.js").config);
+            prepareStacktrace = core.__get__("prepareStacktrace")
+        });
+
+        it('Test preparing a stacktrace without exceeding size limitation', function () {
+            var arr = prepareStacktrace("line0\nline1\nline2")
+            arr.length.should.equal(3)
+            arr[0].should.equal("line0")
+            arr[1].should.equal("line1")
+            arr[2].should.equal("line2")
+        });
+
+        it('Test preparing a stacktrace exceeding size limitation', function () {
+            var stack = [...Array(10000).keys()].reduce((p, c) => { return p + "line" + c + "\n"}, "").trim()
+            var arr = prepareStacktrace(stack)
+            arr.length.should.equal(7171)
+            arr[0].should.equal("-------- STACK TRACE TRUNCATED --------")
+            arr[1].should.equal("line0")
+            arr[2].should.equal("line1")
+            arr[2391].should.equal("-------- OMITTED 2831 LINES --------")
+            arr[2392].should.equal("line5221")
+            arr[7170].should.equal("line9999")
+        });
+    });
+
     describe('Test setLoggingLevel', function () {
         var core = rewire("../core/log-core.js");
 
@@ -1322,6 +1372,15 @@ describe('Test log-core', function () {
                 "field": "value"
             }, null);
             logObject.msg.should.equal('Test abc 42 {"field":"value"}');
+        });
+
+        it("Test log error with stacktrace", function () {
+            var e = new Error("test-message");
+            log("error", "An test-error occurred", e);
+            logObject.msg.should.equal("An test-error occurred");
+            assert.isArray(logObject.stacktrace);
+            logObject.stacktrace.length.should.greaterThan(5);
+            logObject.stacktrace[0].should.equal("Error: test-message");
         });
     });
 
