@@ -172,7 +172,7 @@ describe('Test log-core', function () {
                     type: "static",
                     value: "42"
                 }
-            },{
+            }, {
                 name: "settable_field",
                 type: "settable"
             }
@@ -190,11 +190,11 @@ describe('Test log-core', function () {
         });
 
         it('Test config assignment (settable)', function () {
-            log("info","test", {"settable_field":"settable","non_settable":"test"})
-            
+            log("info", "test", { "settable_field": "settable", "non_settable": "test" })
+
             logObject.settable_field.should.equal("settable");
             assert.equal(logObject.non_settable, null);
-            
+
         });
 
         it('Test settable propagation', function () {
@@ -207,7 +207,7 @@ describe('Test log-core', function () {
             })
 
             core.__get__("settableConfig").should.deep.equal(["settable_field"]);
-            
+
         });
     });
 
@@ -563,7 +563,7 @@ describe('Test log-core', function () {
         });
 
         it('Test preparing a stacktrace exceeding size limitation', function () {
-            var stack = [...Array(10000).keys()].reduce((p, c) => { return p + "line" + c + "\n"}, "").trim()
+            var stack = [...Array(10000).keys()].reduce((p, c) => { return p + "line" + c + "\n" }, "").trim()
             var arr = prepareStacktrace(stack)
             arr.length.should.equal(7171)
             arr[0].should.equal("-------- STACK TRACE TRUNCATED --------")
@@ -659,7 +659,7 @@ describe('Test log-core', function () {
             output.should.equal(JSON.stringify(data) + os.EOL);
         });
 
-        it("Test  log writing in pattern mode with correct keys", function () {
+        it("Test log writing in pattern mode with correct keys", function () {
             var data = {
                 text: "abc",
                 number: 21,
@@ -673,7 +673,7 @@ describe('Test log-core', function () {
             output.should.equal('Test: abc 21 ' + JSON.stringify(data.obj) + os.EOL);
         });
 
-        it("Test  log writing in pattern mode with non-existing keys", function () {
+        it("Test log writing in pattern mode with non-existing keys", function () {
             var data = {
                 text: "abc",
                 number: 21,
@@ -749,7 +749,7 @@ describe('Test log-core', function () {
             level.should.equal("warn");
         });
 
-        it("Test  log writing in pattern mode with correct keys to custom log sink", function () {
+        it("Test log writing in pattern mode with correct keys to custom log sink", function () {
             var data = {
                 text: "abc",
                 number: 21,
@@ -1104,7 +1104,7 @@ describe('Test log-core', function () {
 
             // check correlation id inheritance
             logger1.getCorrelationId().should.equal(req.logger.getCorrelationId());
-            
+
             // set a new correlation id using logger2
             logger2.setCorrelationId(uuid());
 
@@ -1132,7 +1132,7 @@ describe('Test log-core', function () {
                 } else {
                     assert.isFunction(logger[lvl]);
                     logger[lvl]("test");
-                    level.should.equal(lvl);   
+                    level.should.equal(lvl);
                 }
             }
         });
@@ -1247,13 +1247,13 @@ describe('Test log-core', function () {
             registerCustomFields = core.registerCustomFields;
             setCustomFields = core.setCustomFields;
             overrideCustomFieldFormat = core.overrideCustomFieldFormat;
-            process.hrtime = function (){
-                    return [this.hrHigh, this.hrLow];
-                }
-            process.setHrTime = function (high, low){
-                    this.hrHigh = high;
-                    this.hrLow = low;
-                }
+            process.hrtime = function () {
+                return [this.hrHigh, this.hrLow];
+            }
+            process.setHrTime = function (high, low) {
+                this.hrHigh = high;
+                this.hrLow = low;
+            }
         });
 
         beforeEach(function () {
@@ -1264,39 +1264,39 @@ describe('Test log-core', function () {
 
         it('Test normal', function () {
             //tests behaviour for reasonable timestamps
-            process.setHrTime(1,1000);
-            log("info","test");
+            process.setHrTime(1, 1000);
+            log("info", "test");
             var time1 = logObject.written_ts;
-            process.setHrTime(1,2000);
-            log("info","test");
+            process.setHrTime(1, 2000);
+            log("info", "test");
             var time2 = logObject.written_ts;
-            assert.isBelow(time1,time2);
+            assert.isBelow(time1, time2);
         });
 
         it('Test overflow', function () {
             //testing hrtime overflow behaviour
-            process.setHrTime(1,999000);
-            log("info","test");
+            process.setHrTime(1, 999000);
+            log("info", "test");
             var time1 = logObject.written_ts;
-            process.setHrTime(1,1000000);
-            log("info","test");
+            process.setHrTime(1, 1000000);
+            log("info", "test");
             var time2 = logObject.written_ts;
-            assert.isBelow(time1,time2);
+            assert.isBelow(time1, time2);
         });
 
         it('Test small incremental', function () {
             //small incremental may result in the same timestamp
             //this makes sure that they are at least the same or correct
-            process.setHrTime(1,1001);
-            log("info","test");
+            process.setHrTime(1, 1001);
+            log("info", "test");
             var time1 = logObject.written_ts;
-            process.setHrTime(1,1002);
-            log("info","test");
+            process.setHrTime(1, 1002);
+            log("info", "test");
             var time2 = logObject.written_ts;
-            process.setHrTime(1,1003);
-            log("info","test");
+            process.setHrTime(1, 1003);
+            log("info", "test");
             var time3 = logObject.written_ts;
-            assert.isAtLeast(time3,time2);
+            assert.isAtLeast(time3, time2);
         });
     })
 
@@ -1384,7 +1384,7 @@ describe('Test log-core', function () {
         });
     });
 
-    describe("Test custom field logic", function() {
+    describe("Test custom field logic", function () {
         var core = rewire("../core/log-core.js");
 
         var logObject = null;
@@ -1410,7 +1410,7 @@ describe('Test log-core', function () {
             overrideCustomFieldFormat("default");
             registerCustomFields({});
         });
-        
+
         it("Test custom fields log output (number)", function () {
             log("info", "Test", 42);
 
@@ -1429,8 +1429,8 @@ describe('Test log-core', function () {
             });
             logObject.msg.should.equal('Test');
             logObject["#cf"].string.should.eql([
-                {"k":"fieldA","v":"valueA","i":0},
-                {"k":"fieldC","v":"valueC","i":1}
+                { "k": "fieldA", "v": "valueA", "i": 0 },
+                { "k": "fieldC", "v": "valueC", "i": 1 }
             ]);
         });
 
@@ -1447,7 +1447,7 @@ describe('Test log-core', function () {
             logObject.msg.should.equal('Test');
             logObject.layer.should.equal('testLayer');
             logObject["#cf"].string.should.eql([
-                {"k":"fieldA","v":"valueA","i":0}
+                { "k": "fieldA", "v": "valueA", "i": 0 }
             ]);
         });
 
@@ -1456,7 +1456,7 @@ describe('Test log-core', function () {
             overrideCustomFieldFormat("application-logging");
             registerCustomFields(["fieldA", "fieldC"]);
 
-            log("info", "Test", {"layer":"test-layer", "logger":"test-logger"});
+            log("info", "Test", { "layer": "test-layer", "logger": "test-logger" });
             logObject.msg.should.equal('Test');
 
             assert.equal(logObject["#cf"], null);
@@ -1472,9 +1472,9 @@ describe('Test log-core', function () {
 
             logObject.msg.should.equal('Test');
             logObject["#cf"].string.should.eql([
-                {"k":"0","v":"1","i":0},
-                {"k":"1","v":"123","i":1},
-                {"k":"2","v":"{\"field\":\"values\"}","i":2}
+                { "k": "0", "v": "1", "i": 0 },
+                { "k": "1", "v": "123", "i": 1 },
+                { "k": "2", "v": "{\"field\":\"values\"}", "i": 2 }
             ]);
         });
 
@@ -1483,10 +1483,10 @@ describe('Test log-core', function () {
             overrideCustomFieldFormat("all");
 
             log("info", "Test", {
-                    "a": "string",
-                    "b": 1337,
-                    "c": {"nested":"object"}
-                }
+                "a": "string",
+                "b": 1337,
+                "c": { "nested": "object" }
+            }
             );
 
             logObject.msg.should.equal('Test');
@@ -1494,9 +1494,9 @@ describe('Test log-core', function () {
             logObject.b.should.equal("1337");
             logObject.c.should.equal("{\"nested\":\"object\"}");
             logObject["#cf"].string.should.eql([
-                {"k":"a","v":"string","i":0},
-                {"k":"b","v":"1337","i":1},
-                {"k":"c","v":"{\"nested\":\"object\"}","i":2}
+                { "k": "a", "v": "string", "i": 0 },
+                { "k": "b", "v": "1337", "i": 1 },
+                { "k": "c", "v": "{\"nested\":\"object\"}", "i": 2 }
             ]);
         });
 
@@ -1505,10 +1505,10 @@ describe('Test log-core', function () {
             overrideCustomFieldFormat("default");
 
             log("info", "Test", {
-                    "a": "string",
-                    "b": 1337,
-                    "c": {"nested":"object"}
-                }
+                "a": "string",
+                "b": 1337,
+                "c": { "nested": "object" }
+            }
             );
 
             logObject.msg.should.equal('Test');
@@ -1522,10 +1522,10 @@ describe('Test log-core', function () {
             overrideCustomFieldFormat("default");
 
             log("info", "Test", {
-                    "a": "string",
-                    "b": 1337,
-                    "c": {"nested":"object"}
-                }
+                "a": "string",
+                "b": 1337,
+                "c": { "nested": "object" }
+            }
             );
 
             logObject.msg.should.equal('Test');
@@ -1540,10 +1540,10 @@ describe('Test log-core', function () {
             overrideCustomFieldFormat("disabled");
 
             log("info", "Test", {
-                    "a": "string",
-                    "b": 1337,
-                    "c": {"nested":"object"}
-                }
+                "a": "string",
+                "b": 1337,
+                "c": { "nested": "object" }
+            }
             );
 
             logObject.msg.should.equal('Test');
@@ -1554,22 +1554,22 @@ describe('Test log-core', function () {
         });
 
         it("Test reading bindings from context", function () {
-                process.env.VCAP_SERVICES = JSON.stringify({
-                    "application-logs": [
-                        {"plan": "lite"}
-                    ],
-                    "cloud-logs": [
-                        {"plan": "lite"}
-                    ]
-                })
-                core.init();
+            process.env.VCAP_SERVICES = JSON.stringify({
+                "application-logs": [
+                    { "plan": "lite" }
+                ],
+                "cloud-logs": [
+                    { "plan": "lite" }
+                ]
+            })
+            core.init();
             registerCustomFields(["a", "b", "c"]);
 
             log("info", "Test", {
-                    "a": "string",
-                    "b": 1337,
-                    "c": {"nested":"object"}
-                }
+                "a": "string",
+                "b": 1337,
+                "c": { "nested": "object" }
+            }
             );
 
             logObject.msg.should.equal('Test');
@@ -1577,30 +1577,30 @@ describe('Test log-core', function () {
             logObject.b.should.equal("1337");
             logObject.c.should.equal("{\"nested\":\"object\"}");
             logObject["#cf"].string.should.eql([
-                {"k":"a","v":"string","i":0},
-                {"k":"b","v":"1337","i":1},
-                {"k":"c","v":"{\"nested\":\"object\"}","i":2}
+                { "k": "a", "v": "string", "i": 0 },
+                { "k": "b", "v": "1337", "i": 1 },
+                { "k": "c", "v": "{\"nested\":\"object\"}", "i": 2 }
             ]);
         });
 
         it("Test faulty binding string defaulting", function () {
             process.env.VCAP_SERVICES = '{"application-logs": [{"plan": "lite"}],"cloud-logs": [{"plan": "lite"}]'
             core.init();
-        registerCustomFields(["a", "b", "c"]);
+            registerCustomFields(["a", "b", "c"]);
 
-        log("info", "Test", {
+            log("info", "Test", {
                 "a": "string",
                 "b": 1337,
-                "c": {"nested":"object"}
+                "c": { "nested": "object" }
             }
-        );
+            );
 
-        logObject.msg.should.equal('Test');
-        logObject.a.should.equal("string");
-        logObject.b.should.equal("1337");
-        logObject.c.should.equal("{\"nested\":\"object\"}");
-        assert.equal(logObject["#cf"], null);
-    });
+            logObject.msg.should.equal('Test');
+            logObject.a.should.equal("string");
+            logObject.b.should.equal("1337");
+            logObject.c.should.equal("{\"nested\":\"object\"}");
+            assert.equal(logObject["#cf"], null);
+        });
 
         it("Test custom fields inheritance", function () {
             // Register fields
@@ -1627,8 +1627,8 @@ describe('Test log-core', function () {
 
 
             logObject["#cf"].string.should.eql([
-                {"k":"fieldA","v":"a","i":0},
-                {"k":"fieldB","v":"b","i":1},
+                { "k": "fieldA", "v": "a", "i": 0 },
+                { "k": "fieldB", "v": "b", "i": 1 },
             ]);
 
             // loggerA fields and non-overwritten global fields
@@ -1636,25 +1636,25 @@ describe('Test log-core', function () {
             logObject.msg.should.equal('Test');
 
             logObject["#cf"].string.should.eql([
-                {"k":"fieldA","v":"c","i":0},
-                {"k":"fieldB","v":"b","i":1},
+                { "k": "fieldA", "v": "c", "i": 0 },
+                { "k": "fieldB", "v": "b", "i": 1 },
             ]);
 
             // loggerB fields and inherited loggerA and global fields
             loggerB.logMessage("info", "Test", {});
             logObject.msg.should.equal('Test');
             logObject["#cf"].string.should.eql([
-                {"k":"fieldA","v":"d","i":0},
-                {"k":"fieldB","v":"b","i":1},
-                {"k":"fieldC","v":"c","i":2},
+                { "k": "fieldA", "v": "d", "i": 0 },
+                { "k": "fieldB", "v": "b", "i": 1 },
+                { "k": "fieldC", "v": "c", "i": 2 },
             ]);
 
             // inherited loggerA/global fields and NOT unknown field 'fieldU'
             loggerC.logMessage("info", "Test", {});
             logObject.msg.should.equal('Test');
             logObject["#cf"].string.should.eql([
-                {"k":"fieldA","v":"c","i":0},
-                {"k":"fieldB","v":"b","i":1},
+                { "k": "fieldA", "v": "c", "i": 0 },
+                { "k": "fieldB", "v": "b", "i": 1 },
             ]);
         });
 
@@ -1699,7 +1699,7 @@ describe('Test log-core', function () {
             log("info", "Test", obj);
 
             logObject["#cf"].string.should.eql([
-                {"k":"fieldA","v":"{\"a\":456,\"b\":{\"b\":123,\"a\":\"[Circular ~]\"}}","i":0}
+                { "k": "fieldA", "v": "{\"a\":456,\"b\":{\"b\":123,\"a\":\"[Circular ~]\"}}", "i": 0 }
             ]);
         });
 
@@ -1729,9 +1729,9 @@ describe('Test log-core', function () {
             logObject.msg.should.equal('Test abc');
 
             logObject["#cf"].string.should.eql([
-                {"k":"string","v":"text","i":0},
-                {"k":"int","v":"0","i":1},
-                {"k":"obj","v":"{\"test\":\"value\"}","i":2}
+                { "k": "string", "v": "text", "i": 0 },
+                { "k": "int", "v": "0", "i": 1 },
+                { "k": "obj", "v": "{\"test\":\"value\"}", "i": 2 }
             ]);
         });
 
@@ -1739,16 +1739,16 @@ describe('Test log-core', function () {
             registerCustomFields(["1", "2", "3"]);
             overrideCustomFieldFormat("application-logging");
 
-            log("info","Test order", {
+            log("info", "Test order", {
                 "1": "1",
                 "3": "3",
                 "2": "2"
             });
 
             logObject["#cf"].string.should.eql([
-                {"k":"1","v":"1","i":0},
-                {"k":"2","v":"2","i":1},
-                {"k":"3","v":"3","i":2}
+                { "k": "1", "v": "1", "i": 0 },
+                { "k": "2", "v": "2", "i": 1 },
+                { "k": "3", "v": "3", "i": 2 }
             ]);
         });
 
@@ -1756,14 +1756,14 @@ describe('Test log-core', function () {
             registerCustomFields(["1", "2", "3"]);
             overrideCustomFieldFormat("application-logging");
 
-            log("info","Test order", {
+            log("info", "Test order", {
                 "1": "1",
                 "3": "3"
             });
 
             logObject["#cf"].string.should.eql([
-                {"k":"1","v":"1","i":0},
-                {"k":"3","v":"3","i":2}
+                { "k": "1", "v": "1", "i": 0 },
+                { "k": "3", "v": "3", "i": 2 }
             ]);
         });
 
@@ -1782,7 +1782,7 @@ describe('Test log-core', function () {
 
             logObject.msg.should.equal('Test abc');
             logObject["#cf"].string.should.eql([
-                {"k":"int","v":"0","i":0}
+                { "k": "int", "v": "0", "i": 0 }
             ]);
         });
 
@@ -1880,7 +1880,7 @@ describe('Test log-core', function () {
 
         before(function () {
             // set clock to 2017-01-01T00:00:00.000Z
-            clock = sinon.useFakeTimers({now: 1483228800000});
+            clock = sinon.useFakeTimers({ now: 1483228800000 });
         });
 
         beforeEach(function () {
