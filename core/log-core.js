@@ -12,6 +12,8 @@ const REDUCED_PLACEHOLDER = "redacted";
 
 const NS_PER_MS = 1e6;
 
+const MAX_STACKTRACE_SIZE = 55 * 1024;
+
 const LOG_TYPE = "log";
 const LOGGING_LEVELS = {
     "off": -1,
@@ -454,9 +456,14 @@ var logMessage = function () {
 
 
     var customFieldsFromArgs = {};
-    if (typeof args[args.length - 1] === "object") {
-        if (isValidObject(args[args.length - 1])) {
-            customFieldsFromArgs = args[args.length - 1];
+    var stacktrace = null;
+
+    var lastArg = args[args.length - 1];
+    if (typeof lastArg === "object") {
+        if (isErrorWithStacktrace(lastArg)) {
+            logObject.stacktrace = prepareStacktrace(lastArg.stack);
+        } else if (isValidObject(lastArg)) {
+            customFieldsFromArgs = lastArg;   
         }
         args.pop();
     }
@@ -773,6 +780,57 @@ var isValidObject = function (obj, canBeEmpty) {
     }
     return true;
 };
+
+// check if the given object is an Error with stacktrace using duck typing
+var isErrorWithStacktrace = function(obj) {
+    if (obj && obj.stack && obj.message && typeof obj.stack === "string" && typeof obj.message === "string") {
+        return true;
+    }
+    return false;
+}
+
+// Split stacktrace into string array and truncate lines if required by size limitation
+// Truncation strategy: Take one line from the top and two lines from the bottom of the stacktrace until limit is reached.
+var prepareStacktrace = function(stacktraceStr) {
+    var fullStacktrace = stacktraceStr.split('\n');
+    var totalLineLength = fullStacktrace.reduce((p, c) => p + c.length, 0)
+
+    if (totalLineLength > MAX_STACKTRACE_SIZE) {
+        var truncatedStacktrace = [];
+        var stackA = [];
+        var stackB = [];
+        var indexA = 0;
+        var indexB = fullStacktrace.length - 1;
+        var currentLength = 73; // set to approx. character count for "truncated" and "omitted" labels
+
+        for (var i = 0; i < fullStacktrace.length; i++) {
+            if (i % 3 == 0) {
+                var line = fullStacktrace[indexA];
+                if (currentLength + line.length > MAX_STACKTRACE_SIZE) {
+                    break;
+                }
+                currentLength += line.length
+                stackA.push(line);
+                indexA++;
+            } else {
+                var line = fullStacktrace[indexB];
+                if (currentLength + line.length > MAX_STACKTRACE_SIZE) {
+                    break;
+                }
+                currentLength += line.length
+                stackB.push(line);
+                indexB--;
+            }
+        }
+        
+        truncatedStacktrace.push("-------- STACK TRACE TRUNCATED --------")
+        truncatedStacktrace = [...truncatedStacktrace, ...stackA]
+        truncatedStacktrace.push(`-------- OMITTED ${fullStacktrace.length - (stackA.length + stackB.length)} LINES --------`)
+        truncatedStacktrace = [...truncatedStacktrace, ...stackB.reverse()]
+        return truncatedStacktrace;
+    }
+    return fullStacktrace;
+}
 
 // writes static field values to the given logObject
 var writeStaticFields = function (logObject) {
