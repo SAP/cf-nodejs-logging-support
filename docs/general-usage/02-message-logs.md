@@ -101,8 +101,9 @@ try {
 ```
 
 Stack traces get written to the `stacktrace` field of the log and are represented as an array of strings.
-If a stack trace exceeds a total size of 55kB, it will therefore not be logged entirely.
-Since the interesting lines of a stack trace are usually situated in its first and in its last part, we will remove as few lines as necessary from its middle part.
+If a stack trace exceeds a total size of 55kB, it will not be logged entirely.
+The library removes as few lines as necessary from the middle of the stack trace since the relevant parts are usually at the start and the end.
+We use following strategy to do so: Take one line from the top and two lines from the bottom of the stacktrace until the limit is reached.
 
 ## Checking log severity levels
 
