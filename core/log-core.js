@@ -454,15 +454,16 @@ var logMessage = function () {
 
     args.shift();
 
-
     var customFieldsFromArgs = {};
-    var stacktrace = null;
-
     var lastArg = args[args.length - 1];
     if (typeof lastArg === "object") {
         if (isErrorWithStacktrace(lastArg)) {
             logObject.stacktrace = prepareStacktrace(lastArg.stack);
         } else if (isValidObject(lastArg)) {
+            if (isErrorWithStacktrace(lastArg._error)) {
+                logObject.stacktrace = prepareStacktrace(lastArg._error.stack);
+                delete lastArg._error;
+            }
             customFieldsFromArgs = lastArg;
         }
         args.pop();
