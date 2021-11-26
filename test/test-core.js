@@ -1535,6 +1535,28 @@ describe('Test log-core', function () {
             assert.equal(logObject["#cf"], null);
         });
 
+        it("Test logging custom fields along with error", function () {
+            overrideCustomFieldFormat("default");
+
+            var e = new Error("test-message");
+            log("info", "Test", {
+                "a": "string",
+                "b": 1337,
+                "_error": e
+            });
+
+            logObject.msg.should.equal('Test');
+            logObject.a.should.equal("string");
+            logObject.b.should.equal("1337");
+
+            assert.isArray(logObject.stacktrace);
+            assert.equal(logObject["_error"], null);
+
+            logObject.stacktrace.length.should.greaterThan(5);
+            logObject.stacktrace[0].should.equal("Error: test-message");
+            assert.equal(logObject["#cf"], null);
+        });
+
         it("Test disabled custom fields", function () {
             registerCustomFields(["a", "b", "c"]);
             overrideCustomFieldFormat("disabled");
