@@ -87,24 +87,6 @@ In the simplest case, `logger` is an instance of imported `log` module.
   // ... "msg":"Hello World" ...
   ```
 
-## Logging stack traces
-
-For logging stack traces as part of an error message you can append the `Error` object as follows:
-
-```js
-try {
-  // Code throwing an Error
-} catch (e) {
-  logger.error("Error occurred", e)
-}
-// ... "msg":"Error occurred", "stacktrace": [...] ...
-```
-
-Stack traces get written to the `stacktrace` field of the log and are represented as an array of strings.
-If a stack trace exceeds a total size of 55kB, it will not be logged entirely.
-The library removes as few lines as necessary from the middle of the stack trace since the relevant parts are usually at the start and the end.
-We use following strategy to do so: Take one line from the top and two lines from the bottom of the stacktrace until the limit is reached.
-
 ## Checking log severity levels
 
 It can be useful to check if messages with a specific severity level would be logged.
