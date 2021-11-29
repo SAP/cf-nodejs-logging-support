@@ -804,23 +804,21 @@ var prepareStacktrace = function (stacktraceStr) {
         var indexB = fullStacktrace.length - 1;
         var currentLength = 73; // set to approx. character count for "truncated" and "omitted" labels
 
-        for (var i = 0; i < fullStacktrace.length; i++) {
+        for (let i = 0; i < fullStacktrace.length; i++) {
             if (i % 3 == 0) {
-                var line = fullStacktrace[indexA];
+                let line = fullStacktrace[indexA++];
                 if (currentLength + line.length > MAX_STACKTRACE_SIZE) {
                     break;
                 }
                 currentLength += line.length;
                 stackA.push(line);
-                indexA++;
             } else {
-                var line = fullStacktrace[indexB];
+                let line = fullStacktrace[indexB--];
                 if (currentLength + line.length > MAX_STACKTRACE_SIZE) {
                     break;
                 }
                 currentLength += line.length;
                 stackB.push(line);
-                indexB--;
             }
         }
 
