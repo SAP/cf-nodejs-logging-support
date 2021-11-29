@@ -12,6 +12,8 @@ const REDUCED_PLACEHOLDER = "redacted";
 
 const NS_PER_MS = 1e6;
 
+const MAX_STACKTRACE_SIZE = 55 * 1024;
+
 const LOG_TYPE = "log";
 const LOGGING_LEVELS = {
     "off": -1,
@@ -90,18 +92,18 @@ var init = function () {
 
     //Reading bindings from context
     var boundServices = parseJSONSafe(process.env.VCAP_SERVICES);
-    if(boundServices["application-logs"]) {
+    if (boundServices["application-logs"]) {
         cfCustomEnabled = true;
         defaultCustomEnabled = false;
     }
-    if(boundServices["cloud-logs"]) {
+    if (boundServices["cloud-logs"]) {
         defaultCustomEnabled = true;
     }
 };
 
 var parseJSONSafe = function (value) {
     var tmp = {};
-    if(value)
+    if (value)
         try {
             tmp = JSON.parse(value);
         } catch (e) {
@@ -132,7 +134,7 @@ var precompileConfig = function (config) {
             var val = process.env[obj.envVarSwitch];
             var pass = (val == "true" || val == "True" || val == "TRUE");
             if (!pass) {
-                continue; 
+                continue;
             }
         }
 
@@ -281,9 +283,9 @@ var setLoggingLevel = function (level) {
     }
 };
 
-var setRequestLogLevel = function(level) {
+var setRequestLogLevel = function (level) {
     levelInt = getLogLevelFromName(level);
-    if(levelInt != null) {
+    if (levelInt != null) {
         requestLogLevel = level;
         return true;
     }
@@ -325,7 +327,7 @@ var initLog = function () {
     logObject.written_ts = higher + lower;
     //This reorders written_ts, if the new timestamp seems to be smaller
     // due to different rollover times for process.hrtime and now.getTime
-    if(logObject.written_ts < lastTimestamp)
+    if (logObject.written_ts < lastTimestamp)
         logObject.written_ts += NS_PER_MS;
     lastTimestamp = logObject.written_ts;
     return logObject;
@@ -452,11 +454,17 @@ var logMessage = function () {
 
     args.shift();
 
-
     var customFieldsFromArgs = {};
-    if (typeof args[args.length - 1] === "object") {
-        if (isValidObject(args[args.length - 1])) {
-            customFieldsFromArgs = args[args.length - 1];
+    var lastArg = args[args.length - 1];
+    if (typeof lastArg === "object") {
+        if (isErrorWithStacktrace(lastArg)) {
+            logObject.stacktrace = prepareStacktrace(lastArg.stack);
+        } else if (isValidObject(lastArg)) {
+            if (isErrorWithStacktrace(lastArg._error)) {
+                logObject.stacktrace = prepareStacktrace(lastArg._error.stack);
+                delete lastArg._error;
+            }
+            customFieldsFromArgs = lastArg;
         }
         args.pop();
     }
@@ -557,7 +565,7 @@ var getTenantSubdomain = function () {
 
 // Registers a (white)list of allowed custom field names
 var registerCustomFields = function (fieldNames) {
-    
+
     registeredCustomFields = [];
 
     if (!Array.isArray(fieldNames)) return false;
@@ -640,7 +648,7 @@ var writeCustomFields = function (logObject, logger, additionalFields) {
             value = stringifySafe(value);
         }
 
-        if(defaultCustomEnabled || logObject[key] != null || isSettable(key))
+        if (defaultCustomEnabled || logObject[key] != null || isSettable(key))
             logObject[key] = value;
 
         if (cfCustomEnabled)
@@ -654,24 +662,24 @@ var writeCustomFields = function (logObject, logger, additionalFields) {
         res.string = [];
         counter = 0;
         var key;
-        for(var i = 0; i < registeredCustomFields.length; i++) {
+        for (var i = 0; i < registeredCustomFields.length; i++) {
             key = registeredCustomFields[i]
-            if(customFields[key])
+            if (customFields[key])
                 res.string.push({
                     "k": key,
                     "v": customFields[key],
                     "i": i
                 })
         }
-        if(res.string.length > 0)
+        if (res.string.length > 0)
             logObject["#cf"] = res;
     }
 }
 
-var isSettable = function(key) {
+var isSettable = function (key) {
     if (settableConfig.length == 0) return false;
-    for(var i = 0; i < settableConfig.length; i++) {
-        if(settableConfig[i] == key) return true;
+    for (var i = 0; i < settableConfig.length; i++) {
+        if (settableConfig[i] == key) return true;
     }
     return false;
 }
@@ -774,6 +782,55 @@ var isValidObject = function (obj, canBeEmpty) {
     return true;
 };
 
+// check if the given object is an Error with stacktrace using duck typing
+var isErrorWithStacktrace = function (obj) {
+    if (obj && obj.stack && obj.message && typeof obj.stack === "string" && typeof obj.message === "string") {
+        return true;
+    }
+    return false;
+}
+
+// Split stacktrace into string array and truncate lines if required by size limitation
+// Truncation strategy: Take one line from the top and two lines from the bottom of the stacktrace until limit is reached.
+var prepareStacktrace = function (stacktraceStr) {
+    var fullStacktrace = stacktraceStr.split('\n');
+    var totalLineLength = fullStacktrace.reduce((acc, line) => acc + line.length, 0);
+
+    if (totalLineLength > MAX_STACKTRACE_SIZE) {
+        var truncatedStacktrace = [];
+        var stackA = [];
+        var stackB = [];
+        var indexA = 0;
+        var indexB = fullStacktrace.length - 1;
+        var currentLength = 73; // set to approx. character count for "truncated" and "omitted" labels
+
+        for (let i = 0; i < fullStacktrace.length; i++) {
+            if (i % 3 == 0) {
+                let line = fullStacktrace[indexA++];
+                if (currentLength + line.length > MAX_STACKTRACE_SIZE) {
+                    break;
+                }
+                currentLength += line.length;
+                stackA.push(line);
+            } else {
+                let line = fullStacktrace[indexB--];
+                if (currentLength + line.length > MAX_STACKTRACE_SIZE) {
+                    break;
+                }
+                currentLength += line.length;
+                stackB.push(line);
+            }
+        }
+
+        truncatedStacktrace.push("-------- STACK TRACE TRUNCATED --------");
+        truncatedStacktrace = [...truncatedStacktrace, ...stackA];
+        truncatedStacktrace.push(`-------- OMITTED ${fullStacktrace.length - (stackA.length + stackB.length)} LINES --------`);
+        truncatedStacktrace = [...truncatedStacktrace, ...stackB.reverse()];
+        return truncatedStacktrace;
+    }
+    return fullStacktrace;
+}
+
 // writes static field values to the given logObject
 var writeStaticFields = function (logObject) {
     for (var key in fixedValues) {
@@ -796,8 +853,8 @@ var overrideField = function (field, value) {
 };
 
 //Sets the custom field format by hand. Returns true on correct strings.
-var overrideCustomFieldFormat = function(value) {
-    if(typeof value == "string") {
+var overrideCustomFieldFormat = function (value) {
+    if (typeof value == "string") {
         switch (value) {
             case "application-logging":
                 defaultCustomEnabled = false;
