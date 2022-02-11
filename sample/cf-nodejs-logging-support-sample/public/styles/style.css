@@ -1,0 +1,6 @@
+.buttons-container {
+    display: inline-block;
+}
+.buttons-container > * {
+    max-width: 450px;
+}

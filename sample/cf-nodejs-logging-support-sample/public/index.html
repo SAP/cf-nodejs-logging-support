@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <meta name="description" content="Interact with buttons to test library functionalities.">
+  <meta name="author" content="Federico Romagnoli">
+  <script src="../scripts/logic.js"></script>
+  <!-- Bootstrap core CSS -->
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css"
+    integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
+  <link rel="stylesheet" href="../styles/style.css">
+</head>
+
+<body>
+  <div class="wrapper">
+    <div id="main-container" class="text-center">
+      <h1 class="h1 mb-3 font-weight-bold">cf-nodejs-logging-support | sample app</h1>
+      <div id="buttons-container" class="buttons-container">
+        <h2 class="h2 mb-3 font-weight-normal">Buttons to test functionalities:</h2>
+        <button class="btn btn-lg btn-primary btn-block" id="global-context" type="submit">Log message in global
+          context</button>
+        <button class="btn btn-lg btn-primary btn-block" id="request-context" type="submit">Log message in request
+          context</button>
+        <button class="btn btn-lg btn-primary btn-block" id="custom-fields" type="submit">Log message with some custom
+          fields</button>
+        <button class="btn btn-lg btn-primary btn-block" id="stack-trace" type="submit">Log a server error (500) with a stack
+          trace</button>
+          <button class="btn btn-lg btn-primary btn-block" id="client-error" type="submit">Log a client error (404)</button>
+        <button class="btn btn-lg btn-primary btn-block" id="child-logger" type="submit">Logs from child logger</button>
+        <button class="btn btn-lg btn-primary btn-block" id="correlation-and-tenant-id" type="submit">Logs Correlation-
+          and Tenant-ID</button>
+        <a class="btn-block" href="https://sap.github.io/cf-nodejs-logging-support/">Visit Documentation</a>
+      </div>
+    </div>
+  </div>
+</body>
+
+</html>
