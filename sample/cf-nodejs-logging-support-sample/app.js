@@ -77,8 +77,8 @@ function alwaysError() {
 // https://sap.github.io/cf-nodejs-logging-support/advanced-usage/child-loggers
 app.get("/childlogger", function (req, res) {
   var subLogger = log.createLogger({ "new-field": "value" });
-  subLogger.setLoggingLevel("info");
-  subLogger.info("Message logged from child logger.");
+  subLogger.setLoggingLevel("warn");
+  subLogger.warn("Message logged from child logger.");
   res.send();
 });
 
