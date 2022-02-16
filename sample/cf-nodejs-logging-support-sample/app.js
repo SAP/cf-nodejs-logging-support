@@ -61,21 +61,13 @@ app.get("/customfields", function (req, res) {
 // https://sap.github.io/cf-nodejs-logging-support/general-usage/stacktraces
 app.get("/stacktrace", function (req, res) {
   try {
-    stacktracefunction1();
+    alwaysError();
     res.send("request succesful");
   } catch (e) {
     log.error("Error occurred", e)
     res.status(500).send("error ocurred");
   }
 });
-
-function stacktracefunction1() {
-  return stacktracefunction2();
-}
-
-function stacktracefunction2() {
-  return alwaysError();
-}
 
 function alwaysError() {
     throw new Error("An error happened. Stacktrace will be displayed.");
