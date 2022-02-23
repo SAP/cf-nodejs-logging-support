@@ -1,9 +1,11 @@
 body {
-    font-family: "Segoe UI","Roboto","Helvetica Neue","Arial";
+    font-family: "Segoe UI", "Roboto", "Helvetica Neue", "Arial";
 }
+
 .main-container {
     text-align: center!important;
 }
+
 .title {
     color: rgb(33, 37, 41);
     display: block;
@@ -16,6 +18,7 @@ body {
     margin-inline-end: 0px;
     margin-top: 0;
 }
+
 .subtitle {
     color: rgb(33, 37, 41);
     display: block;
@@ -27,12 +30,15 @@ body {
     margin-inline-end: 0px;
     margin-top: 0;
 }
+
 .buttons-container {
     display: inline-block;
 }
-.buttons-container > * {
+
+.buttons-container>* {
     max-width: 450px;
 }
+
 .btn {
     cursor: pointer;
     margin-top: 0.5rem;
@@ -51,11 +57,12 @@ body {
     white-space: nowrap;
     user-select: none;
     border: 1px solid transparent;
-    transition: color .15s ease-in-out,background-color .15s ease-in-out,border-color .15s ease-in-out,box-shadow .15s ease-in-out;
+    transition: color .15s ease-in-out, background-color .15s ease-in-out, border-color .15s ease-in-out, box-shadow .15s ease-in-out;
     -webkit-appearance: button;
     text-transform: none;
     overflow: visible;
 }
+
 a {
     color: #007bff;
     cursor: pointer;

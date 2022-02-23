@@ -17,7 +17,7 @@ app.use(log.logNetwork);
 log.setLoggingLevel("info");
 
 // register names of custom fields
-log.registerCustomFields(["global-field-a","node_version", "pid", "platform","custom-field-a", "custom-field-b","new-field"]);
+log.registerCustomFields(["global-field-a", "node_version", "pid", "platform", "custom-field-a", "custom-field-b", "new-field"]);
 
 // set a custom field globally, so that it will be logged for all following messages independent of their request/child context.
 log.setCustomFields({ "global-field-a": "value" });
@@ -70,7 +70,7 @@ app.get("/stacktrace", function (req, res) {
 });
 
 function alwaysError() {
-    throw new Error("An error happened. Stacktrace will be displayed.");
+  throw new Error("An error happened. Stacktrace will be displayed.");
 }
 
 // create a new child from the logger object and overide/create new fields
