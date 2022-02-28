@@ -13,6 +13,7 @@ program
     .arguments('<level>')
     .option('-k, --key <private-key>', 'a private key to sign token with')
     .option('-f, --keyfile <private-key-file>', 'a path to a file containing the private key')
+    .option('-p, --passphrase <passphrase>', 'private key passphrase')
     .option('-v, --validityPeriod <days>', 'number of days the token will expire after')
     .option('-i, --issuer <email-address>', 'valid issuer e-mail address')
     .action(function (level) {
@@ -47,6 +48,13 @@ program
         } else {
             // Nice to have: KeyPair generation
             console.log("Error: Generating keypairs on-the-fly is currently not supported by this script. Please provide a private key by using the --key or --keyfile option.");
+            return;
+        }
+
+        if (program.passphrase != undefined ) {
+            passphrase = program.passphrase;
+        } else {
+            console.error("Error: Please provide a passphrase with the -p or --passphrase option.");
             return;
         }
 
@@ -105,7 +113,7 @@ function validateEmail(address) {
 
 function createToken(level, key, exp, issuer) {
     try {
-        return jwt.sign({ level: level, exp: exp, issuer: issuer }, key, { algorithm: 'RS256'});
+        return jwt.sign({ level: level, exp: exp, issuer: issuer }, {key: key, passphrase: passphrase}, { algorithm: 'RS256'});
     } catch (err) {
         console.error(err);
         return null;
