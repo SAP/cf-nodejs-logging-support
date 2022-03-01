@@ -34,7 +34,7 @@ To sign and verify JWTs a PEM encoded private key and a matching public key is r
 You can create a private key using the following command:
 
 ```sh
-openssl genrsa -des3 -out private.pem 2048
+openssl genrsa -out private.pem 2048
 ```
 
 To create a public key from a private key use following command:
