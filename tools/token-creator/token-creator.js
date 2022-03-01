@@ -76,7 +76,7 @@ program
         console.log("ISSUER: " + issuer);
         console.log("EXPIRATION DATE: " + exp + " (" + (new Date(exp * 1000).toLocaleString()) + ")");
 
-        passphrase = program.passphrase == undefined ? "" : program.passphrase;
+        var passphrase = program.passphrase == undefined ? "" : program.passphrase;
 
         var token = createToken(level, key, passphrase, exp, issuer);
         if (token == null) {
