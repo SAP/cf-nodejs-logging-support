@@ -76,7 +76,7 @@ program
         console.log("ISSUER: " + issuer);
         console.log("EXPIRATION DATE: " + exp + " (" + (new Date(exp * 1000).toLocaleString()) + ")");
 
-        passphrase = program.passphrase == undefined  ? "" : program.passphrase;
+        passphrase = program.passphrase == undefined ? "" : program.passphrase;
 
         var token = createToken(level, key, passphrase, exp, issuer);
         if (token == null) {
@@ -95,11 +95,11 @@ function validateLevel(level) {
 }
 
 function validatePeriod(days) {
-   if (!isNaN(days)) {
-       return (days >= 1);
-   } else {
+    if (!isNaN(days)) {
+        return (days >= 1);
+    } else {
         return null;
-   }
+    }
 }
 
 function validateEmail(address) {
@@ -108,7 +108,7 @@ function validateEmail(address) {
 
 function createToken(level, key, passphrase, exp, issuer) {
     try {
-        return jwt.sign({ level: level, exp: exp, issuer: issuer }, {key: key, passphrase: passphrase}, { algorithm: 'RS256'});
+        return jwt.sign({ level: level, exp: exp, issuer: issuer }, { key: key, passphrase: passphrase }, { algorithm: 'RS256' });
     } catch (err) {
         console.error(err);
         return null;
