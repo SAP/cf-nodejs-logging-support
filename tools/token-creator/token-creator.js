@@ -13,6 +13,7 @@ program
     .arguments('<level>')
     .option('-k, --key <private-key>', 'a private key to sign token with')
     .option('-f, --keyfile <private-key-file>', 'a path to a file containing the private key')
+    .option('-p, --passphrase <passphrase>', 'private key passphrase (optional)')
     .option('-v, --validityPeriod <days>', 'number of days the token will expire after')
     .option('-i, --issuer <email-address>', 'valid issuer e-mail address')
     .action(function (level) {
@@ -75,7 +76,9 @@ program
         console.log("ISSUER: " + issuer);
         console.log("EXPIRATION DATE: " + exp + " (" + (new Date(exp * 1000).toLocaleString()) + ")");
 
-        var token = createToken(level, key, exp, issuer);
+        var passphrase = program.passphrase == undefined ? "" : program.passphrase;
+
+        var token = createToken(level, key, passphrase, exp, issuer);
         if (token == null) {
             console.log("\nError: Failed to create token. Please check key/keyfile and provided options.");
             return;
@@ -92,20 +95,20 @@ function validateLevel(level) {
 }
 
 function validatePeriod(days) {
-   if (!isNaN(days)) {
-       return (days >= 1);
-   } else {
+    if (!isNaN(days)) {
+        return (days >= 1);
+    } else {
         return null;
-   }
+    }
 }
 
 function validateEmail(address) {
     return emailRegex.test(address);
 }
 
-function createToken(level, key, exp, issuer) {
+function createToken(level, key, passphrase, exp, issuer) {
     try {
-        return jwt.sign({ level: level, exp: exp, issuer: issuer }, key, { algorithm: 'RS256'});
+        return jwt.sign({ level: level, exp: exp, issuer: issuer }, { key: key, passphrase: passphrase }, { algorithm: 'RS256' });
     } catch (err) {
         console.error(err);
         return null;

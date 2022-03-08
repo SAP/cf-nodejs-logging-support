@@ -30,7 +30,14 @@ Using this feature allows changing the logging level threshold dynamically witho
 ### 1 Creating a key-pair
 
 To sign and verify JWTs a PEM encoded private key and a matching public key is required.
-You can create a key-pair using the following command:
+
+You can create a private key using the following command:
+
+```sh
+openssl genrsa -out private.pem 2048
+```
+
+To create a public key from a private key use following command:
 
 ```sh
 openssl rsa -in private.pem -outform PEM -pubout -out public.pem
