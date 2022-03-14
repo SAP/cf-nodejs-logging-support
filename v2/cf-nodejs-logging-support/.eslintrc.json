@@ -14,7 +14,7 @@
     "prettier",
     "prettier/@typescript-eslint"
   ],
-  "globals": { "BigInt": true, "console": true, "WebAssembly": true },
+  "globals": {},
   "rules": {
     "@typescript-eslint/explicit-module-boundary-types": "off",
     "eslint-comments/disable-enable-pair": [
