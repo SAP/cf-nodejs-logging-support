@@ -1,4 +1,5 @@
 // external api methods
+// will be replaced with actual class implementation
 export function setLoggingLevel(_level: string) { }
 export function setRequestLogLevel(_level: string) { }
 export function getLoggingLevel() { }
@@ -6,7 +7,7 @@ export function getBoundServices() { }
 export function setSinkFunction(_f: Function) { }
 export function forceLogger(_logger: string) { }
 export function enableTracing() { }
-export function logNetwork() { }
+export function logNetwork(_req: any, _res: any, _next: any) { }
 export function logMessage(_level: string, _message: string) {
 }
 export function isLoggingLevel(_level: string) { }
