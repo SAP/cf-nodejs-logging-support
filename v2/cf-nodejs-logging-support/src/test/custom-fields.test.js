@@ -7,7 +7,7 @@ var lastOutput;
 describe.skip('Test custom fields', function () {
 
     beforeEach(function () {
-        log = importFresh("cf-nodejs-logging-support");
+        log = importFresh("../../build/main/index");
 
         lastOutput = "";
 
@@ -49,7 +49,7 @@ describe.skip('Test custom fields', function () {
                 }
                 process.env.VCAP_SERVICES = JSON.stringify(obj);
 
-                log = importFresh("cf-nodejs-logging-support");
+                log = importFresh("../../build/main/index");
 
                 log.setCustomFields({ "field-a": "value" });
                 log.logMessage("info", "test-message");
@@ -72,8 +72,7 @@ describe.skip('Test custom fields', function () {
                 }
                 process.env.VCAP_SERVICES = JSON.stringify(obj);
 
-                log = importFresh("cf-nodejs-logging-support");
-
+                log = importFresh("../../build/main/index");
                 log.registerCustomFields(["field-a"]);
                 log.setCustomFields({ "field-a": "value" });
                 log.logMessage("info", "test-message");

@@ -1,6 +1,6 @@
 const importFresh = require('import-fresh');
 var connect = importFresh('connect');
-var log = importFresh('cf-nodejs-logging-support');
+var log = importFresh('../../../build/main/index');
 var http = importFresh('http');
 var app = connect();
 

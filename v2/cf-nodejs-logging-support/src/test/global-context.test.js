@@ -10,7 +10,7 @@ var logCount;
 describe.skip('Test logging in global context', function () {
 
     beforeEach(function () {
-        log = importFresh("cf-nodejs-logging-support");
+        log = importFresh("../../build/main/index");
 
         logCount = 0;
         lastLevel = "";
