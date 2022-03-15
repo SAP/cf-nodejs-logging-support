@@ -1,1 +1,1 @@
-export * from './lib/helloworld';
+export * from './lib/core/extern-api-methods';
