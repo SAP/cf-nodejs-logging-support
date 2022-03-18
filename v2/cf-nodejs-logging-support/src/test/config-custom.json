@@ -1,0 +1,26 @@
+{
+    "config": [
+        {
+            "name": "component_type",
+            "mandatory": true,
+            "source": {
+                "type": "static",
+                "value": "TEST"
+            },
+            "output": [
+                "log"
+            ]
+        },
+        {
+            "name": "new_field",
+            "mandatory": false,
+            "source": {
+                "type": "self",
+                "name": "component_instance"
+            },
+            "output": [
+                "log"
+            ]
+        }
+    ]
+}
