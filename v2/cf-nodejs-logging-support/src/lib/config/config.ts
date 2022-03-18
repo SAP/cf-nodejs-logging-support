@@ -2,10 +2,10 @@ import { ConfigFile, ConfigField } from '../interfaces';
 
 export class Config {
 
-    private mergedConfig: ConfigField[];
-
+    private mergedConfig: ConfigField[] = [];
+ 
     constructor(...rest: ConfigFile[]) {
-        this.mergedConfig = this.setMergedConfig(rest);
+        this.addConfig(rest);
     }
 
     public getConfig(...fieldNames: string[]): ConfigField[] {
@@ -50,43 +50,24 @@ export class Config {
         return filtered;
     }
 
-    public addConfig(fields: ConfigField[]) {
-
-        fields.forEach(newField => {
-
-            let index = this.getIndex(newField.name);
-
-            // if new config field
-            if (index === -1) {
-                this.mergedConfig.push(newField);
-                return;
-            }
-
-            // replace object in array with new field
-            this.mergedConfig.splice(index, 1, newField);
-        }
-        );
-    }
-
-    // priorization of file is position in argument
-    private setMergedConfig = (configs: ConfigFile[]): ConfigField[] => {
-
-        let configMap = new Map();
+    public addConfig(configs: ConfigFile[]) {
 
         configs.forEach(file => {
             file.config.forEach(field => {
-                configMap.set(field.name, field)
+
+                let index = this.getIndex(field.name);
+
+                // if new config field
+                if (index === -1) {
+                    this.mergedConfig.push(field);
+                    return;
+                }
+
+                // replace object in array with new field
+                this.mergedConfig.splice(index, 1, field);
+
             })
         });
-
-        // save config map values in array
-        let mergedConfig: ConfigField[] = [];
-
-        configMap.forEach(element => {
-            mergedConfig.push(element);
-        });
-
-        return mergedConfig;
     }
 
     // get index of field in config
