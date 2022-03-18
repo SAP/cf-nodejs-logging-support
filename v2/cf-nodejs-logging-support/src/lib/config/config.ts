@@ -8,7 +8,7 @@ export class Config {
         this.addConfig(rest);
     }
 
-    public getConfig(...fieldNames: string[]): ConfigField[] {
+    public getConfig(fieldNames: string[]): ConfigField[] {
 
         if (fieldNames.length > 0) {
             let result: ConfigField[] = [];
