@@ -1,0 +1,367 @@
+{
+    "config": [
+        {
+            "name": "request_id",
+            "mandatory": true,
+            "source": {
+                "type": "header",
+                "name": "x-vcap-request-id"
+            },
+            "output": [
+                "req-log"
+            ],
+            "default": "-"
+        }, {
+            "name": "request_size_b",
+            "mandatory": true,
+            "source": {
+                "type": "header",
+                "name": "content-length"
+            },
+            "output": [
+                "req-log"
+            ],
+            "default": -1
+        }, {
+            "name": "type",
+            "mandatory": true,
+            "source": {
+                "type": "static",
+                "value": "request"
+            },
+            "output": [
+                "req-log"
+            ]
+        }, {
+            "name": "request",
+            "mandatory": true,
+            "source": {
+                "type": "field",
+                "name": "originalUrl"
+            },
+            "output": [
+                "req-log"
+            ],
+            "default": "-"
+        }, {
+            "name": "response_status",
+            "mandatory": true,
+            "source": {
+                "type": "field",
+                "parent": "res",
+                "name": "statusCode"
+            },
+            "output": [
+                "req-log"
+            ],
+            "default": 200
+        }, {
+            "name": "method",
+            "mandatory": true,
+            "source": {
+                "type": "field",
+                "name": "method"
+            },
+            "output": [
+                "req-log"
+            ],
+            "default": "-"
+        }, {
+            "name": "response_size_b",
+            "mandatory": true,
+            "source": {
+                "type": "header",
+                "parent": "res",
+                "name": "content-length"
+            },
+            "output": [
+                "req-log"
+            ],
+            "default": -1
+        }, {
+            "name": "response_content_type",
+            "mandatory": true,
+            "source": {
+                "type": "header",
+                "parent": "res",
+                "name": "content-type"
+            },
+            "output": [
+                "req-log"
+            ],
+            "default": "-"
+        }, {
+            "name": "remote_host",
+            "mandatory": true,
+            "envVarRedact": "LOG_SENSITIVE_CONNECTION_DATA",
+            "source": {
+                "type": "special"
+            },
+            "output": [
+                "req-log"
+            ]
+        }, {
+            "name": "remote_port",
+            "mandatory": true,
+            "envVarRedact": "LOG_SENSITIVE_CONNECTION_DATA",
+            "source": {
+                "type": "special"
+            },
+            "output": [
+                "req-log"
+            ]
+        }, {
+            "name": "remote_user",
+            "mandatory": true,
+            "envVarRedact": "LOG_REMOTE_USER",
+            "source": {
+                "type": "special",
+                "parent": "res"
+            },
+            "output": [
+                "req-log"
+            ]
+        }, {
+            "name": "direction",
+            "mandatory": true,
+            "source": {
+                "type": "static",
+                "value": "IN"
+            },
+            "output": [
+                "req-log"
+            ]
+        }, {
+            "name": "remote_ip",
+            "mandatory": false,
+            "envVarRedact": "LOG_SENSITIVE_CONNECTION_DATA",
+            "source": {
+                "type": "self",
+                "name": "remote_host"
+            },
+            "output": [
+                "req-log"
+            ]
+        }, {
+            "name": "request_received_at",
+            "mandatory": false,
+            "source": {
+                "type": "self",
+                "name": "written_at"
+            },
+            "output": [
+                "req-log"
+            ]
+        }, {
+            "name": "protocol",
+            "mandatory": true,
+            "source": {
+                "type": "special"
+            },
+            "output": [
+                "req-log"
+            ]
+        }, {
+            "name": "response_time_ms",
+            "mandatory": true,
+            "source": {
+                "type": "time"
+            },
+            "output": [
+                "req-log"
+            ]
+        }, {
+            "name": "response_sent_at",
+            "mandatory": true,
+            "source": {
+                "type": "time"
+            },
+            "output": [
+                "req-log"
+            ]
+        }, {
+            "name": "referer",
+            "mandatory": true,
+            "envVarRedact": "LOG_REFERER",
+            "source": {
+                "type": "header",
+                "name": "referer"
+            },
+            "output": [
+                "req-log"
+            ],
+            "default": "-"
+        }, {
+            "name": "correlation_id",
+            "mandatory": true,
+            "source": {
+                "type": "header",
+                "name": "x-correlationid"
+            },
+            "output": [
+                "req-log"
+            ]
+        }, {
+            "name": "tenant_id",
+            "mandatory": true,
+            "source": {
+                "type": "header",
+                "name": "tenantid"
+            },
+            "output": [
+                "req-log"
+            ],
+            "default": "-"
+        }, {
+            "name": "tenant_subdomain",
+            "mandatory": true,
+            "source": {
+                "type": "static"
+            },
+            "output": [
+                "req-log"
+            ],
+            "default": "-"
+        }, {
+            "name": "x_forwarded_for",
+            "mandatory": false,
+            "envVarRedact": "LOG_SENSITIVE_CONNECTION_DATA",
+            "source": {
+                "type": "header",
+                "name": "x-forwarded-for"
+            },
+            "output": [
+                "req-log"
+            ]
+        }, {
+            "name": "x_custom_host",
+            "mandatory": false,
+            "envVarRedact": "LOG_SENSITIVE_CONNECTION_DATA",
+            "source": {
+                "type": "header",
+                "name": "x-custom-host"
+            },
+            "output": [
+                "req-log"
+            ]
+        }, {
+            "name": "x_forwarded_host",
+            "mandatory": false,
+            "envVarRedact": "LOG_SENSITIVE_CONNECTION_DATA",
+            "source": {
+                "type": "header",
+                "name": "x-forwarded-host"
+            },
+            "output": [
+                "req-log"
+            ]
+        }, {
+            "name": "x_forwarded_proto",
+            "mandatory": false,
+            "envVarRedact": "LOG_SENSITIVE_CONNECTION_DATA",
+            "source": {
+                "type": "header",
+                "name": "x-forwarded-proto"
+            },
+            "output": [
+                "req-log"
+            ]
+        }, {
+            "name": "x_ssl_client",
+            "mandatory": true,
+            "envVarSwitch": "LOG_SSL_HEADERS",
+            "source": {
+                "type": "header",
+                "name": "x-ssl-client"
+            },
+            "output": [
+                "req-log"
+            ],
+            "default": "-"
+        }, {
+            "name": "x_ssl_client_verify",
+            "mandatory": true,
+            "envVarSwitch": "LOG_SSL_HEADERS",
+            "source": {
+                "type": "header",
+                "name": "x-ssl-client-verify"
+            },
+            "output": [
+                "req-log"
+            ],
+            "default": "-"
+        }, {
+            "name": "x_ssl_client_subject_dn",
+            "mandatory": true,
+            "envVarSwitch": "LOG_SSL_HEADERS",
+            "source": {
+                "type": "header",
+                "name": "x-ssl-client-subject-dn"
+            },
+            "output": [
+                "req-log"
+            ],
+            "default": "-"
+        }, {
+            "name": "x_ssl_client_subject_cn",
+            "mandatory": true,
+            "envVarSwitch": "LOG_SSL_HEADERS",
+            "source": {
+                "type": "header",
+                "name": "x-ssl-client-subject-cn"
+            },
+            "output": [
+                "req-log"
+            ],
+            "default": "-"
+        }, {
+            "name": "x_ssl_client_issuer_dn",
+            "mandatory": true,
+            "envVarSwitch": "LOG_SSL_HEADERS",
+            "source": {
+                "type": "header",
+                "name": "x-ssl-client-issuer-dn"
+            },
+            "output": [
+                "req-log"
+            ],
+            "default": "-"
+        }, {
+            "name": "x_ssl_client_notbefore",
+            "mandatory": true,
+            "envVarSwitch": "LOG_SSL_HEADERS",
+            "source": {
+                "type": "header",
+                "name": "x-ssl-client-notbefore"
+            },
+            "output": [
+                "req-log"
+            ],
+            "default": "-"
+        }, {
+            "name": "x_ssl_client_notafter",
+            "mandatory": true,
+            "envVarSwitch": "LOG_SSL_HEADERS",
+            "source": {
+                "type": "header",
+                "name": "x-ssl-client-notafter"
+            },
+            "output": [
+                "req-log"
+            ],
+            "default": "-"
+        }, {
+            "name": "x_ssl_client_session_id",
+            "mandatory": true,
+            "envVarSwitch": "LOG_SSL_HEADERS",
+            "source": {
+                "type": "header",
+                "name": "x-ssl-client-session-id"
+            },
+            "output": [
+                "req-log"
+            ],
+            "default": "-"
+        }
+    ]
+}
