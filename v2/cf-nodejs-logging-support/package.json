@@ -21,6 +21,7 @@
   "homepage": "https://sap.github.io/cf-nodejs-logging-support/",
   "scripts": {
     "build": "tsc -p tsconfig.json",
+    "start": "tsc -p tsconfig.json && node build/main/index.js",
     "fix:lint": "eslint src --ext .ts --fix",
     "test": "mocha 'src/test/**/*.js'",
     "test:lint": "eslint src --ext .ts"
