@@ -12,6 +12,18 @@
             ]
         },
         {
+            "name": "deactivated_field",
+            "mandatory": false,
+            "source": {
+                "type": "self",
+                "name": "component_instance"
+            },
+            "output": [
+                "log"
+            ],
+            "deactivated": true
+        },
+        {
             "name": "new_field",
             "mandatory": false,
             "source": {

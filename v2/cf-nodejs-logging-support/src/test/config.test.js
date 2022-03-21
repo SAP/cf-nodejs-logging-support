@@ -32,7 +32,7 @@ describe('Test configuration', function () {
         });
     });
 
-    describe('Reads config using conditionally methods', function () {
+    describe('Get core fields', function () {
         beforeEach(function () {
             result = log.getCoreConfig();
         });
@@ -57,6 +57,24 @@ describe('Test configuration', function () {
                 "name": "logger"
             };
             expect(result.join(", ")).to.contain(expectation);
+        });
+    });
+
+    describe('Get deactivated fields', function () {
+        beforeEach(function () {
+            log.addConfig(customConfig);
+            result = log.getDeactivatedFields();
+        });
+
+        it('gets configuration', function () {
+            expect(result.length).to.be.gt(0);
+        });
+
+        it('gets only deactivated field', function () {
+            const expectation = {
+                "name": "deactivated_field"
+            };
+            expect(result[0]).to.contain(expectation);
         });
     });
 });

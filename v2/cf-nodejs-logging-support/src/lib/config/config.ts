@@ -44,7 +44,7 @@ export class Config {
     public getDeactivatedFields(): ConfigField[] {
         const filtered = this.mergedConfig.filter(
             key => {
-                key.deactivated == true
+                return key.deactivated === true
             }
         );
         return filtered;
