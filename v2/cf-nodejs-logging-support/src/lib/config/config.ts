@@ -35,7 +35,7 @@ export class Config {
     public getReqConfig(): ConfigField[] {
         const filtered = this.mergedConfig.filter(
             key => {
-                return key.output?.includes("request-log")
+                return key.output?.includes("req-log")
             }
         );
         return filtered;

@@ -26,4 +26,4 @@ interface Source {
 
 type sources = "static" | "env" | "nested-env" | "self" | "header" | "field" | "time" |  "special";
 
-type outputs = "log" | "request-log";
+type outputs = "log" | "req-log";
