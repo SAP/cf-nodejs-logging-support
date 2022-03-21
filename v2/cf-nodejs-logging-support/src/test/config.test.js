@@ -31,4 +31,32 @@ describe('Test configuration', function () {
             expect(result[index]).to.have.property("name", "new_field");
         });
     });
+
+    describe('Reads config using conditionally methods', function () {
+        beforeEach(function () {
+            result = log.getCoreConfig();
+        });
+
+        it('gets core configuration', function () {
+            expect(result.length).to.be.gt(0);
+        });
+
+        it('gets only fields with output "log"', function () {        
+            const expectation = {
+                "name": "component_id",
+                "name": "component_id",
+                "name": "component_name",
+                "name": "component_instance",
+                "name": "source_instance",
+                "name": "layer",
+                "name": "organization_name",
+                "name": "organization_id",
+                "name": "space_name",
+                "name": "space_id",
+                "name": "container_id",
+                "name": "logger"
+            };
+            expect(result.join(", ")).to.contain(expectation);
+        });
+    });
 });
