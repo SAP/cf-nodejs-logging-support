@@ -1,5 +1,5 @@
 export * from './lib/core/extern-api-methods';
-import { ConfigFile, customFieldsFormat } from './lib/interfaces';
+import { ConfigFile, customFieldsFormat } from './lib/config/interfaces';
 import * as coreConfig from './lib/config/config-core.json';
 import * as requestConfig from './lib/config/config-request.json';
 import * as cfConfig from './lib/config/config-cf.json';

@@ -1,4 +1,4 @@
-import { MergedConfigFile, ConfigFile, ConfigField, customFieldsFormat } from '../interfaces';
+import { MergedConfigFile, ConfigFile, ConfigField, customFieldsFormat } from './interfaces';
 
 export class Config {
 
