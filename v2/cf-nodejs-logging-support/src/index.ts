@@ -1,5 +1,5 @@
 export * from './lib/core/extern-api-methods';
-import { ConfigFile } from './lib/interfaces';
+import { ConfigFile, customFieldsFormat } from './lib/interfaces';
 import * as coreConfig from './lib/config/config-core.json';
 import * as requestConfig from './lib/config/config-request.json';
 import * as cfConfig from './lib/config/config-cf.json';
@@ -54,4 +54,12 @@ export function getReqFields() {
 
 export function getDeactivatedFields() {
     return config.getDeactivatedFields();
+}
+
+export function setFormat(format: customFieldsFormat) {
+    return config.setFormat(format);
+}
+
+export function deactivateStartupMessage() {
+    return config.deactivateStartupMessage();
 }

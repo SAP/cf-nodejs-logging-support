@@ -79,25 +79,48 @@ describe('Test configuration', function () {
     });
 
     describe('Set custom fields format', function () {
-        beforeEach(function () {
-            log.addConfig(customConfig);
-            result = log.getConfig();
-        });
+        describe('using config file', function () {
+            beforeEach(function () {
+                log.addConfig(customConfig);
+                result = log.getConfig();
+            });
 
-        it('sets format from config-custom.json', function () {
-            expect(result.customFieldsFormat).to.be.eql("cloud-logging");
+            it('sets format to cloud-logging', function () {
+                expect(result.customFieldsFormat).to.be.eql("cloud-logging");
+            });
+        });
+        describe('using api method', function () {
+            beforeEach(function () {
+                log.setFormat("cloud-logging");
+                result = log.getConfig();
+            });
+
+            it('sets format to cloud-logging', function () {
+                expect(result.customFieldsFormat).to.be.eql("cloud-logging");
+            });
         });
     });
 
     describe('Set startup message', function () {
-        beforeEach(function () {
-            log.addConfig(customConfig);
-            result = log.getConfig();
-        });
+        describe('using config file', function () {
+            beforeEach(function () {
+                log.addConfig(customConfig);
+                result = log.getConfig();
+            });
 
-        it('sets output startup msg from config-custom.json', function () {
-            console.log(result.outputStartupMsg);
-            expect(result.outputStartupMsg).to.be.eql(false);
+            it('sets output startup msg from config-custom.json', function () {
+                expect(result.outputStartupMsg).to.be.eql(false);
+            });
+        });
+        describe('using convenience method', function () {
+            beforeEach(function () {
+                log.deactivateStartupMessage()
+                result = log.getConfig();
+            });
+
+            it('sets output startup msg from config-custom.json', function () {
+                expect(result.outputStartupMsg).to.be.eql(false);
+            });
         });
     });
 });
