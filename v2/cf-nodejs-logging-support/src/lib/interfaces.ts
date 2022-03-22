@@ -1,9 +1,13 @@
-export interface ConfigFile {
-    config: ConfigField[];
+export interface MergedConfigFile {
+    fields: ConfigField[];
+    customFieldsFormat: string;
+    outputStartupMsg: boolean;
 }
 
-export interface CustomConfigFile {
-    config: ConfigField[];
+export interface ConfigFile {
+    fields?: ConfigField[];
+    customFieldsFormat?: string;
+    outputStartupMsg?: boolean;
 }
 
 export interface ConfigField {

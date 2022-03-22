@@ -1,30 +1,34 @@
-import { ConfigFile, ConfigField } from '../interfaces';
+import { MergedConfigFile, ConfigFile, ConfigField } from '../interfaces';
 
 export class Config {
 
-    private mergedConfig: ConfigField[] = [];
- 
+    private configFile: MergedConfigFile = {
+        "fields": [],
+        "customFieldsFormat": "",
+        "outputStartupMsg": false
+    }
+
     constructor(...rest: ConfigFile[]) {
         this.addConfig(rest);
     }
 
-    public getConfig(fieldNames: string[]): ConfigField[] {
+    public getFields(fieldNames: string[]): ConfigField[] {
 
         if (fieldNames.length > 0) {
             let result: ConfigField[] = [];
             fieldNames.forEach(name => {
                 let index = this.getIndex(name);
-                let configField = this.mergedConfig[index];
+                let configField = this.configFile.fields[index];
                 result.push(configField);
             });
             return result;
         }
 
-        return this.mergedConfig;
+        return this.configFile.fields!;
     }
 
-    public getCoreConfig(): ConfigField[] {
-        const filtered = this.mergedConfig.filter(
+    public getCoreFields(): ConfigField[] {
+        const filtered = this.configFile.fields.filter(
             key => {
                 return key.output?.includes('log');
             }
@@ -32,8 +36,8 @@ export class Config {
         return filtered;
     }
 
-    public getReqConfig(): ConfigField[] {
-        const filtered = this.mergedConfig.filter(
+    public getReqFields(): ConfigField[] {
+        const filtered = this.configFile.fields.filter(
             key => {
                 return key.output?.includes("req-log")
             }
@@ -42,7 +46,7 @@ export class Config {
     }
 
     public getDeactivatedFields(): ConfigField[] {
-        const filtered = this.mergedConfig.filter(
+        const filtered = this.configFile.fields.filter(
             key => {
                 return key.deactivated === true
             }
@@ -53,27 +57,34 @@ export class Config {
     public addConfig(configs: ConfigFile[]) {
 
         configs.forEach(file => {
-            file.config.forEach(field => {
+            file.fields?.forEach(field => {
 
                 let index = this.getIndex(field.name);
 
                 // if new config field
                 if (index === -1) {
-                    this.mergedConfig.push(field);
+                    this.configFile.fields.push(field);
                     return;
                 }
 
                 // replace object in array with new field
-                this.mergedConfig.splice(index, 1, field);
-
+                this.configFile.fields.splice(index, 1, field);
             })
+
+            if (file.outputStartupMsg) {
+                this.configFile.outputStartupMsg = file.outputStartupMsg;
+            }
+
+            if (file.customFieldsFormat) {
+                this.configFile.customFieldsFormat = file.customFieldsFormat;
+            }
         });
     }
 
     // get index of field in config
     private getIndex(name: string): number {
 
-        let index = this.mergedConfig.findIndex(
+        let index = this.configFile.fields.findIndex(
             field => field.name == name
         );
 
