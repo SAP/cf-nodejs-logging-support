@@ -1,10 +1,10 @@
-import { MergedConfigFile, ConfigFile, ConfigField } from '../interfaces';
+import { MergedConfigFile, ConfigFile, ConfigField, customFieldsFormat } from '../interfaces';
 
 export class Config {
 
     private configFile: MergedConfigFile = {
         "fields": [],
-        "customFieldsFormat": "",
+        "customFieldsFormat": "application-logging",
         "outputStartupMsg": false
     }
 
@@ -12,6 +12,10 @@ export class Config {
         this.addConfig(rest);
     }
 
+    public getConfig(): ConfigFile {
+        return this.configFile;
+    }
+    
     public getFields(fieldNames: string[]): ConfigField[] {
 
         if (fieldNames.length > 0) {
@@ -79,6 +83,18 @@ export class Config {
                 this.configFile.customFieldsFormat = file.customFieldsFormat;
             }
         });
+    }
+
+    public setFormat(format: customFieldsFormat) {
+        this.configFile.customFieldsFormat = format;
+    }
+
+    public activateStartupMessage() {
+        this.configFile.outputStartupMsg = true;
+    }
+
+    public deactivateStartupMessage() {
+        this.configFile.outputStartupMsg = false;
     }
 
     // get index of field in config
