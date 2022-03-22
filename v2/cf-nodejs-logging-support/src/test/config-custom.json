@@ -1,5 +1,5 @@
 {
-    "config": [
+    "fields": [
         {
             "name": "component_type",
             "mandatory": true,

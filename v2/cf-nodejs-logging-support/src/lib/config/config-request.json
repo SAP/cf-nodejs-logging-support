@@ -1,5 +1,5 @@
 {
-    "config": [
+    "fields": [
         {
             "name": "request_id",
             "mandatory": true,
