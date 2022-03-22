@@ -108,7 +108,7 @@ describe('Test configuration', function () {
                 result = log.getConfig();
             });
 
-            it('sets output startup msg from config-custom.json', function () {
+            it('sets output startup msg to false', function () {
                 expect(result.outputStartupMsg).to.be.eql(false);
             });
         });
@@ -118,7 +118,7 @@ describe('Test configuration', function () {
                 result = log.getConfig();
             });
 
-            it('sets output startup msg from config-custom.json', function () {
+            it('sets output startup msg to false', function () {
                 expect(result.outputStartupMsg).to.be.eql(false);
             });
         });
