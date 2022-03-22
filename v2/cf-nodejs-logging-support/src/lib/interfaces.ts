@@ -1,12 +1,12 @@
 export interface MergedConfigFile {
     fields: ConfigField[];
-    customFieldsFormat: string;
+    customFieldsFormat: customFieldsFormat;
     outputStartupMsg: boolean;
 }
 
 export interface ConfigFile {
     fields?: ConfigField[];
-    customFieldsFormat?: string;
+    customFieldsFormat?: customFieldsFormat;
     outputStartupMsg?: boolean;
 }
 
@@ -31,3 +31,5 @@ interface Source {
 type sources = "static" | "env" | "nested-env" | "self" | "header" | "field" | "time" |  "special";
 
 type outputs = "log" | "req-log";
+
+export type customFieldsFormat = "application-logging" | "cloud-logging";
