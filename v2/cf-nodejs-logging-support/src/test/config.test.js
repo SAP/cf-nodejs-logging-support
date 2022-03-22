@@ -15,7 +15,7 @@ describe('Test configuration', function () {
     describe('Add custom configuration', function () {
         beforeEach(function () {
             log.addConfig(customConfig);
-            result = log.getConfig();
+            result = log.getFields();
         });
 
         it('gets configuration', function () {
@@ -34,14 +34,14 @@ describe('Test configuration', function () {
 
     describe('Get core fields', function () {
         beforeEach(function () {
-            result = log.getCoreConfig();
+            result = log.getCoreFields();
         });
 
         it('gets core configuration', function () {
             expect(result.length).to.be.gt(0);
         });
 
-        it('gets only fields with output "log"', function () {        
+        it('gets only fields with output "log"', function () {
             const expectation = {
                 "name": "component_id",
                 "name": "component_id",
@@ -75,6 +75,29 @@ describe('Test configuration', function () {
                 "name": "deactivated_field"
             };
             expect(result[0]).to.contain(expectation);
+        });
+    });
+
+    describe('Set custom fields format', function () {
+        beforeEach(function () {
+            log.addConfig(customConfig);
+            result = log.getConfig();
+        });
+
+        it('sets format from config-custom.json', function () {
+            expect(result.customFieldsFormat).to.be.eql("cloud-logging");
+        });
+    });
+
+    describe('Set startup message', function () {
+        beforeEach(function () {
+            log.addConfig(customConfig);
+            result = log.getConfig();
+        });
+
+        it('sets output startup msg from config-custom.json', function () {
+            console.log(result.outputStartupMsg);
+            expect(result.outputStartupMsg).to.be.eql(false);
         });
     });
 });

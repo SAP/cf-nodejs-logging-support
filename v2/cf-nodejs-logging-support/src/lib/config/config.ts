@@ -15,7 +15,7 @@ export class Config {
     public getConfig(): ConfigFile {
         return this.configFile;
     }
-    
+
     public getFields(fieldNames: string[]): ConfigField[] {
 
         if (fieldNames.length > 0) {
@@ -75,7 +75,7 @@ export class Config {
                 this.configFile.fields.splice(index, 1, field);
             })
 
-            if (file.outputStartupMsg) {
+            if (file.outputStartupMsg != undefined) {
                 this.configFile.outputStartupMsg = file.outputStartupMsg;
             }
 
