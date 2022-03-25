@@ -1,7 +1,7 @@
 import LevelUtils from "./level-utils";
 import Level from "./level";
 
-class Logger {
+export default class Logger {
     private parent? : Logger = undefined
     private customFields : Map<string, any> = new Map<string, any>()
     protected loggingLevelThreshold : Level = Level.INHERIT
@@ -53,5 +53,3 @@ class Logger {
         }
     }
 }
-
-export default Logger

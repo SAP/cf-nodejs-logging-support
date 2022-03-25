@@ -1,7 +1,7 @@
 import Level from "./level"
 import Logger from "./logger"
 
-class RootLogger extends Logger {
+export default class RootLogger extends Logger {
 
     constructor() {
         super()
@@ -29,5 +29,3 @@ class RootLogger extends Logger {
     createWinstonTransport() { }
     forceLogger(_logger: string) { }
 }
-
-export default RootLogger
