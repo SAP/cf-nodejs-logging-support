@@ -85,7 +85,7 @@ export class Config {
         });
     }
 
-    public setFormat(format: customFieldsFormat) {
+    public setCustomFieldsFormat(format: customFieldsFormat) {
         this.configFile.customFieldsFormat = format;
     }
 

@@ -91,7 +91,7 @@ describe('Test configuration', function () {
         });
         describe('using api method', function () {
             beforeEach(function () {
-                log.setFormat("cloud-logging");
+                log.setCustomFieldsFormat("cloud-logging");
                 result = log.getConfig();
             });
 

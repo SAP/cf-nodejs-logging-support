@@ -56,8 +56,8 @@ export function getDeactivatedFields() {
     return config.getDeactivatedFields();
 }
 
-export function setFormat(format: customFieldsFormat) {
-    return config.setFormat(format);
+export function setCustomFieldsFormat(format: customFieldsFormat) {
+    return config.setCustomFieldsFormat(format);
 }
 
 export function setStartupMessageEnabled(enabled: boolean) {
