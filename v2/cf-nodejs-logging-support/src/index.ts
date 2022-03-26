@@ -60,6 +60,6 @@ export function setFormat(format: customFieldsFormat) {
     return config.setFormat(format);
 }
 
-export function deactivateStartupMessage() {
-    return config.deactivateStartupMessage();
+export function setStartupMessageEnabled(enabled: boolean) {
+    return config.setStartupMessageEnabled(enabled);
 }

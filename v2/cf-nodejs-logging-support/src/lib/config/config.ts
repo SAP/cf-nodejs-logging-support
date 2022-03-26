@@ -89,12 +89,8 @@ export class Config {
         this.configFile.customFieldsFormat = format;
     }
 
-    public activateStartupMessage() {
-        this.configFile.outputStartupMsg = true;
-    }
-
-    public deactivateStartupMessage() {
-        this.configFile.outputStartupMsg = false;
+    public setStartupMessageEnabled(enabled: boolean) {
+        this.configFile.outputStartupMsg = enabled;
     }
 
     // get index of field in config

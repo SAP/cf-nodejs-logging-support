@@ -114,7 +114,7 @@ describe('Test configuration', function () {
         });
         describe('using convenience method', function () {
             beforeEach(function () {
-                log.deactivateStartupMessage()
+                log.setStartupMessageEnabled(false);
                 result = log.getConfig();
             });
 
