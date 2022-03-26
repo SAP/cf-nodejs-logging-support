@@ -1,3 +1,154 @@
 {
-
+    "fields": [
+        {
+            "name": "component_type",
+            "mandatory": true,
+            "source": {
+                "type": "static",
+                "value": "application"
+            },
+            "output": [
+                "log"
+            ]
+        },
+        {
+            "name": "component_id",
+            "mandatory": true,
+            "source": {
+                "type": "nested-env",
+                "path": [
+                    "VCAP_APPLICATION",
+                    "application_id"
+                ]
+            },
+            "output": [
+                "log"
+            ],
+            "default": "-"
+        },
+        {
+            "name": "component_name",
+            "mandatory": true,
+            "source": {
+                "type": "nested-env",
+                "path": [
+                    "VCAP_APPLICATION",
+                    "application_name"
+                ]
+            },
+            "output": [
+                "log"
+            ],
+            "default": "-"
+        },
+        {
+            "name": "component_instance",
+            "mandatory": true,
+            "source": {
+                "type": "nested-env",
+                "path": [
+                    "VCAP_APPLICATION",
+                    "instance_index"
+                ]
+            },
+            "output": [
+                "log"
+            ],
+            "default": "0"
+        },
+        {
+            "name": "source_instance",
+            "mandatory": false,
+            "source": {
+                "type": "self",
+                "name": "component_instance"
+            },
+            "output": [
+                "log"
+            ]
+        },
+        {
+            "name": "layer",
+            "mandatory": true,
+            "source": {
+                "type": "static",
+                "value": "[NODEJS]"
+            },
+            "output": [
+                "log"
+            ]
+        },
+        {
+            "name": "organization_name",
+            "mandatory": true,
+            "source": {
+                "type": "nested-env",
+                "path": [
+                    "VCAP_APPLICATION",
+                    "organization_name"
+                ]
+            },
+            "output": [
+                "log"
+            ],
+            "default": "-"
+        },
+        {
+            "name": "organization_id",
+            "mandatory": true,
+            "source": {
+                "type": "nested-env",
+                "path": [
+                    "VCAP_APPLICATION",
+                    "organization_id"
+                ]
+            },
+            "output": [
+                "log"
+            ],
+            "default": "-"
+        },
+        {
+            "name": "space_name",
+            "mandatory": true,
+            "source": {
+                "type": "nested-env",
+                "path": [
+                    "VCAP_APPLICATION",
+                    "space_name"
+                ]
+            },
+            "output": [
+                "log"
+            ],
+            "default": "-"
+        },
+        {
+            "name": "space_id",
+            "mandatory": true,
+            "source": {
+                "type": "nested-env",
+                "path": [
+                    "VCAP_APPLICATION",
+                    "space_id"
+                ]
+            },
+            "output": [
+                "log"
+            ],
+            "default": "-"
+        },
+        {
+            "name": "container_id",
+            "mandatory": true,
+            "source": {
+                "type": "env",
+                "name": "CF_INSTANCE_IP"
+            },
+            "output": [
+                "log"
+            ],
+            "default": "-"
+        }
+    ]
 }
