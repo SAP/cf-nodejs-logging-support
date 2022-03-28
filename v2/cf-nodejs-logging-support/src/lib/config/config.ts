@@ -1,19 +1,19 @@
-import { MergedConfigFile, ConfigFile, ConfigField, customFieldsFormat } from './interfaces';
+import { MergedConfig, ConfigObject, ConfigField, customFieldsFormat } from './interfaces';
 
 export class Config {
 
-    private configFile: MergedConfigFile = {
+    private config: MergedConfig = {
         "fields": [],
-        "customFieldsFormat": "application-logging",
+        "customFieldsFormat": "cloud-logging",
         "outputStartupMsg": false
     }
 
-    constructor(...rest: ConfigFile[]) {
+    constructor(...rest: ConfigObject[]) {
         this.addConfig(rest);
     }
 
-    public getConfig(): ConfigFile {
-        return this.configFile;
+    public getConfig(): ConfigObject {
+        return this.config;
     }
 
     public getFields(fieldNames: string[]): ConfigField[] {
@@ -22,17 +22,17 @@ export class Config {
             let result: ConfigField[] = [];
             fieldNames.forEach(name => {
                 let index = this.getIndex(name);
-                let configField = this.configFile.fields[index];
+                let configField = this.config.fields[index];
                 result.push(configField);
             });
             return result;
         }
 
-        return this.configFile.fields!;
+        return this.config.fields!;
     }
 
     public getMsgFields(): ConfigField[] {
-        const filtered = this.configFile.fields.filter(
+        const filtered = this.config.fields.filter(
             key => {
                 return key.output?.includes('msg-log');
             }
@@ -41,7 +41,7 @@ export class Config {
     }
 
     public getReqFields(): ConfigField[] {
-        const filtered = this.configFile.fields.filter(
+        const filtered = this.config.fields.filter(
             key => {
                 return key.output?.includes("req-log")
             }
@@ -50,7 +50,7 @@ export class Config {
     }
 
     public getDeactivatedFields(): ConfigField[] {
-        const filtered = this.configFile.fields.filter(
+        const filtered = this.config.fields.filter(
             key => {
                 return key.deactivated === true
             }
@@ -58,7 +58,7 @@ export class Config {
         return filtered;
     }
 
-    public addConfig(configs: ConfigFile[]) {
+    public addConfig(configs: ConfigObject[]) {
 
         configs.forEach(file => {
             file.fields?.forEach(field => {
@@ -67,36 +67,36 @@ export class Config {
 
                 // if new config field
                 if (index === -1) {
-                    this.configFile.fields.push(field);
+                    this.config.fields.push(field);
                     return;
                 }
 
                 // replace object in array with new field
-                this.configFile.fields.splice(index, 1, field);
+                this.config.fields.splice(index, 1, field);
             })
 
             if (file.outputStartupMsg != undefined) {
-                this.configFile.outputStartupMsg = file.outputStartupMsg;
+                this.config.outputStartupMsg = file.outputStartupMsg;
             }
 
             if (file.customFieldsFormat) {
-                this.configFile.customFieldsFormat = file.customFieldsFormat;
+                this.config.customFieldsFormat = file.customFieldsFormat;
             }
         });
     }
 
     public setCustomFieldsFormat(format: customFieldsFormat) {
-        this.configFile.customFieldsFormat = format;
+        this.config.customFieldsFormat = format;
     }
 
     public setStartupMessageEnabled(enabled: boolean) {
-        this.configFile.outputStartupMsg = enabled;
+        this.config.outputStartupMsg = enabled;
     }
 
     // get index of field in config
     private getIndex(name: string): number {
 
-        let index = this.configFile.fields.findIndex(
+        let index = this.config.fields.findIndex(
             field => field.name == name
         );
 

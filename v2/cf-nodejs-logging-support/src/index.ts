@@ -1,5 +1,5 @@
 export * from './lib/core/extern-api-methods';
-import { ConfigFile, customFieldsFormat } from './lib/config/interfaces';
+import { ConfigObject, customFieldsFormat } from './lib/config/interfaces';
 import * as coreConfig from './lib/config/config-core.json';
 import * as requestConfig from './lib/config/config-request.json';
 import * as cfConfig from './lib/config/config-cf.json';
@@ -10,29 +10,29 @@ import { Config } from './lib/config/config';
 import * as EnvManagement from './lib/core/env-management';
 
 let config = new Config(
-    coreConfig as ConfigFile,
-    requestConfig as ConfigFile
+    coreConfig as ConfigObject,
+    requestConfig as ConfigObject
 );
 let env = EnvManagement.getEnv();
 let boundServices = EnvManagement.getBoundServices();
 
 if (env == "CF") {
-    config.addConfig([cfConfig as ConfigFile]);
+    config.addConfig([cfConfig as ConfigObject]);
 }
 
 if (env == "Kyma") {
-    config.addConfig([kymaConfig as ConfigFile]);;
+    config.addConfig([kymaConfig as ConfigObject]);;
 }
 
 if (boundServices["application-logging"]) {
-    config.addConfig([appLoggingConfig as ConfigFile]);
+    config.addConfig([appLoggingConfig as ConfigObject]);
 }
 
 if (boundServices["cloud-logging"]) {
-    config.addConfig([cloudLoggingConfig as ConfigFile]);
+    config.addConfig([cloudLoggingConfig as ConfigObject]);
 }
 
-export function addConfig(...configs: ConfigFile[]) {
+export function addConfig(...configs: ConfigObject[]) {
     return config.addConfig(configs);
 }
 

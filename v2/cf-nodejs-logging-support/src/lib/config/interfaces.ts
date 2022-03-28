@@ -1,10 +1,10 @@
-export interface MergedConfigFile {
+export interface MergedConfig {
     fields: ConfigField[];
     customFieldsFormat: customFieldsFormat;
     outputStartupMsg: boolean;
 }
 
-export interface ConfigFile {
+export interface ConfigObject {
     fields?: ConfigField[];
     customFieldsFormat?: customFieldsFormat;
     outputStartupMsg?: boolean;
