@@ -1,6 +1,6 @@
 const expect = require('chai').expect;
 const importFresh = require('import-fresh');
-const customConfig = require('./config-custom.json');
+const customConfig = require('./config-test.json');
 
 describe('Test configuration', function () {
 
