@@ -1,1 +1,5 @@
-export * from './lib/core/extern-api-methods';
+import RootLogger from "./lib/logger/root-logger"
+
+let rootLogger = new RootLogger()
+
+export = rootLogger
