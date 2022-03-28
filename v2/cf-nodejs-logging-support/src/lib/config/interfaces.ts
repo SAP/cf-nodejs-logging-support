@@ -28,6 +28,7 @@ interface Source {
     name?: string;
 }
 
+// to do: change types
 type sources = "static" | "env" | "nested-env" | "self" | "header" | "field" | "time" |  "special";
 
 type outputs = "msg-log" | "req-log";

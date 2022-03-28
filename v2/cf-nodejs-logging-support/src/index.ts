@@ -7,7 +7,7 @@ import * as kymaConfig from './lib/config/config-kyma.json';
 import * as appLoggingConfig from './lib/config/config-app-logging.json';
 import * as cloudLoggingConfig from './lib/config/config-cloud-logging.json';
 import { Config } from './lib/config/config';
-import * as EnvManagement from './lib/core/env-management';
+import EnvManagement from './lib/core/env-management';
 
 let config = new Config(
     coreConfig as ConfigObject,
