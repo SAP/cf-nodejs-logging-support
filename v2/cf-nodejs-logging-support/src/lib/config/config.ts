@@ -31,10 +31,10 @@ export class Config {
         return this.configFile.fields!;
     }
 
-    public getCoreFields(): ConfigField[] {
+    public getMsgFields(): ConfigField[] {
         const filtered = this.configFile.fields.filter(
             key => {
-                return key.output?.includes('log');
+                return key.output?.includes('msg-log');
             }
         );
         return filtered;

@@ -44,8 +44,8 @@ export function getFields(...fieldNames: string[]) {
     return config.getFields(fieldNames);
 }
 
-export function getCoreFields() {
-    return config.getCoreFields();
+export function getMsgFields() {
+    return config.getMsgFields();
 }
 
 export function getReqFields() {

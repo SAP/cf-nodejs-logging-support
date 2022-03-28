@@ -34,14 +34,14 @@ describe('Test configuration', function () {
 
     describe('Get core fields', function () {
         beforeEach(function () {
-            result = log.getCoreFields();
+            result = log.getMsgFields();
         });
 
         it('gets core configuration', function () {
             expect(result.length).to.be.gt(0);
         });
 
-        it('gets only fields with output "log"', function () {
+        it('gets only fields with output "msg-log"', function () {
             const expectation = {
                 "name": "component_id",
                 "name": "component_id",

@@ -8,7 +8,7 @@
                 "value": "application"
             },
             "output": [
-                "log"
+                "msg-log"
             ]
         },
         {
@@ -22,7 +22,7 @@
                 ]
             },
             "output": [
-                "log"
+                "msg-log"
             ],
             "default": "-"
         },
@@ -37,7 +37,7 @@
                 ]
             },
             "output": [
-                "log"
+                "msg-log"
             ],
             "default": "-"
         },
@@ -52,7 +52,7 @@
                 ]
             },
             "output": [
-                "log"
+                "msg-log"
             ],
             "default": "0"
         },
@@ -64,7 +64,7 @@
                 "name": "component_instance"
             },
             "output": [
-                "log"
+                "msg-log"
             ]
         },
         {
@@ -75,7 +75,7 @@
                 "value": "[NODEJS]"
             },
             "output": [
-                "log"
+                "msg-log"
             ]
         },
         {
@@ -89,7 +89,7 @@
                 ]
             },
             "output": [
-                "log"
+                "msg-log"
             ],
             "default": "-"
         },
@@ -104,7 +104,7 @@
                 ]
             },
             "output": [
-                "log"
+                "msg-log"
             ],
             "default": "-"
         },
@@ -119,7 +119,7 @@
                 ]
             },
             "output": [
-                "log"
+                "msg-log"
             ],
             "default": "-"
         },
@@ -134,7 +134,7 @@
                 ]
             },
             "output": [
-                "log"
+                "msg-log"
             ],
             "default": "-"
         },
@@ -146,7 +146,7 @@
                 "name": "CF_INSTANCE_IP"
             },
             "output": [
-                "log"
+                "msg-log"
             ],
             "default": "-"
         }

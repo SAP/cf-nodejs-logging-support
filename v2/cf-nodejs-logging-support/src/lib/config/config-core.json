@@ -8,7 +8,7 @@
                 "value": "nodejs-logger"
             },
             "output": [
-                "log"
+                "msg-log"
             ]
         }
     ],

@@ -30,6 +30,6 @@ interface Source {
 
 type sources = "static" | "env" | "nested-env" | "self" | "header" | "field" | "time" |  "special";
 
-type outputs = "log" | "req-log";
+type outputs = "msg-log" | "req-log";
 
 export type customFieldsFormat = "application-logging" | "cloud-logging";
