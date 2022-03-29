@@ -58,19 +58,19 @@ describe('Test configuration', function () {
         });
     });
 
-    describe('Get deactivated fields', function () {
+    describe('Get disable fields', function () {
         beforeEach(function () {
             log.addConfig(customConfig);
-            result = log.getDeactivatedFields();
+            result = log.getDisabledFields();
         });
 
         it('gets configuration', function () {
             expect(result.length).to.be.gt(0);
         });
 
-        it('gets only deactivated field', function () {
+        it('gets only disabled field', function () {
             const expectation = {
-                "name": "deactivated_field"
+                "name": "disabled_field"
             };
             expect(result[0]).to.contain(expectation);
         });

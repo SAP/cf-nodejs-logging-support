@@ -12,7 +12,7 @@
             ]
         },
         {
-            "name": "deactivated_field",
+            "name": "disabled_field",
             "mandatory": false,
             "source": {
                 "type": "self",
@@ -21,7 +21,7 @@
             "output": [
                 "msg-log"
             ],
-            "deactivated": true
+            "disable": true
         },
         {
             "name": "new_field",

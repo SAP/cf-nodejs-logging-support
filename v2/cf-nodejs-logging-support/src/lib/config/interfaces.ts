@@ -18,7 +18,7 @@ export interface ConfigField {
     source?: Source;
     default?: string | number;
     output?: outputs[];
-    deactivated?: boolean;
+    disable?: boolean;
 }
 
 interface Source {

@@ -14,8 +14,8 @@ describe.skip('Test Config class', function () {
         });
     });
 
-    describe('Test getDeactivatedFields', function () {
-        it('gets deactivated fields', function () {
+    describe('Test getDisabledFields', function () {
+        it('gets disabled fields', function () {
         });
     });
 

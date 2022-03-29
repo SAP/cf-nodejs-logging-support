@@ -87,10 +87,10 @@ export default class Config {
         return filtered;
     }
 
-    public getDeactivatedFields(): ConfigField[] {
+    public getDisabledFields(): ConfigField[] {
         const filtered = Config.instance.config.fields.filter(
             key => {
-                return key.deactivated === true
+                return key.disable === true
             }
         );
         return filtered;

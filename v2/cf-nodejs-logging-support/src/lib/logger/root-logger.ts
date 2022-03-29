@@ -28,8 +28,8 @@ export default class RootLogger extends Logger {
         return this.config.getReqFields();
     }
 
-    getDeactivatedFields() {
-        return this.config.getDeactivatedFields();
+    getDisabledFields() {
+        return this.config.getDisabledFields();
     }
 
     addConfig(...configObject: ConfigObject[]) {
