@@ -4,8 +4,6 @@ const customConfig = require('./config-test.json');
 
 describe('Test configuration', function () {
 
-    console.log(customConfig);
-
     var result;
 
     beforeEach(function () {
