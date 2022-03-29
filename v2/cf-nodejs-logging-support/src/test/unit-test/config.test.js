@@ -1,5 +1,5 @@
 const expect = require('chai').expect;
-const config = require('../../build/main/lib/config/config').default;
+const config = require('../../../build/main/lib/config/config').default;
 
 describe.skip('Test Config class', function () {
     var singleton = config.getInstance();
