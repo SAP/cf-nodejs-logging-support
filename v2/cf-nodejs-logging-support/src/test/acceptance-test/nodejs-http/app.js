@@ -1,6 +1,6 @@
 const importFresh = require('import-fresh');
 const http = importFresh('http');
-var log = importFresh('../../../build/main/index');;
+var log = importFresh('../../../../build/main/index');;
 
 // Force logger to run the http version.
 log.forceLogger("plainhttp");

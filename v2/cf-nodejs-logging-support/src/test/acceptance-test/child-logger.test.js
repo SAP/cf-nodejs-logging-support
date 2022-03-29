@@ -9,7 +9,7 @@ var childLogger;
 describe.skip('Test child logger', function () {
 
     beforeEach(function () {
-        log = importFresh("../../build/main/index");
+        log = importFresh("../../../build/main/index");
 
         lastOutput = "";
         logCount = 0;

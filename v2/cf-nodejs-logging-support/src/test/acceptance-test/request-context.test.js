@@ -17,7 +17,7 @@ describe.skip('Test request context', function () {
     }
 
     before(function () {
-        log = importFresh("../../build/main/index");
+        log = importFresh("../../../build/main/index");
 
         log.setSinkFunction(function (level, output) {
             process.writeLog(level, output);
