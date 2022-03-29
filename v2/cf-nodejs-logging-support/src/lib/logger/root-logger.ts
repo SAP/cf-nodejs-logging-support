@@ -2,7 +2,7 @@ import Level from "./level"
 import Logger from "./logger"
 import Config from "../config/config"
 import { ConfigObject, customFieldsFormat } from "../config/interfaces"
-import EnvManagement from "../core/env-management";
+import EnvService from "../core/env-service";
 
 export default class RootLogger extends Logger {
     private config = Config.getInstance();
@@ -53,7 +53,7 @@ export default class RootLogger extends Logger {
     registerCustomFields(_object: Object) { }
 
     getBoundServices() { 
-        return EnvManagement.getBoundServices()
+        return EnvService.getBoundServices()
     }
 
     // legacy methods

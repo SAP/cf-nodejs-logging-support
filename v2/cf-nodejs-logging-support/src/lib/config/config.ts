@@ -5,7 +5,7 @@ import * as cfConfig from './config-cf.json';
 import * as kymaConfig from './config-kyma.json';
 import * as appLoggingConfig from './config-app-logging.json';
 import * as cloudLoggingConfig from './config-cloud-logging.json';
-import EnvManagement from '../core/env-management';
+import EnvService from '../core/env-service';
 
 export default class Config {
 
@@ -21,8 +21,8 @@ export default class Config {
 
     public static getInstance(): Config {
         if (!Config.instance) {
-            let env = EnvManagement.getEnv();
-            let boundServices = EnvManagement.getBoundServices();
+            let env = EnvService.getRuntimeName();
+            let boundServices = EnvService.getBoundServices();
             let envConfig = () => {
                 if (env == "Kyma") {
                     return kymaConfig as ConfigObject;
