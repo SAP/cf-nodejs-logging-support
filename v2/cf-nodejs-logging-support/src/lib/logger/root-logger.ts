@@ -1,7 +1,9 @@
 import Level from "./level"
 import Logger from "./logger"
+import Middleware from "../middleware/middleware"
 
 export default class RootLogger extends Logger {
+    private middleware: Middleware = new Middleware();
 
     constructor() {
         super()
@@ -16,7 +18,9 @@ export default class RootLogger extends Logger {
 
     enableTracing() { }
 
-    logNetwork(_req: any, _res: any, _next: any) { }
+    logNetwork(_req: any, _res: any, _next: any) {
+        this.middleware.logNetwork(_req, _res, _next);
+    }
 
     registerCustomFields(_object: Object) { }
 
@@ -27,5 +31,7 @@ export default class RootLogger extends Logger {
     overrideCustomFieldFormat(_value: string) { }
     setLogPattern() { }
     createWinstonTransport() { }
-    forceLogger(_logger: string) { }
+    forceLogger(_logger: string) {
+        this.middleware.forceLogger(_logger);
+    }
 }
