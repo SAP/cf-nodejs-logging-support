@@ -17,34 +17,33 @@ export default class Config {
         "outputStartupMsg": false
     }
 
-    private constructor() {}
+    private constructor() { }
 
     public static getInstance(): Config {
         if (!Config.instance) {
+            let configFiles: ConfigObject[] = [
+                coreConfig as ConfigObject,
+                requestConfig as ConfigObject
+            ];
+
             let env = EnvService.getRuntimeName();
             let boundServices = EnvService.getBoundServices();
-            let envConfig = () => {
-                if (env == "Kyma") {
-                    return kymaConfig as ConfigObject;
-                }
-                return cfConfig as ConfigObject;
-            }
-            let boundServiceConfig = () => {
-                if (boundServices["application-logging"]) {
-                    return appLoggingConfig as ConfigObject;
-                }
 
-                return cloudLoggingConfig as ConfigObject;
+            if (env == "Kyma") {
+                configFiles.push(kymaConfig as ConfigObject);
+            } else {
+                configFiles.push(cfConfig as ConfigObject);
+            }
+
+            if (boundServices["application-logging"]) {
+                configFiles.push(appLoggingConfig as ConfigObject);
+            } else {
+                configFiles.push(cloudLoggingConfig as ConfigObject);
             }
 
             Config.instance = new Config();
 
-            Config.instance.addConfig([
-                coreConfig as ConfigObject,
-                requestConfig as ConfigObject,
-                envConfig(),
-                boundServiceConfig()
-            ]);
+            Config.instance.addConfig(configFiles);
         }
 
         return Config.instance;
@@ -54,9 +53,9 @@ export default class Config {
         return Config.instance.config;
     }
 
-    public getFields(fieldNames: string[]): ConfigField[] {
+    public getFields(fieldNames?: string[]): ConfigField[] {
 
-        if (fieldNames.length > 0) {
+        if (fieldNames && fieldNames.length > 0) {
             let result: ConfigField[] = [];
             fieldNames.forEach(name => {
                 let index = this.getIndex(name);
