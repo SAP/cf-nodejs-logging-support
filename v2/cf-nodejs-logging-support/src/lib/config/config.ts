@@ -1,4 +1,4 @@
-import { MergedConfig, ConfigObject, ConfigField, customFieldsFormat } from './interfaces';
+import { ConfigObject, ConfigField, customFieldsFormat } from './interfaces';
 import * as coreConfig from './config-core.json';
 import * as requestConfig from './config-request.json';
 import * as cfConfig from './config-cf.json';
@@ -11,7 +11,7 @@ export default class Config {
 
     private static instance: Config;
 
-    private config: MergedConfig = {
+    private config: ConfigObject = {
         "fields": [],
         "customFieldsFormat": "cloud-logging",
         "outputStartupMsg": false
@@ -59,7 +59,7 @@ export default class Config {
             let result: ConfigField[] = [];
             fieldNames.forEach(name => {
                 let index = this.getIndex(name);
-                let configField = Config.instance.config.fields[index];
+                let configField = Config.instance.config.fields![index];
                 result.push(configField);
             });
             return result;
@@ -69,7 +69,7 @@ export default class Config {
     }
 
     public getMsgFields(): ConfigField[] {
-        const filtered = Config.instance.config.fields.filter(
+        const filtered = Config.instance.config.fields!.filter(
             key => {
                 return key.output?.includes('msg-log');
             }
@@ -78,7 +78,7 @@ export default class Config {
     }
 
     public getReqFields(): ConfigField[] {
-        const filtered = Config.instance.config.fields.filter(
+        const filtered = Config.instance.config.fields!.filter(
             key => {
                 return key.output?.includes("req-log")
             }
@@ -87,7 +87,7 @@ export default class Config {
     }
 
     public getDisabledFields(): ConfigField[] {
-        const filtered = Config.instance.config.fields.filter(
+        const filtered = Config.instance.config.fields!.filter(
             key => {
                 return key.disable === true
             }
@@ -104,12 +104,12 @@ export default class Config {
 
                 // if new config field
                 if (index === -1) {
-                    Config.instance.config.fields.push(field);
+                    Config.instance.config.fields!.push(field);
                     return;
                 }
 
                 // replace object in array with new field
-                Config.instance.config.fields.splice(index, 1, field);
+                Config.instance.config.fields!.splice(index, 1, field);
             })
 
             if (file.outputStartupMsg != undefined) {
@@ -133,7 +133,7 @@ export default class Config {
     // get index of field in config
     private getIndex(name: string): number {
 
-        let index = Config.instance.config.fields.findIndex(
+        let index = Config.instance.config.fields!.findIndex(
             field => field.name == name
         );
 

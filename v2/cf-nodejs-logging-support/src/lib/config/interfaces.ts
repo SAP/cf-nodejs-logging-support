@@ -1,9 +1,3 @@
-export interface MergedConfig {
-    fields: ConfigField[];
-    customFieldsFormat: customFieldsFormat;
-    outputStartupMsg: boolean;
-}
-
 export interface ConfigObject {
     fields?: ConfigField[];
     customFieldsFormat?: customFieldsFormat;
@@ -29,7 +23,7 @@ interface Source {
 }
 
 // to do: change types
-type sources = "static" | "env" | "nested-env" | "self" | "header" | "field" | "time" |  "special";
+type sources = "static" | "env" | "nested-env" | "self" | "header" | "field" | "time" | "special";
 
 type outputs = "msg-log" | "req-log";
 
