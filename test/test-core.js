@@ -1890,13 +1890,10 @@ describe('Test log-core', function () {
             header = core.__get__("dynLogLevelHeader");
             header.should.equal(defaultHeader);
         });
-
-
-
     });
 
     describe('Test initLog', function () {
-        var core = rewire("../core/log-core.js");
+        var core = require("../core/log-core.js");
         var logObject;
         var clock;
 
