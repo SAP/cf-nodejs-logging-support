@@ -30,52 +30,6 @@ describe('Test configuration', function () {
         });
     });
 
-    describe('Get core fields', function () {
-        beforeEach(function () {
-            result = log.getMsgFields();
-        });
-
-        it('gets core configuration', function () {
-            expect(result.length).to.be.gt(0);
-        });
-
-        it('gets only fields with output "msg-log"', function () {
-            const expectation = {
-                "name": "component_id",
-                "name": "component_id",
-                "name": "component_name",
-                "name": "component_instance",
-                "name": "source_instance",
-                "name": "layer",
-                "name": "organization_name",
-                "name": "organization_id",
-                "name": "space_name",
-                "name": "space_id",
-                "name": "container_id",
-                "name": "logger"
-            };
-            expect(result.join(", ")).to.contain(expectation);
-        });
-    });
-
-    describe('Get disable fields', function () {
-        beforeEach(function () {
-            log.addConfig(customConfig);
-            result = log.getDisabledFields();
-        });
-
-        it('gets configuration', function () {
-            expect(result.length).to.be.gt(0);
-        });
-
-        it('gets only disabled field', function () {
-            const expectation = {
-                "name": "disabled_field"
-            };
-            expect(result[0]).to.contain(expectation);
-        });
-    });
-
     describe('Set custom fields format', function () {
         describe('using config file', function () {
             beforeEach(function () {

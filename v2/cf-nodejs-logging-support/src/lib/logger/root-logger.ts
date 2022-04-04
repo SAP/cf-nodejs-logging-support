@@ -20,18 +20,6 @@ export default class RootLogger extends Logger {
         return this.config.getFields(fieldNames);
     }
 
-    getMsgFields() {
-        return this.config.getMsgFields();
-    }
-
-    getReqFields() {
-        return this.config.getReqFields();
-    }
-
-    getDisabledFields() {
-        return this.config.getDisabledFields();
-    }
-
     addConfig(...configObject: ConfigObject[]) {
         return this.config.addConfig(configObject);
     }
@@ -52,7 +40,7 @@ export default class RootLogger extends Logger {
 
     registerCustomFields(_object: Object) { }
 
-    getBoundServices() { 
+    getBoundServices() {
         return EnvService.getBoundServices()
     }
 
