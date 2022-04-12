@@ -7,7 +7,7 @@ export default class EnvService {
     }
 
     static getBoundServices() {
-        let boundServices = JSONHelper.parseJSONSafe(process.env.VCAP_SERVICES);
+        const boundServices = JSONHelper.parseJSONSafe(process.env.VCAP_SERVICES);
         return boundServices;
     }
 } 

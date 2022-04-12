@@ -1,5 +1,5 @@
 import RootLogger from "./lib/logger/root-logger"
 
-let rootLogger = new RootLogger()
+const rootLogger = new RootLogger()
 
 export = rootLogger

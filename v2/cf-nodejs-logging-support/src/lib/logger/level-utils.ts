@@ -2,10 +2,10 @@ import Level from "./level";
 
 export default class LevelUtils {
 
-    private static defaultLevel: Level = Level.INFO
+    private static readonly defaultLevel: Level = Level.INFO
 
     static getLevel(name: string): Level {
-        let level: Level = Level[name.toUpperCase() as keyof typeof Level]
+        const level: Level = Level[name.toUpperCase() as keyof typeof Level]
         if (level === undefined) {
             return LevelUtils.defaultLevel;
         }

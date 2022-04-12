@@ -1,8 +1,8 @@
-import Level from "./level"
-import Logger from "./logger"
 import Config from "../config/config"
 import { ConfigObject, customFieldsFormat } from "../config/interfaces"
 import EnvService from "../core/env-service";
+import Level from "./level"
+import Logger from "./logger"
 
 export default class RootLogger extends Logger {
     private config = Config.getInstance();
