@@ -48,13 +48,12 @@ describe('Test Config class', function () {
                         "name": "request",
                         "mandatory": true,
                         "source": {
-                            "type": "field",
+                            "type": "req-object",
                             "name": "originalUrl"
                         },
                         "output": [
                             "req-log"
-                        ],
-                        "default": "-"
+                        ]
                     }
                 ];
                 expect(result).to.be.eql(expectation);
@@ -155,7 +154,7 @@ describe('Test Config class', function () {
                     "name": "disabled_field",
                     "mandatory": false,
                     "source": {
-                        "type": "self",
+                        "type": "config-field",
                         "name": "component_instance"
                     },
                     "output": [
@@ -167,7 +166,7 @@ describe('Test Config class', function () {
                     "name": "new_field",
                     "mandatory": false,
                     "source": {
-                        "type": "self",
+                        "type": "config-field",
                         "name": "component_instance"
                     },
                     "output": [
@@ -189,7 +188,7 @@ describe('Test Config class', function () {
                 "name": "disabled_field",
                 "mandatory": false,
                 "source": {
-                    "type": "self",
+                    "type": "config-field",
                     "name": "component_instance"
                 },
                 "output": [

@@ -2,6 +2,7 @@ export interface ConfigObject {
     fields?: ConfigField[];
     customFieldsFormat?: customFieldsFormat;
     outputStartupMsg?: boolean;
+    framework?: framework;
 }
 
 export interface ConfigField {
@@ -9,22 +10,25 @@ export interface ConfigField {
     mandatory?: boolean;
     envVarRedact?: string;
     envVarSwitch?: string;
-    source?: Source;
-    default?: string | number;
+    source?: Source | Source[];
     output?: outputs[];
     disable?: boolean;
+    default?: string;
 }
 
-interface Source {
+export interface Source {
     type: sources;
     value?: string;
     path?: string[];
     name?: string;
+    framework?: framework;
 }
 
 // to do: change types
-type sources = "static" | "env" | "nested-env" | "self" | "header" | "field" | "time" | "special";
+type sources = "static" | "env" | "config-field" | "req-header" | "res-header" | "req-object" | "res-object" | "meta" | "uuid";
 
 type outputs = "msg-log" | "req-log";
+
+export type framework = "express" | "restify" | "connect" | "nodejs-http";
 
 export type customFieldsFormat = "application-logging" | "cloud-logging";

@@ -12,5 +12,6 @@
             ]
         }
     ],
-    "outputStartupMsg": true
+    "outputStartupMsg": true,
+    "framework": "express"
 }

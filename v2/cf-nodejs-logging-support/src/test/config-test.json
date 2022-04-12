@@ -15,7 +15,7 @@
             "name": "disabled_field",
             "mandatory": false,
             "source": {
-                "type": "self",
+                "type": "config-field",
                 "name": "component_instance"
             },
             "output": [
@@ -27,7 +27,7 @@
             "name": "new_field",
             "mandatory": false,
             "source": {
-                "type": "self",
+                "type": "config-field",
                 "name": "component_instance"
             },
             "output": [
