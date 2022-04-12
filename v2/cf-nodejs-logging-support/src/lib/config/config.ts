@@ -1,11 +1,12 @@
-import { ConfigObject, ConfigField, customFieldsFormat } from './interfaces';
-import * as coreConfig from './config-core.json';
-import * as requestConfig from './config-request.json';
-import * as cfConfig from './config-cf.json';
-import * as kymaConfig from './config-kyma.json';
-import * as appLoggingConfig from './config-app-logging.json';
-import * as cloudLoggingConfig from './config-cloud-logging.json';
 import EnvService from '../core/env-service';
+import appLoggingConfig from './config-app-logging.json';
+import cfConfig from './config-cf.json';
+import cloudLoggingConfig from './config-cloud-logging.json';
+import coreConfig from './config-core.json';
+import kymaConfig from './config-kyma.json';
+import requestConfig from './config-request.json';
+import ConfigValidator from './config-validator';
+import { ConfigField, ConfigObject, customFieldsFormat, framework } from './interfaces';
 
 export default class Config {
 
@@ -14,20 +15,21 @@ export default class Config {
     private config: ConfigObject = {
         "fields": [],
         "customFieldsFormat": "cloud-logging",
-        "outputStartupMsg": false
+        "outputStartupMsg": false,
+        "framework": "express"
     }
 
     private constructor() { }
 
     public static getInstance(): Config {
         if (!Config.instance) {
-            let configFiles: ConfigObject[] = [
+            const configFiles: ConfigObject[] = [
                 coreConfig as ConfigObject,
                 requestConfig as ConfigObject
             ];
 
-            let env = EnvService.getRuntimeName();
-            let boundServices = EnvService.getBoundServices();
+            const env = EnvService.getRuntimeName();
+            const boundServices = EnvService.getBoundServices();
 
             if (env == "Kyma") {
                 configFiles.push(kymaConfig as ConfigObject);
@@ -56,10 +58,10 @@ export default class Config {
     public getFields(fieldNames?: string[]): ConfigField[] {
 
         if (fieldNames && fieldNames.length > 0) {
-            let result: ConfigField[] = [];
+            const result: ConfigField[] = [];
             fieldNames.forEach(name => {
-                let index = this.getIndex(name);
-                let configField = Config.instance.config.fields![index];
+                const index = this.getIndex(name);
+                const configField = Config.instance.config.fields![index];
                 result.push(configField);
             });
             return result;
@@ -98,9 +100,11 @@ export default class Config {
     public addConfig(configs: ConfigObject[]) {
 
         configs.forEach(file => {
+            ConfigValidator.isValid(file);
+
             file.fields?.forEach(field => {
 
-                let index = Config.instance.getIndex(field.name);
+                const index = Config.instance.getIndex(field.name);
 
                 // if new config field
                 if (index === -1) {
@@ -119,6 +123,12 @@ export default class Config {
             if (file.customFieldsFormat) {
                 Config.instance.config.customFieldsFormat = file.customFieldsFormat;
             }
+
+            if (file.framework) {
+                Config.instance.config.framework = file.framework;
+            }
+
+            return;
         });
     }
 
@@ -130,10 +140,25 @@ export default class Config {
         Config.instance.config.outputStartupMsg = enabled;
     }
 
+    // delete framework specific fields that are not supported
+    public compressFields(framework: framework): void {
+        Config.instance.config.fields!.forEach(field => {
+            if (field.source && Array.isArray(field.source) && field.source.length > 0) {
+                for (let i = 0; i < field.source.length;) {
+                    if (field.source[i].framework !== undefined && !field.source[i].framework!.includes(framework)) {
+                        field.source.shift();
+                    } else {
+                        i++;
+                    }
+                }
+            }
+        });
+    }
+
     // get index of field in config
     private getIndex(name: string): number {
 
-        let index = Config.instance.config.fields!.findIndex(
+        const index = Config.instance.config.fields!.findIndex(
             field => field.name == name
         );
 
