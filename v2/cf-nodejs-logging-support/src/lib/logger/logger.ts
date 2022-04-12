@@ -1,35 +1,35 @@
-import LevelUtils from "./level-utils";
 import Level from "./level";
+import LevelUtils from "./level-utils";
 
 export default class Logger {
-    private parent? : Logger = undefined
-    private customFields : Map<string, any> = new Map<string, any>()
-    protected loggingLevelThreshold : Level = Level.INHERIT
+    private parent?: Logger = undefined
+    private customFields: Map<string, any> = new Map<string, any>()
+    protected loggingLevelThreshold: Level = Level.INHERIT
 
-    constructor(parent? : Logger) {
+    constructor(parent?: Logger) {
         this.parent = parent;
     }
 
     createLogger(_object?: Object): Logger {
         return new Logger(this)
     }
-    
+
     setLoggingLevel(name: string) {
         this.loggingLevelThreshold = LevelUtils.getLevel(name)
     }
-    
-    getLoggingLevel() : string { 
+
+    getLoggingLevel(): string {
         if (this.loggingLevelThreshold == Level.INHERIT) {
             return this.parent!.getLoggingLevel()
         }
         return LevelUtils.getName(this.loggingLevelThreshold)
     }
 
-    isLoggingLevel(name: string) : boolean { 
+    isLoggingLevel(name: string): boolean {
         if (this.loggingLevelThreshold == Level.INHERIT) {
             return this.parent!.isLoggingLevel(name)
         }
-        let level = LevelUtils.getLevel(name) 
+        const level = LevelUtils.getLevel(name)
         return LevelUtils.isLevelEnabled(this.loggingLevelThreshold, level)
     }
 
@@ -45,7 +45,7 @@ export default class Logger {
         this.customFields = customFields
     }
 
-    getCustomFields() : Map<string, any> {
+    getCustomFields(): Map<string, any> {
         if (this.parent) {
             return new Map([...this.parent.getCustomFields(), ...this.customFields.entries()])
         } else {

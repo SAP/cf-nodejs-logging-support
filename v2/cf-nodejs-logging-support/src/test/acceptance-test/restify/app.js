@@ -1,6 +1,6 @@
 var restify = require('restify');
 const importFresh = require('import-fresh');
-var log = importFresh('../../../build/main/index');
+var log = importFresh('../../../../build/main/index');
 var app = restify.createServer();
 
 // Force logger to run the restify version. (default is express, forcing express is also legal)

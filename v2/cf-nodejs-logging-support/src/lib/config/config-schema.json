@@ -1,0 +1,125 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "additionalProperties": false,
+    "definitions": {
+        "ConfigField": {
+            "additionalProperties": false,
+            "properties": {
+                "default": {
+                    "type": "string"
+                },
+                "disable": {
+                    "type": "boolean"
+                },
+                "envVarRedact": {
+                    "type": "string"
+                },
+                "envVarSwitch": {
+                    "type": "string"
+                },
+                "mandatory": {
+                    "type": "boolean"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "output": {
+                    "items": {
+                        "enum": [
+                            "msg-log",
+                            "req-log"
+                        ],
+                        "type": "string"
+                    },
+                    "type": "array"
+                },
+                "source": {
+                    "anyOf": [
+                        {
+                            "$ref": "#/definitions/Source"
+                        },
+                        {
+                            "items": {
+                                "$ref": "#/definitions/Source"
+                            },
+                            "type": "array"
+                        }
+                    ]
+                }
+            },
+            "type": "object"
+        },
+        "Source": {
+            "additionalProperties": false,
+            "properties": {
+                "framework": {
+                    "$ref": "#/definitions/framework"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "path": {
+                    "items": {
+                        "type": "string"
+                    },
+                    "type": "array"
+                },
+                "type": {
+                    "$ref": "#/definitions/sources"
+                },
+                "value": {
+                    "type": "string"
+                }
+            },
+            "type": "object"
+        },
+        "customFieldsFormat": {
+            "enum": [
+                "application-logging",
+                "cloud-logging"
+            ],
+            "type": "string"
+        },
+        "framework": {
+            "enum": [
+                "connect",
+                "express",
+                "nodejs-http",
+                "restify"
+            ],
+            "type": "string"
+        },
+        "sources": {
+            "enum": [
+                "config-field",
+                "env",
+                "meta",
+                "req-header",
+                "req-object",
+                "res-header",
+                "res-object",
+                "static",
+                "uuid"
+            ],
+            "type": "string"
+        }
+    },
+    "properties": {
+        "customFieldsFormat": {
+            "$ref": "#/definitions/customFieldsFormat"
+        },
+        "fields": {
+            "items": {
+                "$ref": "#/definitions/ConfigField"
+            },
+            "type": "array"
+        },
+        "framework": {
+            "$ref": "#/definitions/framework"
+        },
+        "outputStartupMsg": {
+            "type": "boolean"
+        }
+    },
+    "type": "object"
+}
