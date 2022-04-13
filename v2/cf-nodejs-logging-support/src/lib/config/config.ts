@@ -144,7 +144,8 @@ export default class Config {
     public compressFields(framework: framework): void {
         Config.instance.config.fields!.forEach(field => {
             if (field.source && Array.isArray(field.source) && field.source.length > 0) {
-                for (let i = 0; i < field.source.length;) {
+                let i = 0
+                while (i < field.source.length) {
                     if (field.source[i].framework !== undefined && !field.source[i].framework!.includes(framework)) {
                         field.source.shift();
                     } else {
