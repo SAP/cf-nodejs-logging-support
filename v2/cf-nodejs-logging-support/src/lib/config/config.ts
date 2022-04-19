@@ -100,7 +100,11 @@ export default class Config {
     public addConfig(configs: ConfigObject[]) {
 
         configs.forEach(file => {
-            ConfigValidator.isValid(file);
+            const validation = ConfigValidator.isValid(file);
+            if (validation != true) {
+                const error = JSON.stringify(validation[1]);
+                throw new Error("Configuration file is not valid. Please check error: " + error);
+            }
 
             file.fields?.forEach(field => {
 
