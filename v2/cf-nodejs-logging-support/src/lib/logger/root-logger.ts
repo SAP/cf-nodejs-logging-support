@@ -3,10 +3,10 @@ import { ConfigObject, customFieldsFormat } from "../config/interfaces"
 import EnvService from "../core/env-service";
 import Level from "./level"
 import Logger from "./logger"
-import Middleware from "../middleware/middleware"
+import RecordWriter from "./record-writer";
+import Middleware from "../middleware/middleware";
 
 export default class RootLogger extends Logger {
-    private middleware: Middleware = new Middleware();
     private config = Config.getInstance();
 
     constructor() {
@@ -34,12 +34,14 @@ export default class RootLogger extends Logger {
         return this.config.setStartupMessageEnabled(enabled);
     }
 
-    setSinkFunction(_f: Function) { }
+    setSinkFunction(_f: Function) {
+        RecordWriter.setSinkFunction(_f);
+    }
 
     enableTracing() { }
 
     logNetwork(_req: any, _res: any, _next: any) {
-        this.middleware.logNetwork(_req, _res, _next);
+        Middleware.logNetwork(_req, _res, _next);
     }
 
     registerCustomFields(_object: Object) { }
@@ -54,6 +56,5 @@ export default class RootLogger extends Logger {
     setLogPattern() { }
     createWinstonTransport() { }
     forceLogger(_logger: string) {
-        this.middleware.forceLogger(_logger);
     }
 }
