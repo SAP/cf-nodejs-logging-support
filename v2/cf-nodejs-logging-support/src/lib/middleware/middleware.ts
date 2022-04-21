@@ -3,13 +3,13 @@
 // import RestifyService from './framework-services/restify';
 // import ConnectService from './framework-services/connect';
 
-import { resolve } from "path";
-import Config from "../config/config";
-import LogFactory from "../logger/log-factory";
-import RequestController from "./request";
+import LevelUtils from "../logger/level-utils";
+import RecordFactory from "../logger/record-factory";
+import RecordWriter from "../logger/record-writer";
+import RequestAccesor from "./request-accesor";
 
 interface IMiddleware {
-    logNetwork: (req: any, res: any, next?: any) => void
+    //logNetwork: (req: any, res: any, next?: any) => void
 }
 
 export default class Middleware implements IMiddleware {
@@ -17,24 +17,32 @@ export default class Middleware implements IMiddleware {
     constructor() {
     }
 
-    public logNetwork(_req: any, _res: any, next?: any) {
-        let req = new RequestController(_req);
+    static logNetwork(_req: any, _res: any, next?: any) {
+        let logSent = false;
 
-        // record statt log?
-        let logObject = LogFactory.build(req);
+        let req = new RequestAccesor(_req);
 
-        req.bindLoggerToRequest(logObject);
+        let logObject = RecordFactory.buildReqRecord(req);
+
+        //req.bindLoggerToRequest();
 
         req.bindDynLogLevel();
 
-        _res.on("finish", this.finishLog);
+        const finishLog = () => {
+            if (!logSent) {
+                const loggingLevelThreshold = LevelUtils.getLevel(logObject.level);
+                const level = LevelUtils.getLevel(req.logger.getLoggingLevel());
+                if (LevelUtils.isLevelEnabled(loggingLevelThreshold, level)) {
+                    RecordWriter.writeLog(logObject);
+                }
+                logSent = true;
+            }
+        }
 
-        _res.on("header", this.finishLog);
+        _res.on("finish", finishLog);
+
+        _res.on("header", finishLog);
 
         next ? next() : null;
-    }
-
-    private finishLog() {
-        res.bindLoggerToResponse(logObject);
     }
 }
