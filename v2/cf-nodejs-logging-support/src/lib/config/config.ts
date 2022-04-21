@@ -100,7 +100,11 @@ export default class Config {
     public addConfig(configs: ConfigObject[]) {
 
         configs.forEach(file => {
-            ConfigValidator.isValid(file);
+            const validation = ConfigValidator.isValid(file);
+            if (validation != true) {
+                const error = JSON.stringify(validation[1]);
+                throw new Error("Configuration file is not valid. Please check error: " + error);
+            }
 
             file.fields?.forEach(field => {
 
@@ -144,7 +148,8 @@ export default class Config {
     public compressFields(framework: framework): void {
         Config.instance.config.fields!.forEach(field => {
             if (field.source && Array.isArray(field.source) && field.source.length > 0) {
-                for (let i = 0; i < field.source.length;) {
+                let i = 0
+                while (i < field.source.length) {
                     if (field.source[i].framework !== undefined && !field.source[i].framework!.includes(framework)) {
                         field.source.shift();
                     } else {

@@ -5,11 +5,11 @@ export default class ConfigValidator {
 
     private static ajv = new Ajv();
 
-    static isValid(config: any): boolean | Error {
+    static isValid(config: any): true | [false, any] {
         const validate = ConfigValidator.ajv.compile(ConfigShema);
         const valid = validate(config);
         if (!valid) {
-            throw new Error("Something in the configuration file is not valid. Please check.");
+            return [false, validate.errors];
         }
         return true;
     }
