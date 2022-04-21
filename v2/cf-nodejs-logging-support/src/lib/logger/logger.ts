@@ -1,5 +1,7 @@
 import Level from "./level";
 import LevelUtils from "./level-utils";
+import RecordWriter from "./record-writer";
+import RecordFactory from "./record-factory";
 
 export default class Logger {
     private parent?: Logger = undefined
@@ -36,9 +38,9 @@ export default class Logger {
     logMessage(levelName: string, ..._args: any) {
         if (!this.isLoggingLevel(levelName)) return;
 
-        console.log(levelName + " " + _args)
-
-        // todo: process log message
+        //console.log(levelName + " " + _args)
+        const logObject = RecordFactory.buildMsgRecord(_args);
+        RecordWriter.writeLog(logObject);
     }
 
     setCustomFields(customFields: Map<string, any>) {
