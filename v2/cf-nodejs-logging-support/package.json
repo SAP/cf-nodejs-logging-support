@@ -8,6 +8,7 @@
     "perfx"
   ],
   "main": "build/main/index.js",
+  "types": "build/main/index.d.ts",
   "typings": "build/main/index.d.ts",
   "module": "build/module/index.js",
   "repository": {
@@ -20,10 +21,12 @@
   },
   "homepage": "https://sap.github.io/cf-nodejs-logging-support/",
   "scripts": {
-    "build": "tsc -p tsconfig.json",
+    "build": "npm run build-json-schema && tsc -p tsconfig.json",
+    "start": "npm run build-json-schema && tsc -p tsconfig.json && node build/main/index.js",
     "fix:lint": "eslint src --ext .ts --fix",
     "test": "mocha 'src/test/**/*.js'",
-    "test:lint": "eslint src --ext .ts"
+    "test:lint": "eslint src --ext .ts",
+    "build-json-schema": "typescript-json-schema 'src/lib/config/interfaces.ts' ConfigObject --noExtraProps --out 'src/lib/config/config-schema.json'"
   },
   "engines": {
     "node": ">=10"
@@ -42,7 +45,8 @@
     "supertest": "^6.2.2",
     "ts-node": "^9.0.0",
     "typedoc": "^0.22.13",
-    "typescript": "^4.0.2"
+    "typescript": "^4.0.2",
+    "typescript-json-schema": "^0.53.0"
   },
   "files": [
     "build/main",
@@ -54,6 +58,7 @@
     "README.md"
   ],
   "dependencies": {
+    "ajv": "^8.11.0",
     "connect": "^3.7.0",
     "express": "^4.17.3",
     "http": "^0.0.1-security",

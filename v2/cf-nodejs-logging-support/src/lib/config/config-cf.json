@@ -1,0 +1,146 @@
+{
+    "fields": [
+        {
+            "name": "component_type",
+            "mandatory": true,
+            "source": {
+                "type": "static",
+                "value": "application"
+            },
+            "output": [
+                "msg-log"
+            ]
+        },
+        {
+            "name": "component_id",
+            "mandatory": true,
+            "source": {
+                "type": "env",
+                "path": [
+                    "VCAP_APPLICATION",
+                    "application_id"
+                ]
+            },
+            "output": [
+                "msg-log"
+            ]
+        },
+        {
+            "name": "component_name",
+            "mandatory": true,
+            "source": {
+                "type": "env",
+                "path": [
+                    "VCAP_APPLICATION",
+                    "application_name"
+                ]
+            },
+            "output": [
+                "msg-log"
+            ]
+        },
+        {
+            "name": "component_instance",
+            "mandatory": true,
+            "source": {
+                "type": "env",
+                "path": [
+                    "VCAP_APPLICATION",
+                    "instance_index"
+                ]
+            },
+            "output": [
+                "msg-log"
+            ]
+        },
+        {
+            "name": "source_instance",
+            "mandatory": false,
+            "source": {
+                "type": "config-field",
+                "name": "component_instance"
+            },
+            "output": [
+                "msg-log"
+            ]
+        },
+        {
+            "name": "layer",
+            "mandatory": true,
+            "source": {
+                "type": "static",
+                "value": "[NODEJS]"
+            },
+            "output": [
+                "msg-log"
+            ]
+        },
+        {
+            "name": "organization_name",
+            "mandatory": true,
+            "source": {
+                "type": "env",
+                "path": [
+                    "VCAP_APPLICATION",
+                    "organization_name"
+                ]
+            },
+            "output": [
+                "msg-log"
+            ]
+        },
+        {
+            "name": "organization_id",
+            "mandatory": true,
+            "source": {
+                "type": "env",
+                "path": [
+                    "VCAP_APPLICATION",
+                    "organization_id"
+                ]
+            },
+            "output": [
+                "msg-log"
+            ]
+        },
+        {
+            "name": "space_name",
+            "mandatory": true,
+            "source": {
+                "type": "env",
+                "path": [
+                    "VCAP_APPLICATION",
+                    "space_name"
+                ]
+            },
+            "output": [
+                "msg-log"
+            ]
+        },
+        {
+            "name": "space_id",
+            "mandatory": true,
+            "source": {
+                "type": "env",
+                "path": [
+                    "VCAP_APPLICATION",
+                    "space_id"
+                ]
+            },
+            "output": [
+                "msg-log"
+            ]
+        },
+        {
+            "name": "container_id",
+            "mandatory": true,
+            "source": {
+                "type": "env",
+                "name": "CF_INSTANCE_IP"
+            },
+            "output": [
+                "msg-log"
+            ]
+        }
+    ]
+}
