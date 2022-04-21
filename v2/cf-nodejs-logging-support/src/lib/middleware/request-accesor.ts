@@ -1,4 +1,3 @@
-import Level from "../logger/level";
 import RootLogger from "../logger/root-logger";
 
 export default class RequestAccesor {
@@ -13,11 +12,6 @@ export default class RequestAccesor {
         this.req = _req;
         this.req.logger = new RootLogger();
     }
-
-    // Adds a logger instance to the provided request and assigns all required fields and api methods
-    public bindLoggerToRequest() {
-        this.req.logger = new RootLogger();
-    };
 
     // Binds the Loglevel extracted from JWT token to the given request logger
     public bindDynLogLevel() {

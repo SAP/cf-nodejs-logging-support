@@ -24,8 +24,6 @@ export default class Middleware implements IMiddleware {
 
         let logObject = RecordFactory.buildReqRecord(req);
 
-        //req.bindLoggerToRequest();
-
         req.bindDynLogLevel();
 
         const finishLog = () => {

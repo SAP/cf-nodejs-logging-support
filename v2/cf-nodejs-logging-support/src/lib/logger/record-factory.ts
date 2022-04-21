@@ -1,6 +1,5 @@
 import Config from '../config/config';
 import util from "util";
-import Level from './level';
 
 export default class RecordFactory {
 

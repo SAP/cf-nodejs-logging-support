@@ -1,5 +1,3 @@
-import Config from '../config/config';
-import Level from "./level";
 const os = require("os");
 
 export default class RecordWriter {
@@ -7,7 +5,6 @@ export default class RecordWriter {
     private static customSinkFunction: Function;
 
     static writeLog(_logObject: object): void {
-        const config = Config.getInstance().getConfig()!;;
         if (RecordWriter.customSinkFunction) {
             RecordWriter.customSinkFunction();
         } else {
