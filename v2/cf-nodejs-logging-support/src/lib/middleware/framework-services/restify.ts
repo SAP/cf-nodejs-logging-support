@@ -1,5 +1,3 @@
-import { Request, Response } from 'restify';
-
 export default class RestifyService {
 
     // static getReqHeaderField(_req: Request, fieldName: string): string {

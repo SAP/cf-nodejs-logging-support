@@ -1,4 +1,3 @@
-import Config from '../config/config';
 import util from "util";
 
 export default class RecordFactory {
@@ -9,7 +8,6 @@ export default class RecordFactory {
 
     // init a new log object and assign fields
     static buildMsgRecord(_args: Array<any>): any {
-        const config = Config.getInstance().getConfig()!;
         // TO DO: check if Stacktrace
         let logObject = { "msg": "" }
         logObject.msg = util.format.apply(util, _args);
@@ -22,7 +20,6 @@ export default class RecordFactory {
 
     // init a new req log object and assign fields
     static buildReqRecord(_req: object): any {
-        const config = Config.getInstance().getConfig()!;;
         let logObject = { "level": "info" };
         let reducedLogObject = RecordFactory.reduceFields(logObject);
 
@@ -31,7 +28,6 @@ export default class RecordFactory {
 
     // init a new res log object and assign fields
     static buildResRecord(_res: object): any {
-        const config = Config.getInstance().getConfig()!;;
         let logObject = {};
         let reducedLogObject = RecordFactory.reduceFields(logObject);
 
