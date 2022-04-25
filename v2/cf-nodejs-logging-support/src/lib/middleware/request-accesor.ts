@@ -1,9 +1,9 @@
-import RootLogger from "../logger/root-logger";
 import ExpressService from "./framework-services/express";
 import Config from "../config/config";
 import RestifyService from "./framework-services/restify";
 import HttpService from "./framework-services/plainhttp";
 import ConnectService from "./framework-services/connect";
+import { IFrameworkService } from "./interfaces";
 
 export default class RequestAccesor {
     private static instance: RequestAccesor;
@@ -53,10 +53,4 @@ export default class RequestAccesor {
                 return new ExpressService();
         }
     }
-}
-
-interface IFrameworkService {
-    getReqHeaderField(_req: any, _fieldName: string): any;
-    getReqField(_req: any, _fieldName: string): any;
-
 }
