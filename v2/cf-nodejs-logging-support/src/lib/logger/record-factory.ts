@@ -1,10 +1,7 @@
 import util from "util";
+import RequestAccesor from "../middleware/request-accesor";
 
 export default class RecordFactory {
-
-    private static reduceFields(_record: object): object {
-        return _record;
-    }
 
     // init a new log object and assign fields
     static buildMsgRecord(_args: Array<any>): any {
@@ -13,24 +10,18 @@ export default class RecordFactory {
         record.msg = util.format.apply(util, _args);
         // Alternative?: record.msg = _args.toString();
 
-        let reducedRecord = RecordFactory.reduceFields(record);
-
-        return reducedRecord;
+        return record;
     }
 
     // init a new req log object and assign fields
     static buildReqRecord(_req: object, _args?: Array<any>): any {
         let record = { "level": "info" };
-        let reducedRecord = RecordFactory.reduceFields(record);
-
-        return reducedRecord;
+        return record;
     }
 
     // init a new res log object and assign fields
     static buildResRecord(_res: object): any {
         let record = {};
-        let reducedRecord = RecordFactory.reduceFields(record);
-
-        return reducedRecord;
+        return record;
     }
 }
