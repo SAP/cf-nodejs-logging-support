@@ -7,11 +7,21 @@ import RecordWriter from "./record-writer";
 import Middleware from "../middleware/middleware";
 
 export default class RootLogger extends Logger {
+    private static instance: RootLogger;
     private config = Config.getInstance();
+    //private middleware = new Middleware();
 
-    constructor() {
+    private constructor() {
         super()
         this.loggingLevelThreshold = Level.INFO
+    }
+
+    public static getInstance(): RootLogger {
+        if (!RootLogger.instance) {
+            RootLogger.instance = new RootLogger();
+        }
+
+        return RootLogger.instance;
     }
 
     getConfig() {
