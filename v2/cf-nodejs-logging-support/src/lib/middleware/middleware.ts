@@ -17,21 +17,22 @@ export default class Middleware implements IMiddleware {
     constructor() {
     }
 
-    static logNetwork(_req: any, _res: any, next?: any) {
+    logNetwork(_networkLogger: any, _req: any, _res: any, next?: any) {
         let logSent = false;
 
-        let req = new RequestAccesor(_req);
+        // implement RequestAccesor als singleton
+        let req = RequestAccesor.getInstance();
 
-        let logObject = RecordFactory.buildReqRecord(req);
+        let record = RecordFactory.buildReqRecord(req);
 
         req.bindDynLogLevel();
 
         const finishLog = () => {
             if (!logSent) {
-                const loggingLevelThreshold = LevelUtils.getLevel(logObject.level);
-                const level = LevelUtils.getLevel(req.logger.getLoggingLevel());
+                const level = LevelUtils.getLevel(record.level);
+                const loggingLevelThreshold = LevelUtils.getLevel(req.logger.getLoggingLevel());
                 if (LevelUtils.isLevelEnabled(loggingLevelThreshold, level)) {
-                    RecordWriter.writeLog(logObject);
+                    RecordWriter.writeLog(record);
                 }
                 logSent = true;
             }

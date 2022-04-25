@@ -39,8 +39,8 @@ export default class Logger {
         if (!this.isLoggingLevel(levelName)) return;
 
         //console.log(levelName + " " + _args)
-        const logObject = RecordFactory.buildMsgRecord(_args);
-        RecordWriter.writeLog(logObject);
+        const record = RecordFactory.buildMsgRecord(_args);
+        RecordWriter.writeLog(record);
     }
 
     setCustomFields(customFields: Map<string, any>) {
