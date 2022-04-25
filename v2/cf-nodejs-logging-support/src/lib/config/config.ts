@@ -97,6 +97,11 @@ export default class Config {
         return filtered;
     }
 
+    public getFramework(): framework {
+        const framework = Config.instance.config.framework!;
+        return framework;
+    }
+
     public addConfig(configs: ConfigObject[]) {
 
         configs.forEach(file => {
