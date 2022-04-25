@@ -1,18 +1,24 @@
+import RecordWriter from "../../logger/record-writer";
+
 export default class RestifyService {
 
-    // static getReqHeaderField(_req: Request, fieldName: string): string {
-    //     return "";
-    // }
+    public getReqHeaderField(_req: any, fieldName: string): string {
+        return "";
+    }
 
-    // static getReqField(_req: Request, fieldName: string): string {
-    //     return "";
-    // }
+    public getReqField(_req: any, fieldName: string): string {
+        return "";
+    }
 
-    // static getResHeaderField(_res: Response, fieldName: string): string {
-    //     return "";
-    // }
+    public getResHeaderField(_res: any, fieldName: string): string {
+        return "";
+    }
 
-    // static getResField(_res: Response, fieldName: string): string {
-    //     return "";
-    // }
+    public getResField(_res: any, fieldName: string): string {
+        return "";
+    }
+
+    public finishLog(record: any) {
+        RecordWriter.writeLog(record);
+    }
 }

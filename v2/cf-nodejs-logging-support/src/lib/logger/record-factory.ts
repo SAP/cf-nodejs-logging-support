@@ -19,7 +19,7 @@ export default class RecordFactory {
     }
 
     // init a new req log object and assign fields
-    static buildReqRecord(_req: object): any {
+    static buildReqRecord(_req: object, _args?: Array<any>): any {
         let record = { "level": "info" };
         let reducedRecord = RecordFactory.reduceFields(record);
 

@@ -7,12 +7,7 @@ import { IFrameworkService } from "./interfaces";
 
 export default class RequestAccesor {
     private static instance: RequestAccesor;
-    // ExpressService, RestifyService,etc...
     private frameworkService: IFrameworkService;
-    // private request_id: any;
-    // private tenantId: any;
-    // private correlationId: any;
-    // private subdomainId: any;
 
     private constructor() {
         this.frameworkService = this.assignFrameworkService();

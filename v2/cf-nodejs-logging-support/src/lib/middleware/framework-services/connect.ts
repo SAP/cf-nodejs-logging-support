@@ -1,11 +1,24 @@
+import RecordWriter from "../../logger/record-writer";
+
 export default class ConnectService {
 
-    static fillReq(req: any): any {
-        if (typeof req.getHeader != "function") {
-            req.getHeader = function (header: any) {
-                return this.headers[header.toLocaleLowerCase()];
-            };
-        }
-        return req;
+    public getReqHeaderField(_req: any, fieldName: string): string {
+        return "";
+    }
+
+    public getReqField(_req: any, fieldName: string): string {
+        return "";
+    }
+
+    public getResHeaderField(_res: any, fieldName: string): string {
+        return "";
+    }
+
+    public getResField(_res: any, fieldName: string): string {
+        return "";
+    }
+
+    public finishLog(record: any) {
+        RecordWriter.writeLog(record);
     }
 }
