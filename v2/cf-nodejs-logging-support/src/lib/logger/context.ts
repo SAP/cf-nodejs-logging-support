@@ -1,30 +1,45 @@
+import Config from "../config/config";
+import RequestAccesor from "../middleware/request-accesor";
+
 export default class ReqContext {
-    public props = new Map();
+    private fields: any = {};
+    private requestAccesor = RequestAccesor.getInstance();
 
-    constructor() {
-    }
-
-    getRequest_Id() {
-        return this.props.get("request_id");
-    }
-
-    getTenantId() {
-        return this.props.get("tenant_id");
-    }
-
-    getCorrelationId() {
-        return this.props.get("correlation_id");
-    }
-
-    getSubdomainId() {
-        return this.props.get("tenant_id");
+    constructor(_req: any) {
+        this.setFields(_req);
     }
 
     getProp(key: string) {
-        this.props.get(key);
+        return this.fields[key];
     }
 
-    addProp(key: string, value: string) {
-        this.props.set(key, value);
+    private setFields(_req: any) {
+        const fields = Config.getInstance().getFields();
+        const contextFields = fields.filter(field => {
+            if (field.output?.includes("msg-log") && field.output?.includes("req-log")) {
+                return true;
+            }
+            if (field.context == true) {
+                return true;
+            }
+            return false;
+        });
+
+        // TO DO: handle envVar case
+        contextFields.forEach(field => {
+            if (!Array.isArray(field.source)) {
+                switch (field.source.type) {
+                    case "req-header":
+                        this.fields[field.name] = this.requestAccesor.getHeaderField(_req, field.source.name as string);
+                        break;
+                    case "req-object":
+                        this.fields[field.name] = this.requestAccesor.getField(_req, field.source.name as string);
+                        break;
+                }
+            }
+
+            // TO DO: sources as array case
+
+        });
     }
 }

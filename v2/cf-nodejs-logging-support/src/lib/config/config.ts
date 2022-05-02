@@ -73,7 +73,10 @@ export default class Config {
     public getMsgFields(): ConfigField[] {
         const filtered = Config.instance.config.fields!.filter(
             key => {
-                return key.output?.includes('msg-log');
+                if (key.output?.includes('msg-log') || key.context == true) {
+                    return true;
+                }
+                return false;
             }
         );
         return filtered;
@@ -83,6 +86,15 @@ export default class Config {
         const filtered = Config.instance.config.fields!.filter(
             key => {
                 return key.output?.includes("req-log")
+            }
+        );
+        return filtered;
+    }
+
+    public getContextFields(): ConfigField[] {
+        const filtered = Config.instance.config.fields!.filter(
+            key => {
+                return key.context;
             }
         );
         return filtered;

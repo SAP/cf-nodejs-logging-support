@@ -1,12 +1,5 @@
-// import ExpressService from './framework-services/express';
-// import HttpService from './framework-services/plainhttp';
-// import RestifyService from './framework-services/restify';
-// import ConnectService from './framework-services/connect';
-
 import LevelUtils from "../logger/level-utils";
 import RecordFactory from "../logger/record-factory";
-import RecordWriter from "../logger/record-writer";
-import RequestAccesor from "./request-accesor";
 import ResponseAccesor from "./response-accessor";
 import RootLogger from "../logger/root-logger";
 
@@ -22,21 +15,18 @@ export default class Middleware implements IMiddleware {
     static logNetwork(_req: any, _res: any, next?: any) {
         let logSent = false;
 
-        let req = RequestAccesor.getInstance();
-
-        _req.logger = RootLogger.getInstance().createLogger();
-
-        let record = RecordFactory.buildReqRecord(_req);
-
-        req.bindDynLogLevel();
-
-        let res = ResponseAccesor.getInstance();
+        const networkLogger = RootLogger.getInstance().createLogger();
+        const context = networkLogger.initContext(_req);
+        _req.logger = networkLogger;
 
         const finishLog = () => {
+
             if (!logSent) {
+                const record = RecordFactory.buildReqRecord(_req, _res);
                 const level = LevelUtils.getLevel(record.level);
                 const loggingLevelThreshold = LevelUtils.getLevel(_req.logger.getLoggingLevel());
                 if (LevelUtils.isLevelEnabled(loggingLevelThreshold, level)) {
+                    const res = ResponseAccesor.getInstance();
                     res.finishLog(record);
                 }
                 logSent = true;

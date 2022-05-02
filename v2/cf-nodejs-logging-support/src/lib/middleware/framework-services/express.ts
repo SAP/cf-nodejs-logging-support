@@ -1,21 +1,22 @@
 import RecordWriter from "../../logger/record-writer";
+import { IFrameworkService } from "../interfaces";
 
-export default class ExpressService {
+export default class ExpressService implements IFrameworkService {
 
     public getReqHeaderField(_req: any, fieldName: string): string {
-        return "";
+        return _req.get(fieldName);
     }
 
     public getReqField(_req: any, fieldName: string): string {
-        return "";
+        return _req[fieldName];
     }
 
     public getResHeaderField(_res: any, fieldName: string): string {
-        return "";
+        return _res.get(fieldName);
     }
 
     public getResField(_res: any, fieldName: string): string {
-        return "";
+        return _res[fieldName];
     }
 
     public finishLog(record: any) {

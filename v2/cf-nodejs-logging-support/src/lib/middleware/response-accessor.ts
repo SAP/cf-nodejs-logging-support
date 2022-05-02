@@ -20,12 +20,12 @@ export default class ResponseAccesor {
         return ResponseAccesor.instance;
     }
 
-    public getHeaderField(_req: any, _fieldName: string) {
-        return this.frameworkService.getResHeaderField(_req, _fieldName);
+    public getHeaderField(_res: any, _fieldName: string): any {
+        return this.frameworkService.getResHeaderField(_res, _fieldName);
     };
 
-    public getField(_req: any, _fieldName: string) {
-        return this.frameworkService.getResField(_req, _fieldName);
+    public getField(_res: any, _fieldName: string): any {
+        return this.frameworkService.getResField(_res, _fieldName);
     };
 
     public finishLog(record: any) {

@@ -26,11 +26,11 @@ export default class RequestAccesor {
 
     };
 
-    public getHeaderField(_req: any, _fieldName: string) {
+    public getHeaderField(_req: any, _fieldName: string): any {
         return this.frameworkService.getReqHeaderField(_req, _fieldName);
     };
 
-    public getField(_req: any, _fieldName: string) {
+    public getField(_req: any, _fieldName: string): any {
         return this.frameworkService.getReqField(_req, _fieldName);
     };
 
