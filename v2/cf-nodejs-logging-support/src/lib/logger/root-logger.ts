@@ -9,7 +9,6 @@ import Middleware from "../middleware/middleware";
 export default class RootLogger extends Logger {
     private static instance: RootLogger;
     private config = Config.getInstance();
-    //private middleware = new Middleware();
 
     private constructor() {
         super()

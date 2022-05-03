@@ -3,14 +3,7 @@ import RecordFactory from "../logger/record-factory";
 import ResponseAccesor from "./response-accessor";
 import RootLogger from "../logger/root-logger";
 
-interface IMiddleware {
-    //logNetwork: (req: any, res: any, next?: any) => void
-}
-
-export default class Middleware implements IMiddleware {
-
-    constructor() {
-    }
+export default class Middleware {
 
     static logNetwork(_req: any, _res: any, next?: any) {
         let logSent = false;

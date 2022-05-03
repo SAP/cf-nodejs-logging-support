@@ -10,7 +10,6 @@ export default class RecordFactory {
     // init a new record and assign fields with output "msg-log"
     static buildMsgRecord(_args: Array<any>, _context?: ReqContext): any {
 
-        // Assign fields with output "msg-log"
         const msgLogFields = Config.getInstance().getMsgFields();
         let record: any = {
             "level": "info",
@@ -50,13 +49,12 @@ export default class RecordFactory {
         return record;
     }
 
-    // init a new req log object and assign fields with output "req-log"
+    // init a new record and assign fields with output "req-log"
     static buildReqRecord(_req: any, _res: any): any {
 
         const requestAccesor = RequestAccesor.getInstance();
         const responseAccesor = ResponseAccesor.getInstance();
 
-        // Assign fields with output "req-log"
         const reqLogFields = Config.getInstance().getReqFields();
         let record: any = { "level": "info" };
         reqLogFields.forEach(field => {
