@@ -1,6 +1,6 @@
 import util from "util";
 import Config from "../config/config";
-import { ConfigField } from "../config/interfaces";
+import NestedVarResolver from "../helper/nested-var-resolver";
 import RequestAccesor from "../middleware/request-accesor";
 import ResponseAccesor from "../middleware/response-accessor";
 import ReqContext from "./context";
@@ -20,10 +20,23 @@ export default class RecordFactory {
             if (!Array.isArray(field.source)) {
                 switch (field.source.type) {
                     case "req-header":
-                            record[field.name] = _context?.getProp(field.name as string);
+                        record[field.name] = _context?.getProp(field.name as string);
                         break;
                     case "req-object":
-                            record[field.name] = _context?.getProp(field.name as string);
+                        record[field.name] = _context?.getProp(field.name as string);
+                        break;
+                    case "static":
+                        record[field.name] = field.source.value;
+                        break;
+                    case "env":
+                        if (field.source.path) {
+                            record[field.name] = NestedVarResolver.resolveNestedVariable(process.env, field.source.path);
+                            break;
+                        }
+                        record[field.name] = process.env[field.source.name!];
+                        break;
+                    case "config-field":
+                        record[field.name] = record[field.source.name!];
                         break;
                 }
             } else {
@@ -46,7 +59,6 @@ export default class RecordFactory {
         // Assign fields with output "req-log"
         const reqLogFields = Config.getInstance().getReqFields();
         let record: any = { "level": "info" };
-        // TO DO: handle envVar case
         reqLogFields.forEach(field => {
             if (!Array.isArray(field.source)) {
                 switch (field.source.type) {
@@ -62,6 +74,19 @@ export default class RecordFactory {
                     case "res-object":
                         record[field.name] = responseAccesor.getField(_res, field.source.name as string);
                         break;
+                    case "static":
+                        record[field.name] = field.source.value;
+                        break;
+                    case "env":
+                        if (field.source.path) {
+                            record[field.name] = NestedVarResolver.resolveNestedVariable(process.env, field.source.path);
+                            break;
+                        }
+                        record[field.name] = process.env[field.source.name!];
+                        break;
+                    case "config-field":
+                        record[field.name] = record[field.source.name!];
+                        break;
                 }
             }
 
@@ -69,40 +94,5 @@ export default class RecordFactory {
 
         });
         return record;
-    }
-
-    private static assignFields(fields: ConfigField[], context?: ReqContext): any {
-        let record: any = {
-            "level": "info",
-        };
-
-        fields.forEach(field => {
-            if (!Array.isArray(field.source)) {
-                switch (field.source.type) {
-                    case "req-header":
-                        if (context) {
-                            record[field.name] = context.getProp(field.name as string);
-                        }
-                        break;
-                    case "req-object":
-                        if (context) {
-                            record[field.name] = context.getProp(field.name as string);
-                        }
-                        break;
-                    case "res-header":
-                        // ignore
-                        break;
-                    case "res-object":
-                        // ignore
-                        break;
-                }
-            } else {
-
-                // TO DO: handle sources as array case
-            }
-
-        });
-
-        return record
     }
 }

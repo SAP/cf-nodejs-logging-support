@@ -1,4 +1,5 @@
 import Config from "../config/config";
+import NestedVarResolver from "../helper/nested-var-resolver";
 import RequestAccesor from "../middleware/request-accesor";
 
 export default class ReqContext {
@@ -34,6 +35,23 @@ export default class ReqContext {
                         break;
                     case "req-object":
                         this.fields[field.name] = this.requestAccesor.getField(_req, field.source.name as string);
+                        break;
+                    case "env":
+                        if (field.source.path) {
+                            this.fields[field.name] = NestedVarResolver.resolveNestedVariable(process.env, field.source.path);
+                            break;
+                        }
+                        this.fields[field.name] = process.env[field.source.name!];
+                        break;
+                    case "static":
+                        this.fields[field.name] = field.source.value;
+                        break;
+                    case "env":
+                        if (field.source.path) {
+                            this.fields[field.name] = NestedVarResolver.resolveNestedVariable(process.env, field.source.path);
+                            break;
+                        }
+                        this.fields[field.name] = process.env[field.source.name!];
                         break;
                 }
             }
