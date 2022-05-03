@@ -6,7 +6,7 @@ import coreConfig from './config-core.json';
 import kymaConfig from './config-kyma.json';
 import requestConfig from './config-request.json';
 import ConfigValidator from './config-validator';
-import { ConfigField, ConfigObject, customFieldsFormat, framework } from './interfaces';
+import { ConfigField, ConfigObject, customFieldsFormat, framework, Source } from './interfaces';
 
 export default class Config {
 
@@ -124,6 +124,19 @@ export default class Config {
             }
 
             file.fields?.forEach(field => {
+
+                // check if response fields marked as context fields
+                if (field.context) {
+                    if (Array.isArray(field.source)) {
+                        field.source.forEach(source => {
+                            if (source.type == ("res-header" || "res-object")) {
+                                throw new Error("Configuration file is not valid. Field '" + field.name + "' is declared as context field and has a response source.");
+                            }
+                        });
+                    } else if (field.source.type == 'res-header' || 'res-object') {
+                        throw new Error("Configuration file is not valid. Field '" + field.name + "' is declared as context field and has a response source.");
+                    }
+                }
 
                 const index = Config.instance.getIndex(field.name);
 
