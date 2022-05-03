@@ -16,7 +16,7 @@ export default class Middleware implements IMiddleware {
         let logSent = false;
 
         const networkLogger = RootLogger.getInstance().createLogger();
-        const context = networkLogger.initContext(_req);
+        networkLogger.initContext(_req);
         _req.logger = networkLogger;
 
         const finishLog = () => {
