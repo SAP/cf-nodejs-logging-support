@@ -5,20 +5,20 @@ import HttpService from "./framework-services/plainhttp";
 import ConnectService from "./framework-services/connect";
 import { IFrameworkService } from "./interfaces";
 
-export default class RequestAccesor {
-    private static instance: RequestAccesor;
+export default class RequestAccessor {
+    private static instance: RequestAccessor;
     private frameworkService: IFrameworkService;
 
     private constructor() {
         this.frameworkService = this.assignFrameworkService();
     }
 
-    public static getInstance(): RequestAccesor {
-        if (!RequestAccesor.instance) {
-            RequestAccesor.instance = new RequestAccesor();
+    public static getInstance(): RequestAccessor {
+        if (!RequestAccessor.instance) {
+            RequestAccessor.instance = new RequestAccessor();
         }
 
-        return RequestAccesor.instance;
+        return RequestAccessor.instance;
     }
 
     // Binds the Loglevel extracted from JWT token to the given request logger

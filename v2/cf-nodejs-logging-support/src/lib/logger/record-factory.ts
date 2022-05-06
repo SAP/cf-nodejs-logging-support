@@ -1,8 +1,8 @@
 import util from "util";
 import Config from "../config/config";
 import NestedVarResolver from "../helper/nested-var-resolver";
-import RequestAccesor from "../middleware/request-accesor";
-import ResponseAccesor from "../middleware/response-accessor";
+import RequestAccessor from "../middleware/request-Accessor";
+import ResponseAccessor from "../middleware/response-accessor";
 import ReqContext from "./context";
 
 export default class RecordFactory {
@@ -52,8 +52,8 @@ export default class RecordFactory {
     // init a new record and assign fields with output "req-log"
     static buildReqRecord(_req: any, _res: any): any {
 
-        const requestAccesor = RequestAccesor.getInstance();
-        const responseAccesor = ResponseAccesor.getInstance();
+        const requestAccessor = RequestAccessor.getInstance();
+        const responseAccessor = ResponseAccessor.getInstance();
 
         const reqLogFields = Config.getInstance().getReqFields();
         let record: any = { "level": "info" };
@@ -61,16 +61,16 @@ export default class RecordFactory {
             if (!Array.isArray(field.source)) {
                 switch (field.source.type) {
                     case "req-header":
-                        record[field.name] = requestAccesor.getHeaderField(_req, field.source.name as string);
+                        record[field.name] = requestAccessor.getHeaderField(_req, field.source.name as string);
                         break;
                     case "req-object":
-                        record[field.name] = requestAccesor.getField(_req, field.source.name as string);
+                        record[field.name] = requestAccessor.getField(_req, field.source.name as string);
                         break;
                     case "res-header":
-                        record[field.name] = responseAccesor.getHeaderField(_res, field.source.name as string);
+                        record[field.name] = responseAccessor.getHeaderField(_res, field.source.name as string);
                         break;
                     case "res-object":
-                        record[field.name] = responseAccesor.getField(_res, field.source.name as string);
+                        record[field.name] = responseAccessor.getField(_res, field.source.name as string);
                         break;
                     case "static":
                         record[field.name] = field.source.value;

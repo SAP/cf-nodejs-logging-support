@@ -5,19 +5,19 @@ import HttpService from "./framework-services/plainhttp";
 import ConnectService from "./framework-services/connect";
 import { IFrameworkService } from "./interfaces";
 
-export default class ResponseAccesor {
-    private static instance: ResponseAccesor;
+export default class ResponseAccessor {
+    private static instance: ResponseAccessor;
     private frameworkService: IFrameworkService;
 
     private constructor() {
         this.frameworkService = this.assignFrameworkService();
     }
 
-    public static getInstance(): ResponseAccesor {
-        if (!ResponseAccesor.instance) {
-            ResponseAccesor.instance = new ResponseAccesor();
+    public static getInstance(): ResponseAccessor {
+        if (!ResponseAccessor.instance) {
+            ResponseAccessor.instance = new ResponseAccessor();
         }
-        return ResponseAccesor.instance;
+        return ResponseAccessor.instance;
     }
 
     public getHeaderField(_res: any, _fieldName: string): any {

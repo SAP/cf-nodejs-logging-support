@@ -1,10 +1,10 @@
 import Config from "../config/config";
 import NestedVarResolver from "../helper/nested-var-resolver";
-import RequestAccesor from "../middleware/request-accesor";
+import RequestAccessor from "../middleware/request-Accessor";
 
 export default class ReqContext {
     private fields: any = {};
-    private requestAccesor = RequestAccesor.getInstance();
+    private requestAccessor = RequestAccessor.getInstance();
 
     constructor(_req: any) {
         this.setFields(_req);
@@ -30,10 +30,10 @@ export default class ReqContext {
             if (!Array.isArray(field.source)) {
                 switch (field.source.type) {
                     case "req-header":
-                        this.fields[field.name] = this.requestAccesor.getHeaderField(_req, field.source.name as string);
+                        this.fields[field.name] = this.requestAccessor.getHeaderField(_req, field.source.name as string);
                         break;
                     case "req-object":
-                        this.fields[field.name] = this.requestAccesor.getField(_req, field.source.name as string);
+                        this.fields[field.name] = this.requestAccessor.getField(_req, field.source.name as string);
                         break;
                 }
             }

@@ -1,6 +1,6 @@
 import LevelUtils from "../logger/level-utils";
 import RecordFactory from "../logger/record-factory";
-import ResponseAccesor from "./response-accessor";
+import ResponseAccessor from "./response-accessor";
 import RootLogger from "../logger/root-logger";
 
 export default class Middleware {
@@ -19,7 +19,7 @@ export default class Middleware {
                 const level = LevelUtils.getLevel(record.level);
                 const loggingLevelThreshold = LevelUtils.getLevel(_req.logger.getLoggingLevel());
                 if (LevelUtils.isLevelEnabled(loggingLevelThreshold, level)) {
-                    const res = ResponseAccesor.getInstance();
+                    const res = ResponseAccessor.getInstance();
                     res.finishLog(record);
                 }
                 logSent = true;
