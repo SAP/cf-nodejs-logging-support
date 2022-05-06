@@ -12,7 +12,6 @@ export interface ConfigField {
     envVarSwitch?: string;
     source: Source | Source[];
     output?: outputs[];
-    context?: boolean;
     disable?: boolean;
     default?: string;
 }

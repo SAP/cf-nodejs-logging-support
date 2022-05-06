@@ -73,7 +73,7 @@ export default class Config {
     public getMsgFields(): ConfigField[] {
         const filtered = Config.instance.config.fields!.filter(
             key => {
-                if (key.output?.includes('msg-log') || key.context == true) {
+                if (key.output?.includes('msg-log')) {
                     return true;
                 }
                 return false;
@@ -93,8 +93,13 @@ export default class Config {
 
     public getContextFields(): ConfigField[] {
         const filtered = Config.instance.config.fields!.filter(
-            key => {
-                return key.context;
+            field => {
+                if (field.output?.includes("msg-log") && field.output?.includes("req-log")) {
+                    if ((field.source as Source).type == "req-header" || "req-object") {
+                        return true;
+                    }
+                }
+                return false;
             }
         );
         return filtered;
@@ -124,20 +129,6 @@ export default class Config {
             }
 
             file.fields?.forEach(field => {
-
-                // check if response fields marked as context fields
-                if (field.context) {
-                    if (Array.isArray(field.source)) {
-                        field.source.forEach(source => {
-                            if (source.type == ("res-header" || "res-object")) {
-                                throw new Error("Configuration file is not valid. Field '" + field.name + "' is declared as context field and has a response source.");
-                            }
-                        });
-                    } else if (field.source.type == 'res-header' || 'res-object') {
-                        throw new Error("Configuration file is not valid. Field '" + field.name + "' is declared as context field and has a response source.");
-                    }
-                }
-
                 const index = Config.instance.getIndex(field.name);
 
                 // if new config field
