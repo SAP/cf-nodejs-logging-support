@@ -21,7 +21,7 @@ export default class RecordFactory {
         });
 
         if (context) {
-            const contextFields = context.getFields();
+            const contextFields = context.getProps();
             for (let key in contextFields) {
                 record[key] = contextFields[key];
             }
