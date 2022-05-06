@@ -20,6 +20,6 @@ export default class ConnectService implements IFrameworkService {
     }
 
     public finishLog(record: any) {
-        RecordWriter.writeLog(record);
+        RecordWriter.getInstance().writeLog(record);
     }
 }

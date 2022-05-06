@@ -20,6 +20,6 @@ export default class ExpressService implements IFrameworkService {
     }
 
     public finishLog(record: any) {
-        RecordWriter.writeLog(record);
+        RecordWriter.getInstance().writeLog(record);
     }
 }
