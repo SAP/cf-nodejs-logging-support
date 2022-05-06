@@ -4,13 +4,14 @@ import RestifyService from "./framework-services/restify";
 import HttpService from "./framework-services/plainhttp";
 import ConnectService from "./framework-services/connect";
 import { IFrameworkService } from "./interfaces";
+import { assignFrameworkService } from "./utils";
 
 export default class RequestAccessor {
     private static instance: RequestAccessor;
     private frameworkService: IFrameworkService;
 
     private constructor() {
-        this.frameworkService = this.assignFrameworkService();
+        this.frameworkService = assignFrameworkService();
     }
 
     public static getInstance(): RequestAccessor {
@@ -33,19 +34,4 @@ export default class RequestAccessor {
     public getField(req: any, fieldName: string): any {
         return this.frameworkService.getReqField(req, fieldName);
     };
-
-    private assignFrameworkService(): IFrameworkService {
-        const framework = Config.getInstance().getFramework();
-        switch (framework) {
-            //insert your custom framework logger here
-            case "restify":
-                return new RestifyService();
-            case "nodejs-http":
-                return new HttpService();
-            case "connect":
-                return new ConnectService();
-            default:
-                return new ExpressService();
-        }
-    }
 }
