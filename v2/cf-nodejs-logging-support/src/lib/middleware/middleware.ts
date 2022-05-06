@@ -5,19 +5,19 @@ import RootLogger from "../logger/root-logger";
 
 export default class Middleware {
 
-    static logNetwork(_req: any, _res: any, next?: any) {
+    static logNetwork(req: any, res: any, next?: any) {
         let logSent = false;
 
         const networkLogger = RootLogger.getInstance().createLogger();
-        networkLogger.initContext(_req);
-        _req.logger = networkLogger;
+        networkLogger.initContext(req);
+        req.logger = networkLogger;
 
         const finishLog = () => {
 
             if (!logSent) {
-                const record = RecordFactory.buildReqRecord(_req, _res);
+                const record = RecordFactory.buildReqRecord(req, res);
                 const level = LevelUtils.getLevel(record.level);
-                const loggingLevelThreshold = LevelUtils.getLevel(_req.logger.getLoggingLevel());
+                const loggingLevelThreshold = LevelUtils.getLevel(req.logger.getLoggingLevel());
                 if (LevelUtils.isLevelEnabled(loggingLevelThreshold, level)) {
                     const res = ResponseAccessor.getInstance();
                     res.finishLog(record);
@@ -26,9 +26,9 @@ export default class Middleware {
             }
         }
 
-        _res.on("finish", finishLog);
+        res.on("finish", finishLog);
 
-        _res.on("header", finishLog);
+        res.on("header", finishLog);
 
         next ? next() : null;
     }

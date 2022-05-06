@@ -4,12 +4,12 @@ export default class RecordWriter {
 
     private static customSinkFunction: Function;
 
-    static writeLog(_record: object): void {
+    static writeLog(records: object): void {
         if (RecordWriter.customSinkFunction) {
             RecordWriter.customSinkFunction();
         } else {
             // default to stdout
-            process.stdout.write(JSON.stringify(_record) + os.EOL);
+            process.stdout.write(JSON.stringify(records) + os.EOL);
         }
     }
 

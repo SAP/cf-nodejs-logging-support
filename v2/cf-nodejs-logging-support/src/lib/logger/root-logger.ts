@@ -43,27 +43,27 @@ export default class RootLogger extends Logger {
         return this.config.setStartupMessageEnabled(enabled);
     }
 
-    setSinkFunction(_f: Function) {
-        RecordWriter.setSinkFunction(_f);
+    setSinkFunction(f: Function) {
+        RecordWriter.setSinkFunction(f);
     }
 
     enableTracing() { }
 
-    logNetwork(_req: any, _res: any, _next: any) {
-        Middleware.logNetwork(_req, _res, _next);
+    logNetwork(req: any, res: any, next: any) {
+        Middleware.logNetwork(req, res, next);
     }
 
-    registerCustomFields(_object: Object) { }
+    registerCustomFields(object: Object) { }
 
     getBoundServices() {
         return EnvService.getBoundServices()
     }
 
     // legacy methods
-    overrideNetworkField(_field: string, _value: string) { }
-    overrideCustomFieldFormat(_value: string) { }
+    overrideNetworkField(field: string, value: string) { }
+    overrideCustomFieldFormat(value: string) { }
     setLogPattern() { }
     createWinstonTransport() { }
-    forceLogger(_logger: string) {
+    forceLogger(logger: string) {
     }
 }

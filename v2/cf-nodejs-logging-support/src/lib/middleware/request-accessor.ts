@@ -26,12 +26,12 @@ export default class RequestAccessor {
 
     };
 
-    public getHeaderField(_req: any, _fieldName: string): any {
-        return this.frameworkService.getReqHeaderField(_req, _fieldName);
+    public getHeaderField(req: any, fieldName: string): any {
+        return this.frameworkService.getReqHeaderField(req, fieldName);
     };
 
-    public getField(_req: any, _fieldName: string): any {
-        return this.frameworkService.getReqField(_req, _fieldName);
+    public getField(req: any, fieldName: string): any {
+        return this.frameworkService.getReqField(req, fieldName);
     };
 
     private assignFrameworkService(): IFrameworkService {

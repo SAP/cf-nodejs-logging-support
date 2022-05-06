@@ -3,20 +3,20 @@ import { IFrameworkService } from "../interfaces";
 
 export default class ExpressService implements IFrameworkService {
 
-    public getReqHeaderField(_req: any, fieldName: string): string {
-        return _req.get(fieldName);
+    public getReqHeaderField(req: any, fieldName: string): string {
+        return req.get(fieldName);
     }
 
-    public getReqField(_req: any, fieldName: string): string {
-        return _req[fieldName];
+    public getReqField(req: any, fieldName: string): string {
+        return req[fieldName];
     }
 
-    public getResHeaderField(_res: any, fieldName: string): string {
-        return _res.get(fieldName);
+    public getResHeaderField(res: any, fieldName: string): string {
+        return res.get(fieldName);
     }
 
-    public getResField(_res: any, fieldName: string): string {
-        return _res[fieldName];
+    public getResField(res: any, fieldName: string): string {
+        return res[fieldName];
     }
 
     public finishLog(record: any) {
