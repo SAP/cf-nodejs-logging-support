@@ -1,11 +1,13 @@
 import util from "util";
 import Config from "../config/config";
+import { ConfigField } from "../config/interfaces";
 import NestedVarResolver from "../helper/nested-var-resolver";
 import RequestAccesor from "../middleware/request-accesor";
 import ResponseAccesor from "../middleware/response-accessor";
 import ReqContext from "./context";
 
 export default class RecordFactory {
+    private static REDUCED_PLACEHOLDER = "redacted";
 
     // init a new record and assign fields with output "msg-log"
     static buildMsgRecord(_args: Array<any>, _context?: ReqContext): any {
@@ -16,6 +18,15 @@ export default class RecordFactory {
         };
 
         msgLogFields.forEach(field => {
+            if (field.envVarRedact || field.envVarSwitch) {
+                const shouldBeReduced = this.isReducedField(field);
+                if (shouldBeReduced) {
+                    if (field.envVarRedact) {
+                        record[field.name] = this.REDUCED_PLACEHOLDER;
+                    }
+                    return;
+                }
+            }
             if (!Array.isArray(field.source)) {
                 switch (field.source.type) {
                     case "req-header":
@@ -43,6 +54,12 @@ export default class RecordFactory {
                 // TO DO: handle sources as array case
             }
 
+            // TO DO: handle defaults
+            if (record[field.name] == undefined) {
+                record[field.name] = this.handleConfigDefault(record, field);
+            }
+
+
         });
         record["msg"] = util.format.apply(util, _args);
         // TO DO: check if Stacktrace
@@ -58,6 +75,17 @@ export default class RecordFactory {
         const reqLogFields = Config.getInstance().getReqFields();
         let record: any = { "level": "info" };
         reqLogFields.forEach(field => {
+
+            if (field.envVarRedact || field.envVarSwitch) {
+                const shouldBeReduced = this.isReducedField(field);
+                if (shouldBeReduced) {
+                    if (field.envVarRedact) {
+                        record[field.name] = this.REDUCED_PLACEHOLDER;
+                    }
+                    return;
+                }
+            }
+
             if (!Array.isArray(field.source)) {
                 switch (field.source.type) {
                     case "req-header":
@@ -89,8 +117,26 @@ export default class RecordFactory {
             }
 
             // TO DO: sources as array case
-
+            if (!record[field.name]) {
+                record[field.name] = this.handleConfigDefault(record, field);
+            }
         });
         return record;
+    }
+
+    private static isReducedField(field: ConfigField): boolean {
+        const val = process.env[field.envVarRedact!];
+        const isActivated = (val == "true" || val == "True" || val == "TRUE");
+        if (!isActivated) {
+            return true;
+        }
+        return false;
+    }
+
+    private static handleConfigDefault(record: any, field: ConfigField) {
+        if (field.mandatory) {
+            return field.default;
+        }
+        return undefined;
     }
 }
