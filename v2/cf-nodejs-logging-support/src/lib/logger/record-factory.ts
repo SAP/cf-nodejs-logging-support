@@ -7,14 +7,34 @@ import ResponseAccessor from "../middleware/response-accessor";
 import ReqContext from "./context";
 
 export default class RecordFactory {
+    static MAX_STACKTRACE_SIZE = 55 * 1024;
 
     // init a new record and assign fields with output "msg-log"
-    static buildMsgRecord(args: Array<any>, context?: ReqContext): any {
+    static buildMsgRecord(level: string, args: Array<any>, context?: ReqContext): any {
+
+        let record: any = {
+            "level": level,
+        };
+
+        var customFieldsFromArgs = {};
+        var lastArg = args[args.length - 1];
+
+        // why check if lastArg and lastArg._error?
+        if (typeof lastArg === "object") {
+            if (RecordFactory.isErrorWithStacktrace(lastArg)) {
+                record.stacktrace = RecordFactory.prepareStacktrace(lastArg.stack);
+            } else if (RecordFactory.isValidObject(lastArg)) {
+                if (RecordFactory.isErrorWithStacktrace(lastArg._error)) {
+                    record.stacktrace = RecordFactory.prepareStacktrace(lastArg._error.stack);
+                    delete lastArg._error;
+                }
+                customFieldsFromArgs = lastArg;
+            }
+            args.pop();
+        }
 
         const msgLogFields = Config.getInstance().getMsgFields();
-        let record: any = {
-            "level": "info",
-        };
+
 
         msgLogFields.forEach(field => {
             record[field.name] = this.getFieldValue(field, record);
@@ -67,25 +87,86 @@ export default class RecordFactory {
     }
 
     private static getFieldValue(field: ConfigField, record: any): string | undefined {
-        if (!Array.isArray(field.source)) {
-            switch (field.source.type) {
-                case "static":
-                    return field.source.value;
-                case "env":
-                    if (field.source.path) {
-                        return NestedVarResolver.resolveNestedVariable(process.env, field.source.path);
-                    }
-                    return process.env[field.source.name!];
-                case "config-field":
-                    return record[field.source.name!];
-                default:
-                    return undefined;
-            }
-        } else {
+        let source = Array.isArray(field.source) ? field.source[0] : field.source;
 
-            // TO DO: handle sources as array case
-
-            return undefined;
+        switch (source.type) {
+            case "static":
+                return source.value;
+            case "env":
+                if (source.path) {
+                    return NestedVarResolver.resolveNestedVariable(process.env, source.path);
+                }
+                return process.env[source.name!];
+            case "config-field":
+                return record[source.name!];
+            default:
+                return undefined;
         }
+
+
+
+        // TO DO: handle sources as array case
+
+
+    }
+
+    // check if the given object is an Error with stacktrace using duck typing
+    private static isErrorWithStacktrace(obj: any): boolean {
+        if (obj && obj.stack && obj.message && typeof obj.stack === "string" && typeof obj.message === "string") {
+            return true;
+        }
+        return false;
+    }
+
+    // Split stacktrace into string array and truncate lines if required by size limitation
+    // Truncation strategy: Take one line from the top and two lines from the bottom of the stacktrace until limit is reached.
+    private static prepareStacktrace(stacktraceStr: any): any {
+        var fullStacktrace = stacktraceStr.split('\n');
+        var totalLineLength = fullStacktrace.reduce((acc: any, line: any) => acc + line.length, 0);
+
+        if (totalLineLength > this.MAX_STACKTRACE_SIZE) {
+            var truncatedStacktrace = [];
+            var stackA = [];
+            var stackB = [];
+            var indexA = 0;
+            var indexB = fullStacktrace.length - 1;
+            var currentLength = 73; // set to approx. character count for "truncated" and "omitted" labels
+
+            for (let i = 0; i < fullStacktrace.length; i++) {
+                if (i % 3 == 0) {
+                    let line = fullStacktrace[indexA++];
+                    if (currentLength + line.length > this.MAX_STACKTRACE_SIZE) {
+                        break;
+                    }
+                    currentLength += line.length;
+                    stackA.push(line);
+                } else {
+                    let line = fullStacktrace[indexB--];
+                    if (currentLength + line.length > this.MAX_STACKTRACE_SIZE) {
+                        break;
+                    }
+                    currentLength += line.length;
+                    stackB.push(line);
+                }
+            }
+
+            truncatedStacktrace.push("-------- STACK TRACE TRUNCATED --------");
+            truncatedStacktrace = [...truncatedStacktrace, ...stackA];
+            truncatedStacktrace.push(`-------- OMITTED ${fullStacktrace.length - (stackA.length + stackB.length)} LINES --------`);
+            truncatedStacktrace = [...truncatedStacktrace, ...stackB.reverse()];
+            return truncatedStacktrace;
+        }
+        return fullStacktrace;
+    }
+
+    private static isValidObject(obj: any, canBeEmpty?: any): boolean {
+        if (!obj) {
+            return false;
+        } else if (typeof obj !== "object") {
+            return false;
+        } else if (!canBeEmpty && Object.keys(obj).length === 0) {
+            return false;
+        }
+        return true;
     }
 }

@@ -39,7 +39,7 @@ export default class Logger {
 
     logMessage(levelName: string, ..._args: any) {
         if (!this.isLoggingLevel(levelName)) return;
-        const record = this.context ? RecordFactory.buildMsgRecord(_args, this.context) : RecordFactory.buildMsgRecord(_args);
+        const record = this.context ? RecordFactory.buildMsgRecord(levelName, _args, this.context) : RecordFactory.buildMsgRecord(levelName, _args);
         RecordWriter.getInstance().writeLog(record);
     }
 
