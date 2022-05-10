@@ -181,6 +181,11 @@ export default class Config {
         });
     }
 
+    public setFramework(framework: framework): void {
+        Config.instance.config.framework = framework;
+        Config.instance.compressFields(framework);
+    }
+
     // get index of field in config
     private getIndex(name: string): number {
 
