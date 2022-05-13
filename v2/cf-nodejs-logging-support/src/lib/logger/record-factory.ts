@@ -5,12 +5,13 @@ import NestedVarResolver from "../helper/nested-var-resolver";
 import RequestAccessor from "../middleware/request-Accessor";
 import ResponseAccessor from "../middleware/response-accessor";
 import ReqContext from "./context";
+const stringifySafe = require('json-stringify-safe');
 
 export default class RecordFactory {
     static MAX_STACKTRACE_SIZE = 55 * 1024;
 
     // init a new record and assign fields with output "msg-log"
-    static buildMsgRecord(level: string, args: Array<any>, context?: ReqContext): any {
+    static buildMsgRecord(loggerCustomFields: Map<string, any>, level: string, args: Array<any>, context?: ReqContext): any {
 
         let record: any = {
             "level": level,
@@ -47,8 +48,8 @@ export default class RecordFactory {
             }
         }
 
+        record = this.addCustomFields(record, loggerCustomFields, customFieldsFromArgs);
         record["msg"] = util.format.apply(util, args);
-        // TO DO: check if Stacktrace
         return record;
     }
 
@@ -87,6 +88,7 @@ export default class RecordFactory {
     }
 
     private static getFieldValue(field: ConfigField, record: any): string | undefined {
+        // TO DO: if source array iterate until source framework = config framework
         let source = Array.isArray(field.source) ? field.source[0] : field.source;
 
         switch (source.type) {
@@ -168,5 +170,44 @@ export default class RecordFactory {
             return false;
         }
         return true;
+    }
+
+    private static addCustomFields(record: any, loggerCustomFields: Map<string, any>, customFieldsFromArgs: any): any {
+        var providedFields = Object.assign({}, loggerCustomFields, customFieldsFromArgs);
+        const customFieldsFormat = Config.getInstance().getConfig().customFieldsFormat;
+
+        for (var key in providedFields) {
+            var value = providedFields[key];
+
+            // Stringify, if necessary.
+            if ((typeof value) != "string") {
+                value = stringifySafe(value);
+            }
+
+            // let customFields: any = {};
+            if (customFieldsFormat == "application-logging" || record[key] != null) {
+                record[key] = value;
+            }
+            // if (customFieldsFormat == "cloud-logging")
+            //     customFields[key] = value;
+        }
+
+        if (customFieldsFormat == "cloud-logging") {
+            // let res: any = {};
+            // res.string = [];
+            // let key;
+            // for (var i = 0; i < registeredCustomFields.length; i++) {
+            //     key = registeredCustomFields[i]
+            //     if (providedFields[key])
+            //         res.string.push({
+            //             "k": key,
+            //             "v": providedFields[key],
+            //             "i": i
+            //         })
+            // }
+            // if (res.string.length > 0)
+            //     record["#cf"] = res;
+        }
+        return record;
     }
 }

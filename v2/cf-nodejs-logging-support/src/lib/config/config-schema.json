@@ -5,9 +5,6 @@
         "ConfigField": {
             "additionalProperties": false,
             "properties": {
-                "context": {
-                    "type": "boolean"
-                },
                 "default": {
                     "type": "string"
                 },

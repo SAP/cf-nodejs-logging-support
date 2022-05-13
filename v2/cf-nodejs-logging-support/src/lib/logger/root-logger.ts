@@ -53,7 +53,10 @@ export default class RootLogger extends Logger {
         Middleware.logNetwork(req, res, next);
     }
 
-    registerCustomFields(object: Object) { }
+    registerCustomFields(fieldNames: Array<string>) {
+        // registeredCustomFields = JSON.parse(JSON.stringify(fieldNames));
+        return true;
+    }
 
     getBoundServices() {
         return EnvService.getBoundServices()
