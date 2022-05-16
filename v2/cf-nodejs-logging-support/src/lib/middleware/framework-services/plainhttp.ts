@@ -3,23 +3,23 @@ import { IFrameworkService } from "../interfaces";
 
 export default class HttpService implements IFrameworkService {
 
-    public getReqHeaderField(_req: any, fieldName: string): string {
-        return _req.headers[fieldName];
+    public getReqHeaderField(req: any, fieldName: string): string {
+        return req.headers[fieldName];
     }
 
-    public getReqField(_req: any, fieldName: string): string {
-        return _req[fieldName];
+    public getReqField(req: any, fieldName: string): string {
+        return req[fieldName];
     }
 
-    public getResHeaderField(_res: any, fieldName: string): string {
-        return _res.headers[fieldName];;
+    public getResHeaderField(res: any, fieldName: string): string {
+        return res.headers[fieldName];
     }
 
-    public getResField(_res: any, fieldName: string): string {
-        return _res[fieldName];
+    public getResField(res: any, fieldName: string): string {
+        return res[fieldName];
     }
 
     public finishLog(record: any) {
-        RecordWriter.writeLog(record);
+        RecordWriter.getInstance().writeLog(record);
     }
 }

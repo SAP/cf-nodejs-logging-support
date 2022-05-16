@@ -2,18 +2,30 @@ const os = require("os");
 
 export default class RecordWriter {
 
-    private static customSinkFunction: Function;
+    private static instance: RecordWriter;
+    private customSinkFunction: Function | undefined;
 
-    static writeLog(_record: object): void {
-        if (RecordWriter.customSinkFunction) {
-            RecordWriter.customSinkFunction();
+    private constructor() {
+    }
+
+    public static getInstance(): RecordWriter {
+        if (!RecordWriter.instance) {
+            RecordWriter.instance = new RecordWriter();
+        }
+
+        return RecordWriter.instance;
+    }
+    writeLog(records: object): void {
+        const instance = RecordWriter.getInstance();
+        if (instance.customSinkFunction) {
+            instance.customSinkFunction();
         } else {
             // default to stdout
-            process.stdout.write(JSON.stringify(_record) + os.EOL);
+            process.stdout.write(JSON.stringify(records) + os.EOL);
         }
     }
 
-    static setSinkFunction(f: Function) {
-        RecordWriter.customSinkFunction = f;
+    setSinkFunction(f: Function) {
+        RecordWriter.getInstance().customSinkFunction = f;
     }
 }

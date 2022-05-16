@@ -40,7 +40,7 @@ export default class Logger {
     logMessage(levelName: string, ..._args: any) {
         if (!this.isLoggingLevel(levelName)) return;
         const record = this.context ? RecordFactory.buildMsgRecord(_args, this.context) : RecordFactory.buildMsgRecord(_args);
-        RecordWriter.writeLog(record);
+        RecordWriter.getInstance().writeLog(record);
     }
 
     setCustomFields(customFields: Map<string, any>) {
