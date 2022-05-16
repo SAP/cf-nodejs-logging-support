@@ -7,6 +7,7 @@ import ReqContext from "./context";
 export default class Logger {
     private parent?: Logger = undefined
     private context?: ReqContext;
+    private registeredCustomFields: Array<string> = [];
     private customFields: Map<string, any> = new Map<string, any>()
     protected loggingLevelThreshold: Level = Level.INHERIT
 
@@ -40,9 +41,13 @@ export default class Logger {
     logMessage(levelName: string, ..._args: any) {
         if (!this.isLoggingLevel(levelName)) return;
         const record = this.context ?
-            RecordFactory.buildMsgRecord(this.customFields, levelName, _args, this.context)
-            : RecordFactory.buildMsgRecord(this.customFields, levelName, _args);
+            RecordFactory.buildMsgRecord(this.registeredCustomFields, this.customFields, levelName, _args, this.context)
+            : RecordFactory.buildMsgRecord(this.registeredCustomFields, this.customFields, levelName, _args);
         RecordWriter.getInstance().writeLog(record);
+    }
+
+    registerCustomFields(fieldNames: Array<string>) {
+        this.registeredCustomFields = fieldNames;
     }
 
     setCustomFields(customFields: Map<string, any>) {
