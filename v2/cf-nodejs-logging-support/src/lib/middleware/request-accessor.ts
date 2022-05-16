@@ -1,0 +1,37 @@
+import ExpressService from "./framework-services/express";
+import Config from "../config/config";
+import RestifyService from "./framework-services/restify";
+import HttpService from "./framework-services/plainhttp";
+import ConnectService from "./framework-services/connect";
+import { IFrameworkService } from "./interfaces";
+import { assignFrameworkService } from "./utils";
+
+export default class RequestAccessor {
+    private static instance: RequestAccessor;
+    private frameworkService: IFrameworkService;
+
+    private constructor() {
+        this.frameworkService = assignFrameworkService();
+    }
+
+    public static getInstance(): RequestAccessor {
+        if (!RequestAccessor.instance) {
+            RequestAccessor.instance = new RequestAccessor();
+        }
+
+        return RequestAccessor.instance;
+    }
+
+    // Binds the Loglevel extracted from JWT token to the given request logger
+    public bindDynLogLevel() {
+
+    };
+
+    public getHeaderField(req: any, fieldName: string): any {
+        return this.frameworkService.getReqHeaderField(req, fieldName);
+    };
+
+    public getField(req: any, fieldName: string): any {
+        return this.frameworkService.getReqField(req, fieldName);
+    };
+}

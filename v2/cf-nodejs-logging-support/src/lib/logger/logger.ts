@@ -1,8 +1,12 @@
 import Level from "./level";
 import LevelUtils from "./level-utils";
+import RecordWriter from "./record-writer";
+import RecordFactory from "./record-factory";
+import ReqContext from "./context";
 
 export default class Logger {
     private parent?: Logger = undefined
+    private context?: ReqContext;
     private customFields: Map<string, any> = new Map<string, any>()
     protected loggingLevelThreshold: Level = Level.INHERIT
 
@@ -10,7 +14,7 @@ export default class Logger {
         this.parent = parent;
     }
 
-    createLogger(_object?: Object): Logger {
+    createLogger(): Logger {
         return new Logger(this)
     }
 
@@ -35,10 +39,8 @@ export default class Logger {
 
     logMessage(levelName: string, ..._args: any) {
         if (!this.isLoggingLevel(levelName)) return;
-
-        console.log(levelName + " " + _args)
-
-        // todo: process log message
+        const record = this.context ? RecordFactory.buildMsgRecord(_args, this.context) : RecordFactory.buildMsgRecord(_args);
+        RecordWriter.getInstance().writeLog(record);
     }
 
     setCustomFields(customFields: Map<string, any>) {
@@ -51,5 +53,9 @@ export default class Logger {
         } else {
             return new Map(...this.customFields.entries())
         }
+    }
+
+    initContext(_req: any) {
+        this.context = new ReqContext(_req);
     }
 }

@@ -6,7 +6,7 @@ import coreConfig from './config-core.json';
 import kymaConfig from './config-kyma.json';
 import requestConfig from './config-request.json';
 import ConfigValidator from './config-validator';
-import { ConfigField, ConfigObject, customFieldsFormat, framework } from './interfaces';
+import { ConfigField, ConfigObject, customFieldsFormat, framework, Source } from './interfaces';
 
 export default class Config {
 
@@ -73,7 +73,10 @@ export default class Config {
     public getMsgFields(): ConfigField[] {
         const filtered = Config.instance.config.fields!.filter(
             key => {
-                return key.output?.includes('msg-log');
+                if (key.output?.includes('msg-log')) {
+                    return true;
+                }
+                return false;
             }
         );
         return filtered;
@@ -88,6 +91,20 @@ export default class Config {
         return filtered;
     }
 
+    public getContextFields(): ConfigField[] {
+        const filtered = Config.instance.config.fields!.filter(
+            field => {
+                if (field.output?.includes("msg-log") && field.output?.includes("req-log")) {
+                    if ((field.source as Source).type == "req-header" || "req-object") {
+                        return true;
+                    }
+                }
+                return false;
+            }
+        );
+        return filtered;
+    }
+
     public getDisabledFields(): ConfigField[] {
         const filtered = Config.instance.config.fields!.filter(
             key => {
@@ -95,6 +112,11 @@ export default class Config {
             }
         );
         return filtered;
+    }
+
+    public getFramework(): framework {
+        const framework = Config.instance.config.framework!;
+        return framework;
     }
 
     public addConfig(configs: ConfigObject[]) {
@@ -107,7 +129,6 @@ export default class Config {
             }
 
             file.fields?.forEach(field => {
-
                 const index = Config.instance.getIndex(field.name);
 
                 // if new config field

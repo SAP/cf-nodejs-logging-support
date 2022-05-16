@@ -3,13 +3,24 @@ import { ConfigObject, customFieldsFormat } from "../config/interfaces"
 import EnvService from "../core/env-service";
 import Level from "./level"
 import Logger from "./logger"
+import RecordWriter from "./record-writer";
+import Middleware from "../middleware/middleware";
 
 export default class RootLogger extends Logger {
+    private static instance: RootLogger;
     private config = Config.getInstance();
 
-    constructor() {
+    private constructor() {
         super()
         this.loggingLevelThreshold = Level.INFO
+    }
+
+    public static getInstance(): RootLogger {
+        if (!RootLogger.instance) {
+            RootLogger.instance = new RootLogger();
+        }
+
+        return RootLogger.instance;
     }
 
     getConfig() {
@@ -32,22 +43,27 @@ export default class RootLogger extends Logger {
         return this.config.setStartupMessageEnabled(enabled);
     }
 
-    setSinkFunction(_f: Function) { }
+    setSinkFunction(f: Function) {
+        RecordWriter.getInstance().setSinkFunction(f);
+    }
 
     enableTracing() { }
 
-    logNetwork(_req: any, _res: any, _next: any) { }
+    logNetwork(req: any, res: any, next: any) {
+        Middleware.logNetwork(req, res, next);
+    }
 
-    registerCustomFields(_object: Object) { }
+    registerCustomFields(object: Object) { }
 
     getBoundServices() {
         return EnvService.getBoundServices()
     }
 
     // legacy methods
-    overrideNetworkField(_field: string, _value: string) { }
-    overrideCustomFieldFormat(_value: string) { }
+    overrideNetworkField(field: string, value: string) { }
+    overrideCustomFieldFormat(value: string) { }
     setLogPattern() { }
     createWinstonTransport() { }
-    forceLogger(_logger: string) { }
+    forceLogger(logger: string) {
+    }
 }
