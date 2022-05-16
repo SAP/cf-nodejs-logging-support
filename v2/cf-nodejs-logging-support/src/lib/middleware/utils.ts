@@ -8,7 +8,6 @@ import { IFrameworkService } from "./interfaces";
 export function assignFrameworkService(): IFrameworkService {
     const framework = Config.getInstance().getFramework();
     switch (framework) {
-        //insert your custom framework logger here
         case "restify":
             return new RestifyService();
         case "nodejs-http":
