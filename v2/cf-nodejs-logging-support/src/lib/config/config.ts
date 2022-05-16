@@ -165,25 +165,8 @@ export default class Config {
         Config.instance.config.outputStartupMsg = enabled;
     }
 
-    // delete framework specific fields that are not supported
-    public compressFields(framework: framework): void {
-        Config.instance.config.fields!.forEach(field => {
-            if (field.source && Array.isArray(field.source) && field.source.length > 0) {
-                let i = 0
-                while (i < field.source.length) {
-                    if (field.source[i].framework !== undefined && !field.source[i].framework!.includes(framework)) {
-                        field.source.shift();
-                    } else {
-                        i++;
-                    }
-                }
-            }
-        });
-    }
-
     public setFramework(framework: framework): void {
         Config.instance.config.framework = framework;
-        Config.instance.compressFields(framework);
     }
 
     // get index of field in config

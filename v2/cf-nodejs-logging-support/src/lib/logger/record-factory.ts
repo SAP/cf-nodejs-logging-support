@@ -1,6 +1,6 @@
 import util from "util";
 import Config from "../config/config";
-import { ConfigField } from "../config/interfaces";
+import { ConfigField, Source } from "../config/interfaces";
 import NestedVarResolver from "../helper/nested-var-resolver";
 import RequestAccessor from "../middleware/request-Accessor";
 import ResponseAccessor from "../middleware/response-accessor";
@@ -62,34 +62,43 @@ export default class RecordFactory {
         const reqLogFields = Config.getInstance().getReqFields();
         let record: any = { "level": "info" };
         reqLogFields.forEach(field => {
+
+            let source;
+
             if (!Array.isArray(field.source)) {
-                switch (field.source.type) {
-                    case "req-header":
-                        record[field.name] = requestAccessor.getHeaderField(req, field.source.name!);
-                        break;
-                    case "req-object":
-                        record[field.name] = requestAccessor.getField(req, field.source.name!);
-                        break;
-                    case "res-header":
-                        record[field.name] = responseAccessor.getHeaderField(res, field.source.name!);
-                        break;
-                    case "res-object":
-                        record[field.name] = responseAccessor.getField(res, field.source.name!);
-                        break;
-                    default:
-                        record[field.name] = this.getFieldValue(field, record);
-                }
+                source = field.source;
+            } else {
+                source = RecordFactory.getValidSource(field.source);
             }
 
-            // TO DO: sources as array case
-
+            switch (source.type) {
+                case "req-header":
+                    record[field.name] = requestAccessor.getHeaderField(req, source.name!);
+                    break;
+                case "req-object":
+                    record[field.name] = requestAccessor.getField(req, source.name!);
+                    break;
+                case "res-header":
+                    record[field.name] = responseAccessor.getHeaderField(res, source.name!);
+                    break;
+                case "res-object":
+                    record[field.name] = responseAccessor.getField(res, source.name!);
+                    break;
+                default:
+                    record[field.name] = this.getFieldValue(field, record);
+            }
         });
         return record;
     }
 
     private static getFieldValue(field: ConfigField, record: any): string | undefined {
-        // TO DO: if source array iterate until source framework = config framework
-        let source = Array.isArray(field.source) ? field.source[0] : field.source;
+        let source;
+
+        if (!Array.isArray(field.source)) {
+            source = field.source;
+        } else {
+            source = RecordFactory.getValidSource(field.source);
+        }
 
         switch (source.type) {
             case "static":
@@ -104,12 +113,16 @@ export default class RecordFactory {
             default:
                 return undefined;
         }
+    }
 
-
-
-        // TO DO: handle sources as array case
-
-
+    private static getValidSource(sources: Source[]): Source {
+        const framework = Config.getInstance().getFramework();
+        for (let source of sources) {
+            if (source.framework == framework) {
+                return source;
+            }
+        }
+        return sources[0];
     }
 
     // check if the given object is an Error with stacktrace using duck typing
