@@ -1,10 +1,6 @@
-import ExpressService from "./framework-services/express";
-import Config from "../config/config";
-import RestifyService from "./framework-services/restify";
-import HttpService from "./framework-services/plainhttp";
-import ConnectService from "./framework-services/connect";
 import { IFrameworkService } from "./interfaces";
 import { assignFrameworkService } from "./utils";
+const { v4: uuid } = require('uuid');
 
 export default class RequestAccessor {
     private static instance: RequestAccessor;
@@ -28,7 +24,11 @@ export default class RequestAccessor {
     };
 
     public getHeaderField(req: any, fieldName: string): any {
-        return this.frameworkService.getReqHeaderField(req, fieldName);
+        let result = this.frameworkService.getReqHeaderField(req, fieldName);
+        if (!result && fieldName == "x-correlationid") {
+            result = uuid();
+        }
+        return result;
     };
 
     public getField(req: any, fieldName: string): any {
