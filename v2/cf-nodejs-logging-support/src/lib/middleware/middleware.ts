@@ -9,13 +9,13 @@ export default class Middleware {
         let logSent = false;
 
         const networkLogger = RootLogger.getInstance().createLogger();
-        networkLogger.initContext(req);
+        const context = networkLogger.initContext(req);
         req.logger = networkLogger;
 
         const finishLog = () => {
 
             if (!logSent) {
-                const record = RecordFactory.buildReqRecord(req, res);
+                const record = RecordFactory.buildReqRecord(req, res, context);
                 const level = LevelUtils.getLevel(record.level);
                 const loggingLevelThreshold = LevelUtils.getLevel(req.logger.getLoggingLevel());
                 if (LevelUtils.isLevelEnabled(loggingLevelThreshold, level)) {

@@ -64,5 +64,6 @@ export default class Logger {
 
     initContext(_req: any) {
         this.context = new ReqContext(_req);
+        return this.context;
     }
 }

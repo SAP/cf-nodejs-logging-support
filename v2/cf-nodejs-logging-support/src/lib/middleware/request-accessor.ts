@@ -1,6 +1,5 @@
 import { IFrameworkService } from "./interfaces";
 import { assignFrameworkService } from "./utils";
-const { v4: uuid } = require('uuid');
 
 export default class RequestAccessor {
     private static instance: RequestAccessor;
@@ -25,9 +24,6 @@ export default class RequestAccessor {
 
     public getHeaderField(req: any, fieldName: string): any {
         let result = this.frameworkService.getReqHeaderField(req, fieldName);
-        if (!result && fieldName == "x-correlationid") {
-            result = uuid();
-        }
         return result;
     };
 
