@@ -1,3 +1,4 @@
+import { LegacyCharacterEncoding } from 'crypto';
 import EnvService from '../core/env-service';
 import appLoggingConfig from './config-app-logging.json';
 import cfConfig from './config-cf.json';
@@ -18,6 +19,8 @@ export default class Config {
         "outputStartupMsg": false,
         "framework": "express"
     }
+    private redactedFields = new Map<string, boolean>();
+    private omittedFields = new Map<string, boolean>();
 
     private constructor() { }
 
@@ -129,6 +132,18 @@ export default class Config {
             }
 
             file.fields?.forEach(field => {
+                if (field.envVarRedact || field.envVarSwitch) {
+                    const shouldBeReduced = this.isReducedField(field);
+                    if (shouldBeReduced) {
+                        if (field.envVarRedact) {
+                            this.redactedFields.set(field.name, true);
+                        } else {
+                            this.omittedFields.set(field.name, true);
+
+                        }
+                    }
+                }
+
                 const index = Config.instance.getIndex(field.name);
 
                 // if new config field
@@ -189,5 +204,22 @@ export default class Config {
         );
 
         return index;
+    }
+
+    private isReducedField(field: ConfigField): boolean {
+        const val = process.env[field.envVarRedact!];
+        const isActivated = (val == "true" || val == "True" || val == "TRUE");
+        if (!isActivated) {
+            return true;
+        }
+        return false;
+    }
+
+    public isRedactedField(fieldName: string): boolean {
+        return this.redactedFields.get(fieldName) ? true : false;
+    }
+
+    public isOmittedField(fieldName: string): boolean {
+        return this.omittedFields.get(fieldName) ? true : false;
     }
 }

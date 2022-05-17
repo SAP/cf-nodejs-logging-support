@@ -12,20 +12,19 @@ export default class RecordFactory {
     // init a new record and assign fields with output "msg-log"
     static buildMsgRecord(args: Array<any>, context?: ReqContext): any {
 
-        const msgLogFields = Config.getInstance().getMsgFields();
+        const configInstance = Config.getInstance();
+        const msgLogFields = configInstance.getMsgFields();
         let record: any = {
             "level": "info",
         };
 
         msgLogFields.forEach(field => {
-            if (field.envVarRedact || field.envVarSwitch) {
-                const shouldBeReduced = this.isReducedField(field);
-                if (shouldBeReduced) {
-                    if (field.envVarRedact) {
-                        record[field.name] = this.REDUCED_PLACEHOLDER;
-                    }
-                    return;
-                }
+            if (configInstance.isRedactedField(field.name)) {
+                record[field.name] = this.REDUCED_PLACEHOLDER;
+                return;
+            }
+            if (configInstance.isOmittedField(field.name)) {
+                return;
             }
             record[field.name] = this.getFieldValue(field, record);
         });
@@ -48,18 +47,17 @@ export default class RecordFactory {
         const requestAccessor = RequestAccessor.getInstance();
         const responseAccessor = ResponseAccessor.getInstance();
 
-        const reqLogFields = Config.getInstance().getReqFields();
+        const configInstance = Config.getInstance();
+        const reqLogFields = configInstance.getReqFields();
         let record: any = { "level": "info" };
         reqLogFields.forEach(field => {
 
-            if (field.envVarRedact || field.envVarSwitch) {
-                const shouldBeReduced = this.isReducedField(field);
-                if (shouldBeReduced) {
-                    if (field.envVarRedact) {
-                        record[field.name] = this.REDUCED_PLACEHOLDER;
-                    }
-                    return;
-                }
+            if (configInstance.isRedactedField(field.name)) {
+                record[field.name] = this.REDUCED_PLACEHOLDER;
+                return;
+            }
+            if (configInstance.isOmittedField(field.name)) {
+                return;
             }
 
             if (!Array.isArray(field.source)) {
@@ -83,22 +81,13 @@ export default class RecordFactory {
 
             // TO DO: sources as array case
             if (!record[field.name]) {
-                record[field.name] = this.handleConfigDefault(record, field);
+                record[field.name] = this.handleConfigDefault(field);
             }
         });
         return record;
     }
 
-    private static isReducedField(field: ConfigField): boolean {
-        const val = process.env[field.envVarRedact!];
-        const isActivated = (val == "true" || val == "True" || val == "TRUE");
-        if (!isActivated) {
-            return true;
-        }
-        return false;
-    }
-
-    private static handleConfigDefault(record: any, field: ConfigField) {
+    private static handleConfigDefault(field: ConfigField) {
         if (field.mandatory) {
             return field.default;
         }
@@ -127,7 +116,7 @@ export default class RecordFactory {
 
         // TO DO: handle defaults
         if (record[field.name] == undefined) {
-            record[field.name] = this.handleConfigDefault(record, field);
+            record[field.name] = this.handleConfigDefault(field);
         }
 
         return;
