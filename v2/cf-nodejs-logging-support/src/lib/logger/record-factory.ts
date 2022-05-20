@@ -19,11 +19,12 @@ export default class RecordFactory {
         };
 
         msgLogFields.forEach(field => {
-            if (configInstance.isRedactedField(field.name)) {
-                record[field.name] = this.REDUCED_PLACEHOLDER;
+            if (configInstance.isOmittedField(field.name)) {
                 return;
             }
-            if (configInstance.isOmittedField(field.name)) {
+            if (configInstance.isRedactedField(field.name)) {
+                let fieldValue = this.getFieldValue(field, record);
+                record[field.name] = fieldValue ? this.REDUCED_PLACEHOLDER : undefined;
                 return;
             }
             record[field.name] = this.getFieldValue(field, record);
@@ -52,10 +53,6 @@ export default class RecordFactory {
         let record: any = { "level": "info" };
         reqLogFields.forEach(field => {
 
-            if (configInstance.isRedactedField(field.name)) {
-                record[field.name] = this.REDUCED_PLACEHOLDER;
-                return;
-            }
             if (configInstance.isOmittedField(field.name)) {
                 return;
             }
@@ -77,6 +74,11 @@ export default class RecordFactory {
                     default:
                         record[field.name] = this.getFieldValue(field, record);
                 }
+            }
+
+            if (configInstance.isRedactedField(field.name)) {
+                record[field.name] = record[field.name] ? this.REDUCED_PLACEHOLDER : undefined;
+                return;
             }
 
             // TO DO: sources as array case
