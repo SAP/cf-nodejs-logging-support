@@ -27,11 +27,15 @@ export default class ReqContext {
             if (!Array.isArray(field.source)) {
                 this.properties[field.name] = this.getPropValue(field.source, req);
             } else {
-                let sourceIndex = SourceUtils.getNextValidSourceIndex(field.source);
-                while (!this.properties[field.name] && sourceIndex != -1) {
+                let sourceIndex = 0;
+                while (!this.properties[field.name]) {
+                    sourceIndex = SourceUtils.getNextValidSourceIndex(field.source, sourceIndex);
+                    if (sourceIndex == -1) {
+                        return;
+                    }
                     let source = field.source[sourceIndex];
                     this.properties[field.name] = this.getPropValue(source, req);
-                    sourceIndex = SourceUtils.getNextValidSourceIndex(field.source, ++sourceIndex);
+                    ++sourceIndex;
                 }
             }
         });

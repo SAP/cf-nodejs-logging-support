@@ -51,11 +51,15 @@ export default class RecordFactory {
             if (!Array.isArray(field.source)) {
                 record[field.name] = this.getFieldValue(field.source, record);
             } else {
-                let sourceIndex = SourceUtils.getNextValidSourceIndex(field.source);
-                while (!record[field.name] && sourceIndex != -1) {
+                let sourceIndex = 0;
+                while (!record[field.name]) {
+                    sourceIndex = SourceUtils.getNextValidSourceIndex(field.source, sourceIndex);
+                    if (sourceIndex == -1) {
+                        return;
+                    }
                     let source = field.source[sourceIndex];
                     record[field.name] = this.getFieldValue(source, record);
-                    sourceIndex = SourceUtils.getNextValidSourceIndex(field.source, ++sourceIndex);
+                    ++sourceIndex;
                 }
             }
         });
@@ -86,11 +90,15 @@ export default class RecordFactory {
                     record[field.name] = this.getFieldValue(field.source, record);
                 }
             } else {
-                let sourceIndex = SourceUtils.getNextValidSourceIndex(field.source);
-                while (!record[field.name] && sourceIndex != -1) {
+                let sourceIndex = 0;
+                while (!record[field.name]) {
+                    sourceIndex = SourceUtils.getNextValidSourceIndex(field.source, sourceIndex);
+                    if (sourceIndex == -1) {
+                        return;
+                    }
                     let source = field.source[sourceIndex];
                     record[field.name] = this.getReqFieldValue(source, record, requestAccessor, responseAccessor, req, res);
-                    sourceIndex = SourceUtils.getNextValidSourceIndex(field.source, ++sourceIndex);
+                    ++sourceIndex;
                 }
             }
         });
