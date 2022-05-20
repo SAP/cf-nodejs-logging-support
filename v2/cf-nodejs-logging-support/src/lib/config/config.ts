@@ -1,3 +1,4 @@
+import { mergeEvaluated } from 'ajv/dist/compile/util';
 import { LegacyCharacterEncoding } from 'crypto';
 import EnvService from '../core/env-service';
 import appLoggingConfig from './config-app-logging.json';
@@ -8,6 +9,7 @@ import kymaConfig from './config-kyma.json';
 import requestConfig from './config-request.json';
 import ConfigValidator from './config-validator';
 import { ConfigField, ConfigObject, customFieldsFormat, framework, Source } from './interfaces';
+import { isEnvVarEnabled } from './utils';
 
 export default class Config {
 
@@ -132,14 +134,32 @@ export default class Config {
             }
 
             file.fields?.forEach(field => {
-                if (field.envVarRedact || field.envVarSwitch) {
-                    const shouldBeReduced = this.isReducedField(field);
-                    if (shouldBeReduced) {
-                        if (field.envVarRedact) {
-                            this.redactedFields.set(field.name, true);
-                        } else {
-                            this.omittedFields.set(field.name, true);
+                if (field.envVarSwitch) {
+                    let isEnabled = isEnvVarEnabled(field.envVarSwitch);
+                    if (isEnabled) {
+                        field._meta = {
+                            isRedacted: false,
+                            isEnabled: true,
+                        }
+                    } else {
+                        field._meta = {
+                            isRedacted: false,
+                            isEnabled: false,
+                        }
+                    }
+                }
 
+                if (field.envVarRedact) {
+                    let isEnabled = isEnvVarEnabled(field.envVarRedact);
+                    if (isEnabled) {
+                        field._meta = {
+                            isRedacted: true,
+                            isEnabled: true,
+                        }
+                    } else {
+                        field._meta = {
+                            isRedacted: true,
+                            isEnabled: false,
                         }
                     }
                 }
@@ -204,15 +224,6 @@ export default class Config {
         );
 
         return index;
-    }
-
-    private isReducedField(field: ConfigField): boolean {
-        const val = process.env[field.envVarRedact!];
-        const isActivated = (val == "true" || val == "True" || val == "TRUE");
-        if (!isActivated) {
-            return true;
-        }
-        return false;
     }
 
     public isRedactedField(fieldName: string): boolean {

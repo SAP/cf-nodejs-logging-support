@@ -5,8 +5,8 @@
         "ConfigField": {
             "additionalProperties": false,
             "properties": {
-                "context": {
-                    "type": "boolean"
+                "_meta": {
+                    "$ref": "#/definitions/ConfigFieldMeta"
                 },
                 "default": {
                     "type": "string"
@@ -48,6 +48,18 @@
                             "type": "array"
                         }
                     ]
+                }
+            },
+            "type": "object"
+        },
+        "ConfigFieldMeta": {
+            "additionalProperties": false,
+            "properties": {
+                "isEnabled": {
+                    "type": "boolean"
+                },
+                "isRedacted": {
+                    "type": "boolean"
                 }
             },
             "type": "object"

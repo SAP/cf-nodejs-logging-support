@@ -19,12 +19,18 @@ export default class RecordFactory {
         };
 
         msgLogFields.forEach(field => {
-            if (configInstance.isOmittedField(field.name)) {
+            if (field.disable) {
                 return;
             }
-            if (configInstance.isRedactedField(field.name)) {
-                let fieldValue = this.getFieldValue(field, record);
-                record[field.name] = fieldValue ? this.REDUCED_PLACEHOLDER : undefined;
+
+            if (!field._meta?.isEnabled == false) {
+                // if enVarRedacted and the value of the field is present set to "redacted", if not ommit
+                if (field._meta?.isRedacted == true) {
+                    let fieldValue = this.getFieldValue(field, record);
+                    if (fieldValue) {
+                        record[field.name] = this.REDUCED_PLACEHOLDER;
+                    }
+                }
                 return;
             }
             record[field.name] = this.getFieldValue(field, record);
@@ -51,9 +57,14 @@ export default class RecordFactory {
         const configInstance = Config.getInstance();
         const reqLogFields = configInstance.getReqFields();
         let record: any = { "level": "info" };
-        reqLogFields.forEach(field => {
 
-            if (configInstance.isOmittedField(field.name)) {
+        reqLogFields.forEach(field => {
+            if (field.disable) {
+                return;
+            }
+
+            // if envVarSwitch and not enabled, ommit field
+            if (field._meta?.isEnabled == false && field._meta?.isRedacted == false) {
                 return;
             }
 
@@ -76,8 +87,14 @@ export default class RecordFactory {
                 }
             }
 
-            if (configInstance.isRedactedField(field.name)) {
-                record[field.name] = record[field.name] ? this.REDUCED_PLACEHOLDER : undefined;
+            // if envVarRedacted and not enabled
+            if (field._meta?.isRedacted == true && field._meta?.isEnabled == false) {
+                // if field value is present set to "redacted", if not ommit
+                if (record[field.name]) {
+                    record[field.name] = this.REDUCED_PLACEHOLDER;
+                } else {
+                    record[field.name] = undefined;
+                }
                 return;
             }
 
