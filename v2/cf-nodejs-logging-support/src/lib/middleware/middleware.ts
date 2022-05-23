@@ -2,15 +2,24 @@ import LevelUtils from "../logger/level-utils";
 import RecordFactory from "../logger/record-factory";
 import ResponseAccessor from "./response-accessor";
 import RootLogger from "../logger/root-logger";
+import { JWTService } from "../config/jwt-service";
+import RequestAccessor from "./request-Accessor";
 
 export default class Middleware {
 
     static logNetwork(req: any, res: any, next?: any) {
         let logSent = false;
 
-        const networkLogger = RootLogger.getInstance().createLogger();
+        let networkLogger = RootLogger.getInstance().createLogger();
         networkLogger.initContext(req);
+
+        var dynLogLevelHeader = JWTService.getDynLogLevelHeaderName();
+        var token = RequestAccessor.getInstance().getHeaderField(req, dynLogLevelHeader);
+        if (token) {
+            networkLogger = JWTService.bindDynLogLevel(token, networkLogger);
+        }
         req.logger = networkLogger;
+
 
         const finishLog = () => {
 

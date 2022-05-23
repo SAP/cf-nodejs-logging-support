@@ -133,7 +133,6 @@ export default class RecordFactory {
             // TO DO: handle sources as array case
         }
 
-        // TO DO: handle defaults
         if (record[field.name] == undefined) {
             record[field.name] = this.handleConfigDefault(field);
         }
