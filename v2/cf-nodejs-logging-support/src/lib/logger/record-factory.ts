@@ -1,3 +1,4 @@
+import Logger from "./logger"
 import util from "util";
 import Config from "../config/config";
 import { ConfigField } from "../config/interfaces";
@@ -10,12 +11,12 @@ export default class RecordFactory {
     private static REDUCED_PLACEHOLDER = "redacted";
 
     // init a new record and assign fields with output "msg-log"
-    static buildMsgRecord(args: Array<any>, context?: ReqContext): any {
+    static buildMsgRecord(levelName: string, args: Array<any>, context?: ReqContext): any {
 
         const configInstance = Config.getInstance();
         const msgLogFields = configInstance.getMsgFields();
         let record: any = {
-            "level": "info",
+            "level": levelName,
         };
 
         msgLogFields.forEach(field => {
@@ -50,13 +51,13 @@ export default class RecordFactory {
 
     // init a new record and assign fields with output "req-log"
     static buildReqRecord(req: any, res: any): any {
-
+        const level = (req.logger as Logger).getLoggingLevel();
         const requestAccessor = RequestAccessor.getInstance();
         const responseAccessor = ResponseAccessor.getInstance();
 
         const configInstance = Config.getInstance();
         const reqLogFields = configInstance.getReqFields();
-        let record: any = { "level": "info" };
+        let record: any = { "level": level };
 
         reqLogFields.forEach(field => {
             if (field.disable) {

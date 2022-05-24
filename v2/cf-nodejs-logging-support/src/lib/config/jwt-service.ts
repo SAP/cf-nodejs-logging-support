@@ -7,11 +7,8 @@ const DEFAULT_DYN_LOG_LEVEL_HEADER = "SAP-LOG-LEVEL";
 
 export class JWTService {
     // Read dyn. log level header name from environment var
-    headerName = process.env[ENV_DYN_LOG_HEADER];
-    private static dynLogLevelHeader = "";
-
-    // Read dyn log level key from environment var.
-    private static dynLogLevelKey = process.env[ENV_DYN_LOG_KEY];
+    private static headerName = process.env[ENV_DYN_LOG_HEADER];
+    private static dynLogLevelHeader = JWTService.headerName ? JWTService.headerName : DEFAULT_DYN_LOG_LEVEL_HEADER;;
 
     constructor() {
 
@@ -22,12 +19,14 @@ export class JWTService {
     }
 
     setDynLogLevelHeader() {
-        JWTService.dynLogLevelHeader = this.headerName ? this.headerName : DEFAULT_DYN_LOG_LEVEL_HEADER;
+        JWTService.dynLogLevelHeader = JWTService.headerName ? JWTService.headerName : DEFAULT_DYN_LOG_LEVEL_HEADER;
     }
 
     // Binds the Loglevel extracted from JWT token to the given request logger
     static bindDynLogLevel(token: any, logger: Logger): Logger {
-        var payload = this.verifyAndDecodeJWT(token, JWTService.dynLogLevelKey);
+        // Read dyn log level key from environment var.
+        const dynLogLevelKey = process.env[ENV_DYN_LOG_KEY];
+        var payload = this.verifyAndDecodeJWT(token, dynLogLevelKey);
 
         if (payload) {
             logger.setLoggingLevel(payload.level);

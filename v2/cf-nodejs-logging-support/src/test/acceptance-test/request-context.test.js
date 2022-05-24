@@ -1,3 +1,5 @@
+// saves public key
+process.env.DYN_LOG_LEVEL_KEY = "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA2fzU8StO511QYoC+BZp4riR2eVQM8FPPB2mF4I78WBDzloAVTaz0Z7hkMog1rAy8+Xva+fLiMuxDmN7kQZKBc24O4VeKNjOt8ZtNhz3vlMTZrNQ7bi+j8TS8ycUgKqe4/hSmjJBfXoduZ8Ye90u8RRfPLzbuutctLfCnL/ZhEehqfilt1iQb/CRCEsJou5XahmvOO5Gt+9kTBmY+2rS/+HKKdAhI3OpxwvXXNi8m9LrdHosMD7fTUpLUgdcIp8k3ACp9wCIIxbv1ssDeWKy7bKePihTl7vJq6RkopS6GvhO6yiD1IAJF/iDOrwrJAWzanrtavUc1RJZvbOvD0DFFOwIDAQAB";
 const expect = require('chai').expect;
 const { before, after } = require('mocha');
 const importFresh = require('import-fresh');
@@ -9,11 +11,11 @@ const httpApp = require("./nodejs-http/app.js");
 
 var lastLogs;
 
-describe.skip('Test request context', function () {
+describe('Test request context', function () {
 
     // catch logs written by supertest app
     process.writeLog = function (level, output) {
-        lastLogs.push(JSON.parse(output));
+        lastLogs.push(output);
     }
 
     before(function () {
@@ -42,15 +44,15 @@ describe.skip('Test request context', function () {
             expect(lastLogs[0]).to.have.property('msg', 'test-message');
         });
 
-        it("writes a log with request_id and correlation_id", function () {
+        it.skip("writes a log with request_id and correlation_id", function () {
             expect(lastLogs[0]).to.have.property('request_id');
         });
 
-        it("writes a log with tenant_id", function () {
+        it.skip("writes a log with tenant_id", function () {
             expect(lastLogs[0]).to.have.property('tenant_id');
         });
 
-        it("writes a log with tenant_subdomain", function () {
+        it.skip("writes a log with tenant_subdomain", function () {
             expect(lastLogs[0]).to.have.property('tenant_subdomain');
         });
 
@@ -86,7 +88,7 @@ describe.skip('Test request context', function () {
         });
     });
 
-    describe("Set log level treshold in request handler", function () {
+    describe.skip("Set log level treshold in request handler", function () {
 
         before(function (done) {
             supertest(expressApp)
@@ -108,7 +110,7 @@ describe.skip('Test request context', function () {
         });
     });
 
-    describe("Set implicit correlation-, tenant-id and tenant-subdomain through methods", function () {
+    describe.skip("Set implicit correlation-, tenant-id and tenant-subdomain through methods", function () {
 
         before(function (done) {
             supertest(expressApp)
@@ -138,7 +140,7 @@ describe.skip('Test request context', function () {
         });
     });
 
-    describe("Set implicit correlation- and tenant-id through request header", function () {
+    describe.skip("Set implicit correlation- and tenant-id through request header", function () {
 
         var correlation_id = "cbc4343f-1c31-27d0-96fc-f32efac20986";
         var tenant_id = "abc2654f-5t15-12h0-78gt-n73jeuc01847";
@@ -169,7 +171,7 @@ describe.skip('Test request context', function () {
         });
     });
 
-    describe("Get correlation-, tenant-id and tenant-subdomain", function () {
+    describe.skip("Get correlation-, tenant-id and tenant-subdomain", function () {
 
         before(function (done) {
             supertest(expressApp)
@@ -192,7 +194,7 @@ describe.skip('Test request context', function () {
         });
     });
 
-    describe("Test sensitive data redaction without activated env vars", function () {
+    describe.skip("Test sensitive data redaction without activated env vars", function () {
 
         before(function (done) {
             supertest(expressApp)
@@ -247,7 +249,7 @@ describe.skip('Test request context', function () {
             before(function (done) {
                 supertest(expressApp)
                     .get("/requestcontext")
-                    .set('SAP-LOG-LEVEL', 'eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJsZXZlbCI6ImVycm9yIiwiZXhwIjoxNzc1NzMyMTQ2LCJpc3N1ZXIiOiJ0ZXN0LWVtYWlsQHNhcC5jb20iLCJpYXQiOjE2NDYxMzIxNDZ9.d-RgxVO7h2mvQZA7U49j9GsGXmCUn1WbKeYTc4_rVJ4uPS5RYBi_XesWny-NnQqzef2e4eeI_bZpVdjIVk-eZMnGmnnztLxamdIN5NhI2iTZ1X7taeVai3nsTgTtA1_eFsNNqbGMtxFyIe00VID42bfEkUCtYGph_ecvLTsHDWd5Vo94z_j4pCULqY_SQmkkOVrI0sK-N4qORlcFlPnyNHLKLz0aL6SEisiwtTvcIuKS2DJSvXkJz_6J0ok4FdrseXDmxxMtIqCrFXy1jHTFRfuRk2JNwgLD42nbg4b4O6R_TKpvK5Szl540o_qq9VMEQaZkV8F-I9LF279z3zYRYQ')
+                    .set('SAP-LOG-LEVEL', 'eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJsZXZlbCI6ImVycm9yIiwiZXhwIjoxNzgyOTgxNzg4LCJpc3N1ZXIiOiJpc3N1ZXJAc2FwLmNvbSIsImlhdCI6MTY1MzM4MTc4OH0.t3sHQMc5M8fch_U8WBFCCDyKS3D-1bj6hhft6MB1puXXHnzyTSQDz8oAbgkCpSiUOxRzE3GpRiMpMZEFCm4cvl2xy2TCxERzBBTQBxON_Au7_ggzJUtxrGkuurxWBMf7hjWWxMP2p3DkJvVD8gpM4VphJKwIto0WDJIcdqTtkFM4wruPAEn-nNlyAZCp3GYOcYMtqv3dz1ShckB8uF6KCs_dv238DMI_6q0Y9HtXW_o4gParTL20vDB9IIibpJ3JsKJu2LlZJ6dSkR0iAwqXSTjiXGpMIz3P82URKekTGABxumqHE1Jgl3Kdlquu5r6OvEgwqeMh8oui2ZofLiVe-Q')
                     .expect(200)
                     .then(
                         done()
@@ -264,7 +266,7 @@ describe.skip('Test request context', function () {
             before(function (done) {
                 supertest(expressApp)
                     .get("/requestcontext")
-                    .set('SAP-LOG-LEVEL', 'eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJsZXZlbCI6ImRlYnVnIiwiZXhwIjoxNzc1NzQxNTE0LCJpc3N1ZXIiOiJ0ZXN0LWVtYWlsQHNhcC5jb20iLCJpYXQiOjE2NDYxNDE1MTR9.SJ-F3LrL4dbptw6y9t8wqpqMJgP8jVWGROwvUTg8mfNAopguHZXxn5A_nsknttT5TOREoqdope8ACz8OuvhLjYEWt-i8dt67DWheknOF47RW1NoOg_6s9t85CbIvquWSEZ_B0dhjNM4E6hTLschYNJN4AzuuFSdxqDVA8YAuaZi20CAjyWaVUa3syJhjS1dbyvFA8Aro9Tc1_h-amry1n5udgBHQw-U_K2_OVTmrHmHTw6v8UHuYcgnGS1_QWR_8aaaBvJ9kjrkTKZF9LvO-gdfw17jtwfv311HamXxV9_Tyr5gdJ5skHck8Aqq4Sm8V-o9i4oEqUklwsBSMW1jmZQ')
+                    .set('SAP-LOG-LEVEL', 'eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJsZXZlbCI6ImRlYnVnIiwiZXhwIjoxNzgyOTgyMDk0LCJpc3N1ZXIiOiJpc3N1ZXJAc2FwLmNvbSIsImlhdCI6MTY1MzM4MjA5NH0.c2TsfootLMbGNKoLmsaffINnyE-Vd-UQuOMvDLaQnkFdlSlp67fl327XL2Ttsc_JDse-YROqWcSMucohrLtcabE8MTcVTq_VeIIG_nGQ9WqKsDg1XXzJvFi5VdFAMcHdSgBnrcDSarRNn2kA6Hjcx7sT8aCCrHQRdtGyUVr4t20AHNpwTapKZvrfI7MjtQYDr4KywjoCojRklaUWSvoDn-iLIoZ-kbJLmQyxK5lvpjhvw-Ip8jRQAheyq04wp6CW0mMzWkvqdMIWciUQ_hh2RBg84s1An-kXIKq5Yju0zsDLQ8UPmJWfcNUZ4ACsaZO2WA3xytD4kY6KF_fpZVgVcA')
                     .expect(200)
                     .then(
                         done()
@@ -283,7 +285,7 @@ describe.skip('Test request context', function () {
         });
     });
 
-    describe("RESTIFY", function () {
+    describe.skip("RESTIFY", function () {
         describe("Set implicit correlation- and tenant-id through request header", function () {
 
             var correlation_id = "cbc4343f-1c31-27d0-96fc-f32efac20986";
@@ -366,7 +368,7 @@ describe.skip('Test request context', function () {
         });
     });
 
-    describe("CONNECT", function () {
+    describe.skip("CONNECT", function () {
         describe("Set implicit correlation- and tenant-id through request header", function () {
 
             var correlation_id = "cbc4343f-1c31-27d0-96fc-f32efac20986";
@@ -451,7 +453,7 @@ describe.skip('Test request context', function () {
         });
     });
 
-    describe("NODEJSHTTP", function () {
+    describe.skip("NODEJSHTTP", function () {
         describe("Set implicit correlation- and tenant-id through request header", function () {
 
             var correlation_id = "cbc4343f-1c31-27d0-96fc-f32efac20986";
