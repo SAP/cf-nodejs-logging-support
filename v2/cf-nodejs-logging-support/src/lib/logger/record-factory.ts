@@ -7,7 +7,7 @@ import ResponseAccessor from "../middleware/response-accessor";
 import ReqContext from "./context";
 
 export default class RecordFactory {
-    private static REDUCED_PLACEHOLDER = "redacted";
+    private static REDACTED_PLACEHOLDER = "redacted";
 
     // init a new record and assign fields with output "msg-log"
     static buildMsgRecord(args: Array<any>, context?: ReqContext): any {
@@ -19,21 +19,19 @@ export default class RecordFactory {
         };
 
         msgLogFields.forEach(field => {
-            if (field.disable) {
+            if (field._meta!.isEnabled == false) {
                 return;
             }
 
-            if (!field._meta?.isEnabled == false) {
-                // if enVarRedacted and the value of the field is present set to "redacted", if not ommit
-                if (field._meta?.isRedacted == true) {
-                    let fieldValue = this.getFieldValue(field, record);
-                    if (fieldValue) {
-                        record[field.name] = this.REDUCED_PLACEHOLDER;
-                    }
-                }
-                return;
-            }
             record[field.name] = this.getFieldValue(field, record);
+
+            if (!record[field.name] && field.default) {
+                record[field.name] = field.default;
+            }
+
+            if (field._meta!.isRedacted == true && record[field.name]) {
+                record[field.name] = this.REDACTED_PLACEHOLDER;
+            }
         });
 
         if (context) {
@@ -59,12 +57,7 @@ export default class RecordFactory {
         let record: any = { "level": "info" };
 
         reqLogFields.forEach(field => {
-            if (field.disable) {
-                return;
-            }
-
-            // if envVarSwitch and not enabled, ommit field
-            if (field._meta?.isEnabled == false && field._meta?.isRedacted == false) {
+            if (field._meta!.isEnabled == false) {
                 return;
             }
 
@@ -87,30 +80,16 @@ export default class RecordFactory {
                 }
             }
 
-            // if envVarRedacted and not enabled
-            if (field._meta?.isRedacted == true && field._meta?.isEnabled == false) {
-                // if field value is present set to "redacted", if not ommit
-                if (record[field.name]) {
-                    record[field.name] = this.REDUCED_PLACEHOLDER;
-                } else {
-                    record[field.name] = undefined;
-                }
-                return;
+            if (!record[field.name] && field.default) {
+                record[field.name] = field.default;
             }
 
             // TO DO: sources as array case
-            if (!record[field.name]) {
-                record[field.name] = this.handleConfigDefault(field);
+            if (field._meta!.isRedacted == true && record[field.name]) {
+                record[field.name] = this.REDACTED_PLACEHOLDER;
             }
         });
         return record;
-    }
-
-    private static handleConfigDefault(field: ConfigField) {
-        if (field.mandatory) {
-            return field.default;
-        }
-        return undefined;
     }
 
     private static getFieldValue(field: ConfigField, record: any): string | undefined {
@@ -131,11 +110,6 @@ export default class RecordFactory {
         } else {
 
             // TO DO: handle sources as array case
-        }
-
-        // TO DO: handle defaults
-        if (record[field.name] == undefined) {
-            record[field.name] = this.handleConfigDefault(field);
         }
 
         return;
