@@ -1,5 +1,3 @@
-import { mergeEvaluated } from 'ajv/dist/compile/util';
-import { LegacyCharacterEncoding } from 'crypto';
 import EnvService from '../core/env-service';
 import appLoggingConfig from './config-app-logging.json';
 import cfConfig from './config-cf.json';
@@ -21,8 +19,6 @@ export default class Config {
         "outputStartupMsg": false,
         "framework": "express"
     }
-    private redactedFields = new Map<string, boolean>();
-    private omittedFields = new Map<string, boolean>();
 
     private constructor() { }
 
