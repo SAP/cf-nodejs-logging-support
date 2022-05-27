@@ -25,11 +25,11 @@ export default class RecordFactory {
 
             record[field.name] = this.getFieldValue(field, record);
 
-            if (!record[field.name] && field.default) {
+            if (record[field.name] == null && field.default != null) {
                 record[field.name] = field.default;
             }
 
-            if (field._meta!.isRedacted == true && record[field.name]) {
+            if (field._meta!.isRedacted == true && record[field.name] != null) {
                 record[field.name] = this.REDACTED_PLACEHOLDER;
             }
         });
@@ -80,12 +80,12 @@ export default class RecordFactory {
                 }
             }
 
-            if (!record[field.name] && field.default) {
+            if (record[field.name] == null && field.default != null) {
                 record[field.name] = field.default;
             }
 
             // TO DO: sources as array case
-            if (field._meta!.isRedacted == true && record[field.name]) {
+            if (field._meta!.isRedacted == true && record[field.name] != null) {
                 record[field.name] = this.REDACTED_PLACEHOLDER;
             }
         });
