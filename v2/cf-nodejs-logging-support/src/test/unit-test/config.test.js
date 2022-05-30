@@ -43,7 +43,11 @@ describe('Test Config class', function () {
                         },
                         "output": [
                             "msg-log"
-                        ]
+                        ],
+                        "_meta": {
+                            "isEnabled": true,
+                            "isRedacted": false
+                        }
                     }, {
                         "name": "request",
                         "mandatory": true,
@@ -53,7 +57,11 @@ describe('Test Config class', function () {
                         },
                         "output": [
                             "req-log"
-                        ]
+                        ],
+                        "_meta": {
+                            "isEnabled": true,
+                            "isRedacted": false
+                        }
                     }
                 ];
                 expect(result).to.be.eql(expectation);
@@ -83,7 +91,11 @@ describe('Test Config class', function () {
                 },
                 "output": [
                     "msg-log"
-                ]
+                ],
+                "_meta": {
+                    "isEnabled": true,
+                    "isRedacted": false
+                }
             }];
             expect(result.length).to.be.eql(1);
             expect(result).to.be.eql(expectation);
@@ -148,7 +160,11 @@ describe('Test Config class', function () {
                     },
                     "output": [
                         "msg-log"
-                    ]
+                    ],
+                    "_meta": {
+                        "isEnabled": true,
+                        "isRedacted": false
+                    }
                 },
                 {
                     "name": "disabled_field",
@@ -160,6 +176,10 @@ describe('Test Config class', function () {
                     "output": [
                         "msg-log"
                     ],
+                    "_meta": {
+                        "isEnabled": false,
+                        "isRedacted": false
+                    },
                     "disable": true
                 },
                 {
@@ -171,7 +191,11 @@ describe('Test Config class', function () {
                     },
                     "output": [
                         "msg-log"
-                    ]
+                    ],
+                    "_meta": {
+                        "isEnabled": true,
+                        "isRedacted": false
+                    }
                 }
             ];
             expect(newFieldsData.length).to.be.gt(0);
@@ -194,7 +218,11 @@ describe('Test Config class', function () {
                 "output": [
                     "msg-log"
                 ],
-                "disable": true
+                "disable": true,
+                "_meta": {
+                    "isEnabled": false,
+                    "isRedacted": false
+                }
             }];
             expect(result).to.be.eql(expectation);
         });

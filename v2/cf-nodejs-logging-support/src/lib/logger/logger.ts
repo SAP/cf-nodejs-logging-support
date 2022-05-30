@@ -43,6 +43,54 @@ export default class Logger {
         RecordWriter.getInstance().writeLog(record);
     }
 
+    error(args: any) {
+        this.logMessage("error", args);
+    }
+
+    warn(args: any) {
+        this.logMessage("warn", args);
+    }
+
+    info(args: any) {
+        this.logMessage("info", args);
+    }
+
+    verbose(args: any) {
+        this.logMessage("verbose", args);
+    }
+
+    debug(args: any) {
+        this.logMessage("debug", args);
+    }
+
+    silly(args: any) {
+        this.logMessage("silly", args);
+    }
+
+    isError() {
+        return this.isLoggingLevel("error");
+    }
+
+    isWarn() {
+        return this.isLoggingLevel("warn");
+    }
+
+    isInfo() {
+        return this.isLoggingLevel("info");
+    }
+
+    isVerbose() {
+        return this.isLoggingLevel("verbose");
+    }
+
+    isDebug() {
+        return this.isLoggingLevel("debug");
+    }
+
+    isSilly() {
+        return this.isLoggingLevel("silly");
+    }
+
     setCustomFields(customFields: Map<string, any>) {
         this.customFields = customFields
     }

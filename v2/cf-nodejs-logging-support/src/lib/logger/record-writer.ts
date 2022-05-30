@@ -15,10 +15,10 @@ export default class RecordWriter {
 
         return RecordWriter.instance;
     }
-    writeLog(records: object): void {
+    writeLog(records: any): void {
         const instance = RecordWriter.getInstance();
         if (instance.customSinkFunction) {
-            instance.customSinkFunction();
+            instance.customSinkFunction(records.level, JSON.stringify(records));
         } else {
             // default to stdout
             process.stdout.write(JSON.stringify(records) + os.EOL);
