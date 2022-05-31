@@ -24,7 +24,7 @@ export interface Source {
     framework?: framework;
 }
 
-type sources = "static" | "env" | "config-field" | "req-header" | "res-header" | "req-object" | "res-object" | "meta" | "uuid";
+type sources = "static" | "env" | "config-field" | "req-header" | "res-header" | "req-object" | "res-object" | "meta" | "uuid" | "settable";
 type outputs = "msg-log" | "req-log";
 
 export type framework = "express" | "restify" | "connect" | "nodejs-http";

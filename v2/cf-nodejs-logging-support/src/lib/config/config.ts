@@ -5,6 +5,7 @@ import cloudLoggingConfig from './config-cloud-logging.json';
 import coreConfig from './config-core.json';
 import kymaConfig from './config-kyma.json';
 import requestConfig from './config-request.json';
+import sapPassportConfig from './config-sap-passport.json';
 import ConfigValidator from './config-validator';
 import { ConfigField, ConfigObject, customFieldsFormat, framework, Source } from './interfaces';
 
@@ -167,6 +168,11 @@ export default class Config {
 
     public setFramework(framework: framework): void {
         Config.instance.config.framework = framework;
+    }
+
+    public enableTracing() {
+        this.addConfig([sapPassportConfig as ConfigObject]);
+        // alternative: add in custom fields?
     }
 
     // get index of field in config

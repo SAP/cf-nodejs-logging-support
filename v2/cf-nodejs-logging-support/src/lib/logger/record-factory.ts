@@ -198,7 +198,8 @@ export default class RecordFactory {
 
     private static addCustomFields(record: any, registeredCustomFields: Array<string>, loggerCustomFields: Map<string, any>, customFieldsFromArgs: any): any {
         var providedFields = Object.assign({}, loggerCustomFields, customFieldsFromArgs);
-        const customFieldsFormat = Config.getInstance().getConfig().customFieldsFormat;
+        const config = Config.getInstance();
+        const customFieldsFormat = config.getConfig().customFieldsFormat;
 
         for (var key in providedFields) {
             var value = providedFields[key];
@@ -208,7 +209,7 @@ export default class RecordFactory {
                 value = stringifySafe(value);
             }
 
-            if (customFieldsFormat == "cloud-logging" || record[key] != null) {
+            if (customFieldsFormat == "cloud-logging" || record[key] != null || this.isSettable(key)) {
                 record[key] = value;
             }
         }
@@ -230,5 +231,11 @@ export default class RecordFactory {
                 record["#cf"] = res;
         }
         return record;
+    }
+
+    private static isSettable(propKey: string): boolean {
+        const field = Config.getInstance().getFields([propKey]);
+        const source = field[0].source as Source;
+        return source.type == "settable" ? true : false;
     }
 }
