@@ -7,17 +7,31 @@ import ResponseAccessor from "../middleware/response-accessor";
 import ReqContext from "./context";
 
 export default class RecordFactory {
+    private static REDACTED_PLACEHOLDER = "redacted";
 
     // init a new record and assign fields with output "msg-log"
     static buildMsgRecord(args: Array<any>, context?: ReqContext): any {
 
-        const msgLogFields = Config.getInstance().getMsgFields();
+        const configInstance = Config.getInstance();
+        const msgLogFields = configInstance.getMsgFields();
         let record: any = {
             "level": "info",
         };
 
         msgLogFields.forEach(field => {
+            if (field._meta!.isEnabled == false) {
+                return;
+            }
+
             record[field.name] = this.getFieldValue(field, record);
+
+            if (record[field.name] == null && field.default != null) {
+                record[field.name] = field.default;
+            }
+
+            if (field._meta!.isRedacted == true && record[field.name] != null) {
+                record[field.name] = this.REDACTED_PLACEHOLDER;
+            }
         });
 
         if (context) {
@@ -38,9 +52,15 @@ export default class RecordFactory {
         const requestAccessor = RequestAccessor.getInstance();
         const responseAccessor = ResponseAccessor.getInstance();
 
-        const reqLogFields = Config.getInstance().getReqFields();
+        const configInstance = Config.getInstance();
+        const reqLogFields = configInstance.getReqFields();
         let record: any = { "level": "info" };
+
         reqLogFields.forEach(field => {
+            if (field._meta!.isEnabled == false) {
+                return;
+            }
+
             if (!Array.isArray(field.source)) {
                 switch (field.source.type) {
                     case "req-header":
@@ -60,8 +80,14 @@ export default class RecordFactory {
                 }
             }
 
-            // TO DO: sources as array case
+            if (record[field.name] == null && field.default != null) {
+                record[field.name] = field.default;
+            }
 
+            // TO DO: sources as array case
+            if (field._meta!.isRedacted == true && record[field.name] != null) {
+                record[field.name] = this.REDACTED_PLACEHOLDER;
+            }
         });
         return record;
     }
@@ -84,8 +110,8 @@ export default class RecordFactory {
         } else {
 
             // TO DO: handle sources as array case
-
-            return undefined;
         }
+
+        return;
     }
 }
