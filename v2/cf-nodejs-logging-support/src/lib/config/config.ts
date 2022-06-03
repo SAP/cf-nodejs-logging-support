@@ -8,6 +8,7 @@ import requestConfig from './config-request.json';
 import sapPassportConfig from './config-sap-passport.json';
 import ConfigValidator from './config-validator';
 import { ConfigField, ConfigObject, customFieldsFormat, framework, Source } from './interfaces';
+import { isEnvVarEnabled } from './utils';
 
 export default class Config {
 
@@ -130,6 +131,23 @@ export default class Config {
             }
 
             file.fields?.forEach(field => {
+                field._meta = {
+                    isEnabled: true,
+                    isRedacted: false
+                }
+
+                if (field.envVarSwitch) {
+                    field._meta.isEnabled = isEnvVarEnabled(field.envVarSwitch)
+                }
+
+                if (field.envVarRedact) {
+                    field._meta.isRedacted = !isEnvVarEnabled(field.envVarRedact) // if the env var is actually set to true, we do not redact => invert result
+                }
+
+                if (field.disable) {
+                    field._meta.isEnabled = false;
+                }
+
                 const index = Config.instance.getIndex(field.name);
 
                 // if new config field

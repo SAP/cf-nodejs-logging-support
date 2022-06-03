@@ -10,10 +10,13 @@ const stringifySafe = require('json-stringify-safe');
 
 export default class RecordFactory {
     static MAX_STACKTRACE_SIZE = 55 * 1024;
+    private static REDACTED_PLACEHOLDER = "redacted";
 
     // init a new record and assign fields with output "msg-log"
     static buildMsgRecord(registeredCustomFields: Array<string>, loggerCustomFields: Map<string, any>, level: string, args: Array<any>, context?: ReqContext): any {
 
+        const configInstance = Config.getInstance();
+        const msgLogFields = configInstance.getMsgFields();
         let record: any = {
             "level": level,
         };
@@ -43,9 +46,6 @@ export default class RecordFactory {
             }
         }
 
-        const msgLogFields = Config.getInstance().getMsgFields();
-
-
         msgLogFields.forEach(field => {
 
             if (!Array.isArray(field.source)) {
@@ -62,6 +62,14 @@ export default class RecordFactory {
                     ++sourceIndex;
                 }
             }
+
+            if (record[field.name] == null && field.default != null) {
+                record[field.name] = field.default;
+            }
+
+            if (field._meta!.isRedacted == true && record[field.name] != null) {
+                record[field.name] = this.REDACTED_PLACEHOLDER;
+            }
         });
 
         record = this.addCustomFields(record, registeredCustomFields, loggerCustomFields, customFieldsFromArgs);
@@ -75,7 +83,8 @@ export default class RecordFactory {
         const requestAccessor = RequestAccessor.getInstance();
         const responseAccessor = ResponseAccessor.getInstance();
 
-        const reqLogFields = Config.getInstance().getReqFields();
+        const configInstance = Config.getInstance();
+        const reqLogFields = configInstance.getReqFields();
         let record: any = { "level": "info" };
 
         // read and copy values from context
@@ -85,6 +94,10 @@ export default class RecordFactory {
         }
 
         reqLogFields.forEach(field => {
+            if (field._meta!.isEnabled == false) {
+                return;
+            }
+
             if (!Array.isArray(field.source)) {
                 if (!record[field.name]) {
                     record[field.name] = this.getFieldValue(field.source, record);
@@ -100,6 +113,14 @@ export default class RecordFactory {
                     record[field.name] = this.getReqFieldValue(source, record, requestAccessor, responseAccessor, req, res);
                     ++sourceIndex;
                 }
+            }
+
+            if (record[field.name] == null && field.default != null) {
+                record[field.name] = field.default;
+            }
+
+            if (field._meta!.isRedacted == true && record[field.name] != null) {
+                record[field.name] = this.REDACTED_PLACEHOLDER;
             }
         });
         return record;
