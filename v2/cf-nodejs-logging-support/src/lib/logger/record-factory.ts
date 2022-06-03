@@ -24,7 +24,6 @@ export default class RecordFactory {
         var customFieldsFromArgs = {};
         var lastArg = args[args.length - 1];
 
-        // why check if lastArg and lastArg._error?
         if (typeof lastArg === "object") {
             if (RecordFactory.isErrorWithStacktrace(lastArg)) {
                 record.stacktrace = RecordFactory.prepareStacktrace(lastArg.stack);
