@@ -10,10 +10,13 @@ const stringifySafe = require('json-stringify-safe');
 
 export default class RecordFactory {
     static MAX_STACKTRACE_SIZE = 55 * 1024;
+    private static REDACTED_PLACEHOLDER = "redacted";
 
     // init a new record and assign fields with output "msg-log"
     static buildMsgRecord(registeredCustomFields: Array<string>, loggerCustomFields: Map<string, any>, level: string, args: Array<any>, context?: ReqContext): any {
 
+        const configInstance = Config.getInstance();
+        const msgLogFields = configInstance.getMsgFields();
         let record: any = {
             "level": level,
         };
@@ -35,17 +38,6 @@ export default class RecordFactory {
             args.pop();
         }
 
-        // read and copy values from context
-        if (context) {
-            const contextFields = context.getProps();
-            for (let key in contextFields) {
-                record[key] = contextFields[key];
-            }
-        }
-
-        const msgLogFields = Config.getInstance().getMsgFields();
-
-
         msgLogFields.forEach(field => {
 
             if (!Array.isArray(field.source)) {
@@ -62,7 +54,23 @@ export default class RecordFactory {
                     ++sourceIndex;
                 }
             }
+
+            if (record[field.name] == null && field.default != null) {
+                record[field.name] = field.default;
+            }
+
+            if (field._meta!.isRedacted == true && record[field.name] != null) {
+                record[field.name] = this.REDACTED_PLACEHOLDER;
+            }
         });
+
+        // read and copy values from context
+        if (context) {
+            const contextFields = context.getProps();
+            for (let key in contextFields) {
+                record[key] = contextFields[key];
+            }
+        }
 
         record = this.addCustomFields(record, registeredCustomFields, loggerCustomFields, customFieldsFromArgs);
         record["msg"] = util.format.apply(util, args);
@@ -75,16 +83,15 @@ export default class RecordFactory {
         const requestAccessor = RequestAccessor.getInstance();
         const responseAccessor = ResponseAccessor.getInstance();
 
-        const reqLogFields = Config.getInstance().getReqFields();
+        const configInstance = Config.getInstance();
+        const reqLogFields = configInstance.getReqFields();
         let record: any = { "level": "info" };
 
-        // read and copy values from context
-        const contextFields = context.getProps();
-        for (let key in contextFields) {
-            record[key] = contextFields[key];
-        }
-
         reqLogFields.forEach(field => {
+            if (field._meta!.isEnabled == false) {
+                return;
+            }
+
             if (!Array.isArray(field.source)) {
                 if (!record[field.name]) {
                     record[field.name] = this.getFieldValue(field.source, record);
@@ -101,7 +108,23 @@ export default class RecordFactory {
                     ++sourceIndex;
                 }
             }
+
+            if (record[field.name] == null && field.default != null) {
+                record[field.name] = field.default;
+            }
+
+            if (field._meta!.isRedacted == true && record[field.name] != null) {
+                record[field.name] = this.REDACTED_PLACEHOLDER;
+            }
         });
+
+        // read and copy values from context
+        const contextFields = context.getProps();
+        for (let key in contextFields) {
+            record[key] = contextFields[key];
+        }
+
+
         return record;
     }
 
