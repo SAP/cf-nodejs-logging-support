@@ -5,11 +5,23 @@ import { SourceUtils } from "./source-utils";
 const stringifySafe = require('json-stringify-safe');
 
 export default class RecordFactory {
-    static MAX_STACKTRACE_SIZE = 55 * 1024;
-    private static REDACTED_PLACEHOLDER = "redacted";
+
+    private static instance: RecordFactory;
+    private MAX_STACKTRACE_SIZE = 55 * 1024;
+    private REDACTED_PLACEHOLDER = "redacted";
+
+    private constructor() { }
+
+    public static getInstance(): RecordFactory {
+        if (!RecordFactory.instance) {
+            RecordFactory.instance = new RecordFactory();
+        }
+
+        return RecordFactory.instance;
+    }
 
     // init a new record and assign fields with output "msg-log"
-    static buildMsgRecord(registeredCustomFields: Array<string>, loggerCustomFields: Map<string, any>, level: string, args: Array<any>, context?: ReqContext): any {
+    buildMsgRecord(registeredCustomFields: Array<string>, loggerCustomFields: Map<string, any>, level: string, args: Array<any>, context?: ReqContext): any {
 
         const configInstance = Config.getInstance();
         const sourceUtils = SourceUtils.getInstance();
@@ -22,11 +34,11 @@ export default class RecordFactory {
         var lastArg = args[args.length - 1];
 
         if (typeof lastArg === "object") {
-            if (RecordFactory.isErrorWithStacktrace(lastArg)) {
-                record.stacktrace = RecordFactory.prepareStacktrace(lastArg.stack);
-            } else if (RecordFactory.isValidObject(lastArg)) {
-                if (RecordFactory.isErrorWithStacktrace(lastArg._error)) {
-                    record.stacktrace = RecordFactory.prepareStacktrace(lastArg._error.stack);
+            if (this.isErrorWithStacktrace(lastArg)) {
+                record.stacktrace = this.prepareStacktrace(lastArg.stack);
+            } else if (this.isValidObject(lastArg)) {
+                if (this.isErrorWithStacktrace(lastArg._error)) {
+                    record.stacktrace = this.prepareStacktrace(lastArg._error.stack);
                     delete lastArg._error;
                 }
                 customFieldsFromArgs = lastArg;
@@ -64,7 +76,7 @@ export default class RecordFactory {
     }
 
     // init a new record and assign fields with output "req-log"
-    static buildReqRecord(req: any, res: any, context: ReqContext): any {
+    buildReqRecord(req: any, res: any, context: ReqContext): any {
 
         const sourceUtils = SourceUtils.getInstance();
         const reqLogFields = Config.getInstance().getReqFields();
@@ -101,7 +113,7 @@ export default class RecordFactory {
     }
 
     // check if the given object is an Error with stacktrace using duck typing
-    private static isErrorWithStacktrace(obj: any): boolean {
+    private isErrorWithStacktrace(obj: any): boolean {
         if (obj && obj.stack && obj.message && typeof obj.stack === "string" && typeof obj.message === "string") {
             return true;
         }
@@ -110,7 +122,7 @@ export default class RecordFactory {
 
     // Split stacktrace into string array and truncate lines if required by size limitation
     // Truncation strategy: Take one line from the top and two lines from the bottom of the stacktrace until limit is reached.
-    private static prepareStacktrace(stacktraceStr: any): any {
+    private prepareStacktrace(stacktraceStr: any): any {
         var fullStacktrace = stacktraceStr.split('\n');
         var totalLineLength = fullStacktrace.reduce((acc: any, line: any) => acc + line.length, 0);
 
@@ -149,7 +161,7 @@ export default class RecordFactory {
         return fullStacktrace;
     }
 
-    private static isValidObject(obj: any, canBeEmpty?: any): boolean {
+    private isValidObject(obj: any, canBeEmpty?: any): boolean {
         if (!obj) {
             return false;
         } else if (typeof obj !== "object") {
@@ -160,7 +172,7 @@ export default class RecordFactory {
         return true;
     }
 
-    private static addCustomFields(record: any, registeredCustomFields: Array<string>, loggerCustomFields: Map<string, any>, customFieldsFromArgs: any): any {
+    private addCustomFields(record: any, registeredCustomFields: Array<string>, loggerCustomFields: Map<string, any>, customFieldsFromArgs: any): any {
         var providedFields = Object.assign({}, loggerCustomFields, customFieldsFromArgs);
         const customFieldsFormat = Config.getInstance().getConfig().customFieldsFormat;
         const isCloudLogging = customFieldsFormat == "cloud-logging";
