@@ -1,6 +1,6 @@
 import util from "util";
 import Config from "../config/config";
-import { Source } from "../config/interfaces";
+import { ConfigField, Source } from "../config/interfaces";
 import NestedVarResolver from "../helper/nested-var-resolver";
 import RequestAccessor from "../middleware/request-Accessor";
 import ResponseAccessor from "../middleware/response-accessor";
@@ -16,6 +16,7 @@ export default class RecordFactory {
     static buildMsgRecord(registeredCustomFields: Array<string>, loggerCustomFields: Map<string, any>, level: string, args: Array<any>, context?: ReqContext): any {
 
         const configInstance = Config.getInstance();
+        const sourceUtils = SourceUtils.getInstance();
         const msgLogFields = configInstance.getMsgFields();
         let record: any = {
             "level": level,
@@ -36,22 +37,12 @@ export default class RecordFactory {
             }
             args.pop();
         }
-
         msgLogFields.forEach(field => {
 
             if (!Array.isArray(field.source)) {
-                record[field.name] = this.getFieldValue(field.source, record);
+                record[field.name] = sourceUtils.getFieldValue(field.source, record);
             } else {
-                let sourceIndex = 0;
-                while (!record[field.name]) {
-                    sourceIndex = SourceUtils.getNextValidSourceIndex(field.source, sourceIndex);
-                    if (sourceIndex == -1) {
-                        return;
-                    }
-                    let source = field.source[sourceIndex];
-                    record[field.name] = this.getFieldValue(source, record);
-                    ++sourceIndex;
-                }
+                record[field.name] = sourceUtils.getValueFromSources(record, field, "msg-log");
             }
 
             if (record[field.name] == null && field.default != null) {
@@ -79,11 +70,8 @@ export default class RecordFactory {
     // init a new record and assign fields with output "req-log"
     static buildReqRecord(req: any, res: any, context: ReqContext): any {
 
-        const requestAccessor = RequestAccessor.getInstance();
-        const responseAccessor = ResponseAccessor.getInstance();
-
-        const configInstance = Config.getInstance();
-        const reqLogFields = configInstance.getReqFields();
+        const sourceUtils = SourceUtils.getInstance();
+        const reqLogFields = Config.getInstance().getReqFields();
         let record: any = { "level": "info" };
 
         reqLogFields.forEach(field => {
@@ -92,20 +80,9 @@ export default class RecordFactory {
             }
 
             if (!Array.isArray(field.source)) {
-                if (!record[field.name]) {
-                    record[field.name] = this.getFieldValue(field.source, record);
-                }
+                record[field.name] = sourceUtils.getReqFieldValue(field.source, record, req, res);
             } else {
-                let sourceIndex = 0;
-                while (!record[field.name]) {
-                    sourceIndex = SourceUtils.getNextValidSourceIndex(field.source, sourceIndex);
-                    if (sourceIndex == -1) {
-                        return;
-                    }
-                    let source = field.source[sourceIndex];
-                    record[field.name] = this.getReqFieldValue(source, record, requestAccessor, responseAccessor, req, res);
-                    ++sourceIndex;
-                }
+                record[field.name] = sourceUtils.getValueFromSources(record, field, "req-log", req, res);
             }
 
             if (record[field.name] == null && field.default != null) {
@@ -125,37 +102,6 @@ export default class RecordFactory {
 
 
         return record;
-    }
-
-    private static getFieldValue(source: Source, record: any): string | undefined {
-        switch (source.type) {
-            case "static":
-                return source.value;
-            case "env":
-                if (source.path) {
-                    return NestedVarResolver.resolveNestedVariable(process.env, source.path);
-                }
-                return process.env[source.name!];
-            case "config-field":
-                return record[source.name!];
-            default:
-                return undefined;
-        }
-    }
-
-    private static getReqFieldValue(source: Source, record: any, requestAccessor: RequestAccessor, responseAccessor: ResponseAccessor, req: any, res: any): string | undefined {
-        switch (source.type) {
-            case "req-header":
-                return requestAccessor.getHeaderField(req, source.name!);
-            case "req-object":
-                return requestAccessor.getField(req, source.name!);
-            case "res-header":
-                return responseAccessor.getHeaderField(res, source.name!);
-            case "res-object":
-                return responseAccessor.getField(res, source.name!);
-            default:
-                return this.getFieldValue(source, record);
-        }
     }
 
     // check if the given object is an Error with stacktrace using duck typing

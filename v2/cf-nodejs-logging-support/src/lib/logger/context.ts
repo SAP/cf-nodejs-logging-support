@@ -1,12 +1,8 @@
 import Config from "../config/config";
-import { Source } from "../config/interfaces";
-import RequestAccessor from "../middleware/request-Accessor";
 import { SourceUtils } from "./source-utils";
-const { v4: uuid } = require('uuid');
 
 export default class ReqContext {
     private properties: any = {};
-    private requestAccessor = RequestAccessor.getInstance();
 
     constructor(req: any) {
         this.setProperties(req);
@@ -22,33 +18,14 @@ export default class ReqContext {
 
     private setProperties(req: any) {
         const contextFields = Config.getInstance().getContextFields();
+        const sourceUtils = SourceUtils.getInstance();
 
         contextFields.forEach(field => {
             if (!Array.isArray(field.source)) {
-                this.properties[field.name] = this.getPropValue(field.source, req);
+                this.properties[field.name] = sourceUtils.getContextFieldValue(field.source, req);
             } else {
-                let sourceIndex = 0;
-                while (!this.properties[field.name]) {
-                    sourceIndex = SourceUtils.getNextValidSourceIndex(field.source, sourceIndex);
-                    if (sourceIndex == -1) {
-                        return;
-                    }
-                    let source = field.source[sourceIndex];
-                    this.properties[field.name] = this.getPropValue(source, req);
-                    ++sourceIndex;
-                }
+                this.properties[field.name] = sourceUtils.getValueFromSources(this.properties, field, "context");
             }
         });
-    }
-
-    private getPropValue(source: Source, req: any) {
-        switch (source.type) {
-            case "req-header":
-                return this.requestAccessor.getHeaderField(req, source.name!);
-            case "req-object":
-                return this.requestAccessor.getField(req, source.name!);
-            case "uuid":
-                return uuid();
-        }
     }
 }
