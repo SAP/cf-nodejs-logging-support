@@ -100,9 +100,8 @@ export class SourceUtils {
     // returns -1 when all sources were iterated
     private getNextValidSourceIndex(sources: Source[], startIndex: number): number {
         const framework = Config.getInstance().getFramework();
-        var i: number = startIndex;
 
-        for (i; i < sources.length; i++) {
+        for (let i = startIndex; i < sources.length; i++) {
             if (!sources[i].framework) {
                 return i;
             }

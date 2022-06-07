@@ -40,9 +40,7 @@ export default class Logger {
 
     logMessage(levelName: string, ..._args: any) {
         if (!this.isLoggingLevel(levelName)) return;
-        const record = this.context ?
-            RecordFactory.buildMsgRecord(this.registeredCustomFields, this.customFields, levelName, _args, this.context)
-            : RecordFactory.buildMsgRecord(this.registeredCustomFields, this.customFields, levelName, _args);
+        const record = RecordFactory.buildMsgRecord(this.registeredCustomFields, this.customFields, levelName, _args, this.context);
         RecordWriter.getInstance().writeLog(record);
     }
 
