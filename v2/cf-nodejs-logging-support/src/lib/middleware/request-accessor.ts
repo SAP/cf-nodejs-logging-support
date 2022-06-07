@@ -22,9 +22,8 @@ export default class RequestAccessor {
 
     };
 
-    public getHeaderField(req: any, fieldName: string): any {
-        let result = this.frameworkService.getReqHeaderField(req, fieldName);
-        return result;
+    public getHeaderField(req: any, fieldName: string): string {
+        return this.frameworkService.getReqHeaderField(req, fieldName);;
     };
 
     public getField(req: any, fieldName: string): any {
