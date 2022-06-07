@@ -5,6 +5,7 @@ import cloudLoggingConfig from './config-cloud-logging.json';
 import coreConfig from './config-core.json';
 import kymaConfig from './config-kyma.json';
 import requestConfig from './config-request.json';
+import sapPassportConfig from './config-sap-passport.json';
 import ConfigValidator from './config-validator';
 import { ConfigField, ConfigObject, customFieldsFormat, framework, Source } from './interfaces';
 import { isEnvVarEnabled } from './utils';
@@ -207,5 +208,9 @@ export default class Config {
         );
 
         return index;
+    }
+
+    public enableTracing() {
+        this.addConfig([sapPassportConfig as ConfigObject]);
     }
 }

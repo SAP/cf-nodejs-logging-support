@@ -1,0 +1,12 @@
+{
+    "fields": [
+        {
+            "name": "sap_passport",
+            "mandatory": false,
+            "source": {
+                "type": "header",
+                "name": "sap-passport"
+            }
+        }
+    ]
+}
