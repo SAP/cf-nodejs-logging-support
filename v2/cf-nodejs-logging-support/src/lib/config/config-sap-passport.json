@@ -8,52 +8,6 @@
                 "type": "header",
                 "name": "sap-passport"
             }
-        }, {
-            "name": "sap_passport_Action",
-            "source": {
-                "type": "settable"
-            }
-        }, {
-            "name": "sap_passport_ActionType",
-            "source": {
-                "type": "settable"
-            }        
-        }, {
-            "name": "sap_passport_ClientNumber",
-            "source": {
-                "type": "settable"
-            }        
-        }, {
-            "name": "sap_passport_ConnectionCounter",
-            "source": {
-                "type": "settable"
-            }        
-        }, {
-            "name": "sap_passport_ConnectionId",
-            "source": {
-                "type": "settable"
-            }        
-        }, {
-            "name": "sap_passport_ComponentName",
-            "type": "settable"
-        }, {
-            "name": "sap_passport_ComponentType",
-            "type": "settable"
-        }, {
-            "name": "sap_passport_PreviousComponentName",
-            "type": "settable"
-        }, {
-            "name": "sap_passport_TraceFlags",
-            "type": "settable"
-        }, {
-            "name": "sap_passport_TransactionId",
-            "type": "settable"
-        }, {
-            "name": "sap_passport_RootContextId",
-            "type": "settable"
-        }, {
-            "name": "sap_passport_UserId",
-            "type": "settable"
         }
     ]
 }

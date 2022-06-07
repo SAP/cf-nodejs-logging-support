@@ -190,7 +190,6 @@ export default class Config {
 
     public enableTracing() {
         this.addConfig([sapPassportConfig as ConfigObject]);
-        // alternative: add in custom fields?
     }
 
     // get index of field in config

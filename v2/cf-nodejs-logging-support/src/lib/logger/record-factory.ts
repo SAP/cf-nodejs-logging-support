@@ -230,7 +230,7 @@ export default class RecordFactory {
                 value = stringifySafe(value);
             }
 
-            if (customFieldsFormat == "cloud-logging" || record[key] != null || this.isSettable(key)) {
+            if (customFieldsFormat == "cloud-logging" || record[key] != null) {
                 record[key] = value;
             }
         }
@@ -252,11 +252,5 @@ export default class RecordFactory {
                 record["#cf"] = res;
         }
         return record;
-    }
-
-    private static isSettable(propKey: string): boolean {
-        const field = Config.getInstance().getFields([propKey]);
-        const source = field[0].source as Source;
-        return source.type == "settable" ? true : false;
     }
 }
