@@ -96,7 +96,7 @@ var init = function () {
         cfCustomEnabled = true;
         defaultCustomEnabled = false;
     }
-    if (boundServices["cloud-logs"]) {
+    if (boundServices["cloud-logging"]) {
         defaultCustomEnabled = true;
     }
 };
