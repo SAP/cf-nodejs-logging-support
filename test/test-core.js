@@ -1580,7 +1580,7 @@ describe('Test log-core', function () {
                 "application-logs": [
                     { "plan": "lite" }
                 ],
-                "cloud-logs": [
+                "cloud-logging": [
                     { "plan": "lite" }
                 ]
             })
@@ -1606,7 +1606,7 @@ describe('Test log-core', function () {
         });
 
         it("Test faulty binding string defaulting", function () {
-            process.env.VCAP_SERVICES = '{"application-logs": [{"plan": "lite"}],"cloud-logs": [{"plan": "lite"}]'
+            process.env.VCAP_SERVICES = '{"application-logs": [{"plan": "lite"}],"cloud-logging": [{"plan": "lite"}]'
             core.init();
             registerCustomFields(["a", "b", "c"]);
 
