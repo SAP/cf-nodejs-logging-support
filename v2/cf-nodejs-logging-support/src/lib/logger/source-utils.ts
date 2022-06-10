@@ -79,7 +79,8 @@ export class SourceUtils {
         field.source = field.source as Source[];
 
         let sourceIndex = 0;
-        while (!record[field.name]) {
+        let fieldValue;
+        while (fieldValue == null) {
             sourceIndex = SourceUtils.getInstance().getNextValidSourceIndex(field.source, sourceIndex);
 
             if (sourceIndex == -1) {
@@ -88,13 +89,13 @@ export class SourceUtils {
 
             let source = field.source[sourceIndex];
 
-            record[field.name] = origin == "msg-log" ? this.getFieldValue(source, record) :
+            fieldValue = origin == "msg-log" ? this.getFieldValue(source, record) :
                 origin == "req-log" ? this.getReqFieldValue(source, record, req, res) :
                     this.getContextFieldValue(source, req);
 
             ++sourceIndex;
         }
-        return record[field.name];
+        return fieldValue;
     }
 
     // returns -1 when all sources were iterated
