@@ -1,5 +1,3 @@
-import { mergeEvaluated } from 'ajv/dist/compile/util';
-import { LegacyCharacterEncoding } from 'crypto';
 import EnvService from '../core/env-service';
 import appLoggingConfig from './config-app-logging.json';
 import cfConfig from './config-cf.json';
@@ -21,8 +19,6 @@ export default class Config {
         "outputStartupMsg": false,
         "framework": "express"
     }
-    private redactedFields = new Map<string, boolean>();
-    private omittedFields = new Map<string, boolean>();
 
     private constructor() { }
 
@@ -134,34 +130,21 @@ export default class Config {
             }
 
             file.fields?.forEach(field => {
+                field._meta = {
+                    isEnabled: true,
+                    isRedacted: false
+                }
+
                 if (field.envVarSwitch) {
-                    let isEnabled = isEnvVarEnabled(field.envVarSwitch);
-                    if (isEnabled) {
-                        field._meta = {
-                            isRedacted: false,
-                            isEnabled: true,
-                        }
-                    } else {
-                        field._meta = {
-                            isRedacted: false,
-                            isEnabled: false,
-                        }
-                    }
+                    field._meta.isEnabled = isEnvVarEnabled(field.envVarSwitch)
                 }
 
                 if (field.envVarRedact) {
-                    let isEnabled = isEnvVarEnabled(field.envVarRedact);
-                    if (isEnabled) {
-                        field._meta = {
-                            isRedacted: true,
-                            isEnabled: true,
-                        }
-                    } else {
-                        field._meta = {
-                            isRedacted: true,
-                            isEnabled: false,
-                        }
-                    }
+                    field._meta.isRedacted = !isEnvVarEnabled(field.envVarRedact) // if the env var is actually set to true, we do not redact => invert result
+                }
+
+                if (field.disable) {
+                    field._meta.isEnabled = false;
                 }
 
                 const index = Config.instance.getIndex(field.name);
@@ -224,13 +207,5 @@ export default class Config {
         );
 
         return index;
-    }
-
-    public isRedactedField(fieldName: string): boolean {
-        return this.redactedFields.get(fieldName) ? true : false;
-    }
-
-    public isOmittedField(fieldName: string): boolean {
-        return this.omittedFields.get(fieldName) ? true : false;
     }
 }
