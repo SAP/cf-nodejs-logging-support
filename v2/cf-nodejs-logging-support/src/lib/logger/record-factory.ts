@@ -175,8 +175,6 @@ export default class RecordFactory {
     private addCustomFields(record: any, registeredCustomFields: Array<string>, loggerCustomFields: Map<string, any>, customFieldsFromArgs: any): any {
         var providedFields = Object.assign({}, loggerCustomFields, customFieldsFromArgs);
         const customFieldsFormat = Config.getInstance().getConfig().customFieldsFormat;
-        const isCloudLogging = customFieldsFormat == "cloud-logging";
-        const isAppLogging = customFieldsFormat == "application-logging";
 
         for (var key in providedFields) {
             var value = providedFields[key];
@@ -186,12 +184,12 @@ export default class RecordFactory {
                 value = stringifySafe(value);
             }
 
-            if (isCloudLogging || record[key] != null) {
+            if (customFieldsFormat == "cloud-logging" || record[key] != null) {
                 record[key] = value;
             }
         }
 
-        if (isAppLogging) {
+        if (customFieldsFormat == "application-logging") {
             let res: any = {};
             res.string = [];
             let key;
