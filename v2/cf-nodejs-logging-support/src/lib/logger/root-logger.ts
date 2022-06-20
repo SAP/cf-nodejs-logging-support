@@ -1,5 +1,5 @@
 import Config from "../config/config"
-import { ConfigObject, customFieldsFormat } from "../config/interfaces"
+import { ConfigObject, customFieldsFormat, framework } from "../config/interfaces"
 import EnvService from "../core/env-service";
 import Level from "./level"
 import Logger from "./logger"
@@ -54,8 +54,6 @@ export default class RootLogger extends Logger {
         Middleware.logNetwork(req, res, next);
     }
 
-    registerCustomFields(object: Object) { }
-
     getBoundServices() {
         return EnvService.getBoundServices()
     }
@@ -73,6 +71,7 @@ export default class RootLogger extends Logger {
         options.logMessage = this.logMessage;
         return createTransport(options);
     };
-    forceLogger(logger: string) {
+    forceLogger(logger: framework) {
+        Config.getInstance().setFramework(logger);
     }
 }
