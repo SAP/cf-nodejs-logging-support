@@ -49,13 +49,13 @@ export default class RecordFactory {
 
     // init a new record and assign fields with output "req-log"
     static buildReqRecord(req: any, res: any): any {
-        const level = (req.logger as Logger).getLoggingLevel();
         const requestAccessor = RequestAccessor.getInstance();
         const responseAccessor = ResponseAccessor.getInstance();
 
         const configInstance = Config.getInstance();
         const reqLogFields = configInstance.getReqFields();
-        let record: any = { "level": level };
+        const reqLoggingLevel = configInstance.getReqLoggingLevel();
+        let record: any = { "level": reqLoggingLevel };
 
         reqLogFields.forEach(field => {
             if (field._meta!.isEnabled == false) {

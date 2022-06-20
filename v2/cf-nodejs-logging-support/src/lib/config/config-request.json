@@ -1,6 +1,14 @@
 {
     "fields": [
         {
+            "name": "request_level",
+            "mandatory": true,
+            "source": {
+                "type": "static",
+                "name": "info"
+            }
+        },
+        {
             "name": "request_id",
             "mandatory": true,
             "source": {

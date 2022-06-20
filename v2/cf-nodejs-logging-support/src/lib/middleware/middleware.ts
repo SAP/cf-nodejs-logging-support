@@ -16,7 +16,7 @@ export default class Middleware {
         var dynLogLevelHeader = JWTService.getDynLogLevelHeaderName();
         var token = RequestAccessor.getInstance().getHeaderField(req, dynLogLevelHeader);
         if (token) {
-            networkLogger = JWTService.bindDynLogLevel(token, networkLogger);
+            JWTService.bindDynLogLevel(token, networkLogger);
         }
         req.logger = networkLogger;
 
@@ -25,9 +25,9 @@ export default class Middleware {
 
             if (!logSent) {
                 const record = RecordFactory.buildReqRecord(req, res);
-                const level = LevelUtils.getLevel(record.level);
+                const reqLoggingLevel = LevelUtils.getLevel(record.level);
                 const loggingLevelThreshold = LevelUtils.getLevel(req.logger.getLoggingLevel());
-                if (LevelUtils.isLevelEnabled(loggingLevelThreshold, level)) {
+                if (LevelUtils.isLevelEnabled(loggingLevelThreshold, reqLoggingLevel)) {
                     const res = ResponseAccessor.getInstance();
                     res.finishLog(record);
                 }
