@@ -1,10 +1,7 @@
-import Logger from "./logger"
 import util from "util";
 import Config from "../config/config";
 import ReqContext from "./context";
 import { SourceUtils } from "./source-utils";
-import RequestAccessor from "../middleware/request-Accessor";
-import ResponseAccessor from "../middleware/response-accessor";
 const stringifySafe = require('json-stringify-safe');
 
 export default class RecordFactory {
@@ -79,7 +76,7 @@ export default class RecordFactory {
     }
 
     // init a new record and assign fields with output "req-log"
-    static buildReqRecord(req: any, res: any, context: ReqContext): any {
+    buildReqRecord(req: any, res: any, context: ReqContext): any {
 
         const configInstance = Config.getInstance();
         const reqLogFields = configInstance.getReqFields();
@@ -97,10 +94,6 @@ export default class RecordFactory {
                 record[field.name] = sourceUtils.getReqFieldValue(field.source, record, req, res);
             } else {
                 record[field.name] = sourceUtils.getValueFromSources(record, field, "req-log", req, res);
-            }
-
-            if (record[field.name] == undefined) {
-                record[field.name] = this.handleConfigDefault(field);
             }
 
             if (record[field.name] == null && field.default != null) {

@@ -1,6 +1,4 @@
 import EnvService from '../core/env-service';
-import Level from '../logger/level';
-import LevelUtils from '../logger/level-utils';
 import appLoggingConfig from './config-app-logging.json';
 import cfConfig from './config-cf.json';
 import cloudLoggingConfig from './config-cloud-logging.json';
@@ -178,7 +176,7 @@ export default class Config {
                 Config.instance.config.framework = file.framework;
             }
 
-            if (file.reqLoggingLevel != undefined) {
+            if (file.reqLoggingLevel) {
                 // let level = LevelUtils.getLevel(file.reqLoggingLevel);
                 Config.instance.config.reqLoggingLevel = file.reqLoggingLevel;
             }

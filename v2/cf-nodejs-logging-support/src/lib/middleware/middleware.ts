@@ -11,7 +11,7 @@ export default class Middleware {
         let logSent = false;
 
         let networkLogger = RootLogger.getInstance().createLogger();
-        networkLogger.initContext(req);
+        const context = networkLogger.initContext(req);
 
         var dynLogLevelHeader = JWTService.getDynLogLevelHeaderName();
         var token = RequestAccessor.getInstance().getHeaderField(req, dynLogLevelHeader);
