@@ -88,7 +88,7 @@ describe('Test request context', function () {
         });
     });
 
-    describe.skip("Set log level treshold in request handler", function () {
+    describe("Set log level treshold in request handler", function () {
 
         before(function (done) {
             supertest(expressApp)
@@ -140,7 +140,7 @@ describe('Test request context', function () {
         });
     });
 
-    describe.skip("Set implicit correlation- and tenant-id through request header", function () {
+    describe("Set implicit correlation- and tenant-id through request header", function () {
 
         var correlation_id = "cbc4343f-1c31-27d0-96fc-f32efac20986";
         var tenant_id = "abc2654f-5t15-12h0-78gt-n73jeuc01847";
