@@ -23,7 +23,7 @@ export class JWTService {
     }
 
     // Binds the Loglevel extracted from JWT token to the given request logger
-    static bindDynLogLevel(token: any, logger: Logger): Logger {
+    static bindDynLogLevel(token: string, logger: Logger) {
         // Read dyn log level key from environment var.
         const dynLogLevelKey = process.env[ENV_DYN_LOG_KEY];
         var payload = this.verifyAndDecodeJWT(token, dynLogLevelKey);
@@ -31,10 +31,9 @@ export class JWTService {
         if (payload) {
             logger.setLoggingLevel(payload.level);
         }
-        return logger;
     };
 
-    private static verifyAndDecodeJWT(token: any, pubKey: any) {
+    private static verifyAndDecodeJWT(token: string, pubKey: any) {
         if (!token || !pubKey) {
             return null; // no public key or jwt provided
         }
