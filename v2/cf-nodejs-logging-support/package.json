@@ -65,6 +65,7 @@
     "express": "^4.17.3",
     "http": "^0.0.1-security",
     "jsonwebtoken": "^8.5.1",
+    "json-stringify-safe": "^5.0.1",
     "restify": "^8.6.1"
   }
 }

@@ -24,7 +24,7 @@ export default class Middleware {
         const finishLog = () => {
 
             if (!logSent) {
-                const record = RecordFactory.buildReqRecord(req, res);
+                const record = RecordFactory.getInstance().buildReqRecord(req, res, context);
                 const reqLoggingLevel = LevelUtils.getLevel(record.level);
                 const loggingLevelThreshold = LevelUtils.getLevel(req.logger.getLoggingLevel());
                 if (LevelUtils.isLevelEnabled(loggingLevelThreshold, reqLoggingLevel)) {

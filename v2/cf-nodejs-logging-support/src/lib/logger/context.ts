@@ -1,9 +1,8 @@
 import Config from "../config/config";
-import RequestAccessor from "../middleware/request-Accessor";
+import { SourceUtils } from "./source-utils";
 
 export default class ReqContext {
     private properties: any = {};
-    private requestAccessor = RequestAccessor.getInstance();
 
     constructor(req: any) {
         this.setProperties(req);
@@ -19,21 +18,14 @@ export default class ReqContext {
 
     private setProperties(req: any) {
         const contextFields = Config.getInstance().getContextFields();
+        const sourceUtils = SourceUtils.getInstance();
 
         contextFields.forEach(field => {
             if (!Array.isArray(field.source)) {
-                switch (field.source.type) {
-                    case "req-header":
-                        this.properties[field.name] = this.requestAccessor.getHeaderField(req, field.source.name!);
-                        break;
-                    case "req-object":
-                        this.properties[field.name] = this.requestAccessor.getField(req, field.source.name!);
-                        break;
-                }
+                this.properties[field.name] = sourceUtils.getContextFieldValue(field.source, req);
+            } else {
+                this.properties[field.name] = sourceUtils.getValueFromSources(this.properties, field, "context");
             }
-
-            // TO DO: sources as array case
-
         });
     }
 }
