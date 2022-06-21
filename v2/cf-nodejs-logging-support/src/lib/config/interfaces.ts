@@ -1,5 +1,6 @@
 export interface ConfigObject {
     fields?: ConfigField[];
+    settableFields?: string[];
     customFieldsFormat?: customFieldsFormat;
     outputStartupMsg?: boolean;
     framework?: framework;
@@ -14,6 +15,7 @@ export interface ConfigField {
     output?: outputs[];
     disable?: boolean;
     default?: string;
+    settable?: boolean;
     _meta?: ConfigFieldMeta
 }
 

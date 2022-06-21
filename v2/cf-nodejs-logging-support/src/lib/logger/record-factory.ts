@@ -225,17 +225,17 @@ export default class RecordFactory {
         for (var key in providedFields) {
             var value = providedFields[key];
 
-            // Stringify, if necessary.
-            if ((typeof value) != "string") {
-                value = stringifySafe(value);
-            }
-
-            if (customFieldsFormat == "cloud-logging" || record[key] != null) {
+            if (customFieldsFormat == "cloud-logging" || record[key] != null || config.isSettable(key)) {
                 record[key] = value;
             }
         }
 
         if (customFieldsFormat == "application-logging") {
+            // Stringify, if necessary.
+            if ((typeof value) != "string") {
+                value = stringifySafe(value);
+            }
+
             let res: any = {};
             res.string = [];
             let key;

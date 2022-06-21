@@ -16,6 +16,7 @@ export default class Config {
 
     private config: ConfigObject = {
         "fields": [],
+        "settableFields": [],
         "customFieldsFormat": "cloud-logging",
         "outputStartupMsg": false,
         "framework": "express"
@@ -131,6 +132,11 @@ export default class Config {
             }
 
             file.fields?.forEach(field => {
+                if (field.settable) {
+                    this.config.settableFields!.push(field.name);
+                    return;
+                }
+
                 field._meta = {
                     isEnabled: true,
                     isRedacted: false
@@ -188,8 +194,20 @@ export default class Config {
         Config.instance.config.framework = framework;
     }
 
-    public enableTracing() {
-        this.addConfig([sapPassportConfig as ConfigObject]);
+    public enableTracing(input: string[]) {
+        for (var i in input) {
+            switch (i.toLowerCase()) {
+                case "sap_passport":
+                    this.addConfig([sapPassportConfig as ConfigObject]);
+                    break;
+                default:
+            }
+        }
+    }
+
+    public isSettable(key: string) {
+        if (this.config.settableFields!.length == 0) return false;
+        return this.config.settableFields!.includes(key);
     }
 
     // get index of field in config
