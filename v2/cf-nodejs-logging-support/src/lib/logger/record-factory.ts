@@ -190,6 +190,7 @@ export default class RecordFactory {
                 if ((typeof value) != "string") {
                     value = stringifySafe(value);
                 }
+                record[key] = value;
             }
 
             if (customFieldsFormat == "application-logging") {
@@ -213,7 +214,7 @@ export default class RecordFactory {
                 if (res.string.length > 0)
                     record["#cf"] = res;
             }
-            return record;
         }
+        return record;
     }
 }
