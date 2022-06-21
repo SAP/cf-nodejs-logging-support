@@ -137,7 +137,7 @@
             "mandatory": false,
             "envVarRedact": "LOG_SENSITIVE_CONNECTION_DATA",
             "source": {
-                "type": "req-object",
+                "type": "config-field",
                 "name": "remote_host"
             },
             "output": [
@@ -378,5 +378,6 @@
                 "req-log"
             ]
         }
-    ]
+    ],
+    "reqLoggingLevel": "info"
 }

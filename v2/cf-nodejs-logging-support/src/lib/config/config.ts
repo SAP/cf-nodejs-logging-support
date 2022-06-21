@@ -18,6 +18,7 @@ export default class Config {
         "fields": [],
         "settableFields": [],
         "customFieldsFormat": "cloud-logging",
+        "reqLoggingLevel": "info",
         "outputStartupMsg": false,
         "framework": "express"
     }
@@ -122,6 +123,10 @@ export default class Config {
         return framework;
     }
 
+    public getReqLoggingLevel() {
+        return Config.instance.config.reqLoggingLevel;
+    }
+
     public addConfig(configs: ConfigObject[]) {
 
         configs.forEach(file => {
@@ -176,6 +181,11 @@ export default class Config {
 
             if (file.framework) {
                 Config.instance.config.framework = file.framework;
+            }
+
+            if (file.reqLoggingLevel) {
+                // let level = LevelUtils.getLevel(file.reqLoggingLevel);
+                Config.instance.config.reqLoggingLevel = file.reqLoggingLevel;
             }
 
             return;

@@ -3,6 +3,7 @@ export interface ConfigObject {
     settableFields?: string[];
     customFieldsFormat?: customFieldsFormat;
     outputStartupMsg?: boolean;
+    reqLoggingLevel?: string;
     framework?: framework;
 }
 

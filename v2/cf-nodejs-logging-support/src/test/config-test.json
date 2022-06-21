@@ -36,5 +36,6 @@
         }
     ],
     "customFieldsFormat": "cloud-logging",
-    "outputStartupMsg": false
+    "outputStartupMsg": false,
+    "reqLoggingLevel": "info"
 }
