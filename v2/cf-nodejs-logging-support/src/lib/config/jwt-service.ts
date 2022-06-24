@@ -1,6 +1,3 @@
-import Logger from "../logger/logger";
-import RecordFactory from "../logger/record-factory";
-
 const jwt = require("jsonwebtoken");
 const ENV_DYN_LOG_HEADER = "DYN_LOG_HEADER";
 const ENV_DYN_LOG_KEY = "DYN_LOG_LEVEL_KEY";
@@ -30,11 +27,14 @@ export class JWTService {
         this.dynLogLevelHeader = this.headerName ? this.headerName : DEFAULT_DYN_LOG_LEVEL_HEADER;
     }
 
-    getDynLogLevel(token: string): string {
+    getDynLogLevel(token: string): string | null {
         // Read dyn log level key from environment var.
         const dynLogLevelKey = process.env[ENV_DYN_LOG_KEY];
         const payload = dynLogLevelKey ? this.verifyAndDecodeJWT(token, dynLogLevelKey) : null;
-        return payload?.level;
+        if (payload) {
+            return payload.level;
+        }
+        return null;
     };
 
     private verifyAndDecodeJWT(token: string, pubKey: string) {
