@@ -17,11 +17,6 @@ export default class RequestAccessor {
         return RequestAccessor.instance;
     }
 
-    // Binds the Loglevel extracted from JWT token to the given request logger
-    public bindDynLogLevel() {
-
-    };
-
     public getHeaderField(req: any, fieldName: string): string {
         return this.frameworkService.getReqHeaderField(req, fieldName);
     };

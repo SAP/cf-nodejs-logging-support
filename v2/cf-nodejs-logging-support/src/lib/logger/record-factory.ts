@@ -78,9 +78,12 @@ export default class RecordFactory {
     // init a new record and assign fields with output "req-log"
     buildReqRecord(req: any, res: any, context: ReqContext): any {
 
+        const configInstance = Config.getInstance();
+        const reqLogFields = configInstance.getReqFields();
+        const reqLoggingLevel = configInstance.getReqLoggingLevel();
+        let record: any = { "level": reqLoggingLevel };
+
         const sourceUtils = SourceUtils.getInstance();
-        const reqLogFields = Config.getInstance().getReqFields();
-        let record: any = { "level": "info" };
 
         reqLogFields.forEach(field => {
             if (field._meta!.isEnabled == false) {
@@ -100,6 +103,7 @@ export default class RecordFactory {
             if (field._meta!.isRedacted == true && record[field.name] != null) {
                 record[field.name] = this.REDACTED_PLACEHOLDER;
             }
+
         });
 
         // read and copy values from context

@@ -2,6 +2,7 @@ export interface ConfigObject {
     fields?: ConfigField[];
     customFieldsFormat?: customFieldsFormat;
     outputStartupMsg?: boolean;
+    reqLoggingLevel?: string;
     framework?: framework;
 }
 
