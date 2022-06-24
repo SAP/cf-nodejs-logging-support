@@ -229,8 +229,4 @@ export default class Config {
 
         return index;
     }
-
-    public enableTracing() {
-        this.addConfig([sapPassportConfig as ConfigObject]);
-    }
 }

@@ -186,30 +186,28 @@ export default class RecordFactory {
             var value = providedFields[key];
 
             if (customFieldsFormat == "cloud-logging" || record[key] != null || config.isSettable(key)) {
-                // Stringify, if necessary.
-                if ((typeof value) != "string") {
-                    value = stringifySafe(value);
-                }
                 record[key] = value;
             }
 
             if (customFieldsFormat == "application-logging") {
-                // Stringify, if necessary.
-                if ((typeof value) != "string") {
-                    value = stringifySafe(value);
-                }
 
                 let res: any = {};
                 res.string = [];
                 let key;
                 for (var i = 0; i < registeredCustomFields.length; i++) {
                     key = registeredCustomFields[i]
-                    if (providedFields[key])
+                    if (providedFields[key]) {
+                        var value = providedFields[key];
+                        // Stringify, if necessary.
+                        if ((typeof value) != "string") {
+                            value = stringifySafe(value);
+                        }
                         res.string.push({
                             "k": key,
-                            "v": providedFields[key],
+                            "v": value,
                             "i": i
                         })
+                    }
                 }
                 if (res.string.length > 0)
                     record["#cf"] = res;

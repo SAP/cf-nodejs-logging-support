@@ -47,7 +47,7 @@ export default class RootLogger extends Logger {
         RecordWriter.getInstance().setSinkFunction(f);
     }
 
-    enableTracing(input: string[]) {
+    enableTracing(...input: string[]) {
         return this.config.enableTracing(input);
     }
 
