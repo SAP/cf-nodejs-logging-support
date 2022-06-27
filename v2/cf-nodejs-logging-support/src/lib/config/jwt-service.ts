@@ -1,5 +1,3 @@
-import Logger from "../logger/logger";
-
 const jwt = require("jsonwebtoken");
 const ENV_DYN_LOG_HEADER = "DYN_LOG_HEADER";
 const ENV_DYN_LOG_KEY = "DYN_LOG_LEVEL_KEY";
@@ -7,33 +5,39 @@ const DEFAULT_DYN_LOG_LEVEL_HEADER = "SAP-LOG-LEVEL";
 
 export class JWTService {
     // Read dyn. log level header name from environment var
-    private static headerName = process.env[ENV_DYN_LOG_HEADER];
-    private static dynLogLevelHeader = JWTService.headerName ? JWTService.headerName : DEFAULT_DYN_LOG_LEVEL_HEADER;;
+    private static instance: JWTService;
+    private headerName = process.env[ENV_DYN_LOG_HEADER];
+    private dynLogLevelHeader = this.headerName ? this.headerName : DEFAULT_DYN_LOG_LEVEL_HEADER;
 
-    constructor() {
+    private constructor() { }
 
+    public static getInstance(): JWTService {
+        if (!JWTService.instance) {
+            JWTService.instance = new JWTService();
+        }
+
+        return JWTService.instance;
     }
 
-    static getDynLogLevelHeaderName() {
+    getDynLogLevelHeaderName() {
         return this.dynLogLevelHeader;
     }
 
     setDynLogLevelHeader() {
-        JWTService.dynLogLevelHeader = JWTService.headerName ? JWTService.headerName : DEFAULT_DYN_LOG_LEVEL_HEADER;
+        this.dynLogLevelHeader = this.headerName ? this.headerName : DEFAULT_DYN_LOG_LEVEL_HEADER;
     }
 
-    // Binds the Loglevel extracted from JWT token to the given request logger
-    static bindDynLogLevel(token: string, logger: Logger) {
+    getDynLogLevel(token: string): string | null {
         // Read dyn log level key from environment var.
         const dynLogLevelKey = process.env[ENV_DYN_LOG_KEY];
-        var payload = this.verifyAndDecodeJWT(token, dynLogLevelKey);
-
+        const payload = dynLogLevelKey ? this.verifyAndDecodeJWT(token, dynLogLevelKey) : null;
         if (payload) {
-            logger.setLoggingLevel(payload.level);
+            return payload.level;
         }
+        return null;
     };
 
-    private static verifyAndDecodeJWT(token: string, pubKey: any) {
+    private verifyAndDecodeJWT(token: string, pubKey: string) {
         if (!token || !pubKey) {
             return null; // no public key or jwt provided
         }
