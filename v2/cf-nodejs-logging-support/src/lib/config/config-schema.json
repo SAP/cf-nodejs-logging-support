@@ -36,6 +36,9 @@
                     },
                     "type": "array"
                 },
+                "settable": {
+                    "type": "boolean"
+                },
                 "source": {
                     "anyOf": [
                         {
@@ -137,6 +140,12 @@
         },
         "reqLoggingLevel": {
             "type": "string"
+        },
+        "settableFields": {
+            "items": {
+                "type": "string"
+            },
+            "type": "array"
         }
     },
     "type": "object"

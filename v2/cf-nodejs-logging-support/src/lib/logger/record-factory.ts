@@ -45,6 +45,7 @@ export default class RecordFactory {
             }
             args.pop();
         }
+
         msgLogFields.forEach(field => {
 
             if (!Array.isArray(field.source)) {
@@ -178,36 +179,39 @@ export default class RecordFactory {
 
     private addCustomFields(record: any, registeredCustomFields: Array<string>, loggerCustomFields: Map<string, any>, customFieldsFromArgs: any): any {
         var providedFields = Object.assign({}, loggerCustomFields, customFieldsFromArgs);
-        const customFieldsFormat = Config.getInstance().getConfig().customFieldsFormat;
+        const config = Config.getInstance();
+        const customFieldsFormat = config.getConfig().customFieldsFormat;
 
         for (var key in providedFields) {
             var value = providedFields[key];
 
-            // Stringify, if necessary.
-            if ((typeof value) != "string") {
-                value = stringifySafe(value);
-            }
-
-            if (customFieldsFormat == "cloud-logging" || record[key] != null) {
+            if (customFieldsFormat == "cloud-logging" || record[key] != null || config.isSettable(key)) {
                 record[key] = value;
             }
-        }
 
-        if (customFieldsFormat == "application-logging") {
-            let res: any = {};
-            res.string = [];
-            let key;
-            for (var i = 0; i < registeredCustomFields.length; i++) {
-                key = registeredCustomFields[i]
-                if (providedFields[key])
-                    res.string.push({
-                        "k": key,
-                        "v": providedFields[key],
-                        "i": i
-                    })
+            if (customFieldsFormat == "application-logging") {
+
+                let res: any = {};
+                res.string = [];
+                let key;
+                for (var i = 0; i < registeredCustomFields.length; i++) {
+                    key = registeredCustomFields[i]
+                    if (providedFields[key]) {
+                        var value = providedFields[key];
+                        // Stringify, if necessary.
+                        if ((typeof value) != "string") {
+                            value = stringifySafe(value);
+                        }
+                        res.string.push({
+                            "k": key,
+                            "v": value,
+                            "i": i
+                        })
+                    }
+                }
+                if (res.string.length > 0)
+                    record["#cf"] = res;
             }
-            if (res.string.length > 0)
-                record["#cf"] = res;
         }
         return record;
     }
