@@ -1,0 +1,59 @@
+{
+    "fields": [
+        {
+            "name": "sap_passport",
+            "source": {
+                "type": "header",
+                "name": "sap-passport"
+            }
+        },
+        {
+            "name": "sap_passport_Action",
+            "settable": "true"
+        },
+        {
+            "name": "sap_passport_ActionType",
+            "settable": "true"
+        },
+        {
+            "name": "sap_passport_ClientNumber",
+            "settable": "true"
+        },
+        {
+            "name": "sap_passport_ConnectionCounter",
+            "settable": "true"
+        },
+        {
+            "name": "sap_passport_ConnectionId",
+            "settable": "true"
+        },
+        {
+            "name": "sap_passport_ComponentName",
+            "settable": "true"
+        },
+        {
+            "name": "sap_passport_ComponentType",
+            "settable": "true"
+        },
+        {
+            "name": "sap_passport_PreviousComponentName",
+            "settable": "true"
+        },
+        {
+            "name": "sap_passport_TraceFlags",
+            "settable": "true"
+        },
+        {
+            "name": "sap_passport_TransactionId",
+            "settable": "true"
+        },
+        {
+            "name": "sap_passport_RootContextId",
+            "settable": "true"
+        },
+        {
+            "name": "sap_passport_UserId",
+            "settable": "true"
+        }
+    ]
+}
