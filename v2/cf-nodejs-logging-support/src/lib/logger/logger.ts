@@ -15,8 +15,14 @@ export default class Logger {
         this.parent = parent;
     }
 
-    createLogger(): Logger {
-        return new Logger(this)
+    createLogger(customFields?: any): Logger {
+
+        let logger = new Logger(this);
+        // assign custom fields, if provided
+        if (customFields) {
+            logger.setCustomFields(customFields);
+        }
+        return logger;
     }
 
     setLoggingLevel(name: string) {
