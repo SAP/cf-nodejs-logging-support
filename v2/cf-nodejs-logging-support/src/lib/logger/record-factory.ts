@@ -76,7 +76,7 @@ export default class RecordFactory {
     }
 
     // init a new record and assign fields with output "req-log"
-    buildReqRecord(req: any, res: any, context: ReqContext): any {
+    buildReqRecord(req: any, res: any, context: ReqContext, now: Date): any {
 
         const configInstance = Config.getInstance();
         const reqLogFields = configInstance.getReqFields();
@@ -91,7 +91,7 @@ export default class RecordFactory {
             }
 
             if (!Array.isArray(field.source)) {
-                record[field.name] = sourceUtils.getReqFieldValue(field.source, record, req, res);
+                record[field.name] = sourceUtils.getReqFieldValue(field.source, record, req, res, now);
             } else {
                 record[field.name] = sourceUtils.getValueFromSources(record, field, "req-log", req, res);
             }

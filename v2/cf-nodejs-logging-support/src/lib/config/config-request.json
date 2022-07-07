@@ -1,6 +1,17 @@
 {
     "fields": [
         {
+            "name": "request_received_at",
+            "mandatory": false,
+            "source": {
+                "type": "meta",
+                "name": "written_at"
+            },
+            "output": [
+                "req-log"
+            ]
+        },
+        {
             "name": "request_id",
             "mandatory": true,
             "source": {
@@ -145,21 +156,11 @@
             ]
         },
         {
-            "name": "request_received_at",
-            "mandatory": false,
-            "source": {
-                "type": "req-object",
-                "name": "written_at"
-            },
-            "output": [
-                "req-log"
-            ]
-        },
-        {
             "name": "protocol",
             "mandatory": true,
             "source": {
-                "type": "meta"
+                "type": "meta",
+                "name": "protocol"
             },
             "output": [
                 "req-log"
@@ -169,7 +170,8 @@
             "name": "response_time_ms",
             "mandatory": true,
             "source": {
-                "type": "meta"
+                "type": "meta",
+                "name": "response_time_ms"
             },
             "output": [
                 "req-log"
@@ -179,7 +181,8 @@
             "name": "response_sent_at",
             "mandatory": true,
             "source": {
-                "type": "meta"
+                "type": "meta",
+                "name": "response_sent_at"
             },
             "output": [
                 "req-log"

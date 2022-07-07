@@ -38,7 +38,7 @@ export class SourceUtils {
         }
     }
 
-    getReqFieldValue(source: Source, record: any, req: any, res: any): string | undefined {
+    getReqFieldValue(source: Source, record: any, req: any, res: any, now?: Date): string | undefined {
         switch (source.type) {
             case "req-header":
                 return this.requestAccessor.getHeaderField(req, source.name!);
@@ -48,6 +48,20 @@ export class SourceUtils {
                 return this.responseAccessor.getHeaderField(res, source.name!);
             case "res-object":
                 return this.responseAccessor.getField(res, source.name!);
+            case "meta":
+                if (now == null) {
+                    return;
+                }
+                if (source.name == "written_at") {
+                    return now.toJSON();
+                }
+                if (source.name == "response_time_ms") {
+                    return (Date.now() - now.getTime()).toString();;
+                }
+                if (source.name == "response_sent_at") {
+                    return new Date().toJSON();
+                }
+                return;
             default:
                 return this.getFieldValue(source, record);
         }
