@@ -38,11 +38,26 @@ export class SourceUtils {
         }
     }
 
-    getReqFieldValue(source: Source, record: any, req: any, res: any, now?: Date): string | undefined {
+    getReqFieldValue(name: string, source: Source, record: any, req: any, res: any, now?: Date): string | undefined {
         switch (source.type) {
             case "req-header":
                 return this.requestAccessor.getHeaderField(req, source.name!);
             case "req-object":
+                if (name == "protocol") {
+                    return "HTTP" + (req.httpVersion == null ? "" : "/" + req.httpVersion);
+                }
+                if (name == "remote_host") {
+                    return req.connection.remoteAddress;
+                }
+                if (name == "remote_port") {
+                    return req.connection.remotePort.toString();
+                }
+                if (name == "remote_user") {
+                    if (req.user && req.user.id) {
+                        return req.user.id;
+                    }
+                    return;
+                }
                 return this.requestAccessor.getField(req, source.name!);
             case "res-header":
                 return this.responseAccessor.getHeaderField(res, source.name!);
@@ -52,13 +67,13 @@ export class SourceUtils {
                 if (now == null) {
                     return;
                 }
-                if (source.name == "written_at") {
+                if (name == "request_received_at") {
                     return now.toJSON();
                 }
-                if (source.name == "response_time_ms") {
+                if (name == "response_time_ms") {
                     return (Date.now() - now.getTime()).toString();;
                 }
-                if (source.name == "response_sent_at") {
+                if (name == "response_sent_at") {
                     return new Date().toJSON();
                 }
                 return;
@@ -104,7 +119,7 @@ export class SourceUtils {
             let source = field.source[sourceIndex];
 
             fieldValue = origin == "msg-log" ? this.getFieldValue(source, record) :
-                origin == "req-log" ? this.getReqFieldValue(source, record, req, res) :
+                origin == "req-log" ? this.getReqFieldValue(field.name, source, record, req, res) :
                     this.getContextFieldValue(source, req);
 
             ++sourceIndex;

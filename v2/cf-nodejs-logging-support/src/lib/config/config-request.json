@@ -1,17 +1,6 @@
 {
     "fields": [
         {
-            "name": "request_received_at",
-            "mandatory": false,
-            "source": {
-                "type": "meta",
-                "name": "written_at"
-            },
-            "output": [
-                "req-log"
-            ]
-        },
-        {
             "name": "request_id",
             "mandatory": true,
             "source": {
@@ -126,7 +115,7 @@
             "mandatory": true,
             "envVarRedact": "LOG_REMOTE_USER",
             "source": {
-                "type": "res-object"
+                "type": "req-object"
             },
             "output": [
                 "req-log"
@@ -159,8 +148,18 @@
             "name": "protocol",
             "mandatory": true,
             "source": {
-                "type": "meta",
+                "type": "req-object",
                 "name": "protocol"
+            },
+            "output": [
+                "req-log"
+            ]
+        },
+        {
+            "name": "request_received_at",
+            "mandatory": false,
+            "source": {
+                "type": "meta"
             },
             "output": [
                 "req-log"
@@ -170,8 +169,7 @@
             "name": "response_time_ms",
             "mandatory": true,
             "source": {
-                "type": "meta",
-                "name": "response_time_ms"
+                "type": "meta"
             },
             "output": [
                 "req-log"
@@ -181,8 +179,7 @@
             "name": "response_sent_at",
             "mandatory": true,
             "source": {
-                "type": "meta",
-                "name": "response_sent_at"
+                "type": "meta"
             },
             "output": [
                 "req-log"

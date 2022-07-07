@@ -91,7 +91,7 @@ export default class RecordFactory {
             }
 
             if (!Array.isArray(field.source)) {
-                record[field.name] = sourceUtils.getReqFieldValue(field.source, record, req, res, now);
+                record[field.name] = sourceUtils.getReqFieldValue(field.name, field.source, record, req, res, now);
             } else {
                 record[field.name] = sourceUtils.getValueFromSources(record, field, "req-log", req, res);
             }
