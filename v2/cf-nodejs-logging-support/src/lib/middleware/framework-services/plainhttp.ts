@@ -18,8 +18,4 @@ export default class HttpService implements IFrameworkService {
     public getResField(res: any, fieldName: string): string {
         return res[fieldName];
     }
-
-    public finishLog(record: any) {
-        RecordWriter.getInstance().writeLog(record);
-    }
 }
