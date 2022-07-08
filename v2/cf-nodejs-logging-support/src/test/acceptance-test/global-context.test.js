@@ -155,7 +155,7 @@ describe.skip('Test logging in global context', function () {
         it('logs stacktrace field', function () {
             expect(lastOutput).to.have.property('stacktrace');
             expect(lastOutput.stacktrace).to.be.an('array');
-            var isArrayOfStrings = lastOutput.stacktrace.every(x => typeof(x) === 'string');
+            var isArrayOfStrings = lastOutput.stacktrace.every(x => typeof (x) === 'string');
             expect(isArrayOfStrings).to.be.true;
         });
 
