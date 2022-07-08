@@ -144,7 +144,7 @@ export default class RecordFactory {
             }
         }
 
-        if (customFieldsFormat == "application-logging") {
+        if (customFieldsFormat == "application-logs") {
             let res: any = {};
             res.string = [];
             let key;

@@ -8,7 +8,6 @@ export interface ConfigObject {
 
 export interface ConfigField {
     name: string;
-    mandatory?: boolean;
     envVarRedact?: string;
     envVarSwitch?: string;
     source: Source | Source[];
@@ -36,4 +35,4 @@ type outputs = "msg-log" | "req-log";
 
 export type framework = "express" | "restify" | "connect" | "nodejs-http";
 
-export type customFieldsFormat = "application-logging" | "cloud-logging";
+export type customFieldsFormat = "application-logs" | "cloud-logging";

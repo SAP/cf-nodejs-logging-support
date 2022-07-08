@@ -39,7 +39,7 @@ export default class Config {
                 configFiles.push(cfConfig as ConfigObject);
             }
 
-            if (boundServices["application-logging"]) {
+            if (boundServices["application-logs"]) {
                 configFiles.push(appLoggingConfig as ConfigObject);
             } else {
                 configFiles.push(cloudLoggingConfig as ConfigObject);
