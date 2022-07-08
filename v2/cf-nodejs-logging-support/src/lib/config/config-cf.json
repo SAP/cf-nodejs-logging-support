@@ -2,7 +2,6 @@
     "fields": [
         {
             "name": "component_type",
-            "mandatory": true,
             "source": {
                 "type": "static",
                 "value": "application"
@@ -13,7 +12,6 @@
         },
         {
             "name": "component_id",
-            "mandatory": true,
             "source": {
                 "type": "env",
                 "path": [
@@ -27,7 +25,6 @@
         },
         {
             "name": "component_name",
-            "mandatory": true,
             "source": {
                 "type": "env",
                 "path": [
@@ -41,7 +38,6 @@
         },
         {
             "name": "component_instance",
-            "mandatory": true,
             "source": {
                 "type": "env",
                 "path": [
@@ -55,7 +51,6 @@
         },
         {
             "name": "source_instance",
-            "mandatory": false,
             "source": {
                 "type": "config-field",
                 "name": "component_instance"
@@ -66,7 +61,6 @@
         },
         {
             "name": "layer",
-            "mandatory": true,
             "source": {
                 "type": "static",
                 "value": "[NODEJS]"
@@ -77,7 +71,6 @@
         },
         {
             "name": "organization_name",
-            "mandatory": true,
             "source": {
                 "type": "env",
                 "path": [
@@ -91,7 +84,6 @@
         },
         {
             "name": "organization_id",
-            "mandatory": true,
             "source": {
                 "type": "env",
                 "path": [
@@ -105,7 +97,6 @@
         },
         {
             "name": "space_name",
-            "mandatory": true,
             "source": {
                 "type": "env",
                 "path": [
@@ -119,7 +110,6 @@
         },
         {
             "name": "space_id",
-            "mandatory": true,
             "source": {
                 "type": "env",
                 "path": [
@@ -133,7 +123,6 @@
         },
         {
             "name": "container_id",
-            "mandatory": true,
             "source": {
                 "type": "env",
                 "name": "CF_INSTANCE_IP"

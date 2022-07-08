@@ -2,7 +2,6 @@
     "fields": [
         {
             "name": "logger",
-            "mandatory": true,
             "source": {
                 "type": "static",
                 "value": "nodejs-logger"

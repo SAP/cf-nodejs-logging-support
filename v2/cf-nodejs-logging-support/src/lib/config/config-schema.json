@@ -20,9 +20,6 @@
                 "envVarSwitch": {
                     "type": "string"
                 },
-                "mandatory": {
-                    "type": "boolean"
-                },
                 "name": {
                     "type": "string"
                 },
@@ -90,7 +87,7 @@
         },
         "customFieldsFormat": {
             "enum": [
-                "application-logging",
+                "application-logs",
                 "cloud-logging"
             ],
             "type": "string"
