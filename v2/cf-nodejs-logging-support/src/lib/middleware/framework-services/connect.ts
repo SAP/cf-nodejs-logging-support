@@ -1,4 +1,3 @@
-import RecordWriter from "../../logger/record-writer";
 import { IFrameworkService } from "../interfaces";
 
 export default class ConnectService implements IFrameworkService {
