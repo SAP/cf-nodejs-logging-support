@@ -176,11 +176,11 @@ describe('Test Config class', function () {
                     "output": [
                         "msg-log"
                     ],
+                    "disable": true,
                     "_meta": {
                         "isEnabled": false,
                         "isRedacted": false
-                    },
-                    "disable": true
+                    }
                 },
                 {
                     "name": "new_field",
@@ -218,11 +218,11 @@ describe('Test Config class', function () {
                 "output": [
                     "msg-log"
                 ],
-                "disable": true,
                 "_meta": {
                     "isEnabled": false,
                     "isRedacted": false
-                }
+                },
+                "disable": true
             }];
             expect(result).to.be.eql(expectation);
         });

@@ -134,6 +134,9 @@
         },
         "outputStartupMsg": {
             "type": "boolean"
+        },
+        "reqLoggingLevel": {
+            "type": "string"
         }
     },
     "type": "object"
