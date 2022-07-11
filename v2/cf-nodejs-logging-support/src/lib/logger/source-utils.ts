@@ -43,21 +43,6 @@ export class SourceUtils {
             case "req-header":
                 return this.requestAccessor.getHeaderField(req, source.name!);
             case "req-object":
-                if (name == "protocol") {
-                    return "HTTP" + (req.httpVersion == null ? "" : "/" + req.httpVersion);
-                }
-                if (name == "remote_host") {
-                    return req.connection.remoteAddress;
-                }
-                if (name == "remote_port") {
-                    return req.connection.remotePort.toString();
-                }
-                if (name == "remote_user") {
-                    if (req.user && req.user.id) {
-                        return req.user.id;
-                    }
-                    return;
-                }
                 return this.requestAccessor.getField(req, source.name!);
             case "res-header":
                 return this.responseAccessor.getHeaderField(res, source.name!);

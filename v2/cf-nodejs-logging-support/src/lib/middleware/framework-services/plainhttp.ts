@@ -8,6 +8,20 @@ export default class HttpService implements IFrameworkService {
     }
 
     public getReqField(req: any, fieldName: string): string {
+        if (fieldName == "protocol") {
+            return "HTTP" + (req.httpVersion == null ? "" : "/" + req.httpVersion);
+        }
+        if (fieldName == "remote_host") {
+            return req.connection.remoteAddress;
+        }
+        if (fieldName == "remote_port") {
+            return req.connection.remotePort.toString();
+        }
+        if (fieldName == "remote_user") {
+            if (req.user && req.user.id) {
+                return req.user.id;
+            }
+        }
         return req[fieldName];
     }
 
