@@ -10,12 +10,12 @@ export default class RecordFactory {
     private static REDACTED_PLACEHOLDER = "redacted";
 
     // init a new record and assign fields with output "msg-log"
-    static buildMsgRecord(args: Array<any>, context?: ReqContext): any {
+    static buildMsgRecord(level: string, args: Array<any>, context?: ReqContext): any {
 
         const configInstance = Config.getInstance();
         const msgLogFields = configInstance.getMsgFields();
         let record: any = {
-            "level": "info",
+            "level": level,
         };
 
         msgLogFields.forEach(field => {
@@ -42,6 +42,7 @@ export default class RecordFactory {
         }
 
         record["msg"] = util.format.apply(util, args);
+
         // TO DO: check if Stacktrace
         return record;
     }

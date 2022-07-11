@@ -39,32 +39,32 @@ export default class Logger {
 
     logMessage(levelName: string, ..._args: any) {
         if (!this.isLoggingLevel(levelName)) return;
-        const record = this.context ? RecordFactory.buildMsgRecord(_args, this.context) : RecordFactory.buildMsgRecord(_args);
+        const record = this.context ? RecordFactory.buildMsgRecord(levelName, _args, this.context) : RecordFactory.buildMsgRecord(levelName, _args);
         RecordWriter.getInstance().writeLog(record);
     }
 
-    error(args: any) {
-        this.logMessage("error", args);
+    error() {
+        this.logMessage("error", ...arguments);
     }
 
-    warn(args: any) {
-        this.logMessage("warn", args);
+    warn() {
+        this.logMessage("warn", ...arguments);
     }
 
-    info(args: any) {
-        this.logMessage("info", args);
+    info() {
+        this.logMessage("info", ...arguments);
     }
 
-    verbose(args: any) {
-        this.logMessage("verbose", args);
+    verbose() {
+        this.logMessage("verbose", ...arguments);
     }
 
-    debug(args: any) {
-        this.logMessage("debug", args);
+    debug() {
+        this.logMessage("debug", ...arguments);
     }
 
-    silly(args: any) {
-        this.logMessage("silly", args);
+    silly() {
+        this.logMessage("silly", ...arguments);
     }
 
     isError() {
