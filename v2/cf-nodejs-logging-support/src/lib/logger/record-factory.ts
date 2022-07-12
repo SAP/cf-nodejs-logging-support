@@ -9,6 +9,7 @@ export default class RecordFactory {
 
     private static instance: RecordFactory;
     private REDACTED_PLACEHOLDER = "redacted";
+    private LOG_TYPE = "log";
 
     private constructor() { }
 
@@ -23,6 +24,7 @@ export default class RecordFactory {
     // init a new record and assign fields with output "msg-log"
     buildMsgRecord(registeredCustomFields: Array<string>, loggerCustomFields: Map<string, any>, level: string, args: Array<any>, context?: ReqContext): any {
 
+        const now = new Date();
         const configInstance = Config.getInstance();
         const sourceUtils = SourceUtils.getInstance();
         const msgLogFields = configInstance.getMsgFields();
@@ -48,9 +50,9 @@ export default class RecordFactory {
         msgLogFields.forEach(field => {
 
             if (!Array.isArray(field.source)) {
-                record[field.name] = sourceUtils.getFieldValue(field.source, record);
+                record[field.name] = sourceUtils.getFieldValue(field.name, field.source, record, now);
             } else {
-                record[field.name] = sourceUtils.getValueFromSources(record, field, "msg-log");
+                record[field.name] = sourceUtils.getValueFromSources(field, record, "msg-log", now);
             }
 
             if (record[field.name] == null && field.default != null) {
@@ -72,12 +74,14 @@ export default class RecordFactory {
 
         record = this.addCustomFields(record, registeredCustomFields, loggerCustomFields, customFieldsFromArgs);
         record["msg"] = util.format.apply(util, args);
+        record["type"] = this.LOG_TYPE;
         return record;
     }
 
     // init a new record and assign fields with output "req-log"
-    buildReqRecord(req: any, res: any, context: ReqContext, now: Date): any {
+    buildReqRecord(req: any, res: any, context: ReqContext): any {
 
+        const now = new Date();
         const configInstance = Config.getInstance();
         const reqLogFields = configInstance.getReqFields();
         const reqLoggingLevel = configInstance.getReqLoggingLevel();
@@ -91,7 +95,7 @@ export default class RecordFactory {
             }
 
             if (!Array.isArray(field.source)) {
-                record[field.name] = sourceUtils.getReqFieldValue(field.name, field.source, record, req, res, now);
+                record[field.name] = sourceUtils.getReqFieldValue(field.name, field.source, record, now, req, res);
             } else {
                 record[field.name] = sourceUtils.getValueFromSources(record, field, "req-log", req, res);
             }

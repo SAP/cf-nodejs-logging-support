@@ -144,7 +144,8 @@
         {
             "name": "request_received_at",
             "source": {
-                "type": "meta"
+                "type": "config-field",
+                "name": "written_at"
             },
             "output": [
                 "req-log"

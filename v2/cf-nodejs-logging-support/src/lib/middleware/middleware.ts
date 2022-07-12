@@ -8,7 +8,6 @@ import RecordWriter from "../logger/record-writer";
 export default class Middleware {
 
     static logNetwork(req: any, res: any, next?: any) {
-        const now = new Date();
         let logSent = false;
 
         let networkLogger = RootLogger.getInstance().createLogger();
@@ -29,7 +28,7 @@ export default class Middleware {
         const finishLog = () => {
 
             if (!logSent) {
-                const record = RecordFactory.getInstance().buildReqRecord(req, res, context, now);
+                const record = RecordFactory.getInstance().buildReqRecord(req, res, context);
                 const reqLoggingLevel = LevelUtils.getLevel(record.level);
                 const loggingLevelThreshold = LevelUtils.getLevel(req.logger.getLoggingLevel());
                 if (LevelUtils.isLevelEnabled(loggingLevelThreshold, reqLoggingLevel)) {
