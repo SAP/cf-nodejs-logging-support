@@ -3,6 +3,7 @@ import LevelUtils from "./level-utils";
 import RecordWriter from "./record-writer";
 import RecordFactory from "./record-factory";
 import ReqContext from "./context";
+import { isValidObject } from "../middleware/utils";
 
 export default class Logger {
     private parent?: Logger = undefined
@@ -46,7 +47,8 @@ export default class Logger {
 
     logMessage(levelName: string, ..._args: any) {
         if (!this.isLoggingLevel(levelName)) return;
-        const record = RecordFactory.getInstance().buildMsgRecord(this.registeredCustomFields, this.customFields, levelName, _args, this.context);
+        const loggerCustomFields = Object.assign({}, this.extractCustomFieldsFromLogger(this));
+        const record = RecordFactory.getInstance().buildMsgRecord(this.registeredCustomFields, loggerCustomFields, levelName, _args, this.context);
         RecordWriter.getInstance().writeLog(record);
     }
 
@@ -55,7 +57,7 @@ export default class Logger {
     }
 
     setCustomFields(customFields: Map<string, any>) {
-        this.customFields = customFields
+        this.customFields = customFields;
     }
 
     getCustomFields(): Map<string, any> {
@@ -69,5 +71,20 @@ export default class Logger {
     initContext(_req: any) {
         this.context = new ReqContext(_req);
         return this.context;
+    }
+
+    private extractCustomFieldsFromLogger(logger: Logger): any {
+        let fields = {};
+        if (logger.parent && logger.parent !== this) {
+            fields = this.extractCustomFieldsFromLogger(logger.parent);
+        } else {
+            // fields = Object.assign(fields, globalFields);
+        }
+
+        if (isValidObject(logger.customFields)) {
+            fields = Object.assign(fields, logger.customFields);
+        }
+
+        return fields;
     }
 }

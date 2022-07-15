@@ -18,3 +18,14 @@ export function assignFrameworkService(): IFrameworkService {
             return new ExpressService();
     }
 }
+
+export function isValidObject(obj: any, canBeEmpty?: any): boolean {
+    if (!obj) {
+        return false;
+    } else if (typeof obj !== "object") {
+        return false;
+    } else if (!canBeEmpty && Object.keys(obj).length === 0) {
+        return false;
+    }
+    return true;
+}

@@ -1,5 +1,6 @@
 import util from "util";
 import Config from "../config/config";
+import { isValidObject } from "../middleware/utils";
 import ReqContext from "./context";
 import { SourceUtils } from "./source-utils";
 import { StacktraceUtils } from "./stacktrace-utils";
@@ -38,7 +39,7 @@ export default class RecordFactory {
         if (typeof lastArg === "object") {
             if (StacktraceUtils.isErrorWithStacktrace(lastArg)) {
                 record.stacktrace = StacktraceUtils.prepareStacktrace(lastArg.stack);
-            } else if (this.isValidObject(lastArg)) {
+            } else if (isValidObject(lastArg)) {
                 if (StacktraceUtils.isErrorWithStacktrace(lastArg._error)) {
                     record.stacktrace = StacktraceUtils.prepareStacktrace(lastArg._error.stack);
                     delete lastArg._error;
@@ -97,7 +98,7 @@ export default class RecordFactory {
             if (!Array.isArray(field.source)) {
                 record[field.name] = sourceUtils.getReqFieldValue(field.name, field.source, record, now, req, res);
             } else {
-                record[field.name] = sourceUtils.getValueFromSources(record, field, "req-log", req, res);
+                record[field.name] = sourceUtils.getValueFromSources(field, record, "req-log", now, req, res);
             }
 
             if (record[field.name] == null && field.default != null) {
@@ -116,19 +117,9 @@ export default class RecordFactory {
             record[key] = contextFields[key];
         }
 
-
+        const loggerCustomFields = Object.assign({}, req.logger.extractCustomFieldsFromLogger(req.logger));
+        record = this.addCustomFields(record, req.logger.registeredCustomFields, loggerCustomFields, {});
         return record;
-    }
-
-    private isValidObject(obj: any, canBeEmpty?: any): boolean {
-        if (!obj) {
-            return false;
-        } else if (typeof obj !== "object") {
-            return false;
-        } else if (!canBeEmpty && Object.keys(obj).length === 0) {
-            return false;
-        }
-        return true;
     }
 
     private addCustomFields(record: any, registeredCustomFields: Array<string>, loggerCustomFields: Map<string, any>, customFieldsFromArgs: any): any {
