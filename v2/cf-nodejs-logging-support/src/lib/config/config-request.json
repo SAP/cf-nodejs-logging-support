@@ -8,7 +8,8 @@
             },
             "output": [
                 "req-log"
-            ]
+            ],
+            "default": "-"
         },
         {
             "name": "request_size_b",
@@ -108,7 +109,8 @@
             },
             "output": [
                 "req-log"
-            ]
+            ],
+            "default": "-"
         },
         {
             "name": "direction",
