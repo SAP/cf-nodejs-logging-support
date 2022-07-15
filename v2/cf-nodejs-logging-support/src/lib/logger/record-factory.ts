@@ -105,7 +105,8 @@ export default class RecordFactory {
                 record[field.name] = field.default;
             }
 
-            if (field._meta!.isRedacted == true && record[field.name] != null) {
+            // Replaces all fields, which are marked to be reduced and do not equal to their default value to REDUCED_PLACEHOLDER.
+            if (field._meta!.isRedacted == true && record[field.name] != null && record[field.name] != field.default) {
                 record[field.name] = this.REDACTED_PLACEHOLDER;
             }
 
