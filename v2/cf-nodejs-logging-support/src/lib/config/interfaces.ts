@@ -13,7 +13,7 @@ export interface ConfigField {
     source: Source | Source[];
     output?: outputs[];
     disable?: boolean;
-    default?: string;
+    default?: string | number | boolean;
     _meta?: ConfigFieldMeta
 }
 

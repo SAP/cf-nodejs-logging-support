@@ -69,7 +69,8 @@
             },
             "output": [
                 "req-log"
-            ]
+            ],
+            "default": -1
         },
         {
             "name": "response_content_type",
@@ -89,7 +90,8 @@
             },
             "output": [
                 "req-log"
-            ]
+            ],
+            "default": "-"
         },
         {
             "name": "remote_port",
@@ -99,13 +101,15 @@
             },
             "output": [
                 "req-log"
-            ]
+            ],
+            "default": "-"
         },
         {
             "name": "remote_user",
             "envVarRedact": "LOG_REMOTE_USER",
             "source": {
-                "type": "req-object"
+                "type": "req-object",
+                "name": "remote_user"
             },
             "output": [
                 "req-log"

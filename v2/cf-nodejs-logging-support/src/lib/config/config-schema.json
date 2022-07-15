@@ -9,7 +9,11 @@
                     "$ref": "#/definitions/ConfigFieldMeta"
                 },
                 "default": {
-                    "type": "string"
+                    "type": [
+                        "string",
+                        "number",
+                        "boolean"
+                    ]
                 },
                 "disable": {
                     "type": "boolean"
