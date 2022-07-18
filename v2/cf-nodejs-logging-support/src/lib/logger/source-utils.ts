@@ -32,7 +32,12 @@ export class SourceUtils {
                 return source.value;
             case "env":
                 if (source.path) {
-                    return NestedVarResolver.resolveNestedVariable(process.env, source.path);
+                    // clone path to avoid deleting path in resolveNestedVariable()
+                    if (fieldName == "component_id") {
+                        console.log();
+                    }
+                    const clonedPath = [...source.path];
+                    return NestedVarResolver.resolveNestedVariable(process.env, clonedPath);
                 }
                 return process.env[source.name!];
             case "config-field":

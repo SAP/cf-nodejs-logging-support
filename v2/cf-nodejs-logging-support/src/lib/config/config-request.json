@@ -7,6 +7,7 @@
                 "name": "x-vcap-request-id"
             },
             "output": [
+                "msg-log",
                 "req-log"
             ],
             "default": "-"
@@ -19,7 +20,8 @@
             },
             "output": [
                 "req-log"
-            ]
+            ],
+            "default": -1
         },
         {
             "name": "type",
@@ -80,7 +82,8 @@
             },
             "output": [
                 "req-log"
-            ]
+            ],
+            "default": "-"
         },
         {
             "name": "remote_host",
@@ -198,8 +201,10 @@
                 }
             ],
             "output": [
+                "msg-log",
                 "req-log"
-            ]
+            ],
+            "default": "-"
         },
         {
             "name": "tenant_id",
@@ -208,8 +213,10 @@
                 "name": "tenantid"
             },
             "output": [
+                "msg-log",
                 "req-log"
-            ]
+            ],
+            "default": "-"
         },
         {
             "name": "tenant_subdomain",
@@ -217,8 +224,10 @@
                 "type": "static"
             },
             "output": [
+                "msg-log",
                 "req-log"
-            ]
+            ],
+            "default": "-"
         },
         {
             "name": "x_forwarded_for",

@@ -67,10 +67,7 @@ export default class RecordFactory {
 
         // read and copy values from context
         if (context) {
-            const contextFields = context.getProps();
-            for (let key in contextFields) {
-                record[key] = contextFields[key];
-            }
+            record = this.addContext(record, context);
         }
 
         record = this.addCustomFields(record, registeredCustomFields, loggerCustomFields, customFieldsFromArgs);
@@ -112,11 +109,7 @@ export default class RecordFactory {
 
         });
 
-        // read and copy values from context
-        const contextFields = context.getProps();
-        for (let key in contextFields) {
-            record[key] = contextFields[key];
-        }
+        record = this.addContext(record, context);
 
         const loggerCustomFields = Object.assign({}, req.logger.extractCustomFieldsFromLogger(req.logger));
         record = this.addCustomFields(record, req.logger.registeredCustomFields, loggerCustomFields, {});
@@ -155,6 +148,17 @@ export default class RecordFactory {
             }
             if (res.string.length > 0)
                 record["#cf"] = res;
+        }
+        return record;
+    }
+
+    // read and copy values from context
+    private addContext(record: any, context: ReqContext): object {
+        const contextFields = context.getProps();
+        for (let key in contextFields) {
+            if (contextFields[key] != null) {
+                record[key] = contextFields[key];
+            }
         }
         return record;
     }
