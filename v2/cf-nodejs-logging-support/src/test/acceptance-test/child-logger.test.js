@@ -6,7 +6,7 @@ var lastOutput;
 var logCount;
 var childLogger;
 
-describe.skip('Test child logger', function () {
+describe('Test child logger', function () {
 
     beforeEach(function () {
         log = importFresh("../../../build/main/index");

@@ -2,13 +2,33 @@
     "fields": [
         {
             "name": "logger",
-            "mandatory": true,
             "source": {
                 "type": "static",
                 "value": "nodejs-logger"
             },
             "output": [
-                "msg-log"
+                "msg-log",
+                "req-log"
+            ]
+        },
+        {
+            "name": "written_at",
+            "source": {
+                "type": "meta"
+            },
+            "output": [
+                "msg-log",
+                "req-log"
+            ]
+        },
+        {
+            "name": "written_ts",
+            "source": {
+                "type": "meta"
+            },
+            "output": [
+                "msg-log",
+                "req-log"
             ]
         }
     ],

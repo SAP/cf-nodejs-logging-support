@@ -19,7 +19,7 @@ export default class RecordWriter {
         const level = record["level"];
         const instance = RecordWriter.getInstance();
         if (instance.customSinkFunction) {
-            instance.customSinkFunction(level, record);
+            instance.customSinkFunction(level, JSON.stringify(record));
         } else {
             // default to stdout
             process.stdout.write(JSON.stringify(record) + os.EOL);

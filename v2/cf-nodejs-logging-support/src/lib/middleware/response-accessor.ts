@@ -23,8 +23,4 @@ export default class ResponseAccessor {
     public getField(res: any, fieldName: string): any {
         return this.frameworkService.getResField(res, fieldName);
     };
-
-    public finishLog(record: any) {
-        return this.frameworkService.finishLog(record);
-    }
 }

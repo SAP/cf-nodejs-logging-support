@@ -66,19 +66,20 @@ describe('Test custom fields', function () {
 
         describe.skip('application-logging format', function () {
             beforeEach(function () {
-
-                var obj = {
-                    "application-logs": {}
-                }
-                process.env.VCAP_SERVICES = JSON.stringify(obj);
+                // does not work since sinleton config and env variable seted only once by first import
+                // var obj = {
+                //     "application-logs": {}
+                // }
+                // process.env.VCAP_SERVICES = JSON.stringify(obj);
 
                 log = importFresh("../../../build/main/index");
+                log.setCustomFieldsFormat("application-logs");
                 log.registerCustomFields(["field-a"]);
                 log.setCustomFields({ "field-a": "value" });
                 log.logMessage("info", "test-message");
             });
 
-            it('logs with application-logging format', function () {
+            it('logs with application-logs format', function () {
                 const expectation = {
                     "#cf": {
                         "string": [{

@@ -41,7 +41,7 @@ export default class Config {
                 configFiles.push(cfConfig as ConfigObject);
             }
 
-            if (boundServices["application-logging"]) {
+            if (boundServices["application-logs"]) {
                 configFiles.push(appLoggingConfig as ConfigObject);
             } else {
                 configFiles.push(cloudLoggingConfig as ConfigObject);
@@ -99,7 +99,7 @@ export default class Config {
         const filtered = Config.instance.config.fields!.filter(
             field => {
                 if (field.output?.includes("msg-log") && field.output?.includes("req-log")) {
-                    if ((field.source as Source).type == "req-header" || "req-object") {
+                    if (["req-header", "req-object"].includes((field.source as Source).type)) {
                         return true;
                     }
                 }

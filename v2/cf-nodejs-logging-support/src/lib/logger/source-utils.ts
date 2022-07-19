@@ -7,10 +7,14 @@ const { v4: uuid } = require('uuid');
 
 type origin = "msg-log" | "req-log" | "context";
 
+const NS_PER_MS = 1e6;
+
+
 export class SourceUtils {
     private static instance: SourceUtils;
     private requestAccessor: RequestAccessor = RequestAccessor.getInstance();
     private responseAccessor = ResponseAccessor.getInstance();
+    private lastTimestamp = 0;
 
     private constructor() { }
 
@@ -22,23 +26,58 @@ export class SourceUtils {
         return SourceUtils.instance;
     }
 
-    getFieldValue(source: Source, record: any): string | undefined {
+    getFieldValue(fieldName: string, source: Source, record: any, now: Date): string | undefined {
         switch (source.type) {
             case "static":
                 return source.value;
             case "env":
                 if (source.path) {
-                    return NestedVarResolver.resolveNestedVariable(process.env, source.path);
+                    // clone path to avoid deleting path in resolveNestedVariable()
+                    if (fieldName == "component_id") {
+                        console.log();
+                    }
+                    const clonedPath = [...source.path];
+                    return NestedVarResolver.resolveNestedVariable(process.env, clonedPath);
                 }
                 return process.env[source.name!];
             case "config-field":
                 return record[source.name!];
+            case "meta":
+                if (now == null) {
+                    return;
+                }
+                if (fieldName == "request_received_at") {
+                    return record["written_at"];
+                }
+                if (fieldName == "response_time_ms") {
+                    return (Date.now() - now.getTime()).toString();;
+                }
+                if (fieldName == "response_sent_at") {
+                    return new Date().toJSON();
+                }
+                if (fieldName == "written_at") {
+                    return now.toJSON();
+                }
+                if (fieldName == "written_ts") {
+                    var lower = process.hrtime()[1] % NS_PER_MS
+                    var higher = now.getTime() * NS_PER_MS
+
+                    let written_ts = higher + lower;
+                    //This reorders written_ts, if the new timestamp seems to be smaller
+                    // due to different rollover times for process.hrtime and now.getTime
+                    if (written_ts < this.lastTimestamp) {
+                        written_ts += NS_PER_MS;
+                    }
+                    this.lastTimestamp = written_ts;
+                    return written_ts.toString();
+                }
+                return;
             default:
                 return undefined;
         }
     }
 
-    getReqFieldValue(source: Source, record: any, req: any, res: any): string | undefined {
+    getReqFieldValue(fieldName: string, source: Source, record: any, now: Date, req: any, res: any): string | undefined {
         switch (source.type) {
             case "req-header":
                 return this.requestAccessor.getHeaderField(req, source.name!);
@@ -49,7 +88,7 @@ export class SourceUtils {
             case "res-object":
                 return this.responseAccessor.getField(res, source.name!);
             default:
-                return this.getFieldValue(source, record);
+                return this.getFieldValue(fieldName, source, record, now);
         }
     }
 
@@ -66,7 +105,7 @@ export class SourceUtils {
     }
 
     // iterate through sources until one source returns a value 
-    getValueFromSources(record: any, field: ConfigField, origin: origin, req?: any, res?: any) {
+    getValueFromSources(field: ConfigField, record: any, origin: origin, now: Date, req?: any, res?: any) {
 
         if (origin == "req-log" && (!req || !res)) {
             throw new Error("Please pass req and res as argument to get value for req-log field.");
@@ -89,8 +128,8 @@ export class SourceUtils {
 
             let source = field.source[sourceIndex];
 
-            fieldValue = origin == "msg-log" ? this.getFieldValue(source, record) :
-                origin == "req-log" ? this.getReqFieldValue(source, record, req, res) :
+            fieldValue = origin == "msg-log" ? this.getFieldValue(field.name, source, record, now) :
+                origin == "req-log" ? this.getReqFieldValue(field.name, source, record, req, res, now) :
                     this.getContextFieldValue(source, req);
 
             ++sourceIndex;

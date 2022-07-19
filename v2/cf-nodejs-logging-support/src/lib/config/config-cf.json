@@ -2,18 +2,18 @@
     "fields": [
         {
             "name": "component_type",
-            "mandatory": true,
             "source": {
                 "type": "static",
                 "value": "application"
             },
             "output": [
-                "msg-log"
-            ]
+                "msg-log",
+                "req-log"
+            ],
+            "default": "-"
         },
         {
             "name": "component_id",
-            "mandatory": true,
             "source": {
                 "type": "env",
                 "path": [
@@ -22,12 +22,13 @@
                 ]
             },
             "output": [
-                "msg-log"
-            ]
+                "msg-log",
+                "req-log"
+            ],
+            "default": "-"
         },
         {
             "name": "component_name",
-            "mandatory": true,
             "source": {
                 "type": "env",
                 "path": [
@@ -36,12 +37,13 @@
                 ]
             },
             "output": [
-                "msg-log"
-            ]
+                "msg-log",
+                "req-log"
+            ],
+            "default": "-"
         },
         {
             "name": "component_instance",
-            "mandatory": true,
             "source": {
                 "type": "env",
                 "path": [
@@ -50,34 +52,36 @@
                 ]
             },
             "output": [
-                "msg-log"
-            ]
+                "msg-log",
+                "req-log"
+            ],
+            "default": "-"
         },
         {
             "name": "source_instance",
-            "mandatory": false,
             "source": {
                 "type": "config-field",
                 "name": "component_instance"
             },
             "output": [
-                "msg-log"
-            ]
+                "msg-log",
+                "req-log"
+            ],
+            "default": "0"
         },
         {
             "name": "layer",
-            "mandatory": true,
             "source": {
                 "type": "static",
                 "value": "[NODEJS]"
             },
             "output": [
-                "msg-log"
+                "msg-log",
+                "req-log"
             ]
         },
         {
             "name": "organization_name",
-            "mandatory": true,
             "source": {
                 "type": "env",
                 "path": [
@@ -86,12 +90,13 @@
                 ]
             },
             "output": [
-                "msg-log"
-            ]
+                "msg-log",
+                "req-log"
+            ],
+            "default": "-"
         },
         {
             "name": "organization_id",
-            "mandatory": true,
             "source": {
                 "type": "env",
                 "path": [
@@ -100,12 +105,13 @@
                 ]
             },
             "output": [
-                "msg-log"
-            ]
+                "msg-log",
+                "req-log"
+            ],
+            "default": "-"
         },
         {
             "name": "space_name",
-            "mandatory": true,
             "source": {
                 "type": "env",
                 "path": [
@@ -114,12 +120,13 @@
                 ]
             },
             "output": [
-                "msg-log"
-            ]
+                "msg-log",
+                "req-log"
+            ],
+            "default": "-"
         },
         {
             "name": "space_id",
-            "mandatory": true,
             "source": {
                 "type": "env",
                 "path": [
@@ -128,19 +135,22 @@
                 ]
             },
             "output": [
-                "msg-log"
-            ]
+                "msg-log",
+                "req-log"
+            ],
+            "default": "-"
         },
         {
             "name": "container_id",
-            "mandatory": true,
             "source": {
                 "type": "env",
                 "name": "CF_INSTANCE_IP"
             },
             "output": [
-                "msg-log"
-            ]
+                "msg-log",
+                "req-log"
+            ],
+            "default": "-"
         }
     ]
 }

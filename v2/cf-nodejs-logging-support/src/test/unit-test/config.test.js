@@ -113,11 +113,11 @@ describe('Test Config class', function () {
 
     describe('Test setCustomFieldsFormat', function () {
         beforeEach(function () {
-            singleton.setCustomFieldsFormat("application-logging");
+            singleton.setCustomFieldsFormat("application-logs");
             result = singleton.getConfig();
         });
         it('sets custom fields format', function () {
-            expect(result).to.have.property("customFieldsFormat", "application-logging");
+            expect(result).to.have.property("customFieldsFormat", "application-logs");
         });
 
         afterEach(function () {
