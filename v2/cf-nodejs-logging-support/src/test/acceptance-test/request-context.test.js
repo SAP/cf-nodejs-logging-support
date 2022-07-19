@@ -15,7 +15,7 @@ describe('Test request context', function () {
 
     // catch logs written by supertest app
     process.writeLog = function (level, output) {
-        lastLogs.push(output);
+        lastLogs.push(JSON.parse(output));
     }
 
     before(function () {

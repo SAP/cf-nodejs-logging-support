@@ -7,7 +7,7 @@ var lastLevel;
 var lastOutput;
 var logCount;
 
-describe('Test logging in global context', function () {
+describe.skip('Test logging in global context', function () {
 
     beforeEach(function () {
         log = importFresh("../../../build/main/index");
