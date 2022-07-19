@@ -2,18 +2,17 @@
     "fields": [
         {
             "name": "logger",
-            "mandatory": true,
             "source": {
                 "type": "static",
                 "value": "TEST"
             },
             "output": [
-                "msg-log"
+                "msg-log",
+                "req-log"
             ]
         },
         {
             "name": "disabled_field",
-            "mandatory": false,
             "source": {
                 "type": "config-field",
                 "name": "component_instance"
@@ -25,7 +24,6 @@
         },
         {
             "name": "new_field",
-            "mandatory": false,
             "source": {
                 "type": "config-field",
                 "name": "component_instance"
