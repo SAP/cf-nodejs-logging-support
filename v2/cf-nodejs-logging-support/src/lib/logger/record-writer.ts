@@ -15,6 +15,7 @@ export default class RecordWriter {
 
         return RecordWriter.instance;
     }
+
     writeLog(record: any): void {
         const level = record["level"];
         const instance = RecordWriter.getInstance();

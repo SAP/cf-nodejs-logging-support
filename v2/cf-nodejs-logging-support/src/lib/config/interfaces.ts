@@ -1,5 +1,6 @@
 export interface ConfigObject {
     fields?: ConfigField[];
+    settableFields?: string[];
     customFieldsFormat?: customFieldsFormat;
     outputStartupMsg?: boolean;
     reqLoggingLevel?: string;
@@ -14,6 +15,7 @@ export interface ConfigField {
     output?: outputs[];
     disable?: boolean;
     default?: string | number | boolean;
+    settable?: boolean;
     _meta?: ConfigFieldMeta
 }
 
@@ -24,6 +26,7 @@ export interface Source {
     name?: string;
     framework?: framework;
 }
+
 
 interface ConfigFieldMeta {
     isRedacted: boolean;
