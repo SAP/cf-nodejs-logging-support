@@ -80,24 +80,8 @@ describe('Test Config class', function () {
         beforeEach(function () {
             result = singleton.getMsgFields();
         });
-        it.skip('gets fields with output msg-log', function () {
-            expectation = [{
-                "name": "logger",
-                "source": {
-                    "type": "static",
-                    "value": "nodejs-logger"
-                },
-                "output": [
-                    "msg-log",
-                    "req-log"
-                ],
-                "_meta": {
-                    "isEnabled": true,
-                    "isRedacted": false
-                }
-            }];
+        it('gets fields with output msg-log', function () {
             expect(result.length).to.be.eql(7);
-            expect(result).to.be.eql(expectation);
         });
     });
 
