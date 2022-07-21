@@ -197,14 +197,17 @@
                     "name": "x-correlationid"
                 },
                 {
+                    "type": "config-field",
+                    "name": "request_id"
+                },
+                {
                     "type": "uuid"
                 }
             ],
             "output": [
                 "msg-log",
                 "req-log"
-            ],
-            "default": "-"
+            ]
         },
         {
             "name": "tenant_id",
