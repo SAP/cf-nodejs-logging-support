@@ -26,7 +26,7 @@ export default class ReqContext {
             if (!Array.isArray(field.source)) {
                 this.properties[field.name] = sourceUtils.getContextFieldValue(field.source, req);
             } else {
-                this.properties[field.name] = sourceUtils.getValueFromSources(this.properties, field, "context", now);
+                this.properties[field.name] = sourceUtils.getValueFromSources(field, this.properties, "context", now, req);
             }
         });
     }

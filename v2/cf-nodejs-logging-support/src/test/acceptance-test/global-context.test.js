@@ -7,7 +7,7 @@ var lastLevel;
 var lastOutput;
 var logCount;
 
-describe.skip('Test logging in global context', function () {
+describe('Test logging in global context', function () {
 
     beforeEach(function () {
         log = importFresh("../../../build/main/index");
@@ -145,7 +145,7 @@ describe.skip('Test logging in global context', function () {
         });
     });
 
-    describe.skip('Log a stacktrace', function () {
+    describe('Log a stacktrace', function () {
 
         beforeEach(function () {
             const e = new Error("An error happened.");

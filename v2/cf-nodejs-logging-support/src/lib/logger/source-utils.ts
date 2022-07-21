@@ -4,6 +4,7 @@ import NestedVarResolver from "../helper/nested-var-resolver";
 import RequestAccessor from "../middleware/request-Accessor";
 import ResponseAccessor from "../middleware/response-accessor";
 const { v4: uuid } = require('uuid');
+var uuidCheck = /[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[0-9a-f]{4}-[0-9a-f]{12}/;
 
 type origin = "msg-log" | "req-log" | "context";
 
@@ -33,14 +34,14 @@ export class SourceUtils {
             case "env":
                 if (source.path) {
                     // clone path to avoid deleting path in resolveNestedVariable()
-                    if (fieldName == "component_id") {
-                        console.log();
-                    }
                     const clonedPath = [...source.path];
                     return NestedVarResolver.resolveNestedVariable(process.env, clonedPath);
                 }
                 return process.env[source.name!];
             case "config-field":
+                if (fieldName == "correlation_id" && !uuidCheck.exec(record[source.name!])) {
+                    return;
+                }
                 return record[source.name!];
             case "meta":
                 if (now == null) {
@@ -107,11 +108,11 @@ export class SourceUtils {
     // iterate through sources until one source returns a value 
     getValueFromSources(field: ConfigField, record: any, origin: origin, now: Date, req?: any, res?: any) {
 
-        if (origin == "req-log" && (!req || !res)) {
+        if (origin == "req-log" && (req == null || res == null)) {
             throw new Error("Please pass req and res as argument to get value for req-log field.");
         }
 
-        if (origin == "context" && (!req)) {
+        if (origin == "context" && (req == null)) {
             throw new Error("Please pass req as argument to get value for context field.");
         }
 
