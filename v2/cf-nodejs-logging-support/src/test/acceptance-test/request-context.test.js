@@ -48,19 +48,19 @@ describe('Test request context', function () {
                 expect(lastLogs[0]).to.have.property('msg', 'test-message');
             });
 
-            it.skip("writes a log with request_id and correlation_id", function () {
+            it("writes a log with request_id and correlation_id", function () {
                 expect(lastLogs[0]).to.have.property('request_id');
             });
 
-            it.skip("writes a log with tenant_id", function () {
+            it("writes a log with tenant_id", function () {
                 expect(lastLogs[0]).to.have.property('tenant_id');
             });
 
-            it.skip("writes a log with tenant_subdomain", function () {
+            it("writes a log with tenant_subdomain", function () {
                 expect(lastLogs[0]).to.have.property('tenant_subdomain');
             });
 
-            it.skip('writes a log with all default request related properties', function () {
+            it('writes a log with all default request related properties', function () {
                 const expectedKeys = [
                     'request_id',
                     'request_size_b',
@@ -115,7 +115,7 @@ describe('Test request context', function () {
             });
         });
 
-        describe.skip("Set implicit correlation-, tenant-id and tenant-subdomain through methods", function () {
+        describe("Set implicit correlation-, tenant-id and tenant-subdomain through methods", function () {
 
             before(function (done) {
                 supertest(expressApp)

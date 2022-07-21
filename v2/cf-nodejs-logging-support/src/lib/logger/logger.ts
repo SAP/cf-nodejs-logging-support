@@ -116,6 +116,31 @@ export default class Logger {
         }
     }
 
+    getCorrelationId(): string | undefined {
+        return this.context?.getProp("correlation_id");
+    }
+
+    setCorrelationId(value: string) {
+        this.context?.setProp("correlation_id", value);
+    }
+
+    getTenantId(): string | undefined {
+        return this.context?.getProp("tenant_id");
+    }
+
+    setTenantId(value: string) {
+        this.context?.setProp("tenant_id", value);
+
+    }
+
+    getTenantSubdomain(): string | undefined {
+        return this.context?.getProp("tenant_subdomain");
+    }
+
+    setTenantSubdomain(value: string) {
+        this.context?.setProp("tenant_subdomain", value);
+    }
+
     initContext(_req: any) {
         this.context = new ReqContext(_req);
         return this.context;

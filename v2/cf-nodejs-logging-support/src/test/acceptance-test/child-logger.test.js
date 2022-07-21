@@ -54,27 +54,27 @@ describe('Test child logger', function () {
             expect(childLogger.isLoggingLevel).to.be.a('function');
         });
 
-        it.skip('implements getCorrelationId()', function () {
+        it('implements getCorrelationId()', function () {
             expect(childLogger.getCorrelationId).to.be.a('function');
         });
 
-        it.skip('implements setCorrelationId()', function () {
+        it('implements setCorrelationId()', function () {
             expect(childLogger.setCorrelationId).to.be.a('function');
         });
 
-        it.skip('implements setTenantId()', function () {
+        it('implements setTenantId()', function () {
             expect(childLogger.setTenantId).to.be.a('function');
         });
 
-        it.skip('implements getTenantId()', function () {
+        it('implements getTenantId()', function () {
             expect(childLogger.getTenantId).to.be.a('function');
         });
 
-        it.skip('implements setTenantSubdomain()', function () {
+        it('implements setTenantSubdomain()', function () {
             expect(childLogger.setTenantSubdomain).to.be.a('function');
         });
 
-        it.skip('implements getTenantSubdomain()', function () {
+        it('implements getTenantSubdomain()', function () {
             expect(childLogger.getTenantSubdomain).to.be.a('function');
         });
 

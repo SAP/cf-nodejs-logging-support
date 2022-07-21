@@ -16,6 +16,10 @@ export default class ReqContext {
         return this.properties;
     }
 
+    setProp(key: string, value: string) {
+        this.properties[key] = value;
+    }
+
     private setProperties(req: any) {
 
         const now = new Date();
