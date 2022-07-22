@@ -23,4 +23,8 @@ export default class ResponseAccessor {
     public getField(res: any, fieldName: string): any {
         return this.frameworkService.getResField(res, fieldName);
     };
+
+    public setFrameworkService() {
+        this.frameworkService = assignFrameworkService();
+    }
 }

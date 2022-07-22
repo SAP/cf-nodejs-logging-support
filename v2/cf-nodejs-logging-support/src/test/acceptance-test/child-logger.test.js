@@ -78,7 +78,7 @@ describe('Test child logger', function () {
             expect(childLogger.getTenantSubdomain).to.be.a('function');
         });
 
-        it('implements setDynamicLoggingLevel()', function () {
+        it.skip('implements setDynamicLoggingLevel()', function () {
             expect(childLogger.setDynamicLoggingLevel).to.be.a('function');
         });
 

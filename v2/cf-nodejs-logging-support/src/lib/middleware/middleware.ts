@@ -32,8 +32,6 @@ export default class Middleware {
                 const reqLoggingLevel = LevelUtils.getLevel(record.level);
                 const loggingLevelThreshold = LevelUtils.getLevel(req.logger.getLoggingLevel());
                 if (LevelUtils.isLevelEnabled(loggingLevelThreshold, reqLoggingLevel)) {
-                    // const res = ResponseAccessor.getInstance();
-                    // res.finishLog(record);
                     RecordWriter.getInstance().writeLog(record);
                 }
                 logSent = true;

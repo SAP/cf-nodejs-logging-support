@@ -14,8 +14,8 @@ export interface ConfigField {
     source: Source | Source[];
     output?: outputs[];
     disable?: boolean;
-    settable?: boolean;
     default?: string | number | boolean;
+    settable?: boolean;
     _meta?: ConfigFieldMeta
 }
 

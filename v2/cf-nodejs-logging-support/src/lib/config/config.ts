@@ -102,6 +102,10 @@ export default class Config {
                     if (["req-header", "req-object"].includes((field.source as Source).type)) {
                         return true;
                     }
+
+                    if (["correlation_id", "tenant_id"].includes(field.name)) {
+                        return true;
+                    }
                 }
                 return false;
             }
