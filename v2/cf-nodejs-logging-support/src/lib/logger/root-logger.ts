@@ -5,6 +5,8 @@ import Level from "./level"
 import Logger from "./logger"
 import RecordWriter from "./record-writer";
 import Middleware from "../middleware/middleware";
+import ResponseAccessor from "../middleware/response-accessor";
+import RequestAccessor from "../middleware/request-Accessor";
 
 export default class RootLogger extends Logger {
     private static instance: RootLogger;
@@ -66,5 +68,7 @@ export default class RootLogger extends Logger {
     createWinstonTransport() { }
     forceLogger(logger: framework) {
         Config.getInstance().setFramework(logger);
+        RequestAccessor.getInstance().setFrameworkService();
+        ResponseAccessor.getInstance().setFrameworkService();
     }
 }

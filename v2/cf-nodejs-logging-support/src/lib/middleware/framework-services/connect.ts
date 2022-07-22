@@ -3,7 +3,7 @@ import { IFrameworkService } from "../interfaces";
 export default class ConnectService implements IFrameworkService {
 
     public getReqHeaderField(req: any, fieldName: string): string {
-        return req.headers[fieldName];
+        return req.header(fieldName);
     }
 
     public getReqField(req: any, fieldName: string): string {
@@ -25,7 +25,7 @@ export default class ConnectService implements IFrameworkService {
     }
 
     public getResHeaderField(res: any, fieldName: string): string {
-        return res.headers[fieldName];
+        return res.header(fieldName);
     }
 
     public getResField(res: any, fieldName: string): string {

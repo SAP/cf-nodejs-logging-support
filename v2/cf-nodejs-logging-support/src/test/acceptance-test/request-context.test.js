@@ -291,14 +291,19 @@ describe('Test request context', function () {
         });
     })
 
-    describe.skip("RESTIFY", function () {
+    describe("RESTIFY", function () {
+
+        before(function (done) {
+            log.forceLogger("restify");
+            done();
+        });
+
         describe("Set implicit correlation- and tenant-id through request header", function () {
 
             var correlation_id = "cbc4343f-1c31-27d0-96fc-f32efac20986";
             var tenant_id = "abc2654f-5t15-12h0-78gt-n73jeuc01847";
 
             before(function (done) {
-                log.forceLogger("restify");
                 supertest(restifyApp)
                     .get("/log")
                     .set("x-correlationid", correlation_id)
@@ -375,14 +380,19 @@ describe('Test request context', function () {
         });
     });
 
-    describe.skip("CONNECT", function () {
+    describe("CONNECT", function () {
+
+        before(function (done) {
+            log.forceLogger("connect");
+            done();
+        });
+
         describe("Set implicit correlation- and tenant-id through request header", function () {
 
             var correlation_id = "cbc4343f-1c31-27d0-96fc-f32efac20986";
             var tenant_id = "abc2654f-5t15-12h0-78gt-n73jeuc01847";
 
             before(function (done) {
-                log.forceLogger("connect");
                 supertest(connectApp)
                     .get("/log")
                     .set("x-correlationid", correlation_id)
@@ -461,14 +471,17 @@ describe('Test request context', function () {
         });
     });
 
-    describe.skip("NODEJSHTTP", function () {
+    describe("NODEJSHTTP", function () {
+        before(function (done) {
+            log.forceLogger("nodejs-http");
+            done();
+        });
         describe("Set implicit correlation- and tenant-id through request header", function () {
 
             var correlation_id = "cbc4343f-1c31-27d0-96fc-f32efac20986";
             var tenant_id = "abc2654f-5t15-12h0-78gt-n73jeuc01847";
 
             before(function (done) {
-                log.forceLogger("plainhttp");
                 supertest(httpApp)
                     .get("/")
                     .set("x-correlationid", correlation_id)
