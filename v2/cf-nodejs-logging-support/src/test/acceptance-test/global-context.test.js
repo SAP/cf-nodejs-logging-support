@@ -59,7 +59,7 @@ describe('Test logging in global context', function () {
         });
     });
 
-    describe.skip('Write a log with convenience method', function () {
+    describe('Write a log with convenience method', function () {
 
         beforeEach(function () {
             log.error("Error message logged in global context");

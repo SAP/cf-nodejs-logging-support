@@ -89,7 +89,8 @@
             "name": "remote_host",
             "envVarRedact": "LOG_SENSITIVE_CONNECTION_DATA",
             "source": {
-                "type": "req-object"
+                "type": "req-object",
+                "name": "remote_host"
             },
             "output": [
                 "req-log"
@@ -100,7 +101,8 @@
             "name": "remote_port",
             "envVarRedact": "LOG_SENSITIVE_CONNECTION_DATA",
             "source": {
-                "type": "req-object"
+                "type": "req-object",
+                "name": "remote_port"
             },
             "output": [
                 "req-log"

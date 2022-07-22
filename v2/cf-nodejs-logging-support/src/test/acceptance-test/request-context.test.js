@@ -176,7 +176,7 @@ describe('Test request context', function () {
             });
         });
 
-        describe.skip("Get correlation-, tenant-id and tenant-subdomain", function () {
+        describe("Get correlation-, tenant-id and tenant-subdomain", function () {
 
             before(function (done) {
                 supertest(expressApp)
@@ -199,7 +199,7 @@ describe('Test request context', function () {
             });
         });
 
-        describe.skip("Test sensitive data redaction without activated env vars", function () {
+        describe("Test sensitive data redaction without activated env vars", function () {
 
             before(function (done) {
                 supertest(expressApp)
@@ -226,7 +226,7 @@ describe('Test request context', function () {
             });
 
             it("writes a log with default referer", function () {
-                expect(lastLogs[1]).to.have.property("referer", "-");
+                expect(lastLogs[1]).to.have.property("referer", "redacted");
             });
 
             it("writes a log without x_ssl_* properties", function () {
