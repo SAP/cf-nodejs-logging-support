@@ -36,6 +36,8 @@ describe('Test request context', function () {
                 lastLogs = [];
                 supertest(expressApp)
                     .get("/requestcontext")
+                    .set("x-vcap-request-id", "1234")
+                    .set("tenantid", "1234")
                     .expect(200)
                     .then(
                         done()
@@ -57,19 +59,16 @@ describe('Test request context', function () {
             });
 
             it("writes a log with tenant_subdomain", function () {
-                expect(lastLogs[0]).to.have.property('tenant_subdomain');
+                expect(lastLogs[0]).to.not.have.property('tenant_subdomain');
             });
 
             it('writes a log with all default request related properties', function () {
                 const expectedKeys = [
                     'request_id',
-                    'request_size_b',
                     'type',
                     'request',
                     'response_status',
                     'method',
-                    'response_size_b',
-                    'response_content_type',
                     'remote_host',
                     'remote_port',
                     'remote_user',
@@ -81,8 +80,7 @@ describe('Test request context', function () {
                     'response_sent_at',
                     'referer',
                     'correlation_id',
-                    'tenant_id',
-                    'tenant_subdomain',
+                    'tenant_id'
                 ];
                 expect(lastLogs[1]).to.include.all.keys(expectedKeys);
             });

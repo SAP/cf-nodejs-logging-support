@@ -9,8 +9,7 @@
             "output": [
                 "msg-log",
                 "req-log"
-            ],
-            "default": "-"
+            ]
         },
         {
             "name": "request_size_b",
@@ -20,8 +19,7 @@
             },
             "output": [
                 "req-log"
-            ],
-            "default": -1
+            ]
         },
         {
             "name": "type",
@@ -71,8 +69,7 @@
             },
             "output": [
                 "req-log"
-            ],
-            "default": -1
+            ]
         },
         {
             "name": "response_content_type",
@@ -82,8 +79,7 @@
             },
             "output": [
                 "req-log"
-            ],
-            "default": "-"
+            ]
         },
         {
             "name": "remote_host",
@@ -94,8 +90,7 @@
             },
             "output": [
                 "req-log"
-            ],
-            "default": "-"
+            ]
         },
         {
             "name": "remote_port",
@@ -106,8 +101,7 @@
             },
             "output": [
                 "req-log"
-            ],
-            "default": "-"
+            ]
         },
         {
             "name": "remote_user",
@@ -118,8 +112,7 @@
             },
             "output": [
                 "req-log"
-            ],
-            "default": "-"
+            ]
         },
         {
             "name": "direction",
@@ -220,8 +213,7 @@
             "output": [
                 "msg-log",
                 "req-log"
-            ],
-            "default": "-"
+            ]
         },
         {
             "name": "tenant_subdomain",
@@ -231,8 +223,7 @@
             "output": [
                 "msg-log",
                 "req-log"
-            ],
-            "default": "-"
+            ]
         },
         {
             "name": "x_forwarded_for",

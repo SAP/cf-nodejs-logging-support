@@ -9,8 +9,7 @@
             "output": [
                 "msg-log",
                 "req-log"
-            ],
-            "default": "-"
+            ]
         },
         {
             "name": "component_id",
@@ -24,8 +23,7 @@
             "output": [
                 "msg-log",
                 "req-log"
-            ],
-            "default": "-"
+            ]
         },
         {
             "name": "component_name",
@@ -39,8 +37,7 @@
             "output": [
                 "msg-log",
                 "req-log"
-            ],
-            "default": "-"
+            ]
         },
         {
             "name": "component_instance",
@@ -54,8 +51,7 @@
             "output": [
                 "msg-log",
                 "req-log"
-            ],
-            "default": "-"
+            ]
         },
         {
             "name": "source_instance",
@@ -66,8 +62,7 @@
             "output": [
                 "msg-log",
                 "req-log"
-            ],
-            "default": "0"
+            ]
         },
         {
             "name": "layer",
@@ -92,8 +87,7 @@
             "output": [
                 "msg-log",
                 "req-log"
-            ],
-            "default": "-"
+            ]
         },
         {
             "name": "organization_id",
@@ -107,8 +101,7 @@
             "output": [
                 "msg-log",
                 "req-log"
-            ],
-            "default": "-"
+            ]
         },
         {
             "name": "space_name",
@@ -122,8 +115,7 @@
             "output": [
                 "msg-log",
                 "req-log"
-            ],
-            "default": "-"
+            ]
         },
         {
             "name": "space_id",
@@ -137,8 +129,7 @@
             "output": [
                 "msg-log",
                 "req-log"
-            ],
-            "default": "-"
+            ]
         },
         {
             "name": "container_id",
@@ -149,8 +140,7 @@
             "output": [
                 "msg-log",
                 "req-log"
-            ],
-            "default": "-"
+            ]
         }
     ]
 }
