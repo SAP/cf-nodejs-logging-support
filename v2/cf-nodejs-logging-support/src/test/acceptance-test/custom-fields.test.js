@@ -12,7 +12,7 @@ describe('Test custom fields', function () {
         lastOutput = "";
 
         log.setSinkFunction(function (level, output) {
-            lastOutput = output;
+            lastOutput = JSON.parse(output);
         });
     });
 
