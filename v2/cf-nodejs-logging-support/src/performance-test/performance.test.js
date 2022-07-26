@@ -1,5 +1,27 @@
 const importFresh = require('import-fresh');
-
+process.env.VCAP_SERVICES = "CF";
+process.env.VCAP_APPLICATION = JSON.stringify(
+    {
+        "cf_api": "https://api.cf.stagingaws.hanavlab.ondemand.com",
+        "limits": {
+            "fds": 32768
+        },
+        "application_name": "I556334-express-cf-logging-support-sample",
+        "application_uris": [
+            "I556334-express-cf-logging-support-sample.cert.cfapps.stagingaws.hanavlab.ondemand.com"
+        ],
+        "name": "I556334-express-cf-logging-support-sample",
+        "space_name": "dev",
+        "space_id": "9c58830f-ed14-4ac3-a0b2-d7957c4a23ae",
+        "organization_id": "0a2f41af-a1d3-45d4-81bc-247d1f8ea2fc",
+        "organization_name": "Cloud-Logging_Perfx-CLS",
+        "uris": [
+            "I556334-express-cf-logging-support-sample.cert.cfapps.stagingaws.hanavlab.ondemand.com"
+        ],
+        "users": null,
+        "application_id": "87a4594e-c93e-42c5-87f6-15d92985e6a8"
+    }
+);
 var log;
 var lastLevel;
 var lastOutput;
@@ -8,8 +30,9 @@ var logCount;
 describe('Test performance of old and new library', function () {
 
     beforeEach(function () {
-        oldLog = importFresh("../../../../../index");
-        newLog = importFresh("../../../build/main/index");
+
+        oldLog = importFresh("../../../../index");
+        newLog = importFresh("../../build/main/index");
 
         logCount = 0;
         lastLevel = "";
