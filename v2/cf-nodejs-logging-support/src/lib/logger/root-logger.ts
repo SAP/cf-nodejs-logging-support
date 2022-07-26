@@ -3,10 +3,11 @@ import { ConfigObject, customFieldsFormat, framework } from "../config/interface
 import EnvService from "../core/env-service";
 import Level from "./level"
 import Logger from "./logger"
-import RecordWriter from "./record-writer";
 import Middleware from "../middleware/middleware";
+import RecordWriter from "./record-writer";
 import ResponseAccessor from "../middleware/response-accessor";
 import RequestAccessor from "../middleware/request-Accessor";
+import createTransport from "../winston/winston-transport";
 
 export default class RootLogger extends Logger {
     private static instance: RootLogger;
@@ -65,7 +66,15 @@ export default class RootLogger extends Logger {
     overrideNetworkField(field: string, value: string) { }
     overrideCustomFieldFormat(value: string) { }
     setLogPattern() { }
-    createWinstonTransport() { }
+    createWinstonTransport(options: any) {
+        if (!options) {
+            options = {
+                level: 'info'
+            };
+        }
+        options.logMessage = this.logMessage;
+        return createTransport(options);
+    };
     forceLogger(logger: framework) {
         Config.getInstance().setFramework(logger);
         RequestAccessor.getInstance().setFrameworkService();

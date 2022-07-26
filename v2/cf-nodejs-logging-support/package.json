@@ -24,7 +24,7 @@
     "build": "npm run build-json-schema && tsc -p tsconfig.json",
     "start": "npm run build-json-schema && tsc -p tsconfig.json && node build/main/index.js",
     "fix:lint": "eslint src --ext .ts --fix",
-    "test": "mocha 'src/test/**/*.test.js'",
+    "test": "npm run start && mocha 'src/test/**/*.test.js'",
     "test:lint": "eslint src --ext .ts",
     "build-json-schema": "typescript-json-schema 'src/lib/config/interfaces.ts' ConfigObject --noExtraProps --out 'src/lib/config/config-schema.json'"
   },
