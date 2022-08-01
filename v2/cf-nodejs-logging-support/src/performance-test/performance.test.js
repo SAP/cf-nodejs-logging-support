@@ -174,4 +174,35 @@ describe('Test performance of old and new library', function () {
         });
     });
 
+    describe.skip('Compare buildMsgRecord and writeLog performance', function () {
+
+        it('New library', function () {
+
+            var startTime = performance.now()
+
+            for (let index = 0; index < 10; index++) {
+                newLog.logMessage("info", "test-message");
+            }
+
+            var endTime = performance.now()
+
+            console.log(`New lib: Logging 10 simple messages took ${endTime - startTime} milliseconds`)
+        });
+    });
+
+    describe.skip('Check performance for creating Config instance', function () {
+
+        it('New library', function () {
+
+            var startTime = performance.now()
+
+            for (let index = 0; index < 10; index++) {
+                newLog.logMessage("info", "test-message");
+            }
+
+            var endTime = performance.now()
+
+            console.log(`New lib: Logging 10 simple messages took ${endTime - startTime} milliseconds`)
+        });
+    });
 });

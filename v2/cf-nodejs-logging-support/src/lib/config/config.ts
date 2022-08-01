@@ -1,3 +1,4 @@
+import { performance } from 'perf_hooks';
 import EnvService from '../core/env-service';
 import appLoggingConfig from './config-app-logging.json';
 import cfConfig from './config-cf.json';
@@ -27,6 +28,7 @@ export default class Config {
 
     public static getInstance(): Config {
         if (!Config.instance) {
+            var startTime = performance.now();
             const configFiles: ConfigObject[] = [
                 coreConfig as ConfigObject,
                 requestConfig as ConfigObject
@@ -50,6 +52,8 @@ export default class Config {
             Config.instance = new Config();
 
             Config.instance.addConfig(configFiles);
+            var endTime = performance.now();
+            console.log(`creating Config instance lasted ${endTime - startTime} milliseconds`)
         }
 
         return Config.instance;
