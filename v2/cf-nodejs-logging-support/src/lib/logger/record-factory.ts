@@ -51,17 +51,20 @@ export default class RecordFactory {
 
         msgLogFields.forEach(field => {
 
+            // Assign value
             if (!Array.isArray(field.source)) {
                 record[field.name] = sourceUtils.getFieldValue(field.name, field.source, record, now);
             } else {
                 record[field.name] = sourceUtils.getValueFromSources(field, record, "msg-log", now);
             }
 
+            // Handle default
             if (record[field.name] == null && field.default != null) {
                 record[field.name] = field.default;
             }
 
-            if (field._meta!.isRedacted == true && record[field.name] != null) {
+            // Replaces all fields, which are marked to be reduced and do not equal to their default value to REDUCED_PLACEHOLDER.
+            if (field._meta!.isRedacted == true && record[field.name] != null && record[field.name] != field.default) {
                 record[field.name] = this.REDACTED_PLACEHOLDER;
             }
         });
@@ -93,12 +96,14 @@ export default class RecordFactory {
                 return;
             }
 
+            // Assign value
             if (!Array.isArray(field.source)) {
                 record[field.name] = sourceUtils.getReqFieldValue(field.name, field.source, record, now, req, res);
             } else {
                 record[field.name] = sourceUtils.getValueFromSources(field, record, "req-log", now, req, res);
             }
 
+            // Handle default
             if (record[field.name] == null && field.default != null) {
                 record[field.name] = field.default;
             }

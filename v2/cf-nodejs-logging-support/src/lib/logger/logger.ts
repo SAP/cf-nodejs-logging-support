@@ -150,8 +150,6 @@ export default class Logger {
         let fields = {};
         if (logger.parent && logger.parent !== this) {
             fields = this.extractCustomFieldsFromLogger(logger.parent);
-        } else {
-            // fields = Object.assign(fields, globalFields);
         }
 
         if (isValidObject(logger.customFields)) {
