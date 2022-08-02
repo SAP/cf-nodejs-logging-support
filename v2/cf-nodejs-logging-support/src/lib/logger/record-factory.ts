@@ -26,7 +26,7 @@ export default class RecordFactory {
     buildMsgRecord(registeredCustomFields: Array<string>, loggerCustomFields: Map<string, any>, level: string, args: Array<any>, context?: ReqContext): any {
 
         const stacktraceUtils = StacktraceUtils.getInstance();
-        const now = new Date();
+        const timestamp = new Date();
         const configInstance = Config.getInstance();
         const sourceUtils = SourceUtils.getInstance();
         const msgLogFields = configInstance.getMsgFields();
@@ -54,9 +54,9 @@ export default class RecordFactory {
 
             // Assign value
             if (!Array.isArray(field.source)) {
-                record[field.name] = sourceUtils.getFieldValue(field.name, field.source, record, now);
+                record[field.name] = sourceUtils.getFieldValue(field.name, field.source, record, timestamp);
             } else {
-                record[field.name] = sourceUtils.getValueFromSources(field, record, "msg-log", now);
+                record[field.name] = sourceUtils.getValueFromSources(field, record, "msg-log", timestamp);
             }
 
             // Handle default
@@ -84,7 +84,7 @@ export default class RecordFactory {
     // init a new record and assign fields with output "req-log"
     buildReqRecord(req: any, res: any, context: ReqContext): any {
 
-        const now = new Date();
+        const timestamp = new Date();
         const configInstance = Config.getInstance();
         const reqLogFields = configInstance.getReqFields();
         const reqLoggingLevel = configInstance.getReqLoggingLevel();
@@ -99,9 +99,9 @@ export default class RecordFactory {
 
             // Assign value
             if (!Array.isArray(field.source)) {
-                record[field.name] = sourceUtils.getReqFieldValue(field.name, field.source, record, now, req, res);
+                record[field.name] = sourceUtils.getReqFieldValue(field.name, field.source, record, timestamp, req, res);
             } else {
-                record[field.name] = sourceUtils.getValueFromSources(field, record, "req-log", now, req, res);
+                record[field.name] = sourceUtils.getValueFromSources(field, record, "req-log", timestamp, req, res);
             }
 
             // Handle default
