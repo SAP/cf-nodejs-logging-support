@@ -43,7 +43,7 @@
     "eslint-plugin-functional": "^3.0.2",
     "eslint-plugin-import": "^2.22.0",
     "import-fresh": "^3.3.0",
-    "mocha": "^6.2.3",
+    "mocha": "^9.2.2",
     "supertest": "^6.2.2",
     "ts-node": "^9.0.0",
     "typedoc": "^0.22.13",
