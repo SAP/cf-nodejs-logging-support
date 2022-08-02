@@ -27,7 +27,7 @@ export class SourceUtils {
         return SourceUtils.instance;
     }
 
-    getFieldValue(source: Source, record: any, timestamp: Date): string | undefined {
+    getFieldValue(source: Source, record: any, writtenAt: Date): string | undefined {
         switch (source.type) {
             case "static":
                 return source.value;
@@ -44,28 +44,28 @@ export class SourceUtils {
                 }
                 return record[source.name!];
             case "meta":
-                if (timestamp == null) {
+                if (writtenAt == null) {
                     return;
                 }
                 if (source.name == "request_received_at") {
                     return record["written_at"];
                 }
                 if (source.name == "response_time_ms") {
-                    return (Date.now() - timestamp.getTime()).toString();
+                    return (Date.now() - writtenAt.getTime()).toString();
                 }
                 if (source.name == "response_sent_at") {
                     return new Date().toJSON();
                 }
                 if (source.name == "written_at") {
-                    return timestamp.toJSON();
+                    return writtenAt.toJSON();
                 }
                 if (source.name == "written_ts") {
                     var lower = process.hrtime()[1] % NS_PER_MS
-                    var higher = timestamp.getTime() * NS_PER_MS
+                    var higher = writtenAt.getTime() * NS_PER_MS
 
                     let written_ts = higher + lower;
                     //This reorders written_ts, if the new timestamp seems to be smaller
-                    // due to different rollover times for process.hrtime and timestamp.getTime
+                    // due to different rollover times for process.hrtime and writtenAt.getTime
                     if (written_ts < this.lastTimestamp) {
                         written_ts += NS_PER_MS;
                     }
@@ -78,7 +78,7 @@ export class SourceUtils {
         }
     }
 
-    getReqFieldValue(source: Source, record: any, timestamp: Date, req: any, res: any): string | undefined {
+    getReqFieldValue(source: Source, record: any, writtenAt: Date, req: any, res: any): string | undefined {
         switch (source.type) {
             case "req-header":
                 return this.requestAccessor.getHeaderField(req, source.name!);
@@ -89,7 +89,7 @@ export class SourceUtils {
             case "res-object":
                 return this.responseAccessor.getField(res, source.name!);
             default:
-                return this.getFieldValue(source, record, timestamp);
+                return this.getFieldValue(source, record, writtenAt);
 
         }
     }
@@ -107,7 +107,7 @@ export class SourceUtils {
     }
 
     // iterate through sources until one source returns a value 
-    getValueFromSources(field: ConfigField, record: any, origin: origin, timestamp: Date, req?: any, res?: any) {
+    getValueFromSources(field: ConfigField, record: any, origin: origin, writtenAt: Date, req?: any, res?: any) {
 
         if (origin == "req-log" && (req == null || res == null)) {
             throw new Error("Please pass req and res as argument to get value for req-log field.");
@@ -130,8 +130,8 @@ export class SourceUtils {
 
             let source = field.source[sourceIndex];
 
-            fieldValue = origin == "msg-log" ? this.getFieldValue(source, record, timestamp) :
-                origin == "req-log" ? this.getReqFieldValue(source, record, req, res, timestamp) :
+            fieldValue = origin == "msg-log" ? this.getFieldValue(source, record, writtenAt) :
+                origin == "req-log" ? this.getReqFieldValue(source, record, req, res, writtenAt) :
                     this.getContextFieldValue(source, req);
 
             ++sourceIndex;
