@@ -54,7 +54,7 @@ export default class RecordFactory {
 
             // Assign value
             if (!Array.isArray(field.source)) {
-                record[field.name] = sourceUtils.getFieldValue(field.name, field.source, record, timestamp);
+                record[field.name] = sourceUtils.getFieldValue(field.source, record, timestamp);
             } else {
                 record[field.name] = sourceUtils.getValueFromSources(field, record, "msg-log", timestamp);
             }
@@ -99,7 +99,7 @@ export default class RecordFactory {
 
             // Assign value
             if (!Array.isArray(field.source)) {
-                record[field.name] = sourceUtils.getReqFieldValue(field.name, field.source, record, timestamp, req, res);
+                record[field.name] = sourceUtils.getReqFieldValue(field.source, record, timestamp, req, res);
             } else {
                 record[field.name] = sourceUtils.getValueFromSources(field, record, "req-log", timestamp, req, res);
             }

@@ -158,7 +158,8 @@
         {
             "name": "response_time_ms",
             "source": {
-                "type": "meta"
+                "type": "meta",
+                "name": "response_time_ms"
             },
             "output": [
                 "req-log"
@@ -167,7 +168,8 @@
         {
             "name": "response_sent_at",
             "source": {
-                "type": "meta"
+                "type": "meta",
+                "name": "response_sent_at"
             },
             "output": [
                 "req-log"

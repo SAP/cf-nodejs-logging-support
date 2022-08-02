@@ -27,7 +27,7 @@ export class SourceUtils {
         return SourceUtils.instance;
     }
 
-    getFieldValue(fieldName: string, source: Source, record: any, timestamp: Date): string | undefined {
+    getFieldValue(source: Source, record: any, timestamp: Date): string | undefined {
         switch (source.type) {
             case "static":
                 return source.value;
@@ -39,7 +39,7 @@ export class SourceUtils {
                 }
                 return process.env[source.name!];
             case "config-field":
-                if (fieldName == "correlation_id" && !uuidCheck.exec(record[source.name!])) {
+                if (source.name == "correlation_id" && !uuidCheck.exec(record[source.name!])) {
                     return;
                 }
                 return record[source.name!];
@@ -47,19 +47,19 @@ export class SourceUtils {
                 if (timestamp == null) {
                     return;
                 }
-                if (fieldName == "request_received_at") {
+                if (source.name == "request_received_at") {
                     return record["written_at"];
                 }
-                if (fieldName == "response_time_ms") {
+                if (source.name == "response_time_ms") {
                     return (Date.now() - timestamp.getTime()).toString();
                 }
-                if (fieldName == "response_sent_at") {
+                if (source.name == "response_sent_at") {
                     return new Date().toJSON();
                 }
-                if (fieldName == "written_at") {
+                if (source.name == "written_at") {
                     return timestamp.toJSON();
                 }
-                if (fieldName == "written_ts") {
+                if (source.name == "written_ts") {
                     var lower = process.hrtime()[1] % NS_PER_MS
                     var higher = timestamp.getTime() * NS_PER_MS
 
@@ -78,7 +78,7 @@ export class SourceUtils {
         }
     }
 
-    getReqFieldValue(fieldName: string, source: Source, record: any, timestamp: Date, req: any, res: any): string | undefined {
+    getReqFieldValue(source: Source, record: any, timestamp: Date, req: any, res: any): string | undefined {
         switch (source.type) {
             case "req-header":
                 return this.requestAccessor.getHeaderField(req, source.name!);
@@ -89,7 +89,8 @@ export class SourceUtils {
             case "res-object":
                 return this.responseAccessor.getField(res, source.name!);
             default:
-                return this.getFieldValue(fieldName, source, record, timestamp);
+                return this.getFieldValue(source, record, timestamp);
+
         }
     }
 
@@ -129,8 +130,8 @@ export class SourceUtils {
 
             let source = field.source[sourceIndex];
 
-            fieldValue = origin == "msg-log" ? this.getFieldValue(field.name, source, record, timestamp) :
-                origin == "req-log" ? this.getReqFieldValue(field.name, source, record, req, res, timestamp) :
+            fieldValue = origin == "msg-log" ? this.getFieldValue(source, record, timestamp) :
+                origin == "req-log" ? this.getReqFieldValue(source, record, req, res, timestamp) :
                     this.getContextFieldValue(source, req);
 
             ++sourceIndex;
