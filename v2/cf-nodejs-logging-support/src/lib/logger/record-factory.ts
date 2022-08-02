@@ -25,6 +25,7 @@ export default class RecordFactory {
     // init a new record and assign fields with output "msg-log"
     buildMsgRecord(registeredCustomFields: Array<string>, loggerCustomFields: Map<string, any>, level: string, args: Array<any>, context?: ReqContext): any {
 
+        const stacktraceUtils = StacktraceUtils.getInstance();
         const now = new Date();
         const configInstance = Config.getInstance();
         const sourceUtils = SourceUtils.getInstance();
@@ -37,11 +38,11 @@ export default class RecordFactory {
         var lastArg = args[args.length - 1];
 
         if (typeof lastArg === "object") {
-            if (StacktraceUtils.isErrorWithStacktrace(lastArg)) {
-                record.stacktrace = StacktraceUtils.prepareStacktrace(lastArg.stack);
+            if (stacktraceUtils.isErrorWithStacktrace(lastArg)) {
+                record.stacktrace = stacktraceUtils.prepareStacktrace(lastArg.stack);
             } else if (isValidObject(lastArg)) {
-                if (StacktraceUtils.isErrorWithStacktrace(lastArg._error)) {
-                    record.stacktrace = StacktraceUtils.prepareStacktrace(lastArg._error.stack);
+                if (stacktraceUtils.isErrorWithStacktrace(lastArg._error)) {
+                    record.stacktrace = stacktraceUtils.prepareStacktrace(lastArg._error.stack);
                     delete lastArg._error;
                 }
                 customFieldsFromArgs = lastArg;
