@@ -1,3 +1,5 @@
+cfConfig = require('./config-cf-with-defaults.json');
+requestConfig = require('./config-request-with-defaults.json');
 const importFresh = require('import-fresh');
 process.env.VCAP_SERVICES = "CF";
 process.env.VCAP_APPLICATION = JSON.stringify(
@@ -33,6 +35,8 @@ describe('Test performance of old and new library', function () {
 
         oldLog = importFresh("../../../../index");
         newLog = importFresh("../../build/main/index");
+        newLogWithDefaults = importFresh("../../build/main/index");
+        newLogWithDefaults.addConfig(cfConfig, requestConfig);
 
         logCount = 0;
         lastLevel = "";
@@ -63,6 +67,7 @@ describe('Test performance of old and new library', function () {
 
             var endTime = performance.now()
 
+
             console.log(`Old lib: Logging 10.000 simple messages took ${endTime - startTime} milliseconds`)
         });
 
@@ -76,7 +81,17 @@ describe('Test performance of old and new library', function () {
 
             var endTime = performance.now()
 
+            var startTime2 = performance.now()
+
+            for (let index = 0; index < 10000; index++) {
+                newLogWithDefaults.logMessage("info", "test-message");
+            }
+
+            var endTime2 = performance.now()
+
             console.log(`New lib: Logging 10.000 simple messages took ${endTime - startTime} milliseconds`)
+            console.log(`New lib with defaults: Logging 10.000 simple messages took ${endTime2 - startTime2} milliseconds`)
+
         });
     });
 
@@ -107,7 +122,17 @@ describe('Test performance of old and new library', function () {
 
             var endTime = performance.now()
 
+            var startTime2 = performance.now()
+
+            for (let index = 0; index < 10000; index++) {
+                newLogWithDefaults.logMessage("info", "test-message");
+            }
+
+            var endTime2 = performance.now()
+
             console.log(`New lib: Logging 10.000 messages with global custom field took ${endTime - startTime} milliseconds`)
+            console.log(`New lib with defaults: Logging 10.000 simple messages took ${endTime2 - startTime2} milliseconds`)
+
         });
     });
 
@@ -138,7 +163,17 @@ describe('Test performance of old and new library', function () {
 
             var endTime = performance.now()
 
+            var startTime2 = performance.now()
+
+            for (let index = 0; index < 10000; index++) {
+                var childLogger = newLogWithDefaults.createLogger({ "child-field": "value" });
+                childLogger.logMessage("info", "test-message");
+            }
+
+            var endTime2 = performance.now()
+
             console.log(`New lib: Logging a simple message from a new child logger 10.000 times took ${endTime - startTime} milliseconds`)
+            console.log(`New lib with defaults: Logging 10.000 simple messages took ${endTime2 - startTime2} milliseconds`)
         });
     });
 
@@ -170,7 +205,16 @@ describe('Test performance of old and new library', function () {
 
             var endTime = performance.now()
 
+            var startTime2 = performance.now()
+
+            for (let index = 0; index < 10000; index++) {
+                newLogWithDefaults.logMessage("info", "test-message");
+            }
+
+            var endTime2 = performance.now()
+
             console.log(`New lib: Setting a new logging level and loging a message 10.000 times took ${endTime - startTime} milliseconds`)
+            console.log(`New lib with defaults: Logging 10.000 simple messages took ${endTime2 - startTime2} milliseconds`)
         });
     });
 
@@ -186,7 +230,17 @@ describe('Test performance of old and new library', function () {
 
             var endTime = performance.now()
 
+            var startTime2 = performance.now()
+
+            for (let index = 0; index < 10000; index++) {
+                newLogWithDefaults.logMessage("info", "test-message");
+            }
+
+            var endTime2 = performance.now()
+
             console.log(`New lib: Logging 10 simple messages took ${endTime - startTime} milliseconds`)
+            console.log(`New lib with defaults: Logging 10.000 simple messages took ${endTime2 - startTime2} milliseconds`)
+
         });
     });
 
@@ -202,7 +256,16 @@ describe('Test performance of old and new library', function () {
 
             var endTime = performance.now()
 
+            var startTime = performance.now()
+
+            for (let index = 0; index < 10; index++) {
+                newLogWithDefaults.logMessage("info", "test-message");
+            }
+
+            var endTime = performance.now()
+
             console.log(`New lib: Logging 10 simple messages took ${endTime - startTime} milliseconds`)
+            console.log(`New lib with defaults: Logging 10.000 simple messages took ${endTime2 - startTime2} milliseconds`)
         });
     });
 });
