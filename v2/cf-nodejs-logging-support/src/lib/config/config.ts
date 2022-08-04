@@ -192,7 +192,6 @@ export default class Config {
             }
 
             if (file.reqLoggingLevel) {
-                // let level = LevelUtils.getLevel(file.reqLoggingLevel);
                 Config.instance.config.reqLoggingLevel = file.reqLoggingLevel;
             }
 

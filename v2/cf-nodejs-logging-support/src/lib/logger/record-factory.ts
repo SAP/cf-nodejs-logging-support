@@ -25,7 +25,8 @@ export default class RecordFactory {
     // init a new record and assign fields with output "msg-log"
     buildMsgRecord(registeredCustomFields: Array<string>, loggerCustomFields: Map<string, any>, level: string, args: Array<any>, context?: ReqContext): any {
 
-        const now = new Date();
+        const stacktraceUtils = StacktraceUtils.getInstance();
+        const writtenAt = new Date();
         const configInstance = Config.getInstance();
         const sourceUtils = SourceUtils.getInstance();
         const msgLogFields = configInstance.getMsgFields();
@@ -37,11 +38,11 @@ export default class RecordFactory {
         var lastArg = args[args.length - 1];
 
         if (typeof lastArg === "object") {
-            if (StacktraceUtils.isErrorWithStacktrace(lastArg)) {
-                record.stacktrace = StacktraceUtils.prepareStacktrace(lastArg.stack);
+            if (stacktraceUtils.isErrorWithStacktrace(lastArg)) {
+                record.stacktrace = stacktraceUtils.prepareStacktrace(lastArg.stack);
             } else if (isValidObject(lastArg)) {
-                if (StacktraceUtils.isErrorWithStacktrace(lastArg._error)) {
-                    record.stacktrace = StacktraceUtils.prepareStacktrace(lastArg._error.stack);
+                if (stacktraceUtils.isErrorWithStacktrace(lastArg._error)) {
+                    record.stacktrace = stacktraceUtils.prepareStacktrace(lastArg._error.stack);
                     delete lastArg._error;
                 }
                 customFieldsFromArgs = lastArg;
@@ -51,17 +52,20 @@ export default class RecordFactory {
 
         msgLogFields.forEach(field => {
 
+            // Assign value
             if (!Array.isArray(field.source)) {
-                record[field.name] = sourceUtils.getFieldValue(field.name, field.source, record, now);
+                record[field.name] = sourceUtils.getFieldValue(field.source, record, writtenAt);
             } else {
-                record[field.name] = sourceUtils.getValueFromSources(field, record, "msg-log", now);
+                record[field.name] = sourceUtils.getValueFromSources(field, record, "msg-log", writtenAt);
             }
 
+            // Handle default
             if (record[field.name] == null && field.default != null) {
                 record[field.name] = field.default;
             }
 
-            if (field._meta!.isRedacted == true && record[field.name] != null) {
+            // Replaces all fields, which are marked to be reduced and do not equal to their default value to REDUCED_PLACEHOLDER.
+            if (field._meta!.isRedacted == true && record[field.name] != null && record[field.name] != field.default) {
                 record[field.name] = this.REDACTED_PLACEHOLDER;
             }
         });
@@ -80,7 +84,7 @@ export default class RecordFactory {
     // init a new record and assign fields with output "req-log"
     buildReqRecord(req: any, res: any, context: ReqContext): any {
 
-        const now = new Date();
+        const writtenAt = new Date();
         const configInstance = Config.getInstance();
         const reqLogFields = configInstance.getReqFields();
         const reqLoggingLevel = configInstance.getReqLoggingLevel();
@@ -93,12 +97,14 @@ export default class RecordFactory {
                 return;
             }
 
+            // Assign value
             if (!Array.isArray(field.source)) {
-                record[field.name] = sourceUtils.getReqFieldValue(field.name, field.source, record, now, req, res);
+                record[field.name] = sourceUtils.getReqFieldValue(field.source, record, writtenAt, req, res);
             } else {
-                record[field.name] = sourceUtils.getValueFromSources(field, record, "req-log", now, req, res);
+                record[field.name] = sourceUtils.getValueFromSources(field, record, "req-log", writtenAt, req, res);
             }
 
+            // Handle default
             if (record[field.name] == null && field.default != null) {
                 record[field.name] = field.default;
             }
