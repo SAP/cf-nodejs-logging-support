@@ -1,6 +1,5 @@
 import Config from "../config/config";
 import { ConfigField, Source } from "../config/interfaces";
-import NestedVarResolver from "../helper/nested-var-resolver";
 import RequestAccessor from "../middleware/request-Accessor";
 import ResponseAccessor from "../middleware/response-accessor";
 const { v4: uuid } = require('uuid');
@@ -15,9 +14,12 @@ export class SourceUtils {
     private static instance: SourceUtils;
     private requestAccessor: RequestAccessor = RequestAccessor.getInstance();
     private responseAccessor = ResponseAccessor.getInstance();
+    private config: Config;
     private lastTimestamp = 0;
 
-    private constructor() { }
+    private constructor() {
+        this.config = Config.getInstance();
+    }
 
     public static getInstance(): SourceUtils {
         if (!SourceUtils.instance) {
@@ -35,7 +37,7 @@ export class SourceUtils {
                 if (source.path) {
                     // clone path to avoid deleting path in resolveNestedVariable()
                     const clonedPath = [...source.path];
-                    return NestedVarResolver.resolveNestedVariable(process.env, clonedPath);
+                    return this.resolveNestedVariable(process.env, clonedPath);
                 }
                 return process.env[source.name!];
             case "config-field":
@@ -78,7 +80,7 @@ export class SourceUtils {
         }
     }
 
-    getReqFieldValue(source: Source, record: any, writtenAt: Date, req: any, res: any): string | undefined {
+    getReqFieldValue(source: Source, record: any, req: any, res: any, writtenAt: Date): string | undefined {
         switch (source.type) {
             case "req-header":
                 return this.requestAccessor.getHeaderField(req, source.name!);
@@ -122,7 +124,7 @@ export class SourceUtils {
         let sourceIndex = 0;
         let fieldValue;
         while (fieldValue == null) {
-            sourceIndex = SourceUtils.getInstance().getNextValidSourceIndex(field.source, sourceIndex);
+            sourceIndex = this.getNextValidSourceIndex(field.source, sourceIndex);
 
             if (sourceIndex == -1) {
                 return;
@@ -141,7 +143,7 @@ export class SourceUtils {
 
     // returns -1 when all sources were iterated
     private getNextValidSourceIndex(sources: Source[], startIndex: number): number {
-        const framework = Config.getInstance().getFramework();
+        const framework = this.config.getFramework();
 
         for (let i = startIndex; i < sources.length; i++) {
             if (!sources[i].framework) {
@@ -153,4 +155,37 @@ export class SourceUtils {
         }
         return -1;
     }
+
+    private resolveNestedVariable(root: any, path: string[]): any {
+
+        // return, if path is empty.
+        if (path == null || path.length == 0) {
+            return null;
+        }
+
+        var rootObj;
+
+        // if root is a string => parse it to an object. Otherwise => use it directly as object.
+        if (typeof root === "string") {
+            rootObj = JSON.parse(root);
+        } else if (typeof root === "object") {
+            rootObj = root;
+        } else {
+            return null;
+        }
+
+        // get value from root object
+        var value = rootObj[path[0]];
+
+        // cut first entry of the object path
+        path.shift();
+
+        // if the path is not empty, recursively resolve the remaining waypoints.
+        if (path.length >= 1) {
+            return this.resolveNestedVariable(value, path);
+        }
+
+        // return the resolved value, if path is empty.
+        return value;
+    };
 }

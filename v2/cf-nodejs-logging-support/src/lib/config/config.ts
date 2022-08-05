@@ -103,9 +103,16 @@ export default class Config {
         const filtered = Config.instance.config.fields!.filter(
             field => {
                 if (field.output?.includes("msg-log") && field.output?.includes("req-log")) {
-                    if (["req-header", "req-object"].includes((field.source as Source).type)) {
-                        return true;
+                    const sources = field.source as Source[];
+                    for (let index = 0; index < sources.length; index++) {
+                        const source = sources[index];
+                        if (["req-header", "req-object"].includes((source.type))) {
+                            return true;
+                        }
                     }
+                    // if (["req-header", "req-object"].includes((field.source as Source).type)) {
+                    //     return true;
+                    // }
 
                     if (["correlation_id", "tenant_id"].includes(field.name)) {
                         return true;
@@ -149,6 +156,10 @@ export default class Config {
                     this.config.settableFields!.push(field.name);
                     return;
                 }
+
+                if (field.source.constructor !== Array) {
+                    field.source = [field.source] as Source[];
+                };
 
                 field._meta = {
                     isEnabled: true,

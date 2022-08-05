@@ -18,9 +18,8 @@ export default class RecordWriter {
 
     writeLog(record: any): void {
         const level = record["level"];
-        const instance = RecordWriter.getInstance();
-        if (instance.customSinkFunction) {
-            instance.customSinkFunction(level, JSON.stringify(record));
+        if (this.customSinkFunction) {
+            this.customSinkFunction(level, JSON.stringify(record));
         } else {
             // default to stdout
             process.stdout.write(JSON.stringify(record) + os.EOL);
@@ -28,6 +27,6 @@ export default class RecordWriter {
     }
 
     setSinkFunction(f: Function) {
-        RecordWriter.getInstance().customSinkFunction = f;
+        this.customSinkFunction = f;
     }
 }

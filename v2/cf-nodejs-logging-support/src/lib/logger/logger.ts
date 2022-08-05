@@ -11,10 +11,14 @@ export default class Logger {
     private context?: ReqContext;
     private registeredCustomFields: Array<string> = [];
     private customFields: Map<string, any> = new Map<string, any>()
+    private recordFactory: RecordFactory;
+    private recordWriter: RecordWriter;
     protected loggingLevelThreshold: Level = Level.INHERIT
 
     constructor(parent?: Logger) {
         this.parent = parent;
+        this.recordFactory = RecordFactory.getInstance();
+        this.recordWriter = RecordWriter.getInstance();
     }
 
     createLogger(customFields?: any): Logger {
@@ -51,12 +55,12 @@ export default class Logger {
         const loggerCustomFields = Object.assign({}, this.extractCustomFieldsFromLogger(this));
 
         // var startTimeBuildMsgRecord = performance.now();
-        const record = RecordFactory.getInstance().buildMsgRecord(this.registeredCustomFields, loggerCustomFields, levelName, _args, this.context);
+        const record = this.recordFactory.buildMsgRecord(this.registeredCustomFields, loggerCustomFields, levelName, _args, this.context);
         // var endimeBuildMsgRecord = performance.now();
         // console.log(`buildMsgRecord lasted ${endimeBuildMsgRecord - startTimeBuildMsgRecord} milliseconds`)
 
         // var startTimeWriteLog = performance.now();
-        RecordWriter.getInstance().writeLog(record);
+        this.recordWriter.writeLog(record);
         // var endTimeWriteLog = performance.now();
         // console.log(`writeLog lasted ${endTimeWriteLog - startTimeWriteLog} milliseconds`)
     }

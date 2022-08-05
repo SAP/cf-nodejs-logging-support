@@ -1,5 +1,7 @@
+import { performance } from "perf_hooks";
 import util from "util";
 import Config from "../config/config";
+import { Source } from "../config/interfaces";
 import { isValidObject } from "../middleware/utils";
 import ReqContext from "./context";
 import { SourceUtils } from "./source-utils";
@@ -9,10 +11,17 @@ const stringifySafe = require('json-stringify-safe');
 export default class RecordFactory {
 
     private static instance: RecordFactory;
+    private config: Config;
+    private stacktraceUtils: StacktraceUtils;
+    private sourceUtils: SourceUtils;
     private REDACTED_PLACEHOLDER = "redacted";
     private LOG_TYPE = "log";
 
-    private constructor() { }
+    private constructor() {
+        this.config = Config.getInstance();
+        this.stacktraceUtils = StacktraceUtils.getInstance();
+        this.sourceUtils = SourceUtils.getInstance();
+    }
 
     public static getInstance(): RecordFactory {
         if (!RecordFactory.instance) {
@@ -25,11 +34,12 @@ export default class RecordFactory {
     // init a new record and assign fields with output "msg-log"
     buildMsgRecord(registeredCustomFields: Array<string>, loggerCustomFields: Map<string, any>, level: string, args: Array<any>, context?: ReqContext): any {
 
-        const stacktraceUtils = StacktraceUtils.getInstance();
         const writtenAt = new Date();
-        const configInstance = Config.getInstance();
-        const sourceUtils = SourceUtils.getInstance();
-        const msgLogFields = configInstance.getMsgFields();
+        // var startTimeGetMsgFields = performance.now();
+        const msgLogFields = this.config.getMsgFields();
+        // var endTimeGetMsgFields = performance.now();
+        // console.log(`Config.getMsgFields: ${endTimeGetMsgFields - startTimeGetMsgFields} milliseconds`)
+
         let record: any = {
             "level": level,
         };
@@ -38,11 +48,11 @@ export default class RecordFactory {
         var lastArg = args[args.length - 1];
 
         if (typeof lastArg === "object") {
-            if (stacktraceUtils.isErrorWithStacktrace(lastArg)) {
-                record.stacktrace = stacktraceUtils.prepareStacktrace(lastArg.stack);
+            if (this.stacktraceUtils.isErrorWithStacktrace(lastArg)) {
+                record.stacktrace = this.stacktraceUtils.prepareStacktrace(lastArg.stack);
             } else if (isValidObject(lastArg)) {
-                if (stacktraceUtils.isErrorWithStacktrace(lastArg._error)) {
-                    record.stacktrace = stacktraceUtils.prepareStacktrace(lastArg._error.stack);
+                if (this.stacktraceUtils.isErrorWithStacktrace(lastArg._error)) {
+                    record.stacktrace = this.stacktraceUtils.prepareStacktrace(lastArg._error.stack);
                     delete lastArg._error;
                 }
                 customFieldsFromArgs = lastArg;
@@ -50,14 +60,21 @@ export default class RecordFactory {
             args.pop();
         }
 
+        // var startTimeForEach = performance.now();
         msgLogFields.forEach(field => {
 
             // Assign value
-            if (!Array.isArray(field.source)) {
-                record[field.name] = sourceUtils.getFieldValue(field.source, record, writtenAt);
-            } else {
-                record[field.name] = sourceUtils.getValueFromSources(field, record, "msg-log", writtenAt);
+            // var startTimeGetValue = performance.now();
+            // if (!Array.isArray(field.source)) {
+            //     record[field.name] = this.sourceUtils.getFieldValue(field.source, record, writtenAt);
+            // } else {
+            const value = this.sourceUtils.getValueFromSources(field, record, "msg-log", writtenAt);
+            if (value != null) {
+                record[field.name] = value;
             }
+            // }
+            // var endTimeGetValue = performance.now();
+            // console.log(`msgLogFields.forEach => get source value: ${endTimeGetValue - startTimeGetValue} milliseconds`)
 
             // Handle default
             if (record[field.name] == null && field.default != null) {
@@ -69,13 +86,24 @@ export default class RecordFactory {
                 record[field.name] = this.REDACTED_PLACEHOLDER;
             }
         });
+        // var endTimeBuildForEach = performance.now();
+        // console.log(`msgLogFields.forEach: ${endTimeBuildForEach - startTimeForEach} milliseconds`)
+
 
         // read and copy values from context
+        // var startTimeAddContext = performance.now();
         if (context) {
+            // var startTimeAddContext = performance.now();
             record = this.addContext(record, context);
+            // var endTimeAddContext = performance.now();
+            // console.log(`RecordFactory.addContext: ${endTimeAddContext - startTimeAddContext} milliseconds`)
         }
 
+        // var startTimeAddCustomFields = performance.now();
         record = this.addCustomFields(record, registeredCustomFields, loggerCustomFields, customFieldsFromArgs);
+        // var endTimeAddCustomFields = performance.now();
+        // console.log(`RecordFactory.addCustomFields: ${endTimeAddCustomFields - startTimeAddCustomFields} milliseconds`)
+
         record["msg"] = util.format.apply(util, args);
         record["type"] = this.LOG_TYPE;
         return record;
@@ -85,12 +113,9 @@ export default class RecordFactory {
     buildReqRecord(req: any, res: any, context: ReqContext): any {
 
         const writtenAt = new Date();
-        const configInstance = Config.getInstance();
-        const reqLogFields = configInstance.getReqFields();
-        const reqLoggingLevel = configInstance.getReqLoggingLevel();
+        const reqLogFields = this.config.getReqFields();
+        const reqLoggingLevel = this.config.getReqLoggingLevel();
         let record: any = { "level": reqLoggingLevel };
-
-        const sourceUtils = SourceUtils.getInstance();
 
         reqLogFields.forEach(field => {
             if (field._meta!.isEnabled == false) {
@@ -98,11 +123,11 @@ export default class RecordFactory {
             }
 
             // Assign value
-            if (!Array.isArray(field.source)) {
-                record[field.name] = sourceUtils.getReqFieldValue(field.source, record, writtenAt, req, res);
-            } else {
-                record[field.name] = sourceUtils.getValueFromSources(field, record, "req-log", writtenAt, req, res);
-            }
+            // if (!Array.isArray(field.source)) {
+            //     record[field.name] = sourceUtils.getReqFieldValue(field.source, record, writtenAt, req, res);
+            // } else {
+            record[field.name] = this.sourceUtils.getValueFromSources(field, record, "req-log", writtenAt, req, res);
+            // }
 
             // Handle default
             if (record[field.name] == null && field.default != null) {
@@ -125,13 +150,12 @@ export default class RecordFactory {
 
     private addCustomFields(record: any, registeredCustomFields: Array<string>, loggerCustomFields: Map<string, any>, customFieldsFromArgs: any): any {
         var providedFields = Object.assign({}, loggerCustomFields, customFieldsFromArgs);
-        const config = Config.getInstance();
-        const customFieldsFormat = config.getConfig().customFieldsFormat;
+        const customFieldsFormat = this.config.getConfig().customFieldsFormat;
 
         for (var key in providedFields) {
             var value = providedFields[key];
 
-            if (customFieldsFormat == "cloud-logging" || record[key] != null || config.isSettable(key)) {
+            if (customFieldsFormat == "cloud-logging" || record[key] != null || this.config.isSettable(key)) {
                 record[key] = value;
             }
 
