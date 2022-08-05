@@ -36,10 +36,12 @@ describe('Test Config class', function () {
                 let expectation = [
                     {
                         "name": "logger",
-                        "source": {
-                            "type": "static",
-                            "value": "nodejs-logger"
-                        },
+                        "source": [
+                            {
+                                "type": "static",
+                                "value": "nodejs-logger"
+                            }
+                        ],
                         "output": [
                             "msg-log",
                             "req-log"
@@ -50,10 +52,12 @@ describe('Test Config class', function () {
                         }
                     }, {
                         "name": "request",
-                        "source": {
-                            "type": "req-object",
-                            "name": "originalUrl"
-                        },
+                        "source": [
+                            {
+                                "type": "req-object",
+                                "name": "originalUrl"
+                            }
+                        ],
                         "output": [
                             "req-log"
                         ],
@@ -136,10 +140,12 @@ describe('Test Config class', function () {
             let expectation = [
                 {
                     "name": "logger",
-                    "source": {
-                        "type": "static",
-                        "value": "TEST"
-                    },
+                    "source": [
+                        {
+                            "type": "static",
+                            "value": "TEST"
+                        }
+                    ],
                     "output": [
                         "msg-log",
                         "req-log"
@@ -151,10 +157,12 @@ describe('Test Config class', function () {
                 },
                 {
                     "name": "disabled_field",
-                    "source": {
-                        "type": "config-field",
-                        "name": "component_instance"
-                    },
+                    "source": [
+                        {
+                            "type": "config-field",
+                            "name": "component_instance"
+                        }
+                    ],
                     "output": [
                         "msg-log"
                     ],
@@ -166,10 +174,12 @@ describe('Test Config class', function () {
                 },
                 {
                     "name": "new_field",
-                    "source": {
-                        "type": "config-field",
-                        "name": "component_instance"
-                    },
+                    "source": [
+                        {
+                            "type": "config-field",
+                            "name": "component_instance"
+                        }
+                    ],
                     "output": [
                         "msg-log"
                     ],
@@ -191,10 +201,12 @@ describe('Test Config class', function () {
         it('gets disabled fields', function () {
             expectation = [{
                 "name": "disabled_field",
-                "source": {
-                    "type": "config-field",
-                    "name": "component_instance"
-                },
+                "source": [
+                    {
+                        "type": "config-field",
+                        "name": "component_instance"
+                    }
+                ],
                 "output": [
                     "msg-log"
                 ],
