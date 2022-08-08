@@ -65,12 +65,13 @@ export default class RecordFactory {
 
             // Assign value
             // var startTimeGetValue = performance.now();
-            // if (!Array.isArray(field.source)) {
-            //     record[field.name] = this.sourceUtils.getFieldValue(field.source, record, writtenAt);
-            // } else {
-            const value = this.sourceUtils.getValueFromSources(field, record, "msg-log", writtenAt);
-            if (value != null) {
-                record[field.name] = value;
+            if (!Array.isArray(field.source)) {
+                record[field.name] = this.sourceUtils.getFieldValue(field.source, record, writtenAt);
+            } else {
+                const value = this.sourceUtils.getValueFromSources(field, record, "msg-log", writtenAt);
+                if (value != null) {
+                    record[field.name] = value;
+                }
             }
             // }
             // var endTimeGetValue = performance.now();
@@ -123,11 +124,11 @@ export default class RecordFactory {
             }
 
             // Assign value
-            // if (!Array.isArray(field.source)) {
-            //     record[field.name] = sourceUtils.getReqFieldValue(field.source, record, writtenAt, req, res);
-            // } else {
-            record[field.name] = this.sourceUtils.getValueFromSources(field, record, "req-log", writtenAt, req, res);
-            // }
+            if (!Array.isArray(field.source)) {
+                record[field.name] = this.sourceUtils.getReqFieldValue(field.source, record, req, res, writtenAt);
+            } else {
+                record[field.name] = this.sourceUtils.getValueFromSources(field, record, "req-log", writtenAt, req, res);
+            }
 
             // Handle default
             if (record[field.name] == null && field.default != null) {
@@ -138,7 +139,6 @@ export default class RecordFactory {
             if (field._meta!.isRedacted == true && record[field.name] != null && record[field.name] != field.default) {
                 record[field.name] = this.REDACTED_PLACEHOLDER;
             }
-
         });
 
         record = this.addContext(record, context);

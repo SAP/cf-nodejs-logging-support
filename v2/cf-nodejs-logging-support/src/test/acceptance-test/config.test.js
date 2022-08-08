@@ -21,7 +21,7 @@ describe('Test configuration', function () {
         });
 
         it('overrides existing field', function () {
-            expect(result[0].source[0]).to.have.property("value", "TEST");
+            expect(result[0].source).to.have.property("value", "TEST");
         });
 
         it('adds new field', function () {
