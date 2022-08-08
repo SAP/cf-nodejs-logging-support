@@ -12,12 +12,14 @@ const NS_PER_MS = 1e6;
 
 export class SourceUtils {
     private static instance: SourceUtils;
-    private requestAccessor: RequestAccessor = RequestAccessor.getInstance();
-    private responseAccessor = ResponseAccessor.getInstance();
+    private requestAccessor: RequestAccessor;
+    private responseAccessor: ResponseAccessor;
     private config: Config;
     private lastTimestamp = 0;
 
     private constructor() {
+        this.requestAccessor = RequestAccessor.getInstance();
+        this.responseAccessor = ResponseAccessor.getInstance();
         this.config = Config.getInstance();
     }
 
