@@ -1,6 +1,7 @@
 cfConfig = require('./config-cf-with-defaults.json');
 requestConfig = require('./config-request-with-defaults.json');
 const importFresh = require('import-fresh');
+var httpMocks = require('node-mocks-http');
 process.env.VCAP_SERVICES = "CF";
 process.env.VCAP_APPLICATION = JSON.stringify(
     {
@@ -176,6 +177,76 @@ describe('Test performance of old and new library', function () {
             // console.log(`New lib with defaults: Logging 10.000 simple messages took ${endTime2 - startTime2} milliseconds`)
         });
     });
+
+
+    describe('logNetwork', function () {
+
+        it('Old library', function () {
+
+            var req = httpMocks.createRequest({ method: 'GET', url: 'globalcontext' });
+            req.headers["referer"] = "test-referer";
+            req.user = {
+                id: "test-user"
+            };
+            req.connection = {
+                remoteAddress: "test-user",
+                remotePort: "remote-port"
+            };
+            var res = httpMocks.createResponse();
+
+
+            var startTime = performance.now()
+
+            for (let index = 0; index < 10000; index++) {
+                oldLog.logNetwork(req, res, () => { });
+            }
+
+            var endTime = performance.now()
+
+            console.log(`Old lib: logNetwork ${endTime - startTime} milliseconds`)
+        });
+
+        it('New library', function () {
+
+            var req = httpMocks.createRequest({ method: 'GET', url: 'globalcontext' });
+
+            // dont override req object
+            // req.headers["referer"] = "test-referer";
+            // req.headers["x-vcap-request-id"] = "1234";
+            // req.headers["x-correlationid"] = "1234";
+            // req.headers["tenantid"] = "1234";
+            // req.user = {
+            //     id: "test-user"
+            // };
+            // req.connection = {
+            //     remoteAddress: "test-user",
+            //     remotePort: "remote-port"
+            // };
+
+            var res = httpMocks.createResponse();
+
+            var startTime = performance.now()
+
+            for (let index = 0; index < 10000; index++) {
+                newLog.logNetwork(req, res, () => { });
+            }
+
+            var endTime = performance.now()
+
+            // var startTime2 = performance.now()
+
+            // for (let index = 0; index < 10000; index++) {
+            //     newLogWithDefaults.logMessage("info", "test-message");
+            // }
+
+            // var endTime2 = performance.now()
+
+            console.log(`New lib: logNetwork ${endTime - startTime} milliseconds`)
+            // console.log(`New lib with defaults: Logging 10.000 simple messages took ${endTime2 - startTime2} milliseconds`)
+
+        });
+    });
+
 
     describe.skip('Write 10.000 logs with a global custom field', function () {
 
