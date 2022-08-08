@@ -24,6 +24,10 @@ export default class Config {
         "framework": "express"
     }
 
+    private msgFields: ConfigField[] = [];
+    private reqFields: ConfigField[] = [];
+    private contextFields: ConfigField[] = [];
+
     private constructor() { }
 
     public static getInstance(): Config {
@@ -79,49 +83,54 @@ export default class Config {
     }
 
     public getMsgFields(): ConfigField[] {
-        const filtered = Config.instance.config.fields!.filter(
-            key => {
-                if (key.output?.includes('msg-log')) {
-                    return true;
-                }
-                return false;
-            }
-        );
-        return filtered;
+        // const filtered = Config.instance.config.fields!.filter(
+        //     key => {
+        //         if (key.output?.includes('msg-log')) {
+        //             return true;
+        //         }
+        //         return false;
+        //     }
+        // );
+        // return filtered;
+        return Config.instance.msgFields;
     }
 
     public getReqFields(): ConfigField[] {
-        const filtered = Config.instance.config.fields!.filter(
-            key => {
-                return key.output?.includes("req-log")
-            }
-        );
-        return filtered;
+        // const filtered = Config.instance.config.fields!.filter(
+        //     key => {
+        //         return key.output?.includes("req-log")
+        //     }
+        // );
+        // return filtered;
+
+        return Config.instance.reqFields;
     }
 
     public getContextFields(): ConfigField[] {
-        const filtered = Config.instance.config.fields!.filter(
-            field => {
-                if (field.output?.includes("msg-log") && field.output?.includes("req-log")) {
-                    const sources = field.source as Source[];
-                    for (let index = 0; index < sources.length; index++) {
-                        const source = sources[index];
-                        if (["req-header", "req-object"].includes((source.type))) {
-                            return true;
-                        }
-                    }
-                    // if (["req-header", "req-object"].includes((field.source as Source).type)) {
-                    //     return true;
-                    // }
+        // const filtered = Config.instance.config.fields!.filter(
+        //     field => {
+        //         if (field.output?.includes("msg-log") && field.output?.includes("req-log")) {
+        //             const sources = field.source as Source[];
+        //             for (let index = 0; index < sources.length; index++) {
+        //                 const source = sources[index];
+        //                 if (["req-header", "req-object"].includes((source.type))) {
+        //                     return true;
+        //                 }
+        //             }
+        //             // if (["req-header", "req-object"].includes((field.source as Source).type)) {
+        //             //     return true;
+        //             // }
 
-                    if (["correlation_id", "tenant_id"].includes(field.name)) {
-                        return true;
-                    }
-                }
-                return false;
-            }
-        );
-        return filtered;
+        //             if (["correlation_id", "tenant_id"].includes(field.name)) {
+        //                 return true;
+        //             }
+        //         }
+        //         return false;
+        //     }
+        // );
+        // return filtered;
+        return Config.instance.contextFields;
+
     }
 
     public getDisabledFields(): ConfigField[] {
@@ -157,9 +166,9 @@ export default class Config {
                     return;
                 }
 
-                if (field.source.constructor !== Array) {
-                    field.source = [field.source] as Source[];
-                };
+                // if (field.source.constructor !== Array) {
+                //     field.source = [field.source] as Source[];
+                // };
 
                 field._meta = {
                     isEnabled: true,
@@ -183,7 +192,80 @@ export default class Config {
                 // if new config field
                 if (index === -1) {
                     Config.instance.config.fields!.push(field);
-                    return;
+                }
+
+                if (field.output?.includes('msg-log')) {
+                    const index = Config.instance.msgFields.findIndex(
+                        element => element.name == field.name
+                    );
+
+                    if (index === -1) {
+                        Config.instance.msgFields.push(field);
+                    } else {
+                        Config.instance.msgFields.splice(index, 1, field);
+                    }
+                }
+
+                if (field.output?.includes('req-log')) {
+                    const index = Config.instance.reqFields.findIndex(
+                        element => element.name == field.name
+                    );
+
+                    if (index === -1) {
+                        Config.instance.reqFields.push(field);
+                    } else {
+                        Config.instance.reqFields.splice(index, 1, field);
+                    }
+                }
+
+                // check if context field, if true, then save field in list
+                if (field.output?.includes("msg-log") && field.output?.includes("req-log")) {
+                    if (Array.isArray(field.source)) {
+                        const sources = field.source as Source[];
+                        for (let index = 0; index < sources.length; index++) {
+                            const source = sources[index];
+                            if (["req-header", "req-object"].includes((source.type))) {
+                                let index = Config.instance.contextFields.findIndex(
+                                    element => element.name == field.name
+                                );
+
+                                if (index === -1) {
+                                    Config.instance.contextFields.push(field);
+                                } else {
+                                    Config.instance.contextFields.splice(index, 1, field);
+                                }
+                                break;
+                            }
+                        }
+                    } else {
+                        if (["req-header", "req-object"].includes((field.source.type))) {
+                            const index = Config.instance.contextFields.findIndex(
+                                element => element.name == field.name
+                            );
+
+                            if (index === -1) {
+                                Config.instance.contextFields.push(field);
+                            } else {
+                                Config.instance.contextFields.splice(index, 1, field);
+                            }
+                        }
+                    }
+
+                    // if (["req-header", "req-object"].includes((field.source as Source).type)) {
+                    //     return true;
+                    // }
+
+                    if (["correlation_id", "tenant_id"].includes(field.name)) {
+                        const index = Config.instance.contextFields.findIndex(
+                            element => element.name == field.name
+                        );
+
+                        if (index === -1) {
+                            Config.instance.contextFields.push(field);
+                        } else {
+                            Config.instance.contextFields.splice(index, 1, field);
+                        }
+                    }
                 }
 
                 // replace object in array with new field
