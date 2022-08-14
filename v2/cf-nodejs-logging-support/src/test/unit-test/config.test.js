@@ -13,7 +13,7 @@ describe('Test Config class', function () {
         });
         it('gets property fields', function () {
             expect(result).to.have.property("fields");
-            expect(result.fields.length).be.eql(34);
+            expect(result.fields.length).be.eql(36);
         });
         it('gets property outputStartupMsg', function () {
             expect(result).to.have.property("outputStartupMsg", true);
@@ -36,13 +36,13 @@ describe('Test Config class', function () {
                 let expectation = [
                     {
                         "name": "logger",
-                        "mandatory": true,
                         "source": {
                             "type": "static",
                             "value": "nodejs-logger"
                         },
                         "output": [
-                            "msg-log"
+                            "msg-log",
+                            "req-log"
                         ],
                         "_meta": {
                             "isEnabled": true,
@@ -50,7 +50,6 @@ describe('Test Config class', function () {
                         }
                     }, {
                         "name": "request",
-                        "mandatory": true,
                         "source": {
                             "type": "req-object",
                             "name": "originalUrl"
@@ -72,7 +71,7 @@ describe('Test Config class', function () {
                 result = singleton.getFields();
             });
             it('gets all fields', function () {
-                expect(result.length).to.be.eql(34);
+                expect(result.length).to.be.eql(36);
             });
         })
     });
@@ -82,23 +81,7 @@ describe('Test Config class', function () {
             result = singleton.getMsgFields();
         });
         it('gets fields with output msg-log', function () {
-            expectation = [{
-                "name": "logger",
-                "mandatory": true,
-                "source": {
-                    "type": "static",
-                    "value": "nodejs-logger"
-                },
-                "output": [
-                    "msg-log"
-                ],
-                "_meta": {
-                    "isEnabled": true,
-                    "isRedacted": false
-                }
-            }];
-            expect(result.length).to.be.eql(1);
-            expect(result).to.be.eql(expectation);
+            expect(result.length).to.be.eql(7);
         });
     });
 
@@ -107,17 +90,17 @@ describe('Test Config class', function () {
             result = singleton.getReqFields();
         });
         it('gets fields with output req-log', function () {
-            expect(result.length).to.be.eql(33);
+            expect(result.length).to.be.eql(36);
         });
     });
 
     describe('Test setCustomFieldsFormat', function () {
         beforeEach(function () {
-            singleton.setCustomFieldsFormat("application-logging");
+            singleton.setCustomFieldsFormat("application-logs");
             result = singleton.getConfig();
         });
         it('sets custom fields format', function () {
-            expect(result).to.have.property("customFieldsFormat", "application-logging");
+            expect(result).to.have.property("customFieldsFormat", "application-logs");
         });
 
         afterEach(function () {
@@ -146,20 +129,20 @@ describe('Test Config class', function () {
         });
 
         it('adds 2 new fields and overrides preexisting field', function () {
-            expect(fields.length).to.be.eql(36);
+            expect(fields.length).to.be.eql(38);
         });
 
         it('adds new data correctly', function () {
             let expectation = [
                 {
                     "name": "logger",
-                    "mandatory": true,
                     "source": {
                         "type": "static",
                         "value": "TEST"
                     },
                     "output": [
-                        "msg-log"
+                        "msg-log",
+                        "req-log"
                     ],
                     "_meta": {
                         "isEnabled": true,
@@ -168,7 +151,6 @@ describe('Test Config class', function () {
                 },
                 {
                     "name": "disabled_field",
-                    "mandatory": false,
                     "source": {
                         "type": "config-field",
                         "name": "component_instance"
@@ -184,7 +166,6 @@ describe('Test Config class', function () {
                 },
                 {
                     "name": "new_field",
-                    "mandatory": false,
                     "source": {
                         "type": "config-field",
                         "name": "component_instance"
@@ -210,7 +191,6 @@ describe('Test Config class', function () {
         it('gets disabled fields', function () {
             expectation = [{
                 "name": "disabled_field",
-                "mandatory": false,
                 "source": {
                     "type": "config-field",
                     "name": "component_instance"

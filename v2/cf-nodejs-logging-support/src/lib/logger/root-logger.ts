@@ -3,8 +3,10 @@ import { ConfigObject, customFieldsFormat, framework } from "../config/interface
 import EnvService from "../core/env-service";
 import Level from "./level"
 import Logger from "./logger"
-import RecordWriter from "./record-writer";
 import Middleware from "../middleware/middleware";
+import RecordWriter from "./record-writer";
+import ResponseAccessor from "../middleware/response-accessor";
+import RequestAccessor from "../middleware/request-Accessor";
 import createTransport from "../winston/winston-transport";
 
 export default class RootLogger extends Logger {
@@ -75,5 +77,7 @@ export default class RootLogger extends Logger {
     };
     forceLogger(logger: framework) {
         Config.getInstance().setFramework(logger);
+        RequestAccessor.getInstance().setFrameworkService();
+        ResponseAccessor.getInstance().setFrameworkService();
     }
 }

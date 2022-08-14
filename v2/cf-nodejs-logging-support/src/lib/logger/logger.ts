@@ -3,6 +3,7 @@ import LevelUtils from "./level-utils";
 import RecordWriter from "./record-writer";
 import RecordFactory from "./record-factory";
 import ReqContext from "./context";
+import { isValidObject } from "../middleware/utils";
 
 export default class Logger {
     private parent?: Logger = undefined
@@ -15,8 +16,14 @@ export default class Logger {
         this.parent = parent;
     }
 
-    createLogger(): Logger {
-        return new Logger(this)
+    createLogger(customFields?: any): Logger {
+
+        let logger = new Logger(this);
+        // assign custom fields, if provided
+        if (customFields) {
+            logger.setCustomFields(customFields);
+        }
+        return logger;
     }
 
     setLoggingLevel(name: string) {
@@ -40,7 +47,8 @@ export default class Logger {
 
     logMessage(levelName: string, ..._args: any) {
         if (!this.isLoggingLevel(levelName)) return;
-        const record = RecordFactory.getInstance().buildMsgRecord(this.registeredCustomFields, this.customFields, levelName, _args, this.context);
+        const loggerCustomFields = Object.assign({}, this.extractCustomFieldsFromLogger(this));
+        const record = RecordFactory.getInstance().buildMsgRecord(this.registeredCustomFields, loggerCustomFields, levelName, _args, this.context);
         RecordWriter.getInstance().writeLog(record);
     }
 
@@ -97,7 +105,7 @@ export default class Logger {
     }
 
     setCustomFields(customFields: Map<string, any>) {
-        this.customFields = customFields
+        this.customFields = customFields;
     }
 
     getCustomFields(): Map<string, any> {
@@ -108,8 +116,46 @@ export default class Logger {
         }
     }
 
+    getCorrelationId(): string | undefined {
+        return this.context?.getProp("correlation_id");
+    }
+
+    setCorrelationId(value: string) {
+        this.context?.setProp("correlation_id", value);
+    }
+
+    getTenantId(): string | undefined {
+        return this.context?.getProp("tenant_id");
+    }
+
+    setTenantId(value: string) {
+        this.context?.setProp("tenant_id", value);
+
+    }
+
+    getTenantSubdomain(): string | undefined {
+        return this.context?.getProp("tenant_subdomain");
+    }
+
+    setTenantSubdomain(value: string) {
+        this.context?.setProp("tenant_subdomain", value);
+    }
+
     initContext(_req: any) {
         this.context = new ReqContext(_req);
         return this.context;
+    }
+
+    private extractCustomFieldsFromLogger(logger: Logger): any {
+        let fields = {};
+        if (logger.parent && logger.parent !== this) {
+            fields = this.extractCustomFieldsFromLogger(logger.parent);
+        }
+
+        if (isValidObject(logger.customFields)) {
+            fields = Object.assign(fields, logger.customFields);
+        }
+
+        return fields;
     }
 }

@@ -1,9 +1,9 @@
 import LevelUtils from "../logger/level-utils";
 import RecordFactory from "../logger/record-factory";
-import ResponseAccessor from "./response-accessor";
 import RootLogger from "../logger/root-logger";
 import { JWTService } from "../config/jwt-service";
 import RequestAccessor from "./request-Accessor";
+import RecordWriter from "../logger/record-writer";
 
 export default class Middleware {
 
@@ -32,8 +32,7 @@ export default class Middleware {
                 const reqLoggingLevel = LevelUtils.getLevel(record.level);
                 const loggingLevelThreshold = LevelUtils.getLevel(req.logger.getLoggingLevel());
                 if (LevelUtils.isLevelEnabled(loggingLevelThreshold, reqLoggingLevel)) {
-                    const res = ResponseAccessor.getInstance();
-                    res.finishLog(record);
+                    RecordWriter.getInstance().writeLog(record);
                 }
                 logSent = true;
             }

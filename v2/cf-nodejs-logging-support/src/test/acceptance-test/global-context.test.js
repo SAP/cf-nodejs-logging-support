@@ -40,26 +40,17 @@ describe('Test logging in global context', function () {
             expect(lastOutput).to.have.property('level', 'info');
         });
 
-        it.skip('writes log with all core properties', function () {
+        it('writes log with all core properties', function () {
             const expectedKeys = [
-                'component_type',
-                'component_id',
-                'component_name',
-                'component_instance',
-                'source_instance',
-                'layer',
-                'organization_name',
-                'organization_id',
-                'space_name',
-                'space_id',
-                'container_id',
-                'logger'
+                'logger',
+                'written_at',
+                'written_ts'
             ];
             expect(lastOutput).to.include.all.keys(expectedKeys);
         });
     });
 
-    describe.skip('Write a log with convenience method', function () {
+    describe('Write a log with convenience method', function () {
 
         beforeEach(function () {
             log.error("Error message logged in global context");
@@ -145,7 +136,7 @@ describe('Test logging in global context', function () {
         });
     });
 
-    describe.skip('Log a stacktrace', function () {
+    describe('Log a stacktrace', function () {
 
         beforeEach(function () {
             const e = new Error("An error happened.");

@@ -2,18 +2,17 @@
     "fields": [
         {
             "name": "request_id",
-            "mandatory": true,
             "source": {
                 "type": "req-header",
                 "name": "x-vcap-request-id"
             },
             "output": [
+                "msg-log",
                 "req-log"
             ]
         },
         {
             "name": "request_size_b",
-            "mandatory": true,
             "source": {
                 "type": "req-header",
                 "name": "content-length"
@@ -24,7 +23,6 @@
         },
         {
             "name": "type",
-            "mandatory": true,
             "source": {
                 "type": "static",
                 "value": "request"
@@ -35,7 +33,6 @@
         },
         {
             "name": "request",
-            "mandatory": true,
             "source": {
                 "type": "req-object",
                 "name": "originalUrl"
@@ -46,7 +43,6 @@
         },
         {
             "name": "response_status",
-            "mandatory": true,
             "source": {
                 "type": "res-object",
                 "name": "statusCode"
@@ -57,7 +53,6 @@
         },
         {
             "name": "method",
-            "mandatory": true,
             "source": {
                 "type": "req-object",
                 "name": "method"
@@ -68,7 +63,6 @@
         },
         {
             "name": "response_size_b",
-            "mandatory": true,
             "source": {
                 "type": "res-header",
                 "name": "content-length"
@@ -79,7 +73,6 @@
         },
         {
             "name": "response_content_type",
-            "mandatory": true,
             "source": {
                 "type": "res-header",
                 "name": "content-type"
@@ -90,10 +83,10 @@
         },
         {
             "name": "remote_host",
-            "mandatory": true,
             "envVarRedact": "LOG_SENSITIVE_CONNECTION_DATA",
             "source": {
-                "type": "req-object"
+                "type": "req-object",
+                "name": "remote_host"
             },
             "output": [
                 "req-log"
@@ -101,10 +94,10 @@
         },
         {
             "name": "remote_port",
-            "mandatory": true,
             "envVarRedact": "LOG_SENSITIVE_CONNECTION_DATA",
             "source": {
-                "type": "req-object"
+                "type": "req-object",
+                "name": "remote_port"
             },
             "output": [
                 "req-log"
@@ -112,10 +105,10 @@
         },
         {
             "name": "remote_user",
-            "mandatory": true,
             "envVarRedact": "LOG_REMOTE_USER",
             "source": {
-                "type": "res-object"
+                "type": "req-object",
+                "name": "remote_user"
             },
             "output": [
                 "req-log"
@@ -123,7 +116,6 @@
         },
         {
             "name": "direction",
-            "mandatory": true,
             "source": {
                 "type": "static",
                 "value": "IN"
@@ -134,7 +126,6 @@
         },
         {
             "name": "remote_ip",
-            "mandatory": false,
             "envVarRedact": "LOG_SENSITIVE_CONNECTION_DATA",
             "source": {
                 "type": "config-field",
@@ -145,10 +136,19 @@
             ]
         },
         {
-            "name": "request_received_at",
-            "mandatory": false,
+            "name": "protocol",
             "source": {
                 "type": "req-object",
+                "name": "protocol"
+            },
+            "output": [
+                "req-log"
+            ]
+        },
+        {
+            "name": "request_received_at",
+            "source": {
+                "type": "config-field",
                 "name": "written_at"
             },
             "output": [
@@ -156,20 +156,10 @@
             ]
         },
         {
-            "name": "protocol",
-            "mandatory": true,
-            "source": {
-                "type": "meta"
-            },
-            "output": [
-                "req-log"
-            ]
-        },
-        {
             "name": "response_time_ms",
-            "mandatory": true,
             "source": {
-                "type": "meta"
+                "type": "meta",
+                "name": "response_time_ms"
             },
             "output": [
                 "req-log"
@@ -177,9 +167,9 @@
         },
         {
             "name": "response_sent_at",
-            "mandatory": true,
             "source": {
-                "type": "meta"
+                "type": "meta",
+                "name": "response_sent_at"
             },
             "output": [
                 "req-log"
@@ -187,7 +177,6 @@
         },
         {
             "name": "referer",
-            "mandatory": true,
             "envVarRedact": "LOG_REFERER",
             "source": {
                 "type": "req-header",
@@ -199,44 +188,47 @@
         },
         {
             "name": "correlation_id",
-            "mandatory": true,
             "source": [
                 {
                     "type": "req-header",
                     "name": "x-correlationid"
                 },
                 {
+                    "type": "config-field",
+                    "name": "request_id"
+                },
+                {
                     "type": "uuid"
                 }
             ],
             "output": [
+                "msg-log",
                 "req-log"
             ]
         },
         {
             "name": "tenant_id",
-            "mandatory": true,
             "source": {
                 "type": "req-header",
                 "name": "tenantid"
             },
             "output": [
+                "msg-log",
                 "req-log"
             ]
         },
         {
             "name": "tenant_subdomain",
-            "mandatory": true,
             "source": {
                 "type": "static"
             },
             "output": [
+                "msg-log",
                 "req-log"
             ]
         },
         {
             "name": "x_forwarded_for",
-            "mandatory": false,
             "envVarRedact": "LOG_SENSITIVE_CONNECTION_DATA",
             "source": {
                 "type": "req-header",
@@ -248,7 +240,6 @@
         },
         {
             "name": "x_custom_host",
-            "mandatory": false,
             "envVarRedact": "LOG_SENSITIVE_CONNECTION_DATA",
             "source": {
                 "type": "req-header",
@@ -260,7 +251,6 @@
         },
         {
             "name": "x_forwarded_host",
-            "mandatory": false,
             "envVarRedact": "LOG_SENSITIVE_CONNECTION_DATA",
             "source": {
                 "type": "req-header",
@@ -272,7 +262,6 @@
         },
         {
             "name": "x_forwarded_proto",
-            "mandatory": false,
             "envVarRedact": "LOG_SENSITIVE_CONNECTION_DATA",
             "source": {
                 "type": "req-header",
@@ -284,7 +273,6 @@
         },
         {
             "name": "x_ssl_client",
-            "mandatory": true,
             "envVarSwitch": "LOG_SSL_HEADERS",
             "source": {
                 "type": "req-header",
@@ -296,7 +284,6 @@
         },
         {
             "name": "x_ssl_client_verify",
-            "mandatory": true,
             "envVarSwitch": "LOG_SSL_HEADERS",
             "source": {
                 "type": "req-header",
@@ -308,7 +295,6 @@
         },
         {
             "name": "x_ssl_client_subject_dn",
-            "mandatory": true,
             "envVarSwitch": "LOG_SSL_HEADERS",
             "source": {
                 "type": "req-header",
@@ -320,7 +306,6 @@
         },
         {
             "name": "x_ssl_client_subject_cn",
-            "mandatory": true,
             "envVarSwitch": "LOG_SSL_HEADERS",
             "source": {
                 "type": "req-header",
@@ -332,7 +317,6 @@
         },
         {
             "name": "x_ssl_client_issuer_dn",
-            "mandatory": true,
             "envVarSwitch": "LOG_SSL_HEADERS",
             "source": {
                 "type": "req-header",
@@ -344,7 +328,6 @@
         },
         {
             "name": "x_ssl_client_notbefore",
-            "mandatory": true,
             "envVarSwitch": "LOG_SSL_HEADERS",
             "source": {
                 "type": "req-header",
@@ -356,7 +339,6 @@
         },
         {
             "name": "x_ssl_client_notafter",
-            "mandatory": true,
             "envVarSwitch": "LOG_SSL_HEADERS",
             "source": {
                 "type": "req-header",
@@ -368,7 +350,6 @@
         },
         {
             "name": "x_ssl_client_session_id",
-            "mandatory": true,
             "envVarSwitch": "LOG_SSL_HEADERS",
             "source": {
                 "type": "req-header",

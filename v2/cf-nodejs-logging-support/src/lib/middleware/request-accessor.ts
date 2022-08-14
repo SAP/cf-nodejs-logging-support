@@ -24,4 +24,8 @@ export default class RequestAccessor {
     public getField(req: any, fieldName: string): any {
         return this.frameworkService.getReqField(req, fieldName);
     };
+
+    public setFrameworkService() {
+        this.frameworkService = assignFrameworkService();
+    }
 }

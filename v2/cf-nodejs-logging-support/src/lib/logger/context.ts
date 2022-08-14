@@ -16,7 +16,13 @@ export default class ReqContext {
         return this.properties;
     }
 
+    setProp(key: string, value: string) {
+        this.properties[key] = value;
+    }
+
     private setProperties(req: any) {
+
+        const writtenAt = new Date();
         const contextFields = Config.getInstance().getContextFields();
         const sourceUtils = SourceUtils.getInstance();
 
@@ -24,7 +30,7 @@ export default class ReqContext {
             if (!Array.isArray(field.source)) {
                 this.properties[field.name] = sourceUtils.getContextFieldValue(field.source, req);
             } else {
-                this.properties[field.name] = sourceUtils.getValueFromSources(this.properties, field, "context");
+                this.properties[field.name] = sourceUtils.getValueFromSources(field, this.properties, "context", writtenAt, req);
             }
         });
     }
