@@ -84,24 +84,6 @@ describe('Test Config class', function () {
         })
     });
 
-    describe('Test getMsgFields', function () {
-        beforeEach(function () {
-            result = singleton.getMsgFields();
-        });
-        it('gets fields with output msg-log', function () {
-            expect(result.length).to.be.eql(7);
-        });
-    });
-
-    describe('Test getReqFields', function () {
-        beforeEach(function () {
-            result = singleton.getReqFields();
-        });
-        it('gets fields with output req-log', function () {
-            expect(result.length).to.be.eql(36);
-        });
-    });
-
     describe('Test setCustomFieldsFormat', function () {
         beforeEach(function () {
             singleton.setCustomFieldsFormat("application-logs");

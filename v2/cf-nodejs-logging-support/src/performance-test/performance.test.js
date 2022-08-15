@@ -74,8 +74,8 @@ describe('Test performance of old and new library', function () {
         it('Compare msg logs of old and new library', function () {
             oldLog.logMessage("info", "test-message");
             newLog.logMessage("info", "test-message");
-            console.log("Old library msg log: " + lastOutputOldLib);
-            console.log("New library msg log: " + lastOutputNewLib);
+            // console.log("Old library msg log: " + lastOutputOldLib);
+            // console.log("New library msg log: " + lastOutputNewLib);
 
             // check all keys in new lib log are also logged in old lib log
             expect(toMatchStructure(lastOutputNewLib, lastOutputOldLib)).to.be.true;
@@ -190,7 +190,7 @@ describe('Test performance of old and new library', function () {
         });
     });
 
-    describe.skip('Child logger: Write 10.000 logs with a simple message', function () {
+    describe('Child logger: Write 10.000 logs with a simple message', function () {
 
         it('Old library', function () {
 
@@ -231,7 +231,47 @@ describe('Test performance of old and new library', function () {
         });
     });
 
-    describe('logNetwork', function () {
+    describe('Write 10.000 logs with a global custom field', function () {
+
+        it('Old library', function () {
+
+            var startTime = performance.now()
+
+            for (let index = 0; index < 10000; index++) {
+                oldLog.setLoggingLevel('debug');
+                oldLog.logMessage("debug", "test-message");
+            }
+
+            var endTime = performance.now()
+
+            console.log(`Old lib: Setting a new logging level and loging a message 10.000 times took ${endTime - startTime} milliseconds`)
+        });
+
+        it('New library', function () {
+
+            var startTime = performance.now()
+
+            for (let index = 0; index < 10000; index++) {
+                newLog.setLoggingLevel('debug');
+                newLog.logMessage("debug", "test-message");
+            }
+
+            var endTime = performance.now()
+
+            // var startTime2 = performance.now()
+
+            // for (let index = 0; index < 10000; index++) {
+            //     newLogWithDefaults.logMessage("info", "test-message");
+            // }
+
+            // var endTime2 = performance.now()
+
+            console.log(`New lib: Setting a new logging level and loging a message 10.000 times took ${endTime - startTime} milliseconds`)
+            // console.log(`New lib with defaults: Logging 10.000 simple messages took ${endTime2 - startTime2} milliseconds`)
+        });
+    });
+
+    describe.skip('logNetwork', function () {
 
         // to do: assert that output of old and new library are equal
 
@@ -300,47 +340,6 @@ describe('Test performance of old and new library', function () {
             console.log("New lib:" + lastOutputNewLib);
             // console.log(`New lib with defaults: Logging 10.000 simple messages took ${endTime2 - startTime2} milliseconds`)
 
-        });
-    });
-
-
-    describe.skip('Write 10.000 logs with a global custom field', function () {
-
-        it('Old library', function () {
-
-            var startTime = performance.now()
-
-            for (let index = 0; index < 10000; index++) {
-                oldLog.setLoggingLevel('debug');
-                oldLog.logMessage("debug", "test-message");
-            }
-
-            var endTime = performance.now()
-
-            console.log(`Old lib: Setting a new logging level and loging a message 10.000 times took ${endTime - startTime} milliseconds`)
-        });
-
-        it('New library', function () {
-
-            var startTime = performance.now()
-
-            for (let index = 0; index < 10000; index++) {
-                newLog.setLoggingLevel('debug');
-                newLog.logMessage("debug", "test-message");
-            }
-
-            var endTime = performance.now()
-
-            // var startTime2 = performance.now()
-
-            // for (let index = 0; index < 10000; index++) {
-            //     newLogWithDefaults.logMessage("info", "test-message");
-            // }
-
-            // var endTime2 = performance.now()
-
-            console.log(`New lib: Setting a new logging level and loging a message 10.000 times took ${endTime - startTime} milliseconds`)
-            // console.log(`New lib with defaults: Logging 10.000 simple messages took ${endTime2 - startTime2} milliseconds`)
         });
     });
 
