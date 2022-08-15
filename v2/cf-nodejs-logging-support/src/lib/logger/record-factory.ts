@@ -16,6 +16,8 @@ export default class RecordFactory {
     private sourceUtils: SourceUtils;
     private REDACTED_PLACEHOLDER = "redacted";
     private LOG_TYPE = "log";
+    private cacheMsgRecord: any;
+
 
     private constructor() {
         this.config = Config.getInstance();
@@ -31,21 +33,50 @@ export default class RecordFactory {
         return RecordFactory.instance;
     }
 
+    resetCache() {
+        this.cacheMsgRecord = {};
+    }
+
+    updateCacheMsg() {
+        const writtenAt = new Date();
+
+        const cachedFields = this.config.getCacheMsgFields();
+        let cache: any = {};
+        cachedFields.forEach(
+            field => {
+                if (!Array.isArray(field.source)) {
+                    cache[field.name] = this.sourceUtils.getFieldValue(field.source, cache, writtenAt);
+                } else {
+                    const value = this.sourceUtils.getValueFromSources(field, cache, "msg-log", writtenAt);
+
+                    if (value != null) {
+                        cache[field.name] = value;
+                    }
+                }
+
+                // Handle default
+                if (cache[field.name] == null && field.default != null) {
+                    cache[field.name] = field.default;
+                }
+
+                // Replaces all fields, which are marked to be reduced and do not equal to their default value to REDUCED_PLACEHOLDER.
+                if (field._meta!.isRedacted == true && cache[field.name] != null && cache[field.name] != field.default) {
+                    cache[field.name] = this.REDACTED_PLACEHOLDER;
+                }
+            }
+        );
+        this.cacheMsgRecord = cache;
+    }
+
     // init a new record and assign fields with output "msg-log"
     buildMsgRecord(registeredCustomFields: Array<string>, loggerCustomFields: Map<string, any>, level: string, args: Array<any>, context?: ReqContext): any {
 
         const writtenAt = new Date();
-        // var startTimeGetMsgFields = performance.now();
-        const msgLogFields = this.config.getMsgFields();
-        // var endTimeGetMsgFields = performance.now();
-        // console.log(`Config.getMsgFields: ${endTimeGetMsgFields - startTimeGetMsgFields} milliseconds`)
-
-        let record: any = {
-            "level": level,
-        };
 
         var customFieldsFromArgs = {};
         var lastArg = args[args.length - 1];
+
+        let record: any = {};
 
         if (typeof lastArg === "object") {
             if (this.stacktraceUtils.isErrorWithStacktrace(lastArg)) {
@@ -60,53 +91,56 @@ export default class RecordFactory {
             args.pop();
         }
 
-        // var startTimeForEach = performance.now();
-        msgLogFields.forEach(field => {
-
-            // Assign value
-            // var startTimeGetValue = performance.now();
-            if (!Array.isArray(field.source)) {
-                record[field.name] = this.sourceUtils.getFieldValue(field.source, record, writtenAt);
-            } else {
-                const value = this.sourceUtils.getValueFromSources(field, record, "msg-log", writtenAt);
-                if (value != null) {
-                    record[field.name] = value;
-                }
-            }
-            // }
-            // var endTimeGetValue = performance.now();
-            // console.log(`msgLogFields.forEach => get source value: ${endTimeGetValue - startTimeGetValue} milliseconds`)
-
-            // Handle default
-            if (record[field.name] == null && field.default != null) {
-                record[field.name] = field.default;
-            }
-
-            // Replaces all fields, which are marked to be reduced and do not equal to their default value to REDUCED_PLACEHOLDER.
-            if (field._meta!.isRedacted == true && record[field.name] != null && record[field.name] != field.default) {
-                record[field.name] = this.REDACTED_PLACEHOLDER;
-            }
-        });
-        // var endTimeBuildForEach = performance.now();
-        // console.log(`msgLogFields.forEach: ${endTimeBuildForEach - startTimeForEach} milliseconds`)
-
-
-        // read and copy values from context
-        // var startTimeAddContext = performance.now();
-        if (context) {
-            // var startTimeAddContext = performance.now();
-            record = this.addContext(record, context);
-            // var endTimeAddContext = performance.now();
-            // console.log(`RecordFactory.addContext: ${endTimeAddContext - startTimeAddContext} milliseconds`)
+        // if config has changed, rebuild cache of record
+        if (this.config.configHasChanged) {
+            this.resetCache();
+            this.updateCacheMsg();
         }
 
-        // var startTimeAddCustomFields = performance.now();
-        record = this.addCustomFields(record, registeredCustomFields, loggerCustomFields, customFieldsFromArgs);
-        // var endTimeAddCustomFields = performance.now();
-        // console.log(`RecordFactory.addCustomFields: ${endTimeAddCustomFields - startTimeAddCustomFields} milliseconds`)
+        // assign cache to record
+        Object.assign(record, this.cacheMsgRecord);
 
+        // assign dynamic fields
+        this.config.noCacheMsgFields.forEach(
+            field => {
+                // ignore context fields because they are handled after forEach loop in addContext()
+                if (field._meta?.isContext == true) {
+                    return;
+                }
+
+                if (!Array.isArray(field.source)) {
+                    record[field.name] = this.sourceUtils.getFieldValue(field.source, record, writtenAt);
+                } else {
+                    const value = this.sourceUtils.getValueFromSources(field, record, "msg-log", writtenAt);
+                    if (value != null) {
+                        record[field.name] = value;
+                    }
+                }
+
+                // Handle default
+                if (record[field.name] == null && field.default != null) {
+                    record[field.name] = field.default;
+                }
+
+                // Replaces all fields, which are marked to be reduced and do not equal to their default value to REDUCED_PLACEHOLDER.
+                if (field._meta!.isRedacted == true && record[field.name] != null && record[field.name] != field.default) {
+                    record[field.name] = this.REDACTED_PLACEHOLDER;
+                }
+            }
+        );
+
+        // read and copy values from context
+        if (context) {
+            record = this.addContext(record, context);
+        }
+
+        record = this.addCustomFields(record, registeredCustomFields, loggerCustomFields, customFieldsFromArgs);
+
+        record["level"] = level;
         record["msg"] = util.format.apply(util, args);
         record["type"] = this.LOG_TYPE;
+
+        this.config.configHasChanged = false;
         return record;
     }
 

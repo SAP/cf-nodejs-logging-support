@@ -59,6 +59,12 @@
         "ConfigFieldMeta": {
             "additionalProperties": false,
             "properties": {
+                "isCache": {
+                    "type": "boolean"
+                },
+                "isContext": {
+                    "type": "boolean"
+                },
                 "isEnabled": {
                     "type": "boolean"
                 },

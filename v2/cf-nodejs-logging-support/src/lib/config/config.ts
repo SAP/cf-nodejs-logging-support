@@ -1,4 +1,3 @@
-import { performance } from 'perf_hooks';
 import EnvService from '../core/env-service';
 import appLoggingConfig from './config-app-logging.json';
 import cfConfig from './config-cf.json';
@@ -27,12 +26,17 @@ export default class Config {
     private msgFields: ConfigField[] = [];
     private reqFields: ConfigField[] = [];
     private contextFields: ConfigField[] = [];
+    public configHasChanged: boolean;
+    public noCacheMsgFields: ConfigField[];
 
-    private constructor() { }
+
+    private constructor() {
+        this.configHasChanged = true;
+        this.noCacheMsgFields = [];
+    }
 
     public static getInstance(): Config {
         if (!Config.instance) {
-            var startTime = performance.now();
             const configFiles: ConfigObject[] = [
                 coreConfig as ConfigObject,
                 requestConfig as ConfigObject
@@ -56,8 +60,6 @@ export default class Config {
             Config.instance = new Config();
 
             Config.instance.addConfig(configFiles);
-            var endTime = performance.now();
-            console.log(`creating Config instance lasted ${endTime - startTime} milliseconds`)
         }
 
         return Config.instance;
@@ -142,6 +144,15 @@ export default class Config {
         return filtered;
     }
 
+    public getCacheMsgFields(): ConfigField[] {
+        const filtered = Config.instance.getMsgFields().filter(
+            key => {
+                return key._meta?.isCache === true
+            }
+        );
+        return filtered;
+    }
+
     public getFramework(): framework {
         const framework = Config.instance.config.framework!;
         return framework;
@@ -166,13 +177,11 @@ export default class Config {
                     return;
                 }
 
-                // if (field.source.constructor !== Array) {
-                //     field.source = [field.source] as Source[];
-                // };
-
                 field._meta = {
                     isEnabled: true,
-                    isRedacted: false
+                    isRedacted: false,
+                    isCache: false,
+                    isContext: false
                 }
 
                 if (field.envVarSwitch) {
@@ -187,35 +196,25 @@ export default class Config {
                     field._meta.isEnabled = false;
                 }
 
-                const index = Config.instance.getIndex(field.name);
-
-                // if new config field
-                if (index === -1) {
-                    Config.instance.config.fields!.push(field);
+                if (!Array.isArray(field.source)) {
+                    if (["static", "env"].includes(field.source.type)) {
+                        field._meta.isCache = true;
+                    }
+                } else {
+                    // if Sources[] then only check first source
+                    if (["static", "env"].includes(field.source[0].type)) {
+                        field._meta.isCache = true;
+                    }
                 }
 
                 if (field.output?.includes('msg-log')) {
-                    const index = Config.instance.msgFields.findIndex(
-                        element => element.name == field.name
-                    );
+                    this.addToList(this.msgFields, field);
 
-                    if (index === -1) {
-                        Config.instance.msgFields.push(field);
-                    } else {
-                        Config.instance.msgFields.splice(index, 1, field);
-                    }
                 }
 
                 if (field.output?.includes('req-log')) {
-                    const index = Config.instance.reqFields.findIndex(
-                        element => element.name == field.name
-                    );
+                    this.addToList(this.reqFields, field);
 
-                    if (index === -1) {
-                        Config.instance.reqFields.push(field);
-                    } else {
-                        Config.instance.reqFields.splice(index, 1, field);
-                    }
                 }
 
                 // check if context field, if true, then save field in list
@@ -225,47 +224,35 @@ export default class Config {
                         for (let index = 0; index < sources.length; index++) {
                             const source = sources[index];
                             if (["req-header", "req-object"].includes((source.type))) {
-                                let index = Config.instance.contextFields.findIndex(
-                                    element => element.name == field.name
-                                );
-
-                                if (index === -1) {
-                                    Config.instance.contextFields.push(field);
-                                } else {
-                                    Config.instance.contextFields.splice(index, 1, field);
-                                }
+                                field._meta.isContext = true;
+                                this.addToList(this.contextFields, field);
                                 break;
                             }
                         }
                     } else {
                         if (["req-header", "req-object"].includes((field.source.type))) {
-                            const index = Config.instance.contextFields.findIndex(
-                                element => element.name == field.name
-                            );
-
-                            if (index === -1) {
-                                Config.instance.contextFields.push(field);
-                            } else {
-                                Config.instance.contextFields.splice(index, 1, field);
-                            }
+                            field._meta.isContext = true;
+                            this.addToList(this.contextFields, field);
                         }
                     }
-
-                    // if (["req-header", "req-object"].includes((field.source as Source).type)) {
-                    //     return true;
-                    // }
 
                     if (["correlation_id", "tenant_id"].includes(field.name)) {
-                        const index = Config.instance.contextFields.findIndex(
-                            element => element.name == field.name
-                        );
-
-                        if (index === -1) {
-                            Config.instance.contextFields.push(field);
-                        } else {
-                            Config.instance.contextFields.splice(index, 1, field);
-                        }
+                        field._meta.isContext = true;
+                        this.addToList(this.contextFields, field);
                     }
+                }
+
+                if (field._meta.isCache == false) {
+                    if (field.output?.includes("msg-log")) {
+                        this.addToList(this.noCacheMsgFields, field);
+                    }
+                }
+
+                const index = Config.instance.getIndex(field.name);
+
+                // if new config field
+                if (index === -1) {
+                    Config.instance.config.fields!.push(field);
                 }
 
                 // replace object in array with new field
@@ -290,6 +277,8 @@ export default class Config {
 
             return;
         });
+
+        this.configHasChanged = true;
     }
 
     public setCustomFieldsFormat(format: customFieldsFormat) {
@@ -328,5 +317,17 @@ export default class Config {
         );
 
         return index;
+    }
+
+    private addToList(list: ConfigField[], field: ConfigField) {
+        const index = list.findIndex(
+            element => element.name == field.name
+        );
+
+        if (index === -1) {
+            list.push(field);
+        } else {
+            list.splice(index, 1, field);
+        }
     }
 }

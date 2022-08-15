@@ -16,7 +16,7 @@ export interface ConfigField {
     disable?: boolean;
     default?: string | number | boolean;
     settable?: boolean;
-    _meta?: ConfigFieldMeta
+    _meta?: ConfigFieldMeta;
 }
 
 export interface Source {
@@ -31,6 +31,8 @@ export interface Source {
 interface ConfigFieldMeta {
     isRedacted: boolean;
     isEnabled: boolean;
+    isCache: boolean;
+    isContext: boolean;
 }
 
 type sources = "static" | "env" | "config-field" | "req-header" | "res-header" | "req-object" | "res-object" | "meta" | "uuid";
