@@ -82,7 +82,7 @@ export class SourceUtils {
         }
     }
 
-    getReqFieldValue(source: Source, record: any, req: any, res: any, writtenAt: Date): string | undefined {
+    getReqFieldValue(source: Source, record: any, writtenAt: Date, req: any, res: any): string | undefined {
         switch (source.type) {
             case "req-header":
                 return this.requestAccessor.getHeaderField(req, source.name!);
@@ -135,7 +135,7 @@ export class SourceUtils {
             let source = field.source[sourceIndex];
 
             fieldValue = origin == "msg-log" ? this.getFieldValue(source, record, writtenAt) :
-                origin == "req-log" ? this.getReqFieldValue(source, record, req, res, writtenAt) :
+                origin == "req-log" ? this.getReqFieldValue(source, record, writtenAt, req, res,) :
                     this.getContextFieldValue(source, req);
 
             ++sourceIndex;

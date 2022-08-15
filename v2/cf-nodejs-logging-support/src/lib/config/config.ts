@@ -26,13 +26,19 @@ export default class Config {
     private msgFields: ConfigField[] = [];
     private reqFields: ConfigField[] = [];
     private contextFields: ConfigField[] = [];
-    public configHasChanged: boolean;
+    public updateCacheMsgRecord: boolean;
+    public updateCacheReqRecord: boolean;
     public noCacheMsgFields: ConfigField[];
+    public noCacheReqFields: ConfigField[];
+
 
 
     private constructor() {
-        this.configHasChanged = true;
+        // this.configHasChanged = true;
+        this.updateCacheMsgRecord = true;
+        this.updateCacheReqRecord = true;
         this.noCacheMsgFields = [];
+        this.noCacheReqFields = [];
     }
 
     public static getInstance(): Config {
@@ -84,17 +90,8 @@ export default class Config {
         return Config.instance.config.fields!;
     }
 
-    public getMsgFields(): ConfigField[] {
-        return Config.instance.msgFields;
-    }
-
-    public getReqFields(): ConfigField[] {
-        return Config.instance.reqFields;
-    }
-
     public getContextFields(): ConfigField[] {
         return Config.instance.contextFields;
-
     }
 
     public getDisabledFields(): ConfigField[] {
@@ -107,7 +104,16 @@ export default class Config {
     }
 
     public getCacheMsgFields(): ConfigField[] {
-        const filtered = Config.instance.getMsgFields().filter(
+        const filtered = Config.instance.msgFields.filter(
+            key => {
+                return key._meta?.isCache === true
+            }
+        );
+        return filtered;
+    }
+
+    public getCacheReqFields(): ConfigField[] {
+        const filtered = Config.instance.reqFields.filter(
             key => {
                 return key._meta?.isCache === true
             }
@@ -208,6 +214,9 @@ export default class Config {
                     if (field.output?.includes("msg-log")) {
                         this.addToList(this.noCacheMsgFields, field);
                     }
+                    if (field.output?.includes("req-log")) {
+                        this.addToList(this.noCacheReqFields, field);
+                    }
                 }
 
                 const index = Config.instance.getIndex(field.name);
@@ -240,7 +249,8 @@ export default class Config {
             return;
         });
 
-        this.configHasChanged = true;
+        this.updateCacheMsgRecord = true;
+        this.updateCacheReqRecord = true;
     }
 
     public setCustomFieldsFormat(format: customFieldsFormat) {

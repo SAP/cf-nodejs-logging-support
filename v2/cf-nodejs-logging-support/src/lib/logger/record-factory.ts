@@ -1,7 +1,5 @@
-import { performance } from "perf_hooks";
 import util from "util";
 import Config from "../config/config";
-import { Source } from "../config/interfaces";
 import { isValidObject } from "../middleware/utils";
 import ReqContext from "./context";
 import { SourceUtils } from "./source-utils";
@@ -17,6 +15,7 @@ export default class RecordFactory {
     private REDACTED_PLACEHOLDER = "redacted";
     private LOG_TYPE = "log";
     private cacheMsgRecord: any;
+    private cacheReqRecord: any;
 
 
     private constructor() {
@@ -33,11 +32,9 @@ export default class RecordFactory {
         return RecordFactory.instance;
     }
 
-    resetCache() {
-        this.cacheMsgRecord = {};
-    }
-
     updateCacheMsg() {
+        this.cacheMsgRecord = {};
+
         const writtenAt = new Date();
 
         const cachedFields = this.config.getCacheMsgFields();
@@ -68,6 +65,37 @@ export default class RecordFactory {
         this.cacheMsgRecord = cache;
     }
 
+    updateCacheReq(req: any, res: any) {
+
+        const writtenAt = new Date();
+        const cachedFields = this.config.getCacheReqFields();
+        let cache: any = {};
+        cachedFields.forEach(
+            field => {
+                if (!Array.isArray(field.source)) {
+                    cache[field.name] = this.sourceUtils.getReqFieldValue(field.source, cache, writtenAt, req, res);
+                } else {
+                    const value = this.sourceUtils.getValueFromSources(field, cache, "req-log", writtenAt, req, res);
+
+                    if (value != null) {
+                        cache[field.name] = value;
+                    }
+                }
+
+                // Handle default
+                if (cache[field.name] == null && field.default != null) {
+                    cache[field.name] = field.default;
+                }
+
+                // Replaces all fields, which are marked to be reduced and do not equal to their default value to REDUCED_PLACEHOLDER.
+                if (field._meta!.isRedacted == true && cache[field.name] != null && cache[field.name] != field.default) {
+                    cache[field.name] = this.REDACTED_PLACEHOLDER;
+                }
+            }
+        );
+        this.cacheReqRecord = cache;
+    }
+
     // init a new record and assign fields with output "msg-log"
     buildMsgRecord(registeredCustomFields: Array<string>, loggerCustomFields: Map<string, any>, level: string, args: Array<any>, context?: ReqContext): any {
 
@@ -92,9 +120,9 @@ export default class RecordFactory {
         }
 
         // if config has changed, rebuild cache of record
-        if (this.config.configHasChanged) {
-            this.resetCache();
+        if (this.config.updateCacheMsgRecord == true) {
             this.updateCacheMsg();
+            this.config.updateCacheMsgRecord = false;
         }
 
         // assign cache to record
@@ -140,7 +168,6 @@ export default class RecordFactory {
         record["msg"] = util.format.apply(util, args);
         record["type"] = this.LOG_TYPE;
 
-        this.config.configHasChanged = false;
         return record;
     }
 
@@ -148,32 +175,47 @@ export default class RecordFactory {
     buildReqRecord(req: any, res: any, context: ReqContext): any {
 
         const writtenAt = new Date();
-        const reqLogFields = this.config.getReqFields();
         const reqLoggingLevel = this.config.getReqLoggingLevel();
         let record: any = { "level": reqLoggingLevel };
 
-        reqLogFields.forEach(field => {
-            if (field._meta!.isEnabled == false) {
-                return;
-            }
 
-            // Assign value
-            if (!Array.isArray(field.source)) {
-                record[field.name] = this.sourceUtils.getReqFieldValue(field.source, record, req, res, writtenAt);
-            } else {
-                record[field.name] = this.sourceUtils.getValueFromSources(field, record, "req-log", writtenAt, req, res);
-            }
+        // if config has changed, rebuild cache of record
+        if (this.config.updateCacheReqRecord == true) {
+            this.updateCacheReq(req, res);
+            this.config.updateCacheReqRecord = false;
+        }
 
-            // Handle default
-            if (record[field.name] == null && field.default != null) {
-                record[field.name] = field.default;
-            }
+        // assign cache to record
+        record = Object.assign(record, this.cacheReqRecord);
 
-            // Replaces all fields, which are marked to be reduced and do not equal to their default value to REDUCED_PLACEHOLDER.
-            if (field._meta!.isRedacted == true && record[field.name] != null && record[field.name] != field.default) {
-                record[field.name] = this.REDACTED_PLACEHOLDER;
+        // assign dynamic fields
+        this.config.noCacheReqFields.forEach(
+            field => {
+                // ignore context fields because they are handled after forEach loop in addContext()
+                if (field._meta?.isContext == true) {
+                    return;
+                }
+
+                if (!Array.isArray(field.source)) {
+                    record[field.name] = this.sourceUtils.getReqFieldValue(field.source, record, writtenAt, req, res);
+                } else {
+                    const value = this.sourceUtils.getValueFromSources(field, record, "req-log", writtenAt);
+                    if (value != null) {
+                        record[field.name] = value;
+                    }
+                }
+
+                // Handle default
+                if (record[field.name] == null && field.default != null) {
+                    record[field.name] = field.default;
+                }
+
+                // Replaces all fields, which are marked to be reduced and do not equal to their default value to REDUCED_PLACEHOLDER.
+                if (field._meta!.isRedacted == true && record[field.name] != null && record[field.name] != field.default) {
+                    record[field.name] = this.REDACTED_PLACEHOLDER;
+                }
             }
-        });
+        );
 
         record = this.addContext(record, context);
 
