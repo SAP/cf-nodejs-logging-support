@@ -48,7 +48,9 @@ describe('Test Config class', function () {
                         ],
                         "_meta": {
                             "isEnabled": true,
-                            "isRedacted": false
+                            "isRedacted": false,
+                            "isCache": true,
+                            "isContext": false
                         }
                     }, {
                         "name": "request",
@@ -63,7 +65,9 @@ describe('Test Config class', function () {
                         ],
                         "_meta": {
                             "isEnabled": true,
-                            "isRedacted": false
+                            "isRedacted": false,
+                            "isCache": false,
+                            "isContext": false
                         }
                     }
                 ];
@@ -152,7 +156,9 @@ describe('Test Config class', function () {
                     ],
                     "_meta": {
                         "isEnabled": true,
-                        "isRedacted": false
+                        "isRedacted": false,
+                        "isCache": true,
+                        "isContext": false
                     }
                 },
                 {
@@ -169,7 +175,9 @@ describe('Test Config class', function () {
                     "disable": true,
                     "_meta": {
                         "isEnabled": false,
-                        "isRedacted": false
+                        "isRedacted": false,
+                        "isCache": false,
+                        "isContext": false
                     }
                 },
                 {
@@ -185,7 +193,9 @@ describe('Test Config class', function () {
                     ],
                     "_meta": {
                         "isEnabled": true,
-                        "isRedacted": false
+                        "isRedacted": false,
+                        "isCache": false,
+                        "isContext": false
                     }
                 }
             ];
@@ -212,7 +222,9 @@ describe('Test Config class', function () {
                 ],
                 "_meta": {
                     "isEnabled": false,
-                    "isRedacted": false
+                    "isRedacted": false,
+                    "isCache": false,
+                    "isContext": false
                 },
                 "disable": true
             }];

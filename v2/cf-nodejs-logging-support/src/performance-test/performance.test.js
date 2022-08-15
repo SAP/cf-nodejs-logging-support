@@ -1,5 +1,6 @@
-cfConfig = require('./config-cf-with-defaults.json');
-requestConfig = require('./config-request-with-defaults.json');
+// cfConfig = require('./config-cf-with-defaults.json');
+// requestConfig = require('./config-request-with-defaults.json');
+const { expect } = require('chai');
 const importFresh = require('import-fresh');
 var httpMocks = require('node-mocks-http');
 process.env.VCAP_SERVICES = "CF";
@@ -25,9 +26,21 @@ process.env.VCAP_APPLICATION = JSON.stringify(
         "application_id": "87a4594e-c93e-42c5-87f6-15d92985e6a8"
     }
 );
-var log;
+
+function toMatchStructure(obj1, obj2) {
+    return Object.keys(obj1).every(key => {
+        const v = obj1[key];
+
+        if (typeof v === 'object' && v !== null) {
+            return hasEqualStructure(v, obj2[key]);
+        }
+
+        return obj2.hasOwnProperty(key);
+    });
+}
+
 var lastLevel;
-var lastOutput;
+var lastOutputOldLib;
 var logCount;
 
 describe('Test performance of old and new library', function () {
@@ -36,23 +49,63 @@ describe('Test performance of old and new library', function () {
 
         oldLog = importFresh("../../../../index");
         newLog = importFresh("../../build/main/index");
-        newLogWithDefaults = importFresh("../../build/main/index");
-        newLogWithDefaults.addConfig(cfConfig, requestConfig);
+        // newLog.addConfig(cfConfig, requestConfig);
 
         logCount = 0;
         lastLevel = "";
-        lastOutput = "";
+        lastOutputOldLib = "";
+        lastOutputNewLib = "";
 
         newLog.setSinkFunction(function (level, output) {
             lastLevel = level;
-            lastOutput = output;
+            lastOutputNewLib = output;
             logCount++;
         });
 
         oldLog.setSinkFunction(function (level, output) {
             lastLevel = level;
-            lastOutput = output;
+            lastOutputOldLib = output;
             logCount++;
+        });
+    });
+
+    describe('Confirm old and new library logs the same', function () {
+
+        it('Compare msg logs of old and new library', function () {
+            oldLog.logMessage("info", "test-message");
+            newLog.logMessage("info", "test-message");
+            console.log("Old library msg log: " + lastOutputOldLib);
+            console.log("New library msg log: " + lastOutputNewLib);
+
+            // check all keys in new lib log are also logged in old lib log
+            expect(toMatchStructure(lastOutputNewLib, lastOutputOldLib)).to.be.true;
+        });
+    });
+
+    describe('Logs 1 log, 1 cached log and compare', function () {
+        beforeEach(function () {
+            newLog.logMessage("info", "test-message");
+            firstLog = lastOutputNewLib;
+            newLog.logMessage("info", "test-message");
+            secondLog = lastOutputNewLib;
+
+            // ignore time fields
+            firstLog = JSON.parse(firstLog);
+            secondLog = JSON.parse(secondLog);
+            firstLog.written_ts = "123";
+            firstLog.written_at = "123";
+            firstLog.request_received_at = "123";
+            firstLog.response_sent_at = "123";
+            secondLog.written_ts = "123";
+            secondLog.written_at = "123";
+            secondLog.request_received_at = "123";
+            secondLog.response_sent_at = "123";
+
+
+        });
+
+        it('first log equals second cached log', function () {
+            expect(firstLog).to.be.eql(secondLog);
         });
     });
 
@@ -67,7 +120,6 @@ describe('Test performance of old and new library', function () {
             }
 
             var endTime = performance.now()
-
 
             console.log(`Old lib: Logging 10.000 simple messages took ${endTime - startTime} milliseconds`)
         });
@@ -90,6 +142,7 @@ describe('Test performance of old and new library', function () {
 
             // var endTime2 = performance.now()
 
+            // console.log("New library msg log: " + lastOutputNewLib);
             console.log(`New lib: Logging 10.000 simple messages took ${endTime - startTime} milliseconds`)
             // console.log(`New lib with defaults: Logging 10.000 simple messages took ${endTime2 - startTime2} milliseconds`)
 
@@ -137,7 +190,7 @@ describe('Test performance of old and new library', function () {
         });
     });
 
-    describe('Child logger: Write 10.000 logs with a simple message', function () {
+    describe.skip('Child logger: Write 10.000 logs with a simple message', function () {
 
         it('Old library', function () {
 
@@ -178,20 +231,21 @@ describe('Test performance of old and new library', function () {
         });
     });
 
-
     describe('logNetwork', function () {
+
+        // to do: assert that output of old and new library are equal
 
         it('Old library', function () {
 
             var req = httpMocks.createRequest({ method: 'GET', url: 'globalcontext' });
-            req.headers["referer"] = "test-referer";
-            req.user = {
-                id: "test-user"
-            };
-            req.connection = {
-                remoteAddress: "test-user",
-                remotePort: "remote-port"
-            };
+            // req.headers["referer"] = "test-referer";
+            // req.user = {
+            //     id: "test-user"
+            // };
+            // req.connection = {
+            //     remoteAddress: "test-user",
+            //     remotePort: "remote-port"
+            // };
             var res = httpMocks.createResponse();
 
 
@@ -204,6 +258,7 @@ describe('Test performance of old and new library', function () {
             var endTime = performance.now()
 
             console.log(`Old lib: logNetwork ${endTime - startTime} milliseconds`)
+            console.log("Old lib:" + lastOutputOldLib);
         });
 
         it('New library', function () {
@@ -242,6 +297,7 @@ describe('Test performance of old and new library', function () {
             // var endTime2 = performance.now()
 
             console.log(`New lib: logNetwork ${endTime - startTime} milliseconds`)
+            console.log("New lib:" + lastOutputNewLib);
             // console.log(`New lib with defaults: Logging 10.000 simple messages took ${endTime2 - startTime2} milliseconds`)
 
         });
