@@ -85,52 +85,14 @@ export default class Config {
     }
 
     public getMsgFields(): ConfigField[] {
-        // const filtered = Config.instance.config.fields!.filter(
-        //     key => {
-        //         if (key.output?.includes('msg-log')) {
-        //             return true;
-        //         }
-        //         return false;
-        //     }
-        // );
-        // return filtered;
         return Config.instance.msgFields;
     }
 
     public getReqFields(): ConfigField[] {
-        // const filtered = Config.instance.config.fields!.filter(
-        //     key => {
-        //         return key.output?.includes("req-log")
-        //     }
-        // );
-        // return filtered;
-
         return Config.instance.reqFields;
     }
 
     public getContextFields(): ConfigField[] {
-        // const filtered = Config.instance.config.fields!.filter(
-        //     field => {
-        //         if (field.output?.includes("msg-log") && field.output?.includes("req-log")) {
-        //             const sources = field.source as Source[];
-        //             for (let index = 0; index < sources.length; index++) {
-        //                 const source = sources[index];
-        //                 if (["req-header", "req-object"].includes((source.type))) {
-        //                     return true;
-        //                 }
-        //             }
-        //             // if (["req-header", "req-object"].includes((field.source as Source).type)) {
-        //             //     return true;
-        //             // }
-
-        //             if (["correlation_id", "tenant_id"].includes(field.name)) {
-        //                 return true;
-        //             }
-        //         }
-        //         return false;
-        //     }
-        // );
-        // return filtered;
         return Config.instance.contextFields;
 
     }
