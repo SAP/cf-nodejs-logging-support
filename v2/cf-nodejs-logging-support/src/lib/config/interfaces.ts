@@ -12,7 +12,7 @@ export interface ConfigField {
     envVarRedact?: string;
     envVarSwitch?: string;
     source: Source | Source[];
-    output?: outputs[];
+    output: outputs[];
     disable?: boolean;
     default?: string | number | boolean;
     settable?: boolean;
