@@ -1,7 +1,9 @@
 import Config from "../config/config";
 import { ConfigField, Source } from "../config/interfaces";
+import NestedVarResolver from "../helper/nested-var-resolver";
 import RequestAccessor from "../middleware/request-Accessor";
 import ResponseAccessor from "../middleware/response-accessor";
+
 const { v4: uuid } = require('uuid');
 var uuidCheck = /[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[0-9a-f]{4}-[0-9a-f]{12}/;
 
@@ -39,7 +41,7 @@ export class SourceUtils {
                 if (source.path) {
                     // clone path to avoid deleting path in resolveNestedVariable()
                     const clonedPath = [...source.path];
-                    return this.resolveNestedVariable(process.env, clonedPath);
+                    return NestedVarResolver.resolveNestedVariable(process.env, clonedPath);
                 }
                 return process.env[source.name!];
             case "config-field":
@@ -157,37 +159,4 @@ export class SourceUtils {
         }
         return -1;
     }
-
-    private resolveNestedVariable(root: any, path: string[]): any {
-
-        // return, if path is empty.
-        if (path == null || path.length == 0) {
-            return null;
-        }
-
-        var rootObj;
-
-        // if root is a string => parse it to an object. Otherwise => use it directly as object.
-        if (typeof root === "string") {
-            rootObj = JSON.parse(root);
-        } else if (typeof root === "object") {
-            rootObj = root;
-        } else {
-            return null;
-        }
-
-        // get value from root object
-        var value = rootObj[path[0]];
-
-        // cut first entry of the object path
-        path.shift();
-
-        // if the path is not empty, recursively resolve the remaining waypoints.
-        if (path.length >= 1) {
-            return this.resolveNestedVariable(value, path);
-        }
-
-        // return the resolved value, if path is empty.
-        return value;
-    };
 }

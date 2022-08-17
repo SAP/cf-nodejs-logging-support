@@ -164,6 +164,7 @@ export default class Config {
                     field._meta.isEnabled = false;
                 }
 
+                // check if cache field
                 if (!Array.isArray(field.source)) {
                     if (["static", "env"].includes(field.source.type)) {
                         field._meta.isCache = true;
