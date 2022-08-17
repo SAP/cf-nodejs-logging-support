@@ -18,7 +18,6 @@ Example:
     "fields": [
         {
             "name": "organization_id",
-            "mandatory": true,
             "source": {
                 "type": "static",
                 "value": "my_organization"
@@ -30,7 +29,6 @@ Example:
         },
         {
             "name": "component_id",
-            "mandatory": false,
             "source": {
                 "type": "env",
                 "path": [
@@ -44,7 +42,6 @@ Example:
         },
         {
             "name": "source_instance",
-            "mandatory": false,
             "source": {
                 "type": "config-field",
                 "name": "component_instance"
@@ -55,7 +52,6 @@ Example:
         },
         {
             "name": "request",
-            "mandatory": true,
             "source": {
                 "type": "req-object",
                 "name": "originalUrl"
@@ -79,15 +75,15 @@ export interface ConfigField {
     envVarRedact?: string;
     envVarSwitch?: string;
     source: Source | Source[];
-    output?: outputs[];
+    output: outputs[];
     disable?: boolean;
     default?: string;
 }
 ```
 
 ## Multiple sources
-Each field can have one or many sources declared in its configuration. If the field has a list of sources assigned, the library will iterate each source until one delivers a value. 
-You can also assign each source to work only with a specific framework using the property "framework". Our supported frameworks are:
+You can attach multiple sources to a field. In this case, the library will iterate each source until one delivers a value. 
+You can also bind each source to a specific framework. If the framework assigned to the source is not running, then this source will be ignored. To do this just declare the property "framework": <framework> in the respected source. Our supported frameworks are:
 * [Express](https://expressjs.com/): declare as "express"
 * [Restify](http://restify.com/): declare as "restify"
 * [Connect](https://www.npmjs.com/package/connect): declare as "connect"
@@ -170,7 +166,7 @@ Example:
     - path: declare environment variable path to read value.
     - name: declare name of environment variable.
     - framework: only use this sources if declared framework is running.
-* output: define output of field (msg-log or req-log).
+* output: define output of field (msg-log, req-log or both).
 * disable: if true, ommit field.
 * default: if value from sources is null, then assign this value.
 
@@ -195,7 +191,7 @@ Supported values are:
 * "cloud-logging"
 
 ## Add custom configuration
-Once you have a JSON file with your configuration, you can add this to the logger using the addConfig method:
+Once you have a JSON file with your configuration, you can add it to the logger calling the addConfig method:
 ```ts
 log.addConfig(configFile);
 ```
