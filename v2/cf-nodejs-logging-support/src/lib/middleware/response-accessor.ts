@@ -24,7 +24,7 @@ export default class ResponseAccessor {
         return this.frameworkService.getResField(res, fieldName);
     };
 
-    public finishLog(record: any) {
-        return this.frameworkService.finishLog(record);
+    public setFrameworkService() {
+        this.frameworkService = assignFrameworkService();
     }
 }

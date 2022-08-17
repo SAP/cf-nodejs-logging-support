@@ -7,7 +7,7 @@ var lastLevel;
 var lastOutput;
 var logCount;
 
-describe.skip('Test logging in global context', function () {
+describe('Test logging in global context', function () {
 
     beforeEach(function () {
         log = importFresh("../../../build/main/index");
@@ -16,7 +16,7 @@ describe.skip('Test logging in global context', function () {
         lastLevel = "";
         lastOutput = "";
 
-        log.setSinkFunction(function (level, output) {
+        log.setSinkFunction((level, output) => {
             lastLevel = level;
             lastOutput = JSON.parse(output);
             logCount++;
@@ -42,18 +42,9 @@ describe.skip('Test logging in global context', function () {
 
         it('writes log with all core properties', function () {
             const expectedKeys = [
-                'component_type',
-                'component_id',
-                'component_name',
-                'component_instance',
-                'source_instance',
-                'layer',
-                'organization_name',
-                'organization_id',
-                'space_name',
-                'space_id',
-                'container_id',
-                'logger'
+                'logger',
+                'written_at',
+                'written_ts'
             ];
             expect(lastOutput).to.include.all.keys(expectedKeys);
         });
@@ -155,7 +146,7 @@ describe.skip('Test logging in global context', function () {
         it('logs stacktrace field', function () {
             expect(lastOutput).to.have.property('stacktrace');
             expect(lastOutput.stacktrace).to.be.an('array');
-            var isArrayOfStrings = lastOutput.stacktrace.every(x => typeof(x) === 'string');
+            var isArrayOfStrings = lastOutput.stacktrace.every(x => typeof (x) === 'string');
             expect(isArrayOfStrings).to.be.true;
         });
 

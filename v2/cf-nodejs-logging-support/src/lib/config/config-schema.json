@@ -9,7 +9,11 @@
                     "$ref": "#/definitions/ConfigFieldMeta"
                 },
                 "default": {
-                    "type": "string"
+                    "type": [
+                        "string",
+                        "number",
+                        "boolean"
+                    ]
                 },
                 "disable": {
                     "type": "boolean"
@@ -19,9 +23,6 @@
                 },
                 "envVarSwitch": {
                     "type": "string"
-                },
-                "mandatory": {
-                    "type": "boolean"
                 },
                 "name": {
                     "type": "string"
@@ -58,6 +59,12 @@
         "ConfigFieldMeta": {
             "additionalProperties": false,
             "properties": {
+                "isCache": {
+                    "type": "boolean"
+                },
+                "isContext": {
+                    "type": "boolean"
+                },
                 "isEnabled": {
                     "type": "boolean"
                 },
@@ -93,7 +100,7 @@
         },
         "customFieldsFormat": {
             "enum": [
-                "application-logging",
+                "application-logs",
                 "cloud-logging"
             ],
             "type": "string"

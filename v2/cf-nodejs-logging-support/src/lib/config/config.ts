@@ -23,7 +23,23 @@ export default class Config {
         "framework": "express"
     }
 
-    private constructor() { }
+    private msgFields: ConfigField[] = [];
+    private reqFields: ConfigField[] = [];
+    private contextFields: ConfigField[] = [];
+    public updateCacheMsgRecord: boolean;
+    public updateCacheReqRecord: boolean;
+    public noCacheMsgFields: ConfigField[];
+    public noCacheReqFields: ConfigField[];
+
+
+
+    private constructor() {
+        // this.configHasChanged = true;
+        this.updateCacheMsgRecord = true;
+        this.updateCacheReqRecord = true;
+        this.noCacheMsgFields = [];
+        this.noCacheReqFields = [];
+    }
 
     public static getInstance(): Config {
         if (!Config.instance) {
@@ -41,7 +57,7 @@ export default class Config {
                 configFiles.push(cfConfig as ConfigObject);
             }
 
-            if (boundServices["application-logging"]) {
+            if (boundServices["application-logs"]) {
                 configFiles.push(appLoggingConfig as ConfigObject);
             } else {
                 configFiles.push(cloudLoggingConfig as ConfigObject);
@@ -74,45 +90,32 @@ export default class Config {
         return Config.instance.config.fields!;
     }
 
-    public getMsgFields(): ConfigField[] {
-        const filtered = Config.instance.config.fields!.filter(
-            key => {
-                if (key.output?.includes('msg-log')) {
-                    return true;
-                }
-                return false;
-            }
-        );
-        return filtered;
-    }
-
-    public getReqFields(): ConfigField[] {
-        const filtered = Config.instance.config.fields!.filter(
-            key => {
-                return key.output?.includes("req-log")
-            }
-        );
-        return filtered;
-    }
-
     public getContextFields(): ConfigField[] {
-        const filtered = Config.instance.config.fields!.filter(
-            field => {
-                if (field.output?.includes("msg-log") && field.output?.includes("req-log")) {
-                    if ((field.source as Source).type == "req-header" || "req-object") {
-                        return true;
-                    }
-                }
-                return false;
-            }
-        );
-        return filtered;
+        return Config.instance.contextFields;
     }
 
     public getDisabledFields(): ConfigField[] {
         const filtered = Config.instance.config.fields!.filter(
             key => {
                 return key.disable === true
+            }
+        );
+        return filtered;
+    }
+
+    public getCacheMsgFields(): ConfigField[] {
+        const filtered = Config.instance.msgFields.filter(
+            key => {
+                return key._meta?.isCache === true
+            }
+        );
+        return filtered;
+    }
+
+    public getCacheReqFields(): ConfigField[] {
+        const filtered = Config.instance.reqFields.filter(
+            key => {
+                return key._meta?.isCache === true
             }
         );
         return filtered;
@@ -144,7 +147,9 @@ export default class Config {
 
                 field._meta = {
                     isEnabled: true,
-                    isRedacted: false
+                    isRedacted: false,
+                    isCache: false,
+                    isContext: false
                 }
 
                 if (field.envVarSwitch) {
@@ -159,12 +164,67 @@ export default class Config {
                     field._meta.isEnabled = false;
                 }
 
+                // check if cache field
+                if (!Array.isArray(field.source)) {
+                    if (["static", "env"].includes(field.source.type)) {
+                        field._meta.isCache = true;
+                    }
+                } else {
+                    // if Sources[] then only check first source
+                    if (["static", "env"].includes(field.source[0].type)) {
+                        field._meta.isCache = true;
+                    }
+                }
+
+                if (field.output?.includes('msg-log')) {
+                    this.addToList(this.msgFields, field);
+
+                }
+
+                if (field.output?.includes('req-log')) {
+                    this.addToList(this.reqFields, field);
+
+                }
+
+                // check if context field, if true, then save field in list
+                if (field.output?.includes("msg-log") && field.output?.includes("req-log")) {
+                    if (Array.isArray(field.source)) {
+                        const sources = field.source as Source[];
+                        for (let index = 0; index < sources.length; index++) {
+                            const source = sources[index];
+                            if (["req-header", "req-object"].includes((source.type))) {
+                                field._meta.isContext = true;
+                                this.addToList(this.contextFields, field);
+                                break;
+                            }
+                        }
+                    } else {
+                        if (["req-header", "req-object"].includes((field.source.type))) {
+                            field._meta.isContext = true;
+                            this.addToList(this.contextFields, field);
+                        }
+                    }
+
+                    if (["correlation_id", "tenant_id"].includes(field.name)) {
+                        field._meta.isContext = true;
+                        this.addToList(this.contextFields, field);
+                    }
+                }
+
+                if (field._meta.isCache == false) {
+                    if (field.output?.includes("msg-log")) {
+                        this.addToList(this.noCacheMsgFields, field);
+                    }
+                    if (field.output?.includes("req-log")) {
+                        this.addToList(this.noCacheReqFields, field);
+                    }
+                }
+
                 const index = Config.instance.getIndex(field.name);
 
                 // if new config field
                 if (index === -1) {
                     Config.instance.config.fields!.push(field);
-                    return;
                 }
 
                 // replace object in array with new field
@@ -184,12 +244,14 @@ export default class Config {
             }
 
             if (file.reqLoggingLevel) {
-                // let level = LevelUtils.getLevel(file.reqLoggingLevel);
                 Config.instance.config.reqLoggingLevel = file.reqLoggingLevel;
             }
 
             return;
         });
+
+        this.updateCacheMsgRecord = true;
+        this.updateCacheReqRecord = true;
     }
 
     public setCustomFieldsFormat(format: customFieldsFormat) {
@@ -228,5 +290,17 @@ export default class Config {
         );
 
         return index;
+    }
+
+    private addToList(list: ConfigField[], field: ConfigField) {
+        const index = list.findIndex(
+            element => element.name == field.name
+        );
+
+        if (index === -1) {
+            list.push(field);
+        } else {
+            list.splice(index, 1, field);
+        }
     }
 }

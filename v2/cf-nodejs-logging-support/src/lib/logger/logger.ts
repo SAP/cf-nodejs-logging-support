@@ -3,20 +3,32 @@ import LevelUtils from "./level-utils";
 import RecordWriter from "./record-writer";
 import RecordFactory from "./record-factory";
 import ReqContext from "./context";
+import { isValidObject } from "../middleware/utils";
+// import { performance } from "perf_hooks";
 
 export default class Logger {
     private parent?: Logger = undefined
     private context?: ReqContext;
     private registeredCustomFields: Array<string> = [];
     private customFields: Map<string, any> = new Map<string, any>()
+    private recordFactory: RecordFactory;
+    private recordWriter: RecordWriter;
     protected loggingLevelThreshold: Level = Level.INHERIT
 
     constructor(parent?: Logger) {
         this.parent = parent;
+        this.recordFactory = RecordFactory.getInstance();
+        this.recordWriter = RecordWriter.getInstance();
     }
 
-    createLogger(): Logger {
-        return new Logger(this)
+    createLogger(customFields?: any): Logger {
+
+        let logger = new Logger(this);
+        // assign custom fields, if provided
+        if (customFields) {
+            logger.setCustomFields(customFields);
+        }
+        return logger;
     }
 
     setLoggingLevel(name: string) {
@@ -40,8 +52,65 @@ export default class Logger {
 
     logMessage(levelName: string, ..._args: any) {
         if (!this.isLoggingLevel(levelName)) return;
-        const record = RecordFactory.getInstance().buildMsgRecord(this.registeredCustomFields, this.customFields, levelName, _args, this.context);
-        RecordWriter.getInstance().writeLog(record);
+        const loggerCustomFields = Object.assign({}, this.extractCustomFieldsFromLogger(this));
+
+        // var startTimeBuildMsgRecord = performance.now();
+        const record = this.recordFactory.buildMsgRecord(this.registeredCustomFields, loggerCustomFields, levelName, _args, this.context);
+        // var endimeBuildMsgRecord = performance.now();
+        // console.log(`buildMsgRecord lasted ${endimeBuildMsgRecord - startTimeBuildMsgRecord} milliseconds`)
+
+        // var startTimeWriteLog = performance.now();
+        this.recordWriter.writeLog(record);
+        // var endTimeWriteLog = performance.now();
+        // console.log(`writeLog lasted ${endTimeWriteLog - startTimeWriteLog} milliseconds`)
+    }
+
+    error() {
+        this.logMessage("error", ...arguments);
+    }
+
+    warn() {
+        this.logMessage("warn", ...arguments);
+    }
+
+    info() {
+        this.logMessage("info", ...arguments);
+    }
+
+    verbose() {
+        this.logMessage("verbose", ...arguments);
+    }
+
+    debug() {
+        this.logMessage("debug", ...arguments);
+    }
+
+    silly() {
+        this.logMessage("silly", ...arguments);
+    }
+
+    isError() {
+        return this.isLoggingLevel("error");
+    }
+
+    isWarn() {
+        return this.isLoggingLevel("warn");
+    }
+
+    isInfo() {
+        return this.isLoggingLevel("info");
+    }
+
+    isVerbose() {
+        return this.isLoggingLevel("verbose");
+    }
+
+    isDebug() {
+        return this.isLoggingLevel("debug");
+    }
+
+    isSilly() {
+        return this.isLoggingLevel("silly");
     }
 
     registerCustomFields(fieldNames: Array<string>) {
@@ -49,7 +118,7 @@ export default class Logger {
     }
 
     setCustomFields(customFields: Map<string, any>) {
-        this.customFields = customFields
+        this.customFields = customFields;
     }
 
     getCustomFields(): Map<string, any> {
@@ -60,8 +129,46 @@ export default class Logger {
         }
     }
 
+    getCorrelationId(): string | undefined {
+        return this.context?.getProp("correlation_id");
+    }
+
+    setCorrelationId(value: string) {
+        this.context?.setProp("correlation_id", value);
+    }
+
+    getTenantId(): string | undefined {
+        return this.context?.getProp("tenant_id");
+    }
+
+    setTenantId(value: string) {
+        this.context?.setProp("tenant_id", value);
+
+    }
+
+    getTenantSubdomain(): string | undefined {
+        return this.context?.getProp("tenant_subdomain");
+    }
+
+    setTenantSubdomain(value: string) {
+        this.context?.setProp("tenant_subdomain", value);
+    }
+
     initContext(_req: any) {
         this.context = new ReqContext(_req);
         return this.context;
+    }
+
+    private extractCustomFieldsFromLogger(logger: Logger): any {
+        let fields = {};
+        if (logger.parent && logger.parent !== this) {
+            fields = this.extractCustomFieldsFromLogger(logger.parent);
+        }
+
+        if (isValidObject(logger.customFields)) {
+            fields = Object.assign(fields, logger.customFields);
+        }
+
+        return fields;
     }
 }

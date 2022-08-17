@@ -9,7 +9,8 @@
             "output": [
                 "msg-log",
                 "req-log"
-            ]
+            ],
+            "default": "-"
         },
         {
             "name": "request_size_b",
@@ -19,7 +20,8 @@
             },
             "output": [
                 "req-log"
-            ]
+            ],
+            "default": -1
         },
         {
             "name": "type",
@@ -69,7 +71,8 @@
             },
             "output": [
                 "req-log"
-            ]
+            ],
+            "default": -1
         },
         {
             "name": "response_content_type",
@@ -79,7 +82,8 @@
             },
             "output": [
                 "req-log"
-            ]
+            ],
+            "default": "-"
         },
         {
             "name": "remote_host",
@@ -90,7 +94,8 @@
             },
             "output": [
                 "req-log"
-            ]
+            ],
+            "default": "-"
         },
         {
             "name": "remote_port",
@@ -101,7 +106,8 @@
             },
             "output": [
                 "req-log"
-            ]
+            ],
+            "default": "-"
         },
         {
             "name": "remote_user",
@@ -112,7 +118,8 @@
             },
             "output": [
                 "req-log"
-            ]
+            ],
+            "default": "-"
         },
         {
             "name": "direction",
@@ -158,8 +165,7 @@
         {
             "name": "response_time_ms",
             "source": {
-                "type": "meta",
-                "name": "response_time_ms"
+                "type": "meta"
             },
             "output": [
                 "req-log"
@@ -168,8 +174,7 @@
         {
             "name": "response_sent_at",
             "source": {
-                "type": "meta",
-                "name": "response_sent_at"
+                "type": "meta"
             },
             "output": [
                 "req-log"
@@ -215,7 +220,8 @@
             "output": [
                 "msg-log",
                 "req-log"
-            ]
+            ],
+            "default": "-"
         },
         {
             "name": "tenant_subdomain",
@@ -225,7 +231,8 @@
             "output": [
                 "msg-log",
                 "req-log"
-            ]
+            ],
+            "default": "-"
         },
         {
             "name": "x_forwarded_for",

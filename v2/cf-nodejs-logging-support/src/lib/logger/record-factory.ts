@@ -1,16 +1,28 @@
 import util from "util";
 import Config from "../config/config";
+import { isValidObject } from "../middleware/utils";
 import ReqContext from "./context";
 import { SourceUtils } from "./source-utils";
+import { StacktraceUtils } from "./stacktrace-utils";
 const stringifySafe = require('json-stringify-safe');
 
 export default class RecordFactory {
 
     private static instance: RecordFactory;
-    private MAX_STACKTRACE_SIZE = 55 * 1024;
+    private config: Config;
+    private stacktraceUtils: StacktraceUtils;
+    private sourceUtils: SourceUtils;
     private REDACTED_PLACEHOLDER = "redacted";
+    private LOG_TYPE = "log";
+    private cacheMsgRecord: any;
+    private cacheReqRecord: any;
 
-    private constructor() { }
+
+    private constructor() {
+        this.config = Config.getInstance();
+        this.stacktraceUtils = StacktraceUtils.getInstance();
+        this.sourceUtils = SourceUtils.getInstance();
+    }
 
     public static getInstance(): RecordFactory {
         if (!RecordFactory.instance) {
@@ -20,25 +32,86 @@ export default class RecordFactory {
         return RecordFactory.instance;
     }
 
+    updateCacheMsg() {
+        this.cacheMsgRecord = {};
+
+        const writtenAt = new Date();
+
+        const cachedFields = this.config.getCacheMsgFields();
+        let cache: any = {};
+        cachedFields.forEach(
+            field => {
+                if (!Array.isArray(field.source)) {
+                    cache[field.name] = this.sourceUtils.getFieldValue(field.source, cache, writtenAt);
+                } else {
+                    const value = this.sourceUtils.getValueFromSources(field, cache, "msg-log", writtenAt);
+
+                    if (value != null) {
+                        cache[field.name] = value;
+                    }
+                }
+
+                // Handle default
+                if (cache[field.name] == null && field.default != null) {
+                    cache[field.name] = field.default;
+                }
+
+                // Replaces all fields, which are marked to be reduced and do not equal to their default value to REDUCED_PLACEHOLDER.
+                if (field._meta!.isRedacted == true && cache[field.name] != null && cache[field.name] != field.default) {
+                    cache[field.name] = this.REDACTED_PLACEHOLDER;
+                }
+            }
+        );
+        this.cacheMsgRecord = cache;
+    }
+
+    updateCacheReq(req: any, res: any) {
+
+        const writtenAt = new Date();
+        const cachedFields = this.config.getCacheReqFields();
+        let cache: any = {};
+        cachedFields.forEach(
+            field => {
+                if (!Array.isArray(field.source)) {
+                    cache[field.name] = this.sourceUtils.getReqFieldValue(field.source, cache, writtenAt, req, res);
+                } else {
+                    const value = this.sourceUtils.getValueFromSources(field, cache, "req-log", writtenAt, req, res);
+
+                    if (value != null) {
+                        cache[field.name] = value;
+                    }
+                }
+
+                // Handle default
+                if (cache[field.name] == null && field.default != null) {
+                    cache[field.name] = field.default;
+                }
+
+                // Replaces all fields, which are marked to be reduced and do not equal to their default value to REDUCED_PLACEHOLDER.
+                if (field._meta!.isRedacted == true && cache[field.name] != null && cache[field.name] != field.default) {
+                    cache[field.name] = this.REDACTED_PLACEHOLDER;
+                }
+            }
+        );
+        this.cacheReqRecord = cache;
+    }
+
     // init a new record and assign fields with output "msg-log"
     buildMsgRecord(registeredCustomFields: Array<string>, loggerCustomFields: Map<string, any>, level: string, args: Array<any>, context?: ReqContext): any {
 
-        const configInstance = Config.getInstance();
-        const sourceUtils = SourceUtils.getInstance();
-        const msgLogFields = configInstance.getMsgFields();
-        let record: any = {
-            "level": level,
-        };
+        const writtenAt = new Date();
 
         var customFieldsFromArgs = {};
         var lastArg = args[args.length - 1];
 
+        let record: any = {};
+
         if (typeof lastArg === "object") {
-            if (this.isErrorWithStacktrace(lastArg)) {
-                record.stacktrace = this.prepareStacktrace(lastArg.stack);
-            } else if (this.isValidObject(lastArg)) {
-                if (this.isErrorWithStacktrace(lastArg._error)) {
-                    record.stacktrace = this.prepareStacktrace(lastArg._error.stack);
+            if (this.stacktraceUtils.isErrorWithStacktrace(lastArg)) {
+                record.stacktrace = this.stacktraceUtils.prepareStacktrace(lastArg.stack);
+            } else if (isValidObject(lastArg)) {
+                if (this.stacktraceUtils.isErrorWithStacktrace(lastArg._error)) {
+                    record.stacktrace = this.stacktraceUtils.prepareStacktrace(lastArg._error.stack);
                     delete lastArg._error;
                 }
                 customFieldsFromArgs = lastArg;
@@ -46,150 +119,123 @@ export default class RecordFactory {
             args.pop();
         }
 
-        msgLogFields.forEach(field => {
+        // if config has changed, rebuild cache of record
+        if (this.config.updateCacheMsgRecord == true) {
+            this.updateCacheMsg();
+            this.config.updateCacheMsgRecord = false;
+        }
 
-            if (!Array.isArray(field.source)) {
-                record[field.name] = sourceUtils.getFieldValue(field.source, record);
-            } else {
-                record[field.name] = sourceUtils.getValueFromSources(record, field, "msg-log");
-            }
+        // assign cache to record
+        Object.assign(record, this.cacheMsgRecord);
 
-            if (record[field.name] == null && field.default != null) {
-                record[field.name] = field.default;
-            }
+        // assign dynamic fields
+        this.config.noCacheMsgFields.forEach(
+            field => {
+                // ignore context fields because they are handled after forEach loop in addContext()
+                if (field._meta?.isContext == true) {
+                    return;
+                }
 
-            if (field._meta!.isRedacted == true && record[field.name] != null) {
-                record[field.name] = this.REDACTED_PLACEHOLDER;
+                if (!Array.isArray(field.source)) {
+                    record[field.name] = this.sourceUtils.getFieldValue(field.source, record, writtenAt);
+                } else {
+                    const value = this.sourceUtils.getValueFromSources(field, record, "msg-log", writtenAt);
+                    if (value != null) {
+                        record[field.name] = value;
+                    }
+                }
+
+                // Handle default
+                if (record[field.name] == null && field.default != null) {
+                    record[field.name] = field.default;
+                }
+
+                // Replaces all fields, which are marked to be reduced and do not equal to their default value to REDUCED_PLACEHOLDER.
+                if (field._meta!.isRedacted == true && record[field.name] != null && record[field.name] != field.default) {
+                    record[field.name] = this.REDACTED_PLACEHOLDER;
+                }
             }
-        });
+        );
 
         // read and copy values from context
         if (context) {
-            const contextFields = context.getProps();
-            for (let key in contextFields) {
-                record[key] = contextFields[key];
-            }
+            record = this.addContext(record, context);
         }
 
         record = this.addCustomFields(record, registeredCustomFields, loggerCustomFields, customFieldsFromArgs);
+
+        record["level"] = level;
         record["msg"] = util.format.apply(util, args);
+        record["type"] = this.LOG_TYPE;
+
         return record;
     }
 
     // init a new record and assign fields with output "req-log"
     buildReqRecord(req: any, res: any, context: ReqContext): any {
 
-        const configInstance = Config.getInstance();
-        const reqLogFields = configInstance.getReqFields();
-        const reqLoggingLevel = configInstance.getReqLoggingLevel();
+        const writtenAt = new Date();
+        const reqLoggingLevel = this.config.getReqLoggingLevel();
         let record: any = { "level": reqLoggingLevel };
 
-        const sourceUtils = SourceUtils.getInstance();
 
-        reqLogFields.forEach(field => {
-            if (field._meta!.isEnabled == false) {
-                return;
-            }
-
-            if (!Array.isArray(field.source)) {
-                record[field.name] = sourceUtils.getReqFieldValue(field.source, record, req, res);
-            } else {
-                record[field.name] = sourceUtils.getValueFromSources(record, field, "req-log", req, res);
-            }
-
-            if (record[field.name] == null && field.default != null) {
-                record[field.name] = field.default;
-            }
-
-            if (field._meta!.isRedacted == true && record[field.name] != null) {
-                record[field.name] = this.REDACTED_PLACEHOLDER;
-            }
-
-        });
-
-        // read and copy values from context
-        const contextFields = context.getProps();
-        for (let key in contextFields) {
-            record[key] = contextFields[key];
+        // if config has changed, rebuild cache of record
+        if (this.config.updateCacheReqRecord == true) {
+            this.updateCacheReq(req, res);
+            this.config.updateCacheReqRecord = false;
         }
 
+        // assign cache to record
+        record = Object.assign(record, this.cacheReqRecord);
 
-        return record;
-    }
+        // assign dynamic fields
+        this.config.noCacheReqFields.forEach(
+            field => {
+                // ignore context fields because they are handled after forEach loop in addContext()
+                if (field._meta?.isContext == true) {
+                    return;
+                }
 
-    // check if the given object is an Error with stacktrace using duck typing
-    private isErrorWithStacktrace(obj: any): boolean {
-        if (obj && obj.stack && obj.message && typeof obj.stack === "string" && typeof obj.message === "string") {
-            return true;
-        }
-        return false;
-    }
-
-    // Split stacktrace into string array and truncate lines if required by size limitation
-    // Truncation strategy: Take one line from the top and two lines from the bottom of the stacktrace until limit is reached.
-    private prepareStacktrace(stacktraceStr: any): any {
-        var fullStacktrace = stacktraceStr.split('\n');
-        var totalLineLength = fullStacktrace.reduce((acc: any, line: any) => acc + line.length, 0);
-
-        if (totalLineLength > this.MAX_STACKTRACE_SIZE) {
-            var truncatedStacktrace = [];
-            var stackA = [];
-            var stackB = [];
-            var indexA = 0;
-            var indexB = fullStacktrace.length - 1;
-            var currentLength = 73; // set to approx. character count for "truncated" and "omitted" labels
-
-            for (let i = 0; i < fullStacktrace.length; i++) {
-                if (i % 3 == 0) {
-                    let line = fullStacktrace[indexA++];
-                    if (currentLength + line.length > this.MAX_STACKTRACE_SIZE) {
-                        break;
-                    }
-                    currentLength += line.length;
-                    stackA.push(line);
+                if (!Array.isArray(field.source)) {
+                    record[field.name] = this.sourceUtils.getReqFieldValue(field.source, record, writtenAt, req, res);
                 } else {
-                    let line = fullStacktrace[indexB--];
-                    if (currentLength + line.length > this.MAX_STACKTRACE_SIZE) {
-                        break;
+                    const value = this.sourceUtils.getValueFromSources(field, record, "req-log", writtenAt);
+                    if (value != null) {
+                        record[field.name] = value;
                     }
-                    currentLength += line.length;
-                    stackB.push(line);
+                }
+
+                // Handle default
+                if (record[field.name] == null && field.default != null) {
+                    record[field.name] = field.default;
+                }
+
+                // Replaces all fields, which are marked to be reduced and do not equal to their default value to REDUCED_PLACEHOLDER.
+                if (field._meta!.isRedacted == true && record[field.name] != null && record[field.name] != field.default) {
+                    record[field.name] = this.REDACTED_PLACEHOLDER;
                 }
             }
+        );
 
-            truncatedStacktrace.push("-------- STACK TRACE TRUNCATED --------");
-            truncatedStacktrace = [...truncatedStacktrace, ...stackA];
-            truncatedStacktrace.push(`-------- OMITTED ${fullStacktrace.length - (stackA.length + stackB.length)} LINES --------`);
-            truncatedStacktrace = [...truncatedStacktrace, ...stackB.reverse()];
-            return truncatedStacktrace;
-        }
-        return fullStacktrace;
-    }
+        record = this.addContext(record, context);
 
-    private isValidObject(obj: any, canBeEmpty?: any): boolean {
-        if (!obj) {
-            return false;
-        } else if (typeof obj !== "object") {
-            return false;
-        } else if (!canBeEmpty && Object.keys(obj).length === 0) {
-            return false;
-        }
-        return true;
+        const loggerCustomFields = Object.assign({}, req.logger.extractCustomFieldsFromLogger(req.logger));
+        record = this.addCustomFields(record, req.logger.registeredCustomFields, loggerCustomFields, {});
+        return record;
     }
 
     private addCustomFields(record: any, registeredCustomFields: Array<string>, loggerCustomFields: Map<string, any>, customFieldsFromArgs: any): any {
         var providedFields = Object.assign({}, loggerCustomFields, customFieldsFromArgs);
-        const config = Config.getInstance();
-        const customFieldsFormat = config.getConfig().customFieldsFormat;
+        const customFieldsFormat = this.config.getConfig().customFieldsFormat;
 
         for (var key in providedFields) {
             var value = providedFields[key];
 
-            if (customFieldsFormat == "cloud-logging" || record[key] != null || config.isSettable(key)) {
+            if (customFieldsFormat == "cloud-logging" || record[key] != null || this.config.isSettable(key)) {
                 record[key] = value;
             }
 
-            if (customFieldsFormat == "application-logging") {
+            if (customFieldsFormat == "application-logs") {
 
                 let res: any = {};
                 res.string = [];
@@ -211,6 +257,17 @@ export default class RecordFactory {
                 }
                 if (res.string.length > 0)
                     record["#cf"] = res;
+            }
+        }
+        return record;
+    }
+
+    // read and copy values from context
+    private addContext(record: any, context: ReqContext): object {
+        const contextFields = context.getProps();
+        for (let key in contextFields) {
+            if (contextFields[key] != null) {
+                record[key] = contextFields[key];
             }
         }
         return record;
