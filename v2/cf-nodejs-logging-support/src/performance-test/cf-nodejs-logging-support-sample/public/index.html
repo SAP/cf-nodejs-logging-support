@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="Interact with buttons to test library functionalities.">
+    <meta name="author" content="Federico Romagnoli">
+    <script src="../scripts/logic.js"></script>
+    <link rel="stylesheet" href="../styles/style.css">
+</head>
+
+<body>
+    <div class="main-container">
+        <h1 class="title">cf-nodejs-logging-support | sample app</h1>
+        <div id="buttons-container" class="buttons-container">
+            <h2 class="subtitle">Buttons to test functionalities:</h2>
+            <button class="btn" targetpath="globalcontext" type="submit">Log message in global
+        context</button>
+            <button class="btn" targetpath="requestcontext" type="submit">Log message in request
+        context</button>
+            <button class="btn" targetpath="customfields" type="submit">Log message with some custom
+        fields</button>
+            <button class="btn" targetpath="stacktrace" type="submit">Log a server error (500) with a stack
+        trace</button>
+            <button class="btn" targetpath="clienterror" type="submit">Log a client error (404)</button>
+            <button class="btn" targetpath="childlogger" type="submit">Logs from child logger</button>
+            <button class="btn" targetpath="correlationandtenantid" type="submit">Logs Correlation-
+        and Tenant-ID</button>
+            <a href="https://sap.github.io/cf-nodejs-logging-support/">Visit Documentation</a>
+        </div>
+    </div>
+</body>
+
+</html>
