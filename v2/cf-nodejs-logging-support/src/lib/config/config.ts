@@ -1,4 +1,5 @@
 import EnvService from '../core/env-service';
+import Level from '../logger/level';
 import appLoggingConfig from './config-app-logging.json';
 import cfConfig from './config-cf.json';
 import cloudLoggingConfig from './config-cloud-logging.json';
@@ -264,6 +265,10 @@ export default class Config {
 
     public setFramework(framework: framework): void {
         Config.instance.config.framework = framework;
+    }
+
+    public setRequestLogLevel(name: string): void {
+        Config.instance.config.reqLoggingLevel = name;
     }
 
     public enableTracing(input: string[]) {
