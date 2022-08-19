@@ -4,7 +4,6 @@ import RecordWriter from "./record-writer";
 import RecordFactory from "./record-factory";
 import ReqContext from "./context";
 import { isValidObject } from "../middleware/utils";
-// import { performance } from "perf_hooks";
 
 export default class Logger {
     private parent?: Logger = undefined
@@ -54,15 +53,9 @@ export default class Logger {
         if (!this.isLoggingLevel(levelName)) return;
         const loggerCustomFields = Object.assign({}, this.extractCustomFieldsFromLogger(this));
 
-        // var startTimeBuildMsgRecord = performance.now();
         const record = this.recordFactory.buildMsgRecord(this.registeredCustomFields, loggerCustomFields, levelName, _args, this.context);
-        // var endimeBuildMsgRecord = performance.now();
-        // console.log(`buildMsgRecord lasted ${endimeBuildMsgRecord - startTimeBuildMsgRecord} milliseconds`)
 
-        // var startTimeWriteLog = performance.now();
         this.recordWriter.writeLog(record);
-        // var endTimeWriteLog = performance.now();
-        // console.log(`writeLog lasted ${endTimeWriteLog - startTimeWriteLog} milliseconds`)
     }
 
     error() {
