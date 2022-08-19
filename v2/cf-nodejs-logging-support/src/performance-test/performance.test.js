@@ -232,9 +232,9 @@ describe('Test performance of old and new library', function () {
         });
     });
 
-    describe.skip('logNetwork', function () {
+    describe.skip('Write 10.000 request logs by calling logNetwork middleware', function () {
 
-        // to do: assert that output of old and new library are equal
+        // TO DO: finishLog is not triggered when calling logNetwork. Reason: Event in mocked response is not triggered.
 
         it('Old library', function () {
 
@@ -289,53 +289,9 @@ describe('Test performance of old and new library', function () {
 
             var endTime = performance.now()
 
-            // var startTime2 = performance.now()
-
-            // for (let index = 0; index < 10000; index++) {
-            //     newLogWithDefaults.logMessage("info", "test-message");
-            // }
-
-            // var endTime2 = performance.now()
-
             console.log(`New lib: logNetwork ${endTime - startTime} milliseconds`)
             console.log("New lib:" + lastOutputNewLib);
-            // console.log(`New lib with defaults: Logging 10.000 simple messages took ${endTime2 - startTime2} milliseconds`)
 
-        });
-    });
-
-    describe.skip('Compare buildMsgRecord and writeLog performance', function () {
-
-        it('New library', function () {
-
-            var startTime = performance.now()
-
-            for (let index = 0; index < 10; index++) {
-                newLog.logMessage("info", "test-message");
-            }
-
-            var endTime = performance.now()
-
-
-
-            console.log(`New lib: Logging 10 simple messages took ${endTime - startTime} milliseconds`)
-
-        });
-    });
-
-    describe.skip('Check performance for creating Config instance', function () {
-
-        it('New library', function () {
-
-            var startTime = performance.now()
-
-            for (let index = 0; index < 10; index++) {
-                newLog.logMessage("info", "test-message");
-            }
-
-            var endTime = performance.now()
-
-            console.log(`New lib: Logging 10 simple messages took ${endTime - startTime} milliseconds`)
         });
     });
 });
