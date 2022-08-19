@@ -1,29 +1,27 @@
-// cfConfig = require('./config-cf-with-defaults.json');
-// requestConfig = require('./config-request-with-defaults.json');
 const { expect } = require('chai');
 const importFresh = require('import-fresh');
 var httpMocks = require('node-mocks-http');
 process.env.VCAP_SERVICES = "CF";
 process.env.VCAP_APPLICATION = JSON.stringify(
     {
-        "cf_api": "https://api.cf.stagingaws.hanavlab.ondemand.com",
+        "cf_api": "test-value",
         "limits": {
             "fds": 32768
         },
-        "application_name": "I556334-express-cf-logging-support-sample",
+        "application_name": "test-value",
         "application_uris": [
-            "I556334-express-cf-logging-support-sample.cert.cfapps.stagingaws.hanavlab.ondemand.com"
+            "test-value"
         ],
-        "name": "I556334-express-cf-logging-support-sample",
-        "space_name": "dev",
-        "space_id": "9c58830f-ed14-4ac3-a0b2-d7957c4a23ae",
-        "organization_id": "0a2f41af-a1d3-45d4-81bc-247d1f8ea2fc",
-        "organization_name": "Cloud-Logging_Perfx-CLS",
+        "name": "test-value",
+        "space_name": "test-value",
+        "space_id": "test-value",
+        "organization_id": "test-value",
+        "organization_name": "test-value",
         "uris": [
-            "I556334-express-cf-logging-support-sample.cert.cfapps.stagingaws.hanavlab.ondemand.com"
+            "test-value"
         ],
         "users": null,
-        "application_id": "87a4594e-c93e-42c5-87f6-15d92985e6a8"
+        "application_id": "test-value8"
     }
 );
 
