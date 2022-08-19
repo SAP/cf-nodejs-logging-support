@@ -201,7 +201,7 @@ describe('Test performance of old and new library', function () {
         });
     });
 
-    describe('Write 10.000 logs with a global custom field', function () {
+    describe('Write 10.000 logs and set a new log level', function () {
 
         it('Old library', function () {
 
