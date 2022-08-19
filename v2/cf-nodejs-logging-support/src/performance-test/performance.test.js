@@ -30,7 +30,7 @@ function toMatchStructure(obj1, obj2) {
         const v = obj1[key];
 
         if (typeof v === 'object' && v !== null) {
-            return hasEqualStructure(v, obj2[key]);
+            return toMatchStructure(v, obj2[key]);
         }
 
         return obj2.hasOwnProperty(key);
@@ -72,11 +72,12 @@ describe('Test performance of old and new library', function () {
         it('Compare msg logs of old and new library', function () {
             oldLog.logMessage("info", "test-message");
             newLog.logMessage("info", "test-message");
-            // console.log("Old library msg log: " + lastOutputOldLib);
-            // console.log("New library msg log: " + lastOutputNewLib);
 
+            console.log(lastOutputNewLib);
+            console.log(lastOutputOldLib);
             // check all keys in new lib log are also logged in old lib log
             expect(toMatchStructure(lastOutputNewLib, lastOutputOldLib)).to.be.true;
+            // expect(toMatchStructure(lastOutputOldLib, lastOutputNewLib)).to.be.true;
         });
     });
 
