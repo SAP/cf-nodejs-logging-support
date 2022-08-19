@@ -226,17 +226,21 @@ export default class RecordFactory {
 
     private addCustomFields(record: any, registeredCustomFields: Array<string>, loggerCustomFields: Map<string, any>, customFieldsFromArgs: any): any {
         var providedFields = Object.assign({}, loggerCustomFields, customFieldsFromArgs);
-        const customFieldsFormat = this.config.getConfig().customFieldsFormat;
+        const customFieldsFormat = this.config.getConfig().customFieldsFormat!;
+
+        // if format "disabled", do not log any custom fields
+        if (customFieldsFormat == "disabled") {
+            return record;
+        }
 
         for (var key in providedFields) {
             var value = providedFields[key];
 
-            if (customFieldsFormat == "cloud-logging" || record[key] != null || this.config.isSettable(key)) {
+            if (["cloud-logging", "all", "default"].includes(customFieldsFormat) || record[key] != null || this.config.isSettable(key)) {
                 record[key] = value;
             }
 
-            if (customFieldsFormat == "application-logs") {
-
+            if (customFieldsFormat == "application-logging" || customFieldsFormat == "all") {
                 let res: any = {};
                 res.string = [];
                 let key;

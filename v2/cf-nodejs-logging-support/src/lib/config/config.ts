@@ -58,13 +58,17 @@ export default class Config {
                 configFiles.push(cfConfig as ConfigObject);
             }
 
-            if (boundServices["application-logs"]) {
-                configFiles.push(appLoggingConfig as ConfigObject);
-            } else {
-                configFiles.push(cloudLoggingConfig as ConfigObject);
-            }
-
             Config.instance = new Config();
+
+            if (boundServices["application-logs"] && boundServices["cloud-logs"]) {
+                Config.instance.setCustomFieldsFormat("all");
+            } else if (boundServices["application-logs"]) {
+                Config.instance.setCustomFieldsFormat("application-logging");
+                // configFiles.push(appLoggingConfig as ConfigObject);
+            } else {
+                Config.instance.setCustomFieldsFormat("cloud-logging");
+                // configFiles.push(cloudLoggingConfig as ConfigObject);
+            }
 
             Config.instance.addConfig(configFiles);
         }

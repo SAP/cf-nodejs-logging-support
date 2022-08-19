@@ -40,4 +40,4 @@ type outputs = "msg-log" | "req-log";
 
 export type framework = "express" | "restify" | "connect" | "nodejs-http";
 
-export type customFieldsFormat = "application-logs" | "cloud-logging";
+export type customFieldsFormat = "application-logging" | "cloud-logging" | "all" | "disabled" | "default";

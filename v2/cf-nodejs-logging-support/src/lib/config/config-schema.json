@@ -100,8 +100,11 @@
         },
         "customFieldsFormat": {
             "enum": [
-                "application-logs",
-                "cloud-logging"
+                "all",
+                "application-logging",
+                "cloud-logging",
+                "default",
+                "disabled"
             ],
             "type": "string"
         },
