@@ -1,17 +1,18 @@
 ---
 layout: default
-title: Configuration
-parent: Advanced Usage
+title: Configuration Fields
+parent: Configuration
 nav_order: 1
-permalink: /configuration
+permalink: /configuration/fields
 ---
 
-# Configuration
-You can customize the default configuration by writing a JSON file and adding it to the library. If a field name in your configuration already exist this will overrided the previous configuration field. So you can add new fields or override already existing ones.
-Make sure to declare the configuration of your fields as a list in the property "fields".
+# Configuration of logging fields
+You can write a configuration file to add new fields or override the behaviour of already existing ones. If a field name already exist in your configuration, this will override the previous configuration field. 
 
 
 ## Write a JSON file and declare fields configuration
+Make sure to declare the configuration of your fields as a list in the property "fields".
+
 Example:
 ```ts
 {
@@ -61,16 +62,14 @@ Example:
                 "msg-log"
             ]
         },
-    ],
-    "reqLoggingLevel": "info",
-    "customFieldsFormat": "cloud-logging",
-    "outputStartupMsg": true,
-    "framework": "express"
+    ]
 }
 ```
 
+The configuration of each field must implement the ConfigField interface:
+
 ```ts
-export interface ConfigField {
+interface ConfigField {
     name: string;
     envVarRedact?: string;
     envVarSwitch?: string;
@@ -80,6 +79,28 @@ export interface ConfigField {
     default?: string;
 }
 ```
+
+## Description config field properties:
+* name: assigns the key of the field.
+* envVarSwitch: Only log this field, if specified environment variable is set to "true". If specified environment variable is not set to "true" or not present, field gets omitted. This is also affects fields with default values.
+* envVarRedact: Only log this field, if specified environment variable is set to "true". If specified environment variable is not set to "true" or not present, field gets set to "redacted" if it is not set to its default value or null.
+* source: configures how the value of the field is assigned. You can assign one or many sources to a field.
+    -  type: One of
+        + "static": use value from value field.
+        + "env": read value from environment variable.
+        + "config-field": copy value from another configured field.
+        + "req-header": read value from request header.
+        + "req-body": read value from request object.
+        + "res-header": read value from response header.
+        + "res-body": read value from response object.
+        + "uuid": create a random uuid and assign to value.
+    - value: declare value for sources of type static.
+    - path: declare environment variable path to read value.
+    - name: declare name of environment variable.
+    - framework: only use this sources if declared framework is running.
+* output: define output of field (msg-log, req-log or both).
+* disable: if true, ommit field.
+* default: if value from sources is null, then assign this value.
 
 ## Multiple sources
 You can attach multiple sources to a field. In this case, the library will iterate each source until one delivers a value. 
@@ -116,8 +137,8 @@ Exmaple of field with multiple sources:
             ]
         }
     ]
-},
-`
+}
+```
 
 ## Sensitive data redaction
 To handle sensitive data redaction you can assign a field with the properties '"envVarSwitch":<ENV-VARIABLE>' or '"envVarRedact":<ENV-VARIABLE>'.
@@ -148,57 +169,4 @@ Example:
     }
 ```
 
-## Resume config field properties:
-* name: assigns the key of the field.
-* envVarSwitch: Only log this field, if specified environment variable is set to "true". If specified environment variable is not set to "true" or not present, field gets omitted. This is also affects fields with default values.
-* envVarRedact: Only log this field, if specified environment variable is set to "true". If specified environment variable is not set to "true" or not present, field gets set to "redacted" if it is not set to its default value or null.
-* source: configures how the value of the field is assigned. You can assign one or more sources to a field.
-    -  type: One of
-        + "static": use value from value field.
-        + "env": read value from environment variable.
-        + "config-field": copy value from another configured field.
-        + "req-header": read value from request header.
-        + "req-body": read value from request object.
-        + "res-header": read value from response header.
-        + "res-body": read value from response object.
-        + "uuid": create a random uuid and assign to value.
-    - value: declare value for sources of type static.
-    - path: declare environment variable path to read value.
-    - name: declare name of environment variable.
-    - framework: only use this sources if declared framework is running.
-* output: define output of field (msg-log, req-log or both).
-* disable: if true, ommit field.
-* default: if value from sources is null, then assign this value.
-
-
-## Set default request loging level
-Change the default logging level for all request by setting the property "reqLoggingLevel": <level>. For example:
-* "reqLoggingLevel": "warn"
-* "reqLoggingLevel": "debug"
-
-## Set framework
-Set the framework used by setting the property "framework": <frameworkName> in the configuration file. The default framework is express. Alternatively, you can also set the framework from the logger instance by calling the method:
-```ts 
-setFramework(<frameworkName>) 
-```
-Our supported frameworks are:
-* "express"
-* "restify"
-* "connect"
-* "nodejs-http"
-
-## Custom fields format
-Set the custom field format by setting the property "customFieldsFormat": <format> in the configuration file.
-Supported values are:
-* "application-logging"
-* "cloud-logging"
-* "all": use application-logging and cloud-logging format in parallel.
-* "disabled": do not log any custom fields
-* "default": set default format cloud-logging
-
-## Add custom configuration
-Once you have a JSON file with your configuration, you can add it to the logger by calling the addConfig method:
-```ts
-log.addConfig(configFile);
-```
-
+To see which fields are configured as sensitive by default go to [Sensitive Data Redaction](/cf-nodejs-logging-support/advanced-usage/sensitive-data-redaction).
