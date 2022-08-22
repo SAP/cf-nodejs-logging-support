@@ -7,7 +7,7 @@ permalink: /advanced-usage/configuration
 ---
 
 # Configuration
-You can customize the default configuration by writing a JSON file and adding it to the library. You can add new fields or already existing ones. If a field name in your configuration already exist this will overrided the previous configuration field.
+You can customize the default configuration by writing a JSON file and adding it to the library. If a field name in your configuration already exist this will overrided the previous configuration field. So you can add new fields or override already existing ones.
 Make sure to declare the configuration of your fields as a list in the property "fields".
 
 
@@ -117,10 +117,10 @@ Exmaple of field with multiple sources:
         }
     ]
 },
-```
+`
 
 ## Sensitive data redaction
-To handle sensitive data redaction you can use you can assign a field with the properties '"envVarSwitch":<ENV-VARIABLE>' or '"envVarRedact":<ENV-VARIABLE>'.
+To handle sensitive data redaction you can assign a field with the properties '"envVarSwitch":<ENV-VARIABLE>' or '"envVarRedact":<ENV-VARIABLE>'.
 
 * envVarSwitch: 
                       Only log this field, if specified environment variable is set to "true". 
@@ -177,7 +177,10 @@ Change the default logging level for all request by setting the property "reqLog
 * "reqLoggingLevel": "debug"
 
 ## Set framework
-Set the framework used by setting the property "framework": <frameworkName>. The default framework is express.
+Set the framework used by setting the property "framework": <frameworkName> in the configuration file. The default framework is express. Alternatively, you can also set the framework from the logger instance by calling the method:
+```ts 
+setFramework(<frameworkName>) 
+```
 Our supported frameworks are:
 * "express"
 * "restify"
@@ -185,13 +188,16 @@ Our supported frameworks are:
 * "nodejs-http"
 
 ## Custom fields format
-Set the custom field format by setting the property "customFieldsFormat": <format>.
+Set the custom field format by setting the property "customFieldsFormat": <format> in the configuration file.
 Supported values are:
-* "application-logs"
+* "application-logging"
 * "cloud-logging"
+* "all": use application-logging and cloud-logging format in parallel.
+* "disabled": do not log any custom fields
+* "default": set default format cloud-logging
 
 ## Add custom configuration
-Once you have a JSON file with your configuration, you can add it to the logger calling the addConfig method:
+Once you have a JSON file with your configuration, you can add it to the logger by calling the addConfig method:
 ```ts
 log.addConfig(configFile);
 ```
