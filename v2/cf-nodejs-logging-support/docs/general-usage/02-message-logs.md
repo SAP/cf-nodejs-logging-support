@@ -104,3 +104,11 @@ There are convenience methods available for this feature:
 ```js
 var isDebugActive = log.isDebug();
 ```
+
+## Get log level 
+
+For local testing purposes you can get the current level of a logging instance by calling the getLoggingLevel method:
+
+```js
+log.getLoggingLevel();
+```
