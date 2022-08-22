@@ -15,6 +15,24 @@ Example:
 2a54482a0300e60000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000002a54482a
 ```
 
-Applications can add the whole SAP Passport in this field or give its constituents in the respective fields.
+Applications can add the whole SAP Passport in this field or give its constituents in the respective fields. These fields will always be logged as normal fields directly in the log object regardless of the custom fields format.
 
-To read up on the possible fields, please look at [fields](https://github.com/SAP/cf-java-logging-support/blob/master/cf-java-logging-support-core/beats/app-logs/docs/fields.asciidoc).
+To read up on the possible fields, please look at [fields](https://github.com/SAP/cf-java-logging-support/blob/master/cf-java-logging-support-core/beats/app-logs/docs/fields.asciidoc). 
+
+You can activate the SAP Passport by calling the method enableTracing:
+
+```ts
+log.enableTracing("sap_passport") 
+```
+
+After activating the SAP Passport you will be able to add the whole SAP Passport or its constituents related fields by calling setCustomFields:
+
+Example for adding whole SAP Passport:
+```ts
+log.setCustomFields({"sap_passport":"2a54482a0300e60000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000002a54482a"}) 
+```
+
+Example for adding only some SAP Passport related fields:
+```ts
+log.setCustomFields({"sap_passport_Action":"value", "sap_passport_ClientNumber":"1234"}) 
+```
