@@ -30,7 +30,7 @@ As of version 6.5.0 this library will automatically detect which logging service
 For local testing purposes you can still enforce a specific format like this:
 
 ```js
-log.overrideCustomFieldFormat("application-logging");
+log.setCustomFieldsFormat("application-logging");
 // possible values: "disabled", "all", "application-logging", "cloud-logging", "default"
 ```
 
