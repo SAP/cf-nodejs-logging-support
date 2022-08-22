@@ -7,8 +7,8 @@ permalink: /configuration/customfieldsformat
 ---
 
 # Custom fields format
-Set the custom field format by setting the property "customFieldsFormat": <format> in the configuration file.
-Supported values are:
+As described in [Custom Fields](/cf-nodejs-logging-support/general-usage/custom-fields), the library will automatically detect which logging service you are bound to and will set the logging format accordingly. However, it is also possible to force the logging format by setting the property "customFieldsFormat": <format> in a configuration file.
+Supported <format> values are:
 * "application-logging"
 * "cloud-logging"
 * "all": use application-logging and cloud-logging format in parallel.

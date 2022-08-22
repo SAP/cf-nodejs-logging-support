@@ -26,7 +26,7 @@ log.addConfig(configFile1, configFile2, configFile3);
 
 ## Get configuration as JSON object
 
-You can get the setted library configuration as JSON object by calling getConfig in the logging instance:
+For local testing purposes you can get the setted library configuration as JSON object by calling getConfig from any logging instance:
 
 Example:
 ```ts
@@ -68,4 +68,12 @@ Which will return something like:
     "outputStartupMsg": true,
     "framework": "express"
 }
+```
+
+Alternatively you can also use the method getFields(name: string) to get the configuration of only one or many desired fields.
+
+Example:
+
+```ts
+log.getFields("organization_id","request_id")
 ```
