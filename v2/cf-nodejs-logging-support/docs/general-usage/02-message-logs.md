@@ -107,7 +107,7 @@ var isDebugActive = log.isDebug();
 
 ## Get log level 
 
-For local testing purposes you can get the current level of a logging instance by calling the getLoggingLevel method:
+For local testing purposes you can also get the current level of a logging instance by calling the getLoggingLevel method:
 
 ```js
 log.getLoggingLevel();

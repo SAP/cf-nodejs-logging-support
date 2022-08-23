@@ -7,13 +7,18 @@ permalink: /configuration/defaultreqlevel
 ---
 
 # Set default request loging level
-Change the default logging level for all request by setting the property "reqLoggingLevel": <level>. For example:
-* "reqLoggingLevel": "warn"
-* "reqLoggingLevel": "debug"
-
-Example:
+Change the default request logging level by setting the property "reqLoggingLevel": $level. For example:
 ```ts
 {
  "reqLoggingLevel": "info"
 }
 ```
+
+Following common logging levels are supported:
+
+- `error`
+- `warn`
+- `info`
+- `verbose`
+- `debug`
+- `silly`

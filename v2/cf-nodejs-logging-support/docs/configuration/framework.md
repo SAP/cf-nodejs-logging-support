@@ -7,19 +7,20 @@ permalink: /configuration/framework
 ---
 
 ## Set framework
-Set the framework used by setting the property "framework": <frameworkName> in the configuration file. The default framework is express. Alternatively, you can also set the framework from the logger instance by calling the method:
+By default the library will be configured to run with express. If you are going to use another server framework, you have to change the configuration explicity. There are 2 ways to do this: 
+1. Set the key-value pair "framework": "$frameworkName" in a configuration file:
 ```ts 
-setFramework(<frameworkName>) 
+{
+    "framework": "restify"
+}
 ```
+2. Set the framework from the logger instance by calling the method forceLogger:
+```ts 
+log.forceLogger("connect") 
+```
+
 Our supported frameworks are:
 * "express"
 * "restify"
 * "connect"
 * "nodejs-http"
-
-Example:
-```ts
-{
-    "framework": "express"
-}
-```
