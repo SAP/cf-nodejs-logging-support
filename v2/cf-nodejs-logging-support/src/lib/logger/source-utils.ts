@@ -33,7 +33,7 @@ export class SourceUtils {
         return SourceUtils.instance;
     }
 
-    getFieldValue(source: Source, record: any, writtenAt: Date): string | undefined {
+    getFieldValue(source: Source, record: any, writtenAt: Date): string | number | undefined {
         switch (source.type) {
             case "static":
                 return source.value;
@@ -57,7 +57,7 @@ export class SourceUtils {
                     return record["written_at"];
                 }
                 if (source.name == "response_time_ms") {
-                    return (Date.now() - writtenAt.getTime()).toString();
+                    return (Date.now() - writtenAt.getTime());
                 }
                 if (source.name == "response_sent_at") {
                     return new Date().toJSON();
@@ -76,7 +76,7 @@ export class SourceUtils {
                         written_ts += NS_PER_MS;
                     }
                     this.lastTimestamp = written_ts;
-                    return written_ts.toString();
+                    return written_ts;
                 }
                 return;
             default:
@@ -84,7 +84,7 @@ export class SourceUtils {
         }
     }
 
-    getReqFieldValue(source: Source, record: any, writtenAt: Date, req: any, res: any): string | undefined {
+    getReqFieldValue(source: Source, record: any, writtenAt: Date, req: any, res: any): string | number | undefined {
         switch (source.type) {
             case "req-header":
                 return this.requestAccessor.getHeaderField(req, source.name!);

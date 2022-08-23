@@ -21,7 +21,7 @@ process.env.VCAP_APPLICATION = JSON.stringify(
             "test-value"
         ],
         "users": null,
-        "application_id": "test-value8"
+        "application_id": "test-value"
     }
 );
 
@@ -232,66 +232,56 @@ describe('Test performance of old and new library', function () {
         });
     });
 
-    describe.skip('Write 10.000 request logs by calling logNetwork middleware', function () {
+    describe('Write 10.000 request logs by calling logNetwork middleware', function () {
 
-        // TO DO: finishLog is not triggered when calling logNetwork. Reason: Event in mocked response is not triggered.
+        beforeEach(function () {
+
+            req = httpMocks.createRequest({ method: 'GET', url: 'globalcontext' });
+            req.headers["referer"] = "test-referer";
+            req.user = {
+                id: "test-user"
+            };
+            req.connection = {
+                remoteAddress: "test-user",
+                remotePort: "remote-port"
+            };
+
+            res = httpMocks.createResponse();
+            res.on = function (tag, func) {
+                if (tag == 'finish') {
+                    writeLog = func;
+                }
+            };
+
+            next = function () { }
+        });
 
         it('Old library', function () {
-
-            var req = httpMocks.createRequest({ method: 'GET', url: 'globalcontext' });
-            // req.headers["referer"] = "test-referer";
-            // req.user = {
-            //     id: "test-user"
-            // };
-            // req.connection = {
-            //     remoteAddress: "test-user",
-            //     remotePort: "remote-port"
-            // };
-            var res = httpMocks.createResponse();
-
 
             var startTime = performance.now()
 
             for (let index = 0; index < 10000; index++) {
-                oldLog.logNetwork(req, res, () => { });
+                oldLog.logNetwork(req, res, next);
+                writeLog();
             }
 
             var endTime = performance.now()
 
             console.log(`Old lib: logNetwork ${endTime - startTime} milliseconds`)
-            console.log("Old lib:" + lastOutputOldLib);
         });
 
         it('New library', function () {
-
-            var req = httpMocks.createRequest({ method: 'GET', url: 'globalcontext' });
-
-            // dont override req object
-            // req.headers["referer"] = "test-referer";
-            // req.headers["x-vcap-request-id"] = "1234";
-            // req.headers["x-correlationid"] = "1234";
-            // req.headers["tenantid"] = "1234";
-            // req.user = {
-            //     id: "test-user"
-            // };
-            // req.connection = {
-            //     remoteAddress: "test-user",
-            //     remotePort: "remote-port"
-            // };
-
-            var res = httpMocks.createResponse();
 
             var startTime = performance.now()
 
             for (let index = 0; index < 10000; index++) {
                 newLog.logNetwork(req, res, () => { });
+                writeLog();
             }
 
             var endTime = performance.now()
 
             console.log(`New lib: logNetwork ${endTime - startTime} milliseconds`)
-            console.log("New lib:" + lastOutputNewLib);
-
         });
     });
 });
