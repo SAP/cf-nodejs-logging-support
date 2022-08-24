@@ -25,14 +25,11 @@ You can activate the SAP Passport by calling the method enableTracing:
 log.enableTracing("sap_passport") 
 ```
 
-After activating the SAP Passport you will be able to add the whole SAP Passport or its constituents related fields by calling setCustomFields. These fields will always be attached directly in the log object as normal fields regardless of the custom fields format.:
+After activating the SAP Passport the property "sap_passport" will be added automatically to the configuration. This will read the property "sap-passport" from your request header.
 
-Example for adding whole SAP Passport:
-```ts
-log.setCustomFields({"sap_passport":"2a54482a0300e60000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000002a54482a"}) 
-```
+To add its constituents related fields use the setCustomFields method. These fields will always be attached directly in the log object as normal fields regardless of the custom fields format.:
 
-Example for adding only some SAP Passport related fields:
+Example for adding SAP Passport related fields:
 ```ts
 log.setCustomFields({"sap_passport_Action":"value", "sap_passport_ClientNumber":"1234"}) 
 ```
