@@ -41,24 +41,33 @@ Which will return something like:
     "fields": [
         {
             "name": "organization_id",
+            "source": [
+                {
+                    "type": "req-object",
+                    "name": "orgId",
+                    "framework": "restify"
+                },
+                {
+                    "type": "static",
+                    "value": "1111",
+                }
+            ],
+            "output": [
+                "msg-log"
+            ]
+        },
+        {
+            "name": "organization_name",
             "source": {
-                "type": "static",
-                "value": "my_organization"
+                "type": "env",
+                "path": [
+                    "VCAP_APPLICATION",
+                    "organization_name"
+                ]
             },
             "output": [
                 "msg-log",
                 "req-log"
-            ]
-        },
-        {
-            "name": "request",
-            "source": {
-                "type": "req-object",
-                "name": "originalUrl"
-            },
-            "output": [
-                "req-log".
-                "msg-log"
             ]
         },
         {
