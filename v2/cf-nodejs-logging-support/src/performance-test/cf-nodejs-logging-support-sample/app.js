@@ -60,7 +60,6 @@ var stats = {
   pid: process.pid,
   platform: process.platform,
 };
-//log.info("Message logged in global context with custom fields", stats);
 // home route
 app.get("/", function (req, res) {
   res.send();
@@ -69,13 +68,10 @@ app.get("/", function (req, res) {
 // demonstrate log in global context
 // https://sap.github.io/cf-nodejs-logging-support/general-usage/logging-contexts#global-context
 app.get("/globalcontext", function (req, res) {
-  // var startTime = performance.now();
 
-  for (let index = 0; index < 100000; index++) {
+  for (let index = 0; index < 10000; index++) {
     log.logMessage("info", "Message logged in global context");
   }
-  // var endTime = performance.now();
-  // console.log(`Call to doSomething took ${endTime - startTime} milliseconds`)
   res.send();
 });
 
@@ -90,14 +86,10 @@ app.get("/testlognetwork", function (req, res) {
 app.get("/requestcontext", function (req, res) {
   var reqLogger = req.logger; // reqLogger logs in request context
 
-  // var startTime = performance.now()
 
   for (let index = 0; index < 100000; index++) {
     reqLogger.logMessage("info", "Message logged in request context");
   }
-
-  // var endTime = performance.now()
-  // console.log(`Call to doSomething took ${endTime - startTime} milliseconds`)
 
   res.send();
 });
