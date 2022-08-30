@@ -1,11 +1,10 @@
 {
-  "name": "cf-nodejs-logging-support-sample-app",
+  "name": "test-app",
   "version": "1.0.0",
-  "description": "Sample app to learn and test features from the cf-nodejs-logging-support library",
+  "description": "Sample app to test performance of cf-nodejs-logging-support library",
   "main": "app.js",
   "scripts": {
-    "start": "node app.js",
-    "start-nodemon": "nodemon app.js"
+    "start": "node app.js"
   },
   "author": "Federico Romagnoli",
   "license": "Apache-2.0",
@@ -13,9 +12,6 @@
     "cf-nodejs-logging-support": "^6.12.0",
     "ejs": "^3.1.6",
     "express": "^4.17.2"
-  },
-  "devDependencies": {
-    "nodemon": "^2.0.15"
   },
   "engines": {
     "node": ">=8.0.0"

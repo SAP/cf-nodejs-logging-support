@@ -33,7 +33,7 @@ const express = require("express");
 // var log = require("cf-nodejs-logging-support");
 var log = require("../../../build/main/index");
 const app = express();
-// log.addConfig(require("./config-test.json"));
+
 // roots the views directory to public
 app.set('views', 'public');
 
@@ -54,19 +54,12 @@ log.registerCustomFields(["global-field-a", "node_version", "pid", "platform", "
 // set a custom field globally, so that it will be logged for all following messages independent of their request/child context.
 log.setCustomFields({ "global-field-a": "value" });
 
-// log some custom fields
-var stats = {
-  node_version: process.version,
-  pid: process.pid,
-  platform: process.platform,
-};
 // home route
 app.get("/", function (req, res) {
   res.send();
 });
 
 // demonstrate log in global context
-// https://sap.github.io/cf-nodejs-logging-support/general-usage/logging-contexts#global-context
 app.get("/globalcontext", function (req, res) {
 
   for (let index = 0; index < 10000; index++) {
@@ -76,13 +69,11 @@ app.get("/globalcontext", function (req, res) {
 });
 
 // demonstrate log in global context
-// https://sap.github.io/cf-nodejs-logging-support/general-usage/logging-contexts#global-context
 app.get("/testlognetwork", function (req, res) {
   res.send();
 });
 
 // demonstrate log in request context
-// https://sap.github.io/cf-nodejs-logging-support/general-usage/logging-contexts#request-context
 app.get("/requestcontext", function (req, res) {
   var reqLogger = req.logger; // reqLogger logs in request context
 
@@ -95,7 +86,6 @@ app.get("/requestcontext", function (req, res) {
 });
 
 // log message with some custom fields in global context 
-// https://sap.github.io/cf-nodejs-logging-support/general-usage/custom-fields
 app.get("/customfields", function (req, res) {
   log.setCustomFieldsFormat("application-logging");
   log.logMessage("info", "Message logged in global context with some custom fields", { "custom-field-a": "value-a", "custom-field-b": "value-b" });
@@ -103,7 +93,6 @@ app.get("/customfields", function (req, res) {
 });
 
 // demonstrate an error stack trace logging
-// https://sap.github.io/cf-nodejs-logging-support/general-usage/stacktraces
 app.get("/stacktrace", function (req, res) {
   try {
     alwaysError();
@@ -119,7 +108,6 @@ function alwaysError() {
 }
 
 // create a new child from the logger object and overide/create new fields
-// https://sap.github.io/cf-nodejs-logging-support/advanced-usage/child-loggers
 app.get("/childlogger", function (req, res) {
   var subLogger = log.createLogger({ "new-field": "value" });
   subLogger.setLoggingLevel("warn");
@@ -128,7 +116,6 @@ app.get("/childlogger", function (req, res) {
 });
 
 // get the correlation and tenant ID by calling req.logger.getCorrelationId() and .getTenantId()
-// https://sap.github.io/cf-nodejs-logging-support/advanced-usage/correlation-and-tenant-data
 app.get("/correlationandtenantid", function (req, res) {
   var reqLogger = req.logger; // reqLogger logs in request context
   var correlationId = reqLogger.getCorrelationId();
