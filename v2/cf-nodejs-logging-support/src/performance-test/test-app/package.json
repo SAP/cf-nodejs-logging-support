@@ -4,10 +4,8 @@
   "description": "Sample app to test performance of cf-nodejs-logging-support library",
   "main": "app.js",
   "scripts": {
-    "start": "node app.js"
+    "start": "NODE_ENV=production node --prof app.js"
   },
-  "author": "Federico Romagnoli",
-  "license": "Apache-2.0",
   "dependencies": {
     "cf-nodejs-logging-support": "^6.12.0",
     "ejs": "^3.1.6",

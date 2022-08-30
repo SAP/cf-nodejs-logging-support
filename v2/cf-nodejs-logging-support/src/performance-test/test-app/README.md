@@ -1,8 +1,8 @@
 # cf-nodejs-logging-support-sample
-This app demonstrates the logging functionality of the library cf-nodejs-logging-support by providing a simple UI with buttons that send HTTP requests. 
+This app serves to test the performance of the library cf-nodejs-logging-support. 
 
 
-## Running locally
+## Test performance with built-in node profiler
  * Install dependencies by running ```npm install``` 
- * Execute ```node app.js``` to run the app
- * Visit the endpoint of the app (usually http://localhost:8080)
+ * Execute ```npm start``` to run the app in production mode with the built-in profiler.
+ * Send http requests to trigger operations and then use the tick processor bundled with the Node.js binary to create a readable .txt file (See https://nodejs.org/en/docs/guides/simple-profiling/).
