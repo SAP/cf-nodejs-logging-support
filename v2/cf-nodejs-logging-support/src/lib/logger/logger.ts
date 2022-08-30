@@ -50,7 +50,7 @@ export default class Logger {
     }
 
     logMessage(levelName: string, ..._args: any) {
-        if (!this.isLoggingLevel(levelName) || this.loggingLevelThreshold == Level.OFF) return;
+        if (!this.isLoggingLevel(levelName)) return;
         const loggerCustomFields = Object.assign({}, this.extractCustomFieldsFromLogger(this));
 
         const record = this.recordFactory.buildMsgRecord(this.registeredCustomFields, loggerCustomFields, levelName, _args, this.context);
