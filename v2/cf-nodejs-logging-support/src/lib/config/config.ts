@@ -57,7 +57,7 @@ export default class Config {
 
             Config.instance = new Config();
 
-            if (boundServices["application-logs"] && boundServices["cloud-logs"]) {
+            if (boundServices["application-logs"] && boundServices["cloud-logging"]) {
                 Config.instance.setCustomFieldsFormat("all");
             } else if (boundServices["application-logs"]) {
                 Config.instance.setCustomFieldsFormat("application-logging");
