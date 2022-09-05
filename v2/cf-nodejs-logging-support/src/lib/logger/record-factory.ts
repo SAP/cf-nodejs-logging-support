@@ -1,10 +1,14 @@
 import util from "util";
 import Config from "../config/config";
 import { isValidObject } from "../middleware/utils";
+import CacheFactory from "./cache-factory";
 import ReqContext from "./context";
 import { SourceUtils } from "./source-utils";
 import { StacktraceUtils } from "./stacktrace-utils";
+import { outputs } from "../config/interfaces";
 const stringifySafe = require('json-stringify-safe');
+
+export var REDACTED_PLACEHOLDER = "redacted";
 
 export default class RecordFactory {
 
@@ -12,8 +16,8 @@ export default class RecordFactory {
     private config: Config;
     private stacktraceUtils: StacktraceUtils;
     private sourceUtils: SourceUtils;
-    private REDACTED_PLACEHOLDER = "redacted";
     private LOG_TYPE = "log";
+    private cacheFactory: CacheFactory;
     private cacheMsgRecord: any;
     private cacheReqRecord: any;
 
@@ -22,6 +26,7 @@ export default class RecordFactory {
         this.config = Config.getInstance();
         this.stacktraceUtils = StacktraceUtils.getInstance();
         this.sourceUtils = SourceUtils.getInstance();
+        this.cacheFactory = CacheFactory.getInstance();
     }
 
     public static getInstance(): RecordFactory {
@@ -32,68 +37,14 @@ export default class RecordFactory {
         return RecordFactory.instance;
     }
 
-    updateCacheMsg() {
-        this.cacheMsgRecord = {};
-
-        const writtenAt = new Date();
-
-        const cachedFields = this.config.getCacheMsgFields();
-        let cache: any = {};
-        cachedFields.forEach(
-            field => {
-                if (!Array.isArray(field.source)) {
-                    cache[field.name] = this.sourceUtils.getFieldValue(field.source, cache, writtenAt);
-                } else {
-                    const value = this.sourceUtils.getValueFromSources(field, cache, "msg-log", writtenAt);
-
-                    if (value != null) {
-                        cache[field.name] = value;
-                    }
-                }
-
-                // Handle default
-                if (cache[field.name] == null && field.default != null) {
-                    cache[field.name] = field.default;
-                }
-
-                // Replaces all fields, which are marked to be reduced and do not equal to their default value to REDUCED_PLACEHOLDER.
-                if (field._meta!.isRedacted == true && cache[field.name] != null && cache[field.name] != field.default) {
-                    cache[field.name] = this.REDACTED_PLACEHOLDER;
-                }
-            }
-        );
-        this.cacheMsgRecord = cache;
-    }
-
-    updateCacheReq(req: any, res: any) {
-
-        const writtenAt = new Date();
-        const cachedFields = this.config.getCacheReqFields();
-        let cache: any = {};
-        cachedFields.forEach(
-            field => {
-                if (!Array.isArray(field.source)) {
-                    cache[field.name] = this.sourceUtils.getReqFieldValue(field.source, cache, writtenAt, req, res);
-                } else {
-                    const value = this.sourceUtils.getValueFromSources(field, cache, "req-log", writtenAt, req, res);
-
-                    if (value != null) {
-                        cache[field.name] = value;
-                    }
-                }
-
-                // Handle default
-                if (cache[field.name] == null && field.default != null) {
-                    cache[field.name] = field.default;
-                }
-
-                // Replaces all fields, which are marked to be reduced and do not equal to their default value to REDUCED_PLACEHOLDER.
-                if (field._meta!.isRedacted == true && cache[field.name] != null && cache[field.name] != field.default) {
-                    cache[field.name] = this.REDACTED_PLACEHOLDER;
-                }
-            }
-        );
-        this.cacheReqRecord = cache;
+    updateCache(output: outputs, req?: any, res?: any) {
+        if (output == "msg-log") {
+            const newCache = this.cacheFactory.createCache("msg-log");
+            this.cacheMsgRecord = newCache;
+        } else {
+            const newCache = this.cacheFactory.createCache("req-log", req, res);
+            this.cacheReqRecord = newCache;
+        }
     }
 
     // init a new record and assign fields with output "msg-log"
@@ -121,7 +72,7 @@ export default class RecordFactory {
 
         // if config has changed, rebuild cache of record
         if (this.config.updateCacheMsgRecord == true) {
-            this.updateCacheMsg();
+            this.updateCache("msg-log");
             this.config.updateCacheMsgRecord = false;
         }
 
@@ -152,7 +103,7 @@ export default class RecordFactory {
 
                 // Replaces all fields, which are marked to be reduced and do not equal to their default value to REDUCED_PLACEHOLDER.
                 if (field._meta!.isRedacted == true && record[field.name] != null && record[field.name] != field.default) {
-                    record[field.name] = this.REDACTED_PLACEHOLDER;
+                    record[field.name] = REDACTED_PLACEHOLDER;
                 }
             }
         );
@@ -181,7 +132,7 @@ export default class RecordFactory {
 
         // if config has changed, rebuild cache of record
         if (this.config.updateCacheReqRecord == true) {
-            this.updateCacheReq(req, res);
+            this.updateCache("req-log", req, res);
             this.config.updateCacheReqRecord = false;
         }
 
@@ -199,7 +150,7 @@ export default class RecordFactory {
                 if (!Array.isArray(field.source)) {
                     record[field.name] = this.sourceUtils.getReqFieldValue(field.source, record, writtenAt, req, res);
                 } else {
-                    const value = this.sourceUtils.getValueFromSources(field, record, "req-log", writtenAt);
+                    const value = this.sourceUtils.getValueFromSources(field, record, "req-log", writtenAt, req, res);
                     if (value != null) {
                         record[field.name] = value;
                     }
@@ -212,7 +163,7 @@ export default class RecordFactory {
 
                 // Replaces all fields, which are marked to be reduced and do not equal to their default value to REDUCED_PLACEHOLDER.
                 if (field._meta!.isRedacted == true && record[field.name] != null && record[field.name] != field.default) {
-                    record[field.name] = this.REDACTED_PLACEHOLDER;
+                    record[field.name] = REDACTED_PLACEHOLDER;
                 }
             }
         );
