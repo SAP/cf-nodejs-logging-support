@@ -189,28 +189,9 @@ export default class Config {
                 }
 
                 // check if context field, if true, then save field in list
-                if (field.output?.includes("msg-log") && field.output?.includes("req-log")) {
-                    if (Array.isArray(field.source)) {
-                        const sources = field.source as Source[];
-                        for (let index = 0; index < sources.length; index++) {
-                            const source = sources[index];
-                            if (["req-header", "req-object"].includes((source.type))) {
-                                field._meta.isContext = true;
-                                this.addToList(this.contextFields, field);
-                                break;
-                            }
-                        }
-                    } else {
-                        if (["req-header", "req-object"].includes((field.source.type))) {
-                            field._meta.isContext = true;
-                            this.addToList(this.contextFields, field);
-                        }
-                    }
-
-                    if (["correlation_id", "tenant_id"].includes(field.name)) {
-                        field._meta.isContext = true;
-                        this.addToList(this.contextFields, field);
-                    }
+                if (field.isContext) {
+                    field._meta.isContext = true;
+                    this.addToList(this.contextFields, field);
                 }
 
                 if (field._meta.isCache == false) {

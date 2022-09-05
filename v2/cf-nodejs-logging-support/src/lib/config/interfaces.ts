@@ -15,6 +15,7 @@ export interface ConfigField {
     output: outputs[];
     disable?: boolean;
     default?: string | number | boolean;
+    isContext?: boolean;
     settable?: boolean;
     _meta?: ConfigFieldMeta;
 }

@@ -24,6 +24,9 @@
                 "envVarSwitch": {
                     "type": "string"
                 },
+                "isContext": {
+                    "type": "boolean"
+                },
                 "name": {
                     "type": "string"
                 },

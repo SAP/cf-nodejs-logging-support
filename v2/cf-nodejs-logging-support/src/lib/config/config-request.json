@@ -6,6 +6,7 @@
                 "type": "req-header",
                 "name": "x-vcap-request-id"
             },
+            "isContext": true,
             "output": [
                 "msg-log",
                 "req-log"
@@ -201,6 +202,7 @@
                     "type": "uuid"
                 }
             ],
+            "isContext": true,
             "output": [
                 "msg-log",
                 "req-log"
@@ -212,6 +214,7 @@
                 "type": "req-header",
                 "name": "tenantid"
             },
+            "isContext": true,
             "output": [
                 "msg-log",
                 "req-log"
