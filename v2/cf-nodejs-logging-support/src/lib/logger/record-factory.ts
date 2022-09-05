@@ -163,7 +163,7 @@ export default class RecordFactory {
     }
 
     // read and copy values from context
-    private addContext(record: any, context: ReqContext): object {
+    private addContext(record: any, context: ReqContext): any {
         const contextFields = context.getProps();
         for (let key in contextFields) {
             if (contextFields[key] != null) {
