@@ -4,24 +4,24 @@ var httpMocks = require('node-mocks-http');
 process.env.VCAP_SERVICES = "CF";
 process.env.VCAP_APPLICATION = JSON.stringify(
     {
-        "cf_api": "test-value",
+        "cf_api": "test-cf-api",
         "limits": {
             "fds": 32768
         },
-        "application_name": "test-value",
+        "application_name": "test-application-name",
         "application_uris": [
-            "test-value"
+            "test-application-uris"
         ],
-        "name": "test-value",
-        "space_name": "test-value",
-        "space_id": "test-value",
-        "organization_id": "test-value",
-        "organization_name": "test-value",
+        "name": "test-name",
+        "space_name": "test-space-name",
+        "space_id": "test-space-id",
+        "organization_id": "test-organization-id",
+        "organization_name": "test-organization-name",
         "uris": [
-            "test-value"
+            "test-uris"
         ],
         "users": null,
-        "application_id": "test-value"
+        "application_id": "test-application-id"
     }
 );
 
