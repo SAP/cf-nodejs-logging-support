@@ -62,10 +62,6 @@ export default class RootLogger extends Logger {
         return EnvService.getBoundServices()
     }
 
-    // legacy methods
-    overrideNetworkField(field: string, value: string) { }
-    overrideCustomFieldFormat(value: string) { }
-    setLogPattern() { }
     createWinstonTransport(options: any) {
         if (!options) {
             options = {
@@ -75,9 +71,19 @@ export default class RootLogger extends Logger {
         options.logMessage = this.logMessage;
         return createTransport(options);
     };
+
     forceLogger(logger: framework) {
         Config.getInstance().setFramework(logger);
         RequestAccessor.getInstance().setFrameworkService();
         ResponseAccessor.getInstance().setFrameworkService();
     }
+
+    // legacy methods
+    overrideNetworkField() {
+        //to do: create a config file and override in config
+    }
+    overrideCustomFieldFormat(value: customFieldsFormat) {
+        return this.setCustomFieldsFormat(value);
+    }
+    setLogPattern() { } // no longer supported
 }
