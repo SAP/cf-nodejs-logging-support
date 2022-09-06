@@ -5,7 +5,6 @@ import RequestAccessor from "../middleware/request-Accessor";
 import ResponseAccessor from "../middleware/response-accessor";
 
 const { v4: uuid } = require('uuid');
-var uuidCheck = /[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[0-9a-f]{4}-[0-9a-f]{12}/;
 
 type origin = "msg-log" | "req-log" | "context";
 
@@ -45,9 +44,6 @@ export class SourceUtils {
                 }
                 return process.env[source.name!];
             case "config-field":
-                if (source.name == "correlation_id" && !uuidCheck.exec(record[source.name!])) {
-                    return;
-                }
                 return record[source.name!];
             case "meta":
                 if (writtenAt == null) {
@@ -140,6 +136,12 @@ export class SourceUtils {
                 origin == "req-log" ? this.getReqFieldValue(source, record, writtenAt, req, res,) :
                     this.getContextFieldValue(source, req);
 
+            // idea: validate regExp of source, if not valid then ignore source
+            if (source.regExp) {
+                const isValid = this.validateRegExp(fieldValue, source.regExp);
+                if (!isValid) fieldValue == null;
+            }
+
             ++sourceIndex;
         }
         return fieldValue;
@@ -158,5 +160,10 @@ export class SourceUtils {
             }
         }
         return -1;
+    }
+
+    private validateRegExp(value: string, regEx: string) {
+        const regExp = new RegExp(regEx);
+        return regExp.test(value) ? true : false;
     }
 }

@@ -26,6 +26,7 @@ export interface Source {
     path?: string[];
     name?: string;
     framework?: framework;
+    regExp?: string;
 }
 
 

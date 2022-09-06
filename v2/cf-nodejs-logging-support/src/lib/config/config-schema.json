@@ -92,6 +92,9 @@
                     },
                     "type": "array"
                 },
+                "regExp": {
+                    "type": "string"
+                },
                 "type": {
                     "$ref": "#/definitions/sources"
                 },
