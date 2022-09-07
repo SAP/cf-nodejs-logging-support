@@ -60,7 +60,7 @@ var app = connect();
 // Force logger to run the connect version. (default is express, forcing express is also legal)
 log.forceLogger("connect");
 
-// Add the logger middleware, so each time a request is received, it is will get logged.
+// Add the logger middleware, so each time a request is received, it will get logged.
 app.use(log.logNetwork);
 
 // Create node.js http server and listen on port
@@ -80,7 +80,7 @@ var app = restify.createServer();
 // Force logger to run the restify version. (default is express, forcing express is also legal)
 log.forceLogger("restify");
 
-// Add the logger middleware, so each time a request is received, it is will get logged.
+// Add the logger middleware, so each time a request is received, it will get logged.
 app.use(log.logNetwork);
 
 // Listen on specified port
