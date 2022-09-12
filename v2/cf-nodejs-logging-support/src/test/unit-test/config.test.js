@@ -111,11 +111,11 @@ describe('Test Config class', function () {
         beforeEach(function () {
             singleton.addConfig([customConfig]);
             fields = singleton.getFields();
-            newFieldsData = singleton.getFields(["logger", "disabled_field", "new_field"]);
+            newFieldsData = singleton.getFields(["logger", "disabled_field", "uuid_field", "new_field"]);
         });
 
         it('adds 2 new fields and overrides preexisting field', function () {
-            expect(fields.length).to.be.eql(38);
+            expect(fields.length).to.be.eql(40);
         });
 
         it('adds new data correctly', function () {
@@ -151,6 +151,24 @@ describe('Test Config class', function () {
                         "isEnabled": false,
                         "isRedacted": false,
                         "isCache": false,
+                        "isContext": false
+                    }
+                },
+                {
+                    "name": "uuid_field",
+                    "source": {
+                        "type": "static",
+                        "value": "8888c6e8-f44e-4a33-a444-1eadd1234567",
+                        "regExp": "[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[0-9a-f]{4}-[0-9a-f]{12}"
+                    },
+                    "output": [
+                        "msg-log",
+                        "req-log"
+                    ],
+                    "_meta": {
+                        "isEnabled": true,
+                        "isRedacted": false,
+                        "isCache": true,
                         "isContext": false
                     }
                 },

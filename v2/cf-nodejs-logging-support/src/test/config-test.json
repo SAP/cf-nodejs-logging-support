@@ -23,6 +23,30 @@
             "disable": true
         },
         {
+            "name": "uuid_field",
+            "source": {
+                "type": "static",
+                "value": "8888c6e8-f44e-4a33-a444-1eadd1234567",
+                "regExp": "[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[0-9a-f]{4}-[0-9a-f]{12}"
+            },
+            "output": [
+                "msg-log",
+                "req-log"
+            ]
+        },
+        {
+            "name": "will_never_log",
+            "source": {
+                "type": "static",
+                "value": "1234c6e8-f23e-1dd4-a1-1eadd69c3665",
+                "regExp": "[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[0-9a-f]{4}-[0-9a-f]{12}"
+            },
+            "output": [
+                "msg-log",
+                "req-log"
+            ]
+        },
+        {
             "name": "new_field",
             "source": {
                 "type": "config-field",
