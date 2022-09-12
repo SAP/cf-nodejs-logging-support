@@ -33,33 +33,42 @@ export class SourceUtils {
     }
 
     getFieldValue(source: Source, record: any, writtenAt: Date): string | number | undefined {
+        let value;
         switch (source.type) {
             case "static":
-                return source.value;
+                value = source.value;
+                break;
             case "env":
                 if (source.path) {
                     // clone path to avoid deleting path in resolveNestedVariable()
                     const clonedPath = [...source.path];
-                    return NestedVarResolver.resolveNestedVariable(process.env, clonedPath);
+                    value = NestedVarResolver.resolveNestedVariable(process.env, clonedPath);
+                    break;
                 }
-                return process.env[source.name!];
+                value = process.env[source.name!];
+                break;
             case "config-field":
-                return record[source.name!];
+                value = record[source.name!];
+                break;
             case "meta":
                 if (writtenAt == null) {
                     return;
                 }
                 if (source.name == "request_received_at") {
-                    return record["written_at"];
+                    value = record["written_at"];
+                    break;
                 }
                 if (source.name == "response_time_ms") {
-                    return (Date.now() - writtenAt.getTime());
+                    value = (Date.now() - writtenAt.getTime());
+                    break;
                 }
                 if (source.name == "response_sent_at") {
-                    return new Date().toJSON();
+                    value = new Date().toJSON();
+                    break;
                 }
                 if (source.name == "written_at") {
-                    return writtenAt.toJSON();
+                    value = writtenAt.toJSON();
+                    break;
                 }
                 if (source.name == "written_ts") {
                     var lower = process.hrtime()[1] % NS_PER_MS
@@ -72,40 +81,80 @@ export class SourceUtils {
                         written_ts += NS_PER_MS;
                     }
                     this.lastTimestamp = written_ts;
-                    return written_ts;
+                    value = written_ts;
+                    break;
                 }
-                return;
+                break;
             default:
-                return undefined;
+                value = undefined;
         }
+
+        if (source.regExp) {
+            const isValid = this.validateRegExp(value, source.regExp);
+            if (!isValid) {
+                value = undefined;
+            }
+        }
+
+        return value;
     }
 
     getReqFieldValue(source: Source, record: any, writtenAt: Date, req: any, res: any): string | number | undefined {
+        let value;
         switch (source.type) {
             case "req-header":
-                return this.requestAccessor.getHeaderField(req, source.name!);
+                value = this.requestAccessor.getHeaderField(req, source.name!);
+                break;
             case "req-object":
-                return this.requestAccessor.getField(req, source.name!);
+                value = this.requestAccessor.getField(req, source.name!);
+                break;
             case "res-header":
-                return this.responseAccessor.getHeaderField(res, source.name!);
+                value = this.responseAccessor.getHeaderField(res, source.name!);
+                break;
             case "res-object":
-                return this.responseAccessor.getField(res, source.name!);
+                value = this.responseAccessor.getField(res, source.name!);
+                break;
             default:
-                return this.getFieldValue(source, record, writtenAt);
-
+                value = this.getFieldValue(source, record, writtenAt);
         }
+
+        if (source.regExp) {
+            const isValid = this.validateRegExp(value, source.regExp);
+            if (!isValid) {
+                value = undefined;
+            }
+        }
+
+        return value;
     }
 
     // if source is request, then assign to context. If not, then ignore.
-    getContextFieldValue(source: Source, req: any) {
+    getContextFieldValue(source: Source, record: any, req: any) {
+        let value;
         switch (source.type) {
             case "req-header":
-                return this.requestAccessor.getHeaderField(req, source.name!);
+                value = this.requestAccessor.getHeaderField(req, source.name!);
+                break;
             case "req-object":
-                return this.requestAccessor.getField(req, source.name!);
+                value = this.requestAccessor.getField(req, source.name!);
+                break;
+            case "config-field":
+                const writtenAt = new Date();
+                value = this.getFieldValue(source, record, writtenAt);
+                break;
             case "uuid":
-                return uuid();
+                value = uuid();
+                break;
         }
+
+        if (source.regExp) {
+            const isValid = this.validateRegExp(value, source.regExp);
+            if (!isValid) {
+                value = undefined;
+            }
+        }
+
+        return value;
     }
 
     // iterate through sources until one source returns a value 
@@ -134,12 +183,12 @@ export class SourceUtils {
 
             fieldValue = origin == "msg-log" ? this.getFieldValue(source, record, writtenAt) :
                 origin == "req-log" ? this.getReqFieldValue(source, record, writtenAt, req, res,) :
-                    this.getContextFieldValue(source, req);
+                    this.getContextFieldValue(source, record, req);
 
             // idea: validate regExp of source, if not valid then ignore source
-            if (source.regExp) {
+            if (source.regExp && fieldValue) {
                 const isValid = this.validateRegExp(fieldValue, source.regExp);
-                if (!isValid) fieldValue == null;
+                if (!isValid) fieldValue = undefined;
             }
 
             ++sourceIndex;
@@ -163,7 +212,10 @@ export class SourceUtils {
     }
 
     private validateRegExp(value: string, regEx: string) {
+        if (value == null) {
+            return false;
+        }
         const regExp = new RegExp(regEx);
-        return regExp.test(value) ? true : false;
+        return regExp.test(value);
     }
 }

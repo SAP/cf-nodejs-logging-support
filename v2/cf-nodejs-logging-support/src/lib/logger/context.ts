@@ -31,7 +31,7 @@ export default class ReqContext {
 
         contextFields.forEach(field => {
             if (!Array.isArray(field.source)) {
-                this.properties[field.name] = this.sourceUtils.getContextFieldValue(field.source, req);
+                this.properties[field.name] = this.sourceUtils.getContextFieldValue(field.source, this.properties, req);
             } else {
                 this.properties[field.name] = this.sourceUtils.getValueFromSources(field, this.properties, "context", writtenAt, req);
             }
