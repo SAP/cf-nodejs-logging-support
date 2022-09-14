@@ -30,11 +30,7 @@ export default class ReqContext {
         const contextFields = this.config.getContextFields();
 
         contextFields.forEach(field => {
-            if (!Array.isArray(field.source)) {
-                this.properties[field.name] = this.sourceUtils.getContextFieldValue(field.source, this.properties, req);
-            } else {
-                this.properties[field.name] = this.sourceUtils.getValueFromSources(field, this.properties, "context", writtenAt, req);
-            }
+            this.properties[field.name] = this.sourceUtils.getValue(field, this.properties, "context", writtenAt, req);
         });
     }
 }

@@ -1,4 +1,5 @@
 import EnvService from '../core/env-service';
+import Cache from '../logger/cache';
 import cfConfig from './config-cf.json';
 import coreConfig from './config-core.json';
 import kymaConfig from './config-kyma.json';
@@ -32,7 +33,6 @@ export default class Config {
 
 
     private constructor() {
-        // this.configHasChanged = true;
         this.updateCacheMsgRecord = true;
         this.updateCacheReqRecord = true;
         this.noCacheMsgFields = [];
@@ -233,8 +233,10 @@ export default class Config {
             return;
         });
 
-        this.updateCacheMsgRecord = true;
-        this.updateCacheReqRecord = true;
+        // if config has changed, cache will have to be updated
+        const cache = Cache.getInstance();
+        cache.shouldUpdateMsg = true;
+        cache.shouldUpdateReq = true;
     }
 
     public setCustomFieldsFormat(format: customFieldsFormat) {

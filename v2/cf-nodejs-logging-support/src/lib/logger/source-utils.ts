@@ -10,6 +10,7 @@ type origin = "msg-log" | "req-log" | "context";
 
 const NS_PER_MS = 1e6;
 
+export var REDACTED_PLACEHOLDER = "redacted";
 
 export class SourceUtils {
     private static instance: SourceUtils;
@@ -32,7 +33,38 @@ export class SourceUtils {
         return SourceUtils.instance;
     }
 
-    getFieldValue(source: Source, record: any, writtenAt: Date): string | number | undefined {
+    getValue(field: ConfigField, record: any, origin: origin, writtenAt: Date, req?: any, res?: any): string | number | boolean | undefined {
+        let value: string | number | boolean | undefined;
+        if (!Array.isArray(field.source)) {
+            switch (origin) {
+                case "msg-log":
+                    value = this.getFieldValue(field.source, record, writtenAt);
+                    break;
+                case "req-log":
+                    value = this.getReqFieldValue(field.source, record, writtenAt, req, res,);
+                    break;
+                case "context":
+                    value = this.getContextFieldValue(field.source, record, req);
+                    break;
+            }
+        } else {
+            value = this.getValueFromSources(field, record, origin, writtenAt, req, res);
+        }
+
+        // Handle default
+        if (value == null && field.default != null) {
+            value = field.default;
+        }
+
+        // Replaces all fields, which are marked to be reduced and do not equal to their default value to REDUCED_PLACEHOLDER.
+        if (field._meta!.isRedacted == true && value != null && value != field.default) {
+            value = REDACTED_PLACEHOLDER;
+        }
+
+        return value;
+    }
+
+    private getFieldValue(source: Source, record: any, writtenAt: Date): string | number | undefined {
         let value;
         switch (source.type) {
             case "static":
@@ -89,17 +121,17 @@ export class SourceUtils {
                 value = undefined;
         }
 
-        if (source.regExp) {
-            const isValid = this.validateRegExp(value, source.regExp);
-            if (!isValid) {
-                value = undefined;
-            }
+        if (source.regExp && value) {
+            value = this.validateRegExp(value, source.regExp);
         }
 
         return value;
     }
 
-    getReqFieldValue(source: Source, record: any, writtenAt: Date, req: any, res: any): string | number | undefined {
+    private getReqFieldValue(source: Source, record: any, writtenAt: Date, req: any, res: any): string | number | undefined {
+        if (req == null || res == null) {
+            throw new Error("Please pass req and res as argument to get value for req-log field.");
+        }
         let value;
         switch (source.type) {
             case "req-header":
@@ -118,18 +150,18 @@ export class SourceUtils {
                 value = this.getFieldValue(source, record, writtenAt);
         }
 
-        if (source.regExp) {
-            const isValid = this.validateRegExp(value, source.regExp);
-            if (!isValid) {
-                value = undefined;
-            }
+        if (source.regExp && value) {
+            value = this.validateRegExp(value, source.regExp);
         }
 
         return value;
     }
 
     // if source is request, then assign to context. If not, then ignore.
-    getContextFieldValue(source: Source, record: any, req: any) {
+    private getContextFieldValue(source: Source, record: any, req: any) {
+        if (req == null) {
+            throw new Error("Please pass req as argument to get value for req-log field.");
+        }
         let value;
         switch (source.type) {
             case "req-header":
@@ -147,18 +179,15 @@ export class SourceUtils {
                 break;
         }
 
-        if (source.regExp) {
-            const isValid = this.validateRegExp(value, source.regExp);
-            if (!isValid) {
-                value = undefined;
-            }
+        if (source.regExp && value) {
+            value = this.validateRegExp(value, source.regExp);
         }
 
         return value;
     }
 
     // iterate through sources until one source returns a value 
-    getValueFromSources(field: ConfigField, record: any, origin: origin, writtenAt: Date, req?: any, res?: any) {
+    private getValueFromSources(field: ConfigField, record: any, origin: origin, writtenAt: Date, req?: any, res?: any) {
 
         if (origin == "req-log" && (req == null || res == null)) {
             throw new Error("Please pass req and res as argument to get value for req-log field.");
@@ -185,10 +214,8 @@ export class SourceUtils {
                 origin == "req-log" ? this.getReqFieldValue(source, record, writtenAt, req, res,) :
                     this.getContextFieldValue(source, record, req);
 
-            // idea: validate regExp of source, if not valid then ignore source
             if (source.regExp && fieldValue) {
-                const isValid = this.validateRegExp(fieldValue, source.regExp);
-                if (!isValid) fieldValue = undefined;
+                fieldValue = this.validateRegExp(fieldValue, source.regExp);
             }
 
             ++sourceIndex;
@@ -211,11 +238,12 @@ export class SourceUtils {
         return -1;
     }
 
-    private validateRegExp(value: string, regEx: string) {
-        if (value == null) {
-            return false;
-        }
+    private validateRegExp(value: string, regEx: string): string | undefined {
         const regExp = new RegExp(regEx);
-        return regExp.test(value);
+        const isValid = regExp.test(value);
+        if (isValid) {
+            return value;
+        }
+        return undefined;
     }
 }
