@@ -1,5 +1,6 @@
 import EnvService from '../core/env-service';
 import Cache from '../logger/cache';
+import { SourceUtils } from '../logger/source-utils';
 import cfConfig from './config-cf.json';
 import coreConfig from './config-core.json';
 import kymaConfig from './config-kyma.json';
@@ -167,25 +168,16 @@ export default class Config {
                 }
 
                 // check if cache field
-                if (!Array.isArray(field.source)) {
-                    if (["static", "env"].includes(field.source.type)) {
-                        field._meta.isCache = true;
-                    }
-                } else {
-                    // if Sources[] then only check first source
-                    if (["static", "env"].includes(field.source[0].type)) {
-                        field._meta.isCache = true;
-                    }
+                if (SourceUtils.getInstance().isCacheable(field.source)) {
+                    field._meta.isCache = true;
                 }
 
                 if (field.output?.includes('msg-log')) {
                     this.addToList(this.msgFields, field);
-
                 }
 
                 if (field.output?.includes('req-log')) {
                     this.addToList(this.reqFields, field);
-
                 }
 
                 // check if context field, if true, then save field in list

@@ -33,6 +33,21 @@ export class SourceUtils {
         return SourceUtils.instance;
     }
 
+    isCacheable(source: Source | Source[]): boolean {
+        if (!Array.isArray(source)) {
+            if (["static", "env"].includes(source.type)) {
+                return true;
+            }
+        } else {
+            for (const element of source) {
+                if (["static", "env"].includes(element.type)) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
     getValue(field: ConfigField, record: any, origin: origin, writtenAt: Date, req?: any, res?: any): string | number | boolean | undefined {
         let value: string | number | boolean | undefined;
         if (!Array.isArray(field.source)) {
