@@ -39,10 +39,17 @@ export class SourceUtils {
                 return true;
             }
         } else {
-            for (const element of source) {
-                if (["static", "env"].includes(element.type)) {
+            for (const object of source) {
+                if (["static"].includes(object.type)) {
                     return true;
                 }
+                if (object.type == "env") {
+                    if (this.getEnvFieldValue(object) != null) {
+                        return true;
+                    }
+                    continue;
+                }
+                return false;
             }
         }
         return false;
@@ -86,13 +93,7 @@ export class SourceUtils {
                 value = source.value;
                 break;
             case "env":
-                if (source.path) {
-                    // clone path to avoid deleting path in resolveNestedVariable()
-                    const clonedPath = [...source.path];
-                    value = NestedVarResolver.resolveNestedVariable(process.env, clonedPath);
-                    break;
-                }
-                value = process.env[source.name!];
+                value = this.getEnvFieldValue(source);
                 break;
             case "config-field":
                 value = record[source.name!];
@@ -236,6 +237,15 @@ export class SourceUtils {
             ++sourceIndex;
         }
         return fieldValue;
+    }
+
+    private getEnvFieldValue(source: Source): string | number | undefined {
+        if (source.path) {
+            // clone path to avoid deleting path in resolveNestedVariable()
+            const clonedPath = [...source.path];
+            return NestedVarResolver.resolveNestedVariable(process.env, clonedPath);
+        }
+        return process.env[source.name!];
     }
 
     // returns -1 when all sources were iterated
