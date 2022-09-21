@@ -40,16 +40,17 @@ export class SourceUtils {
             }
         } else {
             for (const object of source) {
-                if (["static"].includes(object.type)) {
-                    return true;
-                }
-                if (object.type == "env") {
-                    if (this.getEnvFieldValue(object) != null) {
+                switch (object.type) {
+                    case "static":
                         return true;
-                    }
-                    continue;
+                    case "env":
+                        if (this.getEnvFieldValue(object) != null) {
+                            return true;
+                        }
+                        continue;
+                    default:
+                        return false;
                 }
-                return false;
             }
         }
         return false;
