@@ -230,8 +230,7 @@ export default class Config {
 
         // if config has changed, cache will have to be updated
         const cache = Cache.getInstance();
-        cache.shouldUpdateMsg = true;
-        cache.shouldUpdateReq = true;
+        cache.markCacheDirty();
     }
 
     public setCustomFieldsFormat(format: customFieldsFormat) {

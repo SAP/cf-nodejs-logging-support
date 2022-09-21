@@ -7,8 +7,8 @@ export default class Cache {
     private sourceUtils: SourceUtils;
     private cacheMsgRecord: any;
     private cacheReqRecord: any;
-    public shouldUpdateMsg: boolean;
-    public shouldUpdateReq: boolean;
+    private shouldUpdateMsg: boolean;
+    private shouldUpdateReq: boolean;
 
     private constructor() {
         this.sourceUtils = SourceUtils.getInstance();
@@ -38,6 +38,11 @@ export default class Cache {
             this.shouldUpdateReq = false;
         }
         return this.cacheReqRecord;
+    }
+
+    markCacheDirty() {
+        this.shouldUpdateMsg = true;
+        this.shouldUpdateReq = true;
     }
 
     private updateCache(output: outputs, cacheFields: ConfigField[], req?: any, res?: any) {
