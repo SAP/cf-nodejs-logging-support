@@ -1,8 +1,8 @@
 ---
 layout: default
 title: Default Req Level
-parent: Configuration
-nav_order: 2
+parent: Advanced Configuration
+nav_order: 3
 permalink: /configuration/defaultreqlevel
 ---
 

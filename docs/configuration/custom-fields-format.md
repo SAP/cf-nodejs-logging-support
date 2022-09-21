@@ -1,8 +1,8 @@
 ---
 layout: default
 title: Custom Fields Format
-parent: Configuration
-nav_order: 3
+parent: Advanced Configuration
+nav_order: 4
 permalink: /configuration/customfieldsformat
 ---
 

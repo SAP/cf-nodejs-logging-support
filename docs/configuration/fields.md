@@ -1,8 +1,8 @@
 ---
 layout: default
 title: Configuration Fields
-parent: Configuration
-nav_order: 1
+parent: Advanced Configuration
+nav_order: 2
 permalink: /configuration/fields
 ---
 
