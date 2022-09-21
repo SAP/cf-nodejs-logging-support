@@ -84,6 +84,9 @@ export default class Config {
             const result: ConfigField[] = [];
             fieldNames.forEach(name => {
                 const index = this.getIndex(name);
+                if (index === -1) {
+                    return;
+                }
                 const configField = Config.instance.config.fields![index];
                 result.push(configField);
             });

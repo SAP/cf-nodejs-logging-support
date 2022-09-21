@@ -79,9 +79,49 @@ export default class RootLogger extends Logger {
     }
 
     // legacy methods
-    overrideNetworkField() {
-        //to do: create a config file and override in config
+    overrideNetworkField(field: string, value: string): boolean {
+        if (field == null && typeof field != "string") {
+            return false;
+        }
+        // get field and override config
+        const configField = this.config.getFields([field]);
+
+        // if new field, then add as static field
+        if (configField.length == 0) {
+            this.config.addConfig([
+                {
+                    "fields":
+                        [
+                            {
+                                "name": field,
+                                "source": {
+                                    "type": "static",
+                                    "value": value
+                                },
+                                "output": [
+                                    "req-log"
+                                ]
+                            },
+                        ]
+                }
+            ]);
+            return true;
+        }
+
+        // set static source and override
+        configField[0].source = {
+            "type": "static",
+            "value": value
+        };
+        this.config.addConfig([
+            {
+                "fields":
+                    [configField[0]]
+            }
+        ]);
+        return true;
     }
+
     overrideCustomFieldFormat(value: customFieldsFormat) {
         return this.setCustomFieldsFormat(value);
     }
