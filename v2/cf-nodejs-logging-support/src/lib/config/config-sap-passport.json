@@ -3,7 +3,7 @@
         {
             "name": "sap_passport",
             "source": {
-                "type": "header",
+                "type": "req-header",
                 "name": "sap-passport"
             }
         },

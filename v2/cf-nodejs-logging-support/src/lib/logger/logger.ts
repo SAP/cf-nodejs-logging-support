@@ -10,10 +10,14 @@ export default class Logger {
     private context?: ReqContext;
     private registeredCustomFields: Array<string> = [];
     private customFields: Map<string, any> = new Map<string, any>()
+    private recordFactory: RecordFactory;
+    private recordWriter: RecordWriter;
     protected loggingLevelThreshold: Level = Level.INHERIT
 
     constructor(parent?: Logger) {
         this.parent = parent;
+        this.recordFactory = RecordFactory.getInstance();
+        this.recordWriter = RecordWriter.getInstance();
     }
 
     createLogger(customFields?: any): Logger {
@@ -48,8 +52,10 @@ export default class Logger {
     logMessage(levelName: string, ..._args: any) {
         if (!this.isLoggingLevel(levelName)) return;
         const loggerCustomFields = Object.assign({}, this.extractCustomFieldsFromLogger(this));
-        const record = RecordFactory.getInstance().buildMsgRecord(this.registeredCustomFields, loggerCustomFields, levelName, _args, this.context);
-        RecordWriter.getInstance().writeLog(record);
+
+        const record = this.recordFactory.buildMsgRecord(this.registeredCustomFields, loggerCustomFields, levelName, _args, this.context);
+
+        this.recordWriter.writeLog(record);
     }
 
     error() {

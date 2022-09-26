@@ -41,7 +41,7 @@ describe('Test custom fields', function () {
 
     describe('Test custom field format', function () {
 
-        describe('cloud-logging format', function () {
+        describe('"cloud-logging" format', function () {
 
             beforeEach(function () {
                 var obj = {
@@ -59,27 +59,21 @@ describe('Test custom fields', function () {
                 expect(lastOutput).to.have.property('field-a', 'value');
             });
 
-            afterEach(function () {
-                delete process.env.VCAP_SERVICES;
+            it('does not log in application-logging format', function () {
+                expect(lastOutput).to.not.have.property('cf');
             });
         });
 
-        describe('application-logs format', function () {
+        describe('"application-logging" format', function () {
             beforeEach(function () {
-                // does not work since sinleton config and env variable seted only once by first import
-                // var obj = {
-                //     "application-logs": {}
-                // }
-                // process.env.VCAP_SERVICES = JSON.stringify(obj);
-
                 log = importFresh("../../../build/main/index");
-                log.setCustomFieldsFormat("application-logs");
+                log.setCustomFieldsFormat("application-logging");
                 log.registerCustomFields(["field-a"]);
                 log.setCustomFields({ "field-a": "value" });
                 log.logMessage("info", "test-message");
             });
 
-            it('logs with application-logs format', function () {
+            it('logs custom field in application-logging format', function () {
                 const expectation = {
                     "#cf": {
                         "string": [{
@@ -92,8 +86,74 @@ describe('Test custom fields', function () {
                 expect(lastOutput).to.deep.contain(expectation);
             });
 
-            afterEach(function () {
-                delete process.env.VCAP_SERVICES;
+            it('does not log custom field in cloud-logging format', function () {
+                expect(lastOutput).to.not.have.property('field-a', 'value');
+            });
+        });
+
+        describe('"all" format', function () {
+            beforeEach(function () {
+
+                log = importFresh("../../../build/main/index");
+                log.setCustomFieldsFormat("all");
+                log.registerCustomFields(["field-a"]);
+                log.setCustomFields({ "field-a": "value" });
+                log.logMessage("info", "test-message");
+            });
+
+            it('logs custom field in application-logging format', function () {
+                const expectation = {
+                    "#cf": {
+                        "string": [{
+                            "k": "field-a",
+                            "v": "value",
+                            "i": 0
+                        }]
+                    }
+                };
+                expect(lastOutput).to.deep.contain(expectation);
+            });
+
+            it('logs custom field in cloud-logging format', function () {
+                expect(lastOutput).to.have.property('field-a', 'value');
+            });
+        });
+
+        describe('"disabled" format', function () {
+            beforeEach(function () {
+
+                log = importFresh("../../../build/main/index");
+                log.setCustomFieldsFormat("disabled");
+                log.registerCustomFields(["field-a"]);
+                log.setCustomFields({ "field-a": "value" });
+                log.logMessage("info", "test-message");
+            });
+
+            it('does not log custom field in application-logging format', function () {
+                expect(lastOutput).to.not.have.property('#cf');
+            });
+
+            it('does not log custom field in cloud-logging format', function () {
+                expect(lastOutput).to.not.have.property('field-a', 'value');
+            });
+        });
+
+        describe('"default" format', function () {
+            beforeEach(function () {
+
+                log = importFresh("../../../build/main/index");
+                log.setCustomFieldsFormat("default");
+                log.registerCustomFields(["field-a"]);
+                log.setCustomFields({ "field-a": "value" });
+                log.logMessage("info", "test-message");
+            });
+
+            it('does not log custom field in application-logging format', function () {
+                expect(lastOutput).to.not.have.property('#cf');
+            });
+
+            it('log custom field in cloud-logging format', function () {
+                expect(lastOutput).to.have.property('field-a', 'value');
             });
         });
     });

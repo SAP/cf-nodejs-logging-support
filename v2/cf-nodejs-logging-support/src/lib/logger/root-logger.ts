@@ -62,10 +62,6 @@ export default class RootLogger extends Logger {
         return EnvService.getBoundServices()
     }
 
-    // legacy methods
-    overrideNetworkField(field: string, value: string) { }
-    overrideCustomFieldFormat(value: string) { }
-    setLogPattern() { }
     createWinstonTransport(options: any) {
         if (!options) {
             options = {
@@ -75,9 +71,59 @@ export default class RootLogger extends Logger {
         options.logMessage = this.logMessage;
         return createTransport(options);
     };
+
     forceLogger(logger: framework) {
         Config.getInstance().setFramework(logger);
         RequestAccessor.getInstance().setFrameworkService();
         ResponseAccessor.getInstance().setFrameworkService();
     }
+
+    // legacy methods
+    overrideNetworkField(field: string, value: string): boolean {
+        if (field == null && typeof field != "string") {
+            return false;
+        }
+        // get field and override config
+        const configField = this.config.getFields([field]);
+
+        // if new field, then add as static field
+        if (configField.length == 0) {
+            this.config.addConfig([
+                {
+                    "fields":
+                        [
+                            {
+                                "name": field,
+                                "source": {
+                                    "type": "static",
+                                    "value": value
+                                },
+                                "output": [
+                                    "req-log"
+                                ]
+                            },
+                        ]
+                }
+            ]);
+            return true;
+        }
+
+        // set static source and override
+        configField[0].source = {
+            "type": "static",
+            "value": value
+        };
+        this.config.addConfig([
+            {
+                "fields":
+                    [configField[0]]
+            }
+        ]);
+        return true;
+    }
+
+    overrideCustomFieldFormat(value: customFieldsFormat) {
+        return this.setCustomFieldsFormat(value);
+    }
+    setLogPattern() { } // no longer supported
 }

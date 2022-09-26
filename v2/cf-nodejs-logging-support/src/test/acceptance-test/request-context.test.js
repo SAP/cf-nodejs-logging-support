@@ -36,8 +36,7 @@ describe('Test request context', function () {
                 lastLogs = [];
                 supertest(expressApp)
                     .get("/requestcontext")
-                    .set("x-vcap-request-id", "1234")
-                    .set("tenantid", "1234")
+                    .set({ "x-vcap-request-id": "1234", "tenantid": "1234" })
                     .expect(200)
                     .then(
                         done()

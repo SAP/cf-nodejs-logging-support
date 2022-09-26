@@ -107,6 +107,20 @@ describe('Test logging in global context', function () {
         });
     });
 
+    describe('Test regExp constraint', function () {
+        beforeEach(function () {
+            log.logMessage("info", "test-message");
+        });
+
+        it('writes field with correct uuid format', function () {
+            expect(lastOutput).to.have.property('uuid_field');
+        });
+
+        it('does not write field with incorrect uuid format', function () {
+            expect(lastOutput).to.not.have.property('will_never_log');
+        });
+    });
+
     describe('Set log severity level', function () {
 
         beforeEach(function () {

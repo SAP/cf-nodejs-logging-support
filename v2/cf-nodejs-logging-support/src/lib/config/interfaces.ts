@@ -12,11 +12,12 @@ export interface ConfigField {
     envVarRedact?: string;
     envVarSwitch?: string;
     source: Source | Source[];
-    output?: outputs[];
+    output: outputs[];
     disable?: boolean;
     default?: string | number | boolean;
+    isContext?: boolean;
     settable?: boolean;
-    _meta?: ConfigFieldMeta
+    _meta?: ConfigFieldMeta;
 }
 
 export interface Source {
@@ -25,17 +26,20 @@ export interface Source {
     path?: string[];
     name?: string;
     framework?: framework;
+    regExp?: string;
 }
 
 
 interface ConfigFieldMeta {
     isRedacted: boolean;
     isEnabled: boolean;
+    isCache: boolean;
+    isContext: boolean;
 }
 
 type sources = "static" | "env" | "config-field" | "req-header" | "res-header" | "req-object" | "res-object" | "meta" | "uuid";
-type outputs = "msg-log" | "req-log";
+export type outputs = "msg-log" | "req-log";
 
 export type framework = "express" | "restify" | "connect" | "nodejs-http";
 
-export type customFieldsFormat = "application-logs" | "cloud-logging";
+export type customFieldsFormat = "application-logging" | "cloud-logging" | "all" | "disabled" | "default";

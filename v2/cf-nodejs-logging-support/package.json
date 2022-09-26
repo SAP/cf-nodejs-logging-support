@@ -26,6 +26,7 @@
     "fix:lint": "eslint src --ext .ts --fix",
     "test": "npm run start && mocha 'src/test/**/*.test.js'",
     "test:lint": "eslint src --ext .ts",
+    "test-performance": "mocha 'src/performance-test/*.test.js'",
     "build-json-schema": "typescript-json-schema 'src/lib/config/interfaces.ts' ConfigObject --noExtraProps --out 'src/lib/config/config-schema.json'"
   },
   "engines": {
@@ -44,6 +45,7 @@
     "eslint-plugin-import": "^2.22.0",
     "import-fresh": "^3.3.0",
     "mocha": "^9.2.2",
+    "node-mocks-http": "^1.11.0",
     "supertest": "^6.2.2",
     "ts-node": "^9.0.0",
     "typedoc": "^0.22.13",

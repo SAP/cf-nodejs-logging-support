@@ -17,6 +17,7 @@ export default class LevelUtils {
     }
 
     static isLevelEnabled(threshold: Level, level: Level) {
+        if (level <= Level.OFF) return false;
         return level <= threshold
     }
 }
