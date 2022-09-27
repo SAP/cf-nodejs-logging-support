@@ -34,6 +34,8 @@ log.setCustomFieldsFormat("application-logging");
 // possible values: "disabled", "all", "application-logging", "cloud-logging", "default"
 ```
 
+Alternatively it is also possible to force the logging format by setting a configuration file as explained in [Custom Fields Format](/cf-nodejs-logging-support/configuration/customfieldsformat).
+
 In addition to logging messages as described in [Message Logs](/cf-nodejs-logging-support/general-usage/message-logs) you can attach custom fields as an object of key-value pairs as last parameter:
 
 ```js

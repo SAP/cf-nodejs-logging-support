@@ -81,11 +81,12 @@ interface ConfigField {
 ```
 
 ## Description config field properties:
+
 * name: assigns the key of the field.
 * envVarSwitch: Only log this field, if specified environment variable is set to "true". If specified environment variable is not set to "true" or not present, field gets omitted. This is also affects fields with default values.
 * envVarRedact: Only log this field, if specified environment variable is set to "true". If specified environment variable is not set to "true" or not present, field gets set to "redacted" if it is not set to its default value or null.
 * source: configures how the value of the field is assigned. You can assign one or many sources to a field.
-    -  type: One of
+    -type: One of
         + "static": use value from value field.
         + "env": read value from environment variable.
         + "config-field": copy value from another configured field.
@@ -103,14 +104,17 @@ interface ConfigField {
 * default: if value from sources is null, then assign this value.
 
 ## Multiple sources
-You can attach multiple sources to a field. In this case, the library will iterate each source until one delivers a value. 
-You can also bind each source to a specific framework. If the framework assigned to the source is not running, then this source will be ignored. To do this just declare the property "framework": <framework> in the respected source. Our supported frameworks are:
+
+You can attach multiple sources to a field. In this case, the library will iterate each source until one delivers a value.
+You can also bind each source to a specific framework. If the framework assigned to the source is not running, then this source will be ignored. To do this just declare the property "framework": $framework in the respected source. Our supported frameworks are:
+
 * [Express](https://expressjs.com/): declare as "express"
 * [Restify](http://restify.com/): declare as "restify"
 * [Connect](https://www.npmjs.com/package/connect): declare as "connect"
 * [Node.js HTTP](https://nodejs.org/api/http.html): declare as "nodejs-http"
 
 Exmaple of field with multiple sources:
+
 ```ts
 {
     "fields": [
@@ -141,9 +145,10 @@ Exmaple of field with multiple sources:
 ```
 
 ## Sensitive data redaction
-To handle sensitive data redaction you can assign a field with the properties '"envVarSwitch":<ENV-VARIABLE>' or '"envVarRedact":<ENV-VARIABLE>'.
 
-* envVarSwitch: 
+To handle sensitive data redaction you can assign a field with the properties '"envVarSwitch":$ENV-VARIABLE' or '"envVarRedact":$ENV-VARIABLE'.
+
+* envVarSwitch:
                       Only log this field, if specified environment variable is set to "true". 
                       If specified environment variable is not set to "true" or not present, field gets omitted. This is also affects fields with default values.
 * envVarRedact:
@@ -151,6 +156,7 @@ To handle sensitive data redaction you can assign a field with the properties '"
                       If specified environment variable is not set to "true" or not present, field gets set to "redacted" if it is not set to its default value or null.
 
 Example:
+
 ```ts
     {
         "fields": [

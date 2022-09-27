@@ -114,10 +114,12 @@ DYN_LOG_HEADER: MY-HEADER-FIELD
 
 ## Change logging level threshold within request handlers
 
-You can also change the logging level threshold for all requests of a specific request handler by calling:
+You can also change the logging level threshold for all requests of a specific request handler as follows:
 
 ```js
 req.setLoggingLevel("verbose");
 ```
+
+Alternatively you can also do this by setting a configuration file as explained in  [Default Req Level](/cf-nodejs-logging-support/configuration/defaultreqlevel).
 
 This feature is also available for [Child Loggers](/cf-nodejs-logging-support/advanced-usage/child-loggers#).
