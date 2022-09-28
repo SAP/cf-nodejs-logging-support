@@ -80,28 +80,73 @@ interface ConfigField {
 }
 ```
 
-## Description config field properties:
+## Config field properties
 
-* name: assigns the key of the field.
-* envVarSwitch: Only log this field, if specified environment variable is set to "true". If specified environment variable is not set to "true" or not present, field gets omitted. This is also affects fields with default values.
-* envVarRedact: Only log this field, if specified environment variable is set to "true". If specified environment variable is not set to "true" or not present, field gets set to "redacted" if it is not set to its default value or null.
-* source: configures how the value of the field is assigned. You can assign one or many sources to a field.
-    -type: One of
-        + "static": use value from value field.
-        + "env": read value from environment variable.
-        + "config-field": copy value from another configured field.
-        + "req-header": read value from request header.
-        + "req-body": read value from request object.
-        + "res-header": read value from response header.
-        + "res-body": read value from response object.
-        + "uuid": create a random uuid and assign to value.
-    - value: declare value for sources of type static.
-    - path: declare environment variable path to read value.
-    - name: declare name of environment variable.
-    - framework: only use this sources if declared framework is running.
-* output: define output of field (msg-log, req-log or both).
-* disable: if true, ommit field.
-* default: if value from sources is null, then assign this value.
+* ### name (required)
+
+  * **Type:** string
+  * **Description:** Assigns fields key.
+
+---
+
+* ### envVarSwitch (optional)
+
+  * **Type:** string
+  * **Description:** Only log this field, if specified environment variable is set to "true". If specified environment variable is not set to "true" or not present, field gets omitted. This is also affects fields with default values.
+
+---
+
+* ### envVarRedact (optional)
+
+  * **Type:** string
+  * **Description:** Only log this field, if specified environment variable is set to "true". If specified environment variable is not set to "true" or not present, field gets set to "redacted" if it is not set to its default value or null.
+
+---
+
+* ### source (required)
+
+  * **Type:** Source \| Source[]
+  * **Description:** Configures how the value of the field is assigned. You can assign one or many sources to a field.
+
+  * type One of:
+    * "static": use value from value field.
+    * "env": read value from environment variable.
+    * "config-field": copy value from another configured field.
+    * "req-header": read value from request header.
+    * "req-body": read value from request object.
+    * "res-header": read value from response header.
+    * "res-body": read value from response object.
+    * "uuid": create a random uuid and assign to value.
+  * value: declare value for sources of type static.
+  * path: declare environment variable path to read value.
+  * name: declare name of environment variable.
+  * framework: only use this sources if declared framework is running.
+
+---
+
+* ### output (required)
+
+  * **Type:** Array
+  * **Description:** Define output of field (msg-log, req-log or both).
+  * Allowed values:
+    * msg-log
+    * req-log
+
+---
+
+* ### disable (optional)
+
+  * **Type:** boolean
+  * **Description:** If true, ommit field.
+
+---
+
+* ### default (optional)
+
+  * **Type:** string
+  * **Description:** If returned value from source is null, then assign this value.
+
+---
 
 ## Multiple sources
 

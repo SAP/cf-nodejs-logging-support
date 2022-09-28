@@ -41,8 +41,6 @@ Notice that in this case, the configuration files will be added interatively. Th
 
 For local testing purposes you can get the setted library configuration as JSON object from any logging instance as follows:
 
-Example:
-
 ```ts
 log.getConfig();
 ```
