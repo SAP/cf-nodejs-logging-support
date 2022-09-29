@@ -7,13 +7,15 @@ permalink: /configuration/fields
 ---
 
 # Configuration of logging fields
-You can write a configuration file to add new fields or override the behaviour of already existing ones. If a field name already exist in your configuration, this will override the previous configuration field. 
 
+You can write a configuration file to add new fields or override the behaviour of already existing ones. If a field name already exist in your configuration, this will override the previous field´s configuration.
 
 ## Write a JSON file and declare fields configuration
+
 Make sure to declare the configuration of your fields as a list in the property "fields".
 
 Example:
+
 ```ts
 {
     "fields": [
@@ -85,21 +87,7 @@ interface ConfigField {
 * ### name (required)
 
   * **Type:** string
-  * **Description:** Assigns fields key.
-
----
-
-* ### envVarSwitch (optional)
-
-  * **Type:** string
-  * **Description:** Only log this field, if specified environment variable is set to "true". If specified environment variable is not set to "true" or not present, field gets omitted. This is also affects fields with default values.
-
----
-
-* ### envVarRedact (optional)
-
-  * **Type:** string
-  * **Description:** Only log this field, if specified environment variable is set to "true". If specified environment variable is not set to "true" or not present, field gets set to "redacted" if it is not set to its default value or null.
+  * **Description:** Assign fields key.
 
 ---
 
@@ -108,45 +96,113 @@ interface ConfigField {
   * **Type:** Source \| Source[]
   * **Description:** Configures how the value of the field is assigned. You can assign one or many sources to a field.
 
-  * type One of:
-    * "static": use value from value field.
-    * "env": read value from environment variable.
-    * "config-field": copy value from another configured field.
-    * "req-header": read value from request header.
-    * "req-body": read value from request object.
-    * "res-header": read value from response header.
-    * "res-body": read value from response object.
-    * "uuid": create a random uuid and assign to value.
-  * value: declare value for sources of type static.
-  * path: declare environment variable path to read value.
-  * name: declare name of environment variable.
-  * framework: only use this sources if declared framework is running.
+Each source is defined by the property "type". Allowed values for each type of source are:
 
----
+* ["static"](/cf-nodejs-logging-support/configuration/fields#type---static)
+* ["env"](/cf-nodejs-logging-support/configuration/fields#type---env)
+* ["config-field"](/cf-nodejs-logging-support/configuration/fields#type---config-field)
+* ["req-header"](/cf-nodejs-logging-support/configuration/fields#type---req-header)
+* ["req-body"](/cf-nodejs-logging-support/configuration/fields#type---req-body)
+* ["res-header"](/cf-nodejs-logging-support/configuration/fields#type---res-header)
+* ["res-body"](/cf-nodejs-logging-support/configuration/fields#type---res-body)
+* ["uuid"](/cf-nodejs-logging-support/configuration/fields#type---uuid)
 
-* ### output (required)
+### type - "static"
 
-  * **Type:** Array
-  * **Description:** Define output of field (msg-log, req-log or both).
-  * Allowed values:
-    * msg-log
-    * req-log
+Return always a static value. Declare this value as string in the property "value".
 
----
+Example:
 
-* ### disable (optional)
+  ```ts
+    {
+        "name": "test-field",
+        "type": "static",
+        "value": "my_value",
+        "output": ["msg-log", "req-log"]
+    }
+  ```
 
-  * **Type:** boolean
-  * **Description:** If true, ommit field.
+### type - "env"
 
----
+Read value from environment variable. Declare the environment variable as string in the property "name".
 
-* ### default (optional)
+Example:
 
-  * **Type:** string
-  * **Description:** If returned value from source is null, then assign this value.
+```ts
+    {
+        "name": "test-field",
+        "type": "env",
+        "path": "ENV_VAR",
+        "output": ["msg-log"]
+    }
+```
 
----
+If you need to access a subproperty of the environemt variable, declare the property "path" with the path as an array of strings.
+
+Example:
+
+```ts
+    {
+        "name": "test-field",
+        "type": "env",
+        "path": ["ENV_VAR", "application_id"],
+        "output": ["msg-log"]
+    }
+```
+
+### type - "config-field"
+
+Copy value from another configured field. Declare the name of the field to copy in the property "name".
+
+Example:
+
+  ```ts
+    {
+        "name": "test-field",
+        "type": "config-field",
+        "name": "field-a",
+        "output": ["msg-log"]
+    }
+  ```
+
+### type - "req-header"
+
+Read value from request header. Declare the property to be accesed in the property "name".
+
+Example:
+
+  ```ts
+    {
+        "name": "test-field",
+        "type": "req-header",
+        "name": "access-control-request-method",
+        "output": ["req-log"]
+    }
+  ```
+
+### type - "req-body"
+
+Read value from request object. Declare the property to be accesed in the property "name".
+
+### type - "res-header"
+
+Read value from response header. Declare the property to be accesed in the property "name".
+
+### type - "res-body"
+
+Read value from response object. Declare the property to be accesed in the property "name".
+
+### type - "uuid"
+
+ Create a random uuid and assign to value.
+
+```ts
+    {
+        "name": "test-field",
+        "type": "uuid",
+        "output": ["msg-log","req-log"]
+    }
+```
 
 ## Multiple sources
 
@@ -158,7 +214,7 @@ You can also bind each source to a specific framework. If the framework assigned
 * [Connect](https://www.npmjs.com/package/connect): declare as "connect"
 * [Node.js HTTP](https://nodejs.org/api/http.html): declare as "nodejs-http"
 
-Exmaple of field with multiple sources:
+Example of field with multiple framework specific sources:
 
 ```ts
 {
@@ -189,15 +245,55 @@ Exmaple of field with multiple sources:
 }
 ```
 
+---
+
+* ### output (required)
+
+  * **Type:** Array
+  * **Description:** Define output of field (msg-log, req-log or both).
+  * Allowed values:
+    * msg-log
+    * req-log
+
+---
+
+* ### envVarSwitch (optional)
+
+  * **Type:** string
+  * **Description:** Only log this field, if specified environment variable is set to "true". If specified environment variable is not set to "true" or not present, field gets omitted. This is also affects fields with default values.
+
+---
+
+* ### envVarRedact (optional)
+
+  * **Type:** string
+  * **Description:** Only log this field, if specified environment variable is set to "true". If specified environment variable is not set to "true" or not present, field gets set to "redacted" if it is not set to its default value or null.
+
+---
+
+* ### disable (optional)
+
+  * **Type:** boolean
+  * **Description:** If true, ommit field.
+
+---
+
+* ### default (optional)
+
+  * **Type:** string
+  * **Description:** If returned value from source is null, then assign this value.
+
+---
+
 ## Sensitive data redaction
 
 To handle sensitive data redaction you can assign a field with the properties '"envVarSwitch":$ENV-VARIABLE' or '"envVarRedact":$ENV-VARIABLE'.
 
 * envVarSwitch:
-                      Only log this field, if specified environment variable is set to "true". 
+                      Only log this field, if specified environment variable is set to "true".
                       If specified environment variable is not set to "true" or not present, field gets omitted. This is also affects fields with default values.
 * envVarRedact:
-                      Only log this field, if specified environment variable is set to "true". 
+                      Only log this field, if specified environment variable is set to "true".
                       If specified environment variable is not set to "true" or not present, field gets set to "redacted" if it is not set to its default value or null.
 
 Example:
