@@ -1,7 +1,0 @@
-test
-sample
-.jshintrc
-coverage
-.vscode/*
-.travis.yml
-.nyc_output

@@ -40,5 +40,15 @@
   "scripts": {
     "test": "mocha -- --timeout 10000",
     "coverage": "nyc --reporter=lcov --reporter=text-summary npm run test"
-  }
+  },
+  "files": [
+    "/.reuse/",
+    "/core/",
+    "/docs/",
+    "/logger/",
+    "/trace/",
+    "/winston/",
+    "config.js",
+    "index.js"
+  ]
 }
