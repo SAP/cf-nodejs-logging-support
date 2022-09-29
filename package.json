@@ -44,7 +44,6 @@
   "files": [
     "/.reuse/",
     "/core/",
-    "/docs/",
     "/logger/",
     "/trace/",
     "/winston/",
