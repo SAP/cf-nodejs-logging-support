@@ -1,9 +1,9 @@
 ---
 layout: default
-title: Default Req Level
+title: Default Request Level
 parent: Advanced Configuration
 nav_order: 3
-permalink: /configuration/defaultreqlevel
+permalink: /configuration/defaultrequestlevel
 ---
 
 ## Set default request loging level
@@ -12,7 +12,7 @@ Change the default request logging level by setting the property "reqLoggingLeve
 
 ```ts
 {
- "reqLoggingLevel": "info"
+    "reqLoggingLevel": "info"
 }
 ```
 

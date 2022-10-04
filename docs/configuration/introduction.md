@@ -3,7 +3,7 @@ layout: default
 title: Introduction
 parent: Advanced Configuration
 nav_order: 1
-has_children: true
+has_children: false
 ---
 
 ## Introduction
@@ -11,7 +11,7 @@ has_children: true
 You can customize the default configuration by writing a JSON file and adding it to the library. Take a look at the following sections to get a better understanding of what you can configure and how:
 
 * [Configuration of logging fields](/cf-nodejs-logging-support/configuration/fields/)
-* [Default request logging level](/cf-nodejs-logging-support/configuration/defaultreqlevel/)
+* [Default request logging level](/cf-nodejs-logging-support/configuration/defaultrequestlevel/)
 * [Custom fields format](/cf-nodejs-logging-support/configuration/customfieldsformat/)
 * [Framework](/cf-nodejs-logging-support/configuration/framework/)
 
@@ -92,9 +92,7 @@ Which will return something like:
 }
 ```
 
-Alternatively you can also use the method getFields(name: string) to get the configuration of only one or many desired fields.
-
-Example:
+Alternatively you can also get the configuration of only one or many desired fields as follows:
 
 ```ts
 log.getFields("organization_id","request_id")

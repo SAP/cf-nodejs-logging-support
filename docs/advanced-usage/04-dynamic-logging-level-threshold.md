@@ -120,6 +120,6 @@ You can also change the logging level threshold for all requests of a specific r
 req.setLoggingLevel("verbose");
 ```
 
-Alternatively you can also do this by setting a configuration file as explained in  [Default Req Level](/cf-nodejs-logging-support/configuration/defaultreqlevel).
+Alternatively you can also do this by setting a configuration file as explained in  [Default Req Level](/cf-nodejs-logging-support/configuration/defaultrequestlevel).
 
 This feature is also available for [Child Loggers](/cf-nodejs-logging-support/advanced-usage/child-loggers#).

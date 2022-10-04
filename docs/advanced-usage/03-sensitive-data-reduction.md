@@ -45,4 +45,4 @@ In order to activate usual logging for all or some of these fields you have to s
 
 This behavior matches with the corresponding mechanism in the [CF Java Logging Support](https://github.com/SAP/cf-java-logging-support/wiki/Overview#logging-sensitive-user-data) library.
 
-If you want to override the default behaviour of sensitive data redaction please go to [Configuration Fields](/cf-nodejs-logging-support/configuration/fields)
+If you want to override the default behaviour of sensitive data redaction please go to [Configuration Fields](/cf-nodejs-logging-support/configuration/fields#sensitive-data-redaction)
