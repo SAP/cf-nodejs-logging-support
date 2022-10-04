@@ -68,46 +68,69 @@ Example:
 }
 ```
 
-The configuration of each field must implement the ConfigField interface:
+Use the following properties to configurate a field:
 
-```ts
-interface ConfigField {
-    name: string;
-    envVarRedact?: string;
-    envVarSwitch?: string;
-    source: Source | Source[];
-    output: outputs[];
-    disable?: boolean;
-    default?: string;
-}
-```
+1. [name](/cf-nodejs-logging-support/configuration/fields#name-required) (required)
+1. [source](/cf-nodejs-logging-support/configuration/fields#source-required) (required)
+1. [output](/cf-nodejs-logging-support/configuration/fields#output-required) (required)
+1. [disable](/cf-nodejs-logging-support/configuration/fields#disable-optional) (optional)
+1. [default](/cf-nodejs-logging-support/configuration/fields#default-optional) (optional)
+1. [envVarRedact](/cf-nodejs-logging-support/configuration/fields#sensitive-data-redaction) (optional)
+1. [envVarSwitch](/cf-nodejs-logging-support/configuration/fields#sensitive-data-redaction) (optional)
+
+---
 
 ## Config field properties
 
-* ### name (required)
+### 1. name (required)
 
   * **Type:** string
   * **Description:** Assign fields key.
 
----
 
-* ### source (required)
+### 2. source (required)
 
   * **Type:** Source \| Source[]
   * **Description:** Configures how the value of the field is assigned. You can assign one or many sources to a field.
 
-Each source is defined by the property "type". Allowed values for each type of source are:
+Each Source is defined by the property "type". Allowed values for each type of source are:
 
-* ["static"](/cf-nodejs-logging-support/configuration/fields#type---static)
-* ["env"](/cf-nodejs-logging-support/configuration/fields#type---env)
-* ["config-field"](/cf-nodejs-logging-support/configuration/fields#type---config-field)
-* ["req-header"](/cf-nodejs-logging-support/configuration/fields#type---req-header)
-* ["req-body"](/cf-nodejs-logging-support/configuration/fields#type---req-body)
-* ["res-header"](/cf-nodejs-logging-support/configuration/fields#type---res-header)
-* ["res-body"](/cf-nodejs-logging-support/configuration/fields#type---res-body)
-* ["uuid"](/cf-nodejs-logging-support/configuration/fields#type---uuid)
+1. ["static"](/cf-nodejs-logging-support/configuration/fields#static)
+1. ["env"](/cf-nodejs-logging-support/configuration/fields#env)
+1. ["config-field"](/cf-nodejs-logging-support/configuration/fields#config-field)
+1. ["req-header"](/cf-nodejs-logging-support/configuration/fields#req-header)
+1. ["req-body"](/cf-nodejs-logging-support/configuration/fields#req-body)
+1. ["res-header"](/cf-nodejs-logging-support/configuration/fields#res-header)
+1. ["res-body"](/cf-nodejs-logging-support/configuration/fields#res-body)
+1. ["uuid"](/cf-nodejs-logging-support/configuration/fields#uuid)
 
-### type - "static"
+To get more information about each type of source go to [source types](/cf-nodejs-logging-support/configuration/fields#source-types).
+
+To get more information about assigning multiple sources to a field go to [multiple sources](/cf-nodejs-logging-support/configuration/fields#source-types).
+
+### 3. output (required)
+
+  * **Type:** Array
+  * **Description:** Define output of field (msg-log, req-log or both).
+  * Allowed values:
+    * msg-log
+    * req-log
+
+### 4. disable (optional)
+
+  * **Type:** boolean
+  * **Description:** If true, ommit field.
+
+### 5. default (optional)
+
+  * **Type:** string
+  * **Description:** If returned value from source is null, then assign this value.
+
+---
+
+## Source types
+
+### 1. "static"
 
 Return always a static value. Declare this value as string in the property "value".
 
@@ -122,7 +145,7 @@ Example:
     }
   ```
 
-### type - "env"
+### 2. "env"
 
 Read value from environment variable. Declare the environment variable as string in the property "name".
 
@@ -150,7 +173,7 @@ Example:
     }
 ```
 
-### type - "config-field"
+### 3. "config-field"
 
 Copy value from another configured field. Declare the name of the field to copy in the property "name".
 
@@ -165,7 +188,7 @@ Example:
     }
   ```
 
-### type - "req-header"
+### 4. "req-header"
 
 Read value from request header. Declare the property to be accesed in the property "name".
 
@@ -180,19 +203,19 @@ Example:
     }
   ```
 
-### type - "req-body"
+### 5. "req-body"
 
 Read value from request object. Declare the property to be accesed in the property "name".
 
-### type - "res-header"
+### 6. "res-header"
 
 Read value from response header. Declare the property to be accesed in the property "name".
 
-### type - "res-body"
+### 7. "res-body"
 
 Read value from response object. Declare the property to be accesed in the property "name".
 
-### type - "uuid"
+### 8. "uuid"
 
  Create a random uuid and assign to value.
 
@@ -203,6 +226,8 @@ Read value from response object. Declare the property to be accesed in the prope
         "output": ["msg-log","req-log"]
     }
 ```
+
+---
 
 ## Multiple sources
 
@@ -247,47 +272,9 @@ Example of field with multiple framework specific sources:
 
 ---
 
-* ### output (required)
-
-  * **Type:** Array
-  * **Description:** Define output of field (msg-log, req-log or both).
-  * Allowed values:
-    * msg-log
-    * req-log
-
----
-
-* ### envVarSwitch (optional)
-
-  * **Type:** string
-  * **Description:** Only log this field, if specified environment variable is set to "true". If specified environment variable is not set to "true" or not present, field gets omitted. This is also affects fields with default values.
-
----
-
-* ### envVarRedact (optional)
-
-  * **Type:** string
-  * **Description:** Only log this field, if specified environment variable is set to "true". If specified environment variable is not set to "true" or not present, field gets set to "redacted" if it is not set to its default value or null.
-
----
-
-* ### disable (optional)
-
-  * **Type:** boolean
-  * **Description:** If true, ommit field.
-
----
-
-* ### default (optional)
-
-  * **Type:** string
-  * **Description:** If returned value from source is null, then assign this value.
-
----
-
 ## Sensitive data redaction
 
-To handle sensitive data redaction you can assign a field with the properties '"envVarSwitch":$ENV-VARIABLE' or '"envVarRedact":$ENV-VARIABLE'.
+To handle sensitive data redaction you can assign a field with the properties "envVarSwitch" or "envVarRedact".
 
 * envVarSwitch:
                       Only log this field, if specified environment variable is set to "true".
