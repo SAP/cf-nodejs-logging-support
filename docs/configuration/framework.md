@@ -10,7 +10,7 @@ permalink: /configuration/framework
 
 By default the library will be configured to run with express. If you are going to use another server framework, you have to change the configuration accordingly. There are 2 ways to do this:
 
-1. Set the key-value pair "framework": "$frameworkName" in a configuration file:
+* Set the key-value pair "framework": "$frameworkName" in a configuration file:
 
 ```ts
 {
@@ -18,7 +18,7 @@ By default the library will be configured to run with express. If you are going 
 }
 ```
 
-2. Set the framework from a logger instance by calling:
+* Set the framework from a logger instance by calling:
 
 ```ts
 log.forceLogger("connect") 
