@@ -26,16 +26,12 @@ export default class Config {
     private msgFields: ConfigField[] = [];
     private reqFields: ConfigField[] = [];
     private contextFields: ConfigField[] = [];
-    public updateCacheMsgRecord: boolean;
-    public updateCacheReqRecord: boolean;
     public noCacheMsgFields: ConfigField[];
     public noCacheReqFields: ConfigField[];
 
 
 
     private constructor() {
-        this.updateCacheMsgRecord = true;
-        this.updateCacheReqRecord = true;
         this.noCacheMsgFields = [];
         this.noCacheReqFields = [];
     }
@@ -263,6 +259,18 @@ export default class Config {
     public isSettable(key: string) {
         if (this.config.settableFields!.length == 0) return false;
         return this.config.settableFields!.includes(key);
+    }
+
+    public resetFieldsConfig() {
+        this.config.fields = [];
+        this.config.settableFields = [];
+        this.msgFields = [];
+        this.reqFields = [];
+        this.contextFields = [];
+        this.noCacheMsgFields = [];
+        this.noCacheReqFields = [];
+        const cache = Cache.getInstance();
+        cache.markCacheDirty();
     }
 
     // get index of field in config

@@ -38,6 +38,10 @@ export default class RootLogger extends Logger {
         return this.config.addConfig(configObject);
     }
 
+    resetFieldsConfig() {
+        return this.config.resetFieldsConfig();
+    }
+
     setCustomFieldsFormat(format: customFieldsFormat) {
         return this.config.setCustomFieldsFormat(format);
     }
