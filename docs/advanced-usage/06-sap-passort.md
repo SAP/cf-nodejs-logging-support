@@ -28,7 +28,7 @@ log.enableTracing("sap_passport")
 
 After activating the SAP Passport the property "sap_passport" will be added automatically to the configuration. This will read the property "sap-passport" from your request header.
 
-To add its constituents related fields use the setCustomFields method. These fields will always be attached directly in the log object as normal fields regardless of the custom fields format.:
+To add its constituents related fields use the setCustomFields method. These fields will always be attached directly in the log object as normal fields regardless of the custom fields format.
 
 Example for adding SAP Passport related fields:
 
