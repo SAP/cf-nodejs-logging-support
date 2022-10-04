@@ -37,6 +37,16 @@ log.addConfig(configFile1, configFile2, configFile3);
 
 Notice that in this case, the configuration files will be added interatively. This means that in case of collisions, the latest configuration file will override the previous one.
 
+## Reset fields configuration
+
+You can reset the fields configuration as follows:
+
+```ts
+log.resetFieldsConfig();
+```
+
+This will delet all fields except "level", "msg" and "type".
+
 ## Get configuration as JSON object
 
 For local testing purposes you can get the setted library configuration as JSON object from any logging instance as follows:
