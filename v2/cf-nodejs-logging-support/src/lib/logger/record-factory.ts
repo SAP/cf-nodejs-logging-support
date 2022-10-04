@@ -38,7 +38,7 @@ export default class RecordFactory {
         var customFieldsFromArgs = {};
         var lastArg = args[args.length - 1];
 
-        let record: any = {};
+        let record: any = { "level": level };
 
         if (typeof lastArg === "object") {
             if (this.stacktraceUtils.isErrorWithStacktrace(lastArg)) {
@@ -68,7 +68,6 @@ export default class RecordFactory {
 
         record = this.addCustomFields(record, registeredCustomFields, loggerCustomFields, customFieldsFromArgs);
 
-        record["level"] = level;
         record["msg"] = util.format.apply(util, args);
         record["type"] = this.LOG_TYPE;
 
