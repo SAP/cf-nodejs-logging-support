@@ -57,6 +57,11 @@
                     ]
                 }
             },
+            "required": [
+                "name",
+                "output",
+                "source"
+            ],
             "type": "object"
         },
         "ConfigFieldMeta": {
@@ -75,6 +80,12 @@
                     "type": "boolean"
                 }
             },
+            "required": [
+                "isCache",
+                "isContext",
+                "isEnabled",
+                "isRedacted"
+            ],
             "type": "object"
         },
         "Source": {
@@ -102,6 +113,9 @@
                     "type": "string"
                 }
             },
+            "required": [
+                "type"
+            ],
             "type": "object"
         },
         "customFieldsFormat": {
