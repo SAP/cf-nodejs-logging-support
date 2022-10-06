@@ -111,7 +111,7 @@ export default class RecordFactory {
                 record[key] = value;
             }
 
-            if (customFieldsFormat == "application-logging" || customFieldsFormat == "all") {
+            if (["application-logging", "all"].includes(customFieldsFormat)) {
                 let res: any = {};
                 res.string = [];
                 let key;

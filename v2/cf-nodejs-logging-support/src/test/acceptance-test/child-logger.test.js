@@ -26,6 +26,7 @@ describe('Test child logger', function () {
     describe('Create child logger with new custom field', function () {
 
         beforeEach(function () {
+            log.registerCustomFields(["child-field"]);
             childLogger = log.createLogger({ "child-field": "value" });
             childLogger.logMessage("info", "test-message");
         });
@@ -92,6 +93,10 @@ describe('Test child logger', function () {
 
         it('implements createLogger()', function () {
             expect(childLogger.createLogger).to.be.a('function');
+        });
+
+        it('inherit registered custom fields from parent', function () {
+            expect(childLogger.registeredCustomFields).to.eql(log.registeredCustomFields);
         });
     });
 
