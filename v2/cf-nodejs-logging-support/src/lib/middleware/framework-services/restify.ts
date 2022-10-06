@@ -11,10 +11,10 @@ export default class RestifyService implements IFrameworkService {
             return "HTTP" + (req.httpVersion == null ? "" : "/" + req.httpVersion);
         }
         if (fieldName == "remote_host") {
-            return req.connection.remoteAddress;
+            return req.connection?.remoteAddress;
         }
         if (fieldName == "remote_port") {
-            return req.connection.remotePort.toString();
+            return req.connection?.remotePort.toString();
         }
         if (fieldName == "remote_user") {
             if (req.user && req.user.id) {
