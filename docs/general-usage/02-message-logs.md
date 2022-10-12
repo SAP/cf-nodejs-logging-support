@@ -105,9 +105,9 @@ There are convenience methods available for this feature:
 var isDebugActive = log.isDebug();
 ```
 
-## Get log level 
+## Get the logging level threshold
 
-For local testing purposes you can also get the current level of a logging instance by calling the getLoggingLevel method:
+For local testing purposes you can also get the current level of a logger instance by calling the getLoggingLevel method:
 
 ```js
 log.getLoggingLevel();

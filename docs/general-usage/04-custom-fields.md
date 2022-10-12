@@ -25,7 +25,7 @@ info("Test data", {"field" :"value"});
 
 ## General use
 
-As of version 6.5.0 this library will automatically detect which logging service you are bound to and will set the logging format accordingly.
+As of version 6.5.0 this library will automatically detect which logging service your app is bound to and will set the logging format accordingly.
 
 For local testing purposes you can still enforce a specific format like this:
 
@@ -34,7 +34,7 @@ log.setCustomFieldsFormat("application-logging");
 // possible values: "disabled", "all", "application-logging", "cloud-logging", "default"
 ```
 
-Alternatively it is also possible to force the logging format by setting a configuration file as explained in [Custom Fields Format](/cf-nodejs-logging-support/configuration/customfieldsformat).
+Alternatively, you can force the logging format by setting a configuration file as explained in [Custom Fields Format](/cf-nodejs-logging-support/configuration/customfieldsformat).
 
 In addition to logging messages as described in [Message Logs](/cf-nodejs-logging-support/general-usage/message-logs) you can attach custom fields as an object of key-value pairs as last parameter:
 
