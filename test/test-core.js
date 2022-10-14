@@ -1896,13 +1896,14 @@ describe('Test log-core', function () {
     });
 
     describe('Test initLog', function () {
-        var core = rewire("../core/log-core.js");
+        var core;
         var logObject;
         var clock;
 
         before(function () {
             // set clock to 2017-01-01T00:00:00.000Z
             clock = sinon.useFakeTimers({ now: 1483228800000 });
+            core = rewire("../core/log-core.js");
         });
 
         beforeEach(function () {
