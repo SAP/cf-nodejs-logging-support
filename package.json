@@ -1,6 +1,6 @@
 {
   "name": "cf-nodejs-logging-support",
-  "version": "6.13.1",
+  "version": "6.13.2",
   "description": "Logging tool for Cloud Foundry",
   "keywords": [
     "logging",
@@ -48,6 +48,7 @@
     "/trace/",
     "/winston/",
     "config.js",
-    "index.js"
+    "index.js",
+    "LICENSE"
   ]
 }
