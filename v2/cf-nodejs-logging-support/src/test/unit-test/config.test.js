@@ -23,11 +23,11 @@ describe('Test Config class', function () {
         });
     });
 
-    describe('Test getFields', function () {
+    describe('Test getConfigFields', function () {
         var result;
         describe('Get specific fields', function () {
             beforeEach(function () {
-                result = singleton.getFields(['logger', "request"]);
+                result = singleton.getConfigFields(['logger', "request"]);
             });
             it('gets 2 fields', function () {
                 expect(result.length).to.be.eql(2);
@@ -72,7 +72,7 @@ describe('Test Config class', function () {
         })
         describe('Get all fields', function () {
             beforeEach(function () {
-                result = singleton.getFields();
+                result = singleton.getConfigFields();
             });
             it('gets all fields', function () {
                 expect(result.length).to.be.eql(36);
@@ -110,8 +110,8 @@ describe('Test Config class', function () {
     describe('Test addConfig', function () {
         beforeEach(function () {
             singleton.addConfig([customConfig]);
-            fields = singleton.getFields();
-            newFieldsData = singleton.getFields(["logger", "disabled_field", "uuid_field", "new_field"]);
+            fields = singleton.getConfigFields();
+            newFieldsData = singleton.getConfigFields(["logger", "disabled_field", "uuid_field", "new_field"]);
         });
 
         it('adds 2 new fields and overrides preexisting field', function () {

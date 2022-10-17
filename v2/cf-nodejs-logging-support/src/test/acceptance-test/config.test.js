@@ -13,7 +13,7 @@ describe('Test configuration', function () {
     describe('Add custom configuration', function () {
         beforeEach(function () {
             log.addConfig(customConfig);
-            result = log.getFields();
+            result = log.getConfigFields();
         });
 
         it('gets configuration', function () {

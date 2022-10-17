@@ -74,7 +74,7 @@ export default class Config {
         return Config.instance.config;
     }
 
-    public getFields(fieldNames?: string[]): ConfigField[] {
+    public getConfigFields(fieldNames?: string[]): ConfigField[] {
 
         if (fieldNames && fieldNames.length > 0) {
             const result: ConfigField[] = [];
@@ -261,7 +261,7 @@ export default class Config {
         return this.config.settableFields!.includes(key);
     }
 
-    public resetFieldsConfig() {
+    public clearFieldsConfig() {
         this.config.fields = [];
         this.config.settableFields = [];
         this.msgFields = [];
