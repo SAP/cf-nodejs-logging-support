@@ -12,7 +12,7 @@ You can write a configuration file to add new fields or override the behaviour o
 
 ## Write a JSON file and declare fields configuration
 
-Make sure to declare the configuration of your fields as a list in the property ``` "fields" ```.
+Make sure to declare the configuration of your fields as a list in the property `"fields"`.
 
 Example:
 
@@ -84,16 +84,16 @@ Use the following properties to configurate a field:
 
 ### 1. name (required)
 
-  * **Type:** ```string```
+  * **Type:**`string`
   * **Description:** Assign fields key.
 
 
 ### 2. source (required)
 
-  * **Type:** ```Source | Source[]```
+  * **Type:**`Source | Source[]`
   * **Description:** Configures how the value of the field is determined. You can assign one or many sources to a field.
 
-Each Source is defined by the property ``` "type" ```. Allowed values for each type of source are:
+Each Source is defined by the property `"type"`. Allowed values for each type of source are:
 
 1. ["static"](/cf-nodejs-logging-support/configuration/fields#static)
 1. ["env"](/cf-nodejs-logging-support/configuration/fields#env)
@@ -110,7 +110,7 @@ To get more information about assigning multiple sources to a field go to [multi
 
 ### 3. output (required)
 
-  * **Type:** ```Array```
+  * **Type:**`Array`
   * **Description:** Define output of field (message logs, request logs or both).
   * Allowed values:
     * ["msg-log"] (Only log in [message logs](/cf-nodejs-logging-support/general-usage/message-logs))
@@ -119,21 +119,21 @@ To get more information about assigning multiple sources to a field go to [multi
 
 ### 4. disable (optional)
 
-  * **Type:** ```boolean```
-  * **Description:** If ```true```, ommit field.
+  * **Type:**`boolean`
+  * **Description:** If `true`, ommit field.
 
 ### 5. default (optional)
 
-  * **Type:** ```string```
-  * **Description:** If returned value from source is ```null```, then assign this value.
+  * **Type:**`string`
+  * **Description:** If returned value from source is `null`, then assign this value.
 
 ---
 
 ## Source types
 
-### 1. ``` "static" ```
+### 1.`"static"`
 
-Return always a static value. Declare this value as string in the property ```"value"```.
+Return always a static value. Declare this value as string in the property `"value"`.
 
 Example:
 
@@ -145,9 +145,9 @@ Example:
     }
   ```
 
-### 2. ``` "env" ```
+### 2.`"env"`
 
-Read value from environment variable. Declare the environment variable as string in the property ```"name"```.
+Read value from environment variable. Declare the environment variable as string in the property `"name"`.
 
 Example:
 
@@ -159,7 +159,7 @@ Example:
     }
 ```
 
-If you need to access a subproperty of the environmet variable, declare the property ```"path"``` with the path as an array of strings.
+If you need to access a subproperty of the environmet variable, declare the property `"path"` with the path as an array of strings.
 
 Example:
 
@@ -171,9 +171,9 @@ Example:
     }
 ```
 
-### 3. ``` "config-field" ```
+### 3.`"config-field"`
 
-Copy value from another configured field. Declare the name of the field to copy in the property ```"name"```.
+Copy value from another configured field. Declare the name of the field to copy in the property `"name"`.
 
 Example:
 
@@ -185,9 +185,9 @@ Example:
     }
   ```
 
-### 4. ``` "req-header" ```
+### 4.`"req-header"`
 
-Read value from request header. Declare the property to be accesed in the property ```"name"```.
+Read value from request header. Declare the property to be accesed in the property `"name"`.
 
 Example:
 
@@ -199,19 +199,19 @@ Example:
     }
   ```
 
-### 5. ``` "req-body" ```
+### 5. `"req-body"`
 
-Read value from request object. Declare the property to be accesed in the property ```"name"```.
+Read value from request object. Declare the property to be accesed in the property `"name"`.
 
-### 6. ``` "res-header" ```
+### 6. `"res-header"`
 
-Read value from response header. Declare the property to be accesed in the property ```"name"```.
+Read value from response header. Declare the property to be accesed in the property `"name"`.
 
-### 7. ``` "res-body" ```
+### 7. `"res-body"`
 
-Read value from response object. Declare the property to be accesed in the property ```"name"```.
+Read value from response object. Declare the property to be accesed in the property `"name"`.
 
-### 8. ``` "uuid" ```
+### 8. `"uuid"`
 
  Create a random uuid and assign to value.
 
@@ -227,12 +227,12 @@ Read value from response object. Declare the property to be accesed in the prope
 ## Multiple sources
 
 You can attach multiple sources to a field. In this case, the library will iterate each source until one delivers a value.
-You can also bind each source to a specific server framework. If the framework assigned to the source is not enabled, then this source will be ignored. To do this just declare the property ```"framework": $framework``` in the respected source. Our supported server frameworks are:
+You can also bind each source to a specific server framework. If the framework assigned to the source is not enabled, then this source will be ignored. To do this just declare the property `"framework": $framework` in the respected source. Our supported server frameworks are:
 
-* [Express](https://expressjs.com/): declare as ```"express"```
-* [Restify](http://restify.com/): declare as ```"restify"```
-* [Connect](https://www.npmjs.com/package/connect): declare as ```"connect"```
-* [Node.js HTTP](https://nodejs.org/api/http.html): declare as ```"nodejs-http"```
+* [Express](https://expressjs.com/): declare as `"express"`
+* [Restify](http://restify.com/): declare as `"restify"`
+* [Connect](https://www.npmjs.com/package/connect): declare as `"connect"`
+* [Node.js HTTP](https://nodejs.org/api/http.html): declare as `"nodejs-http"`
 
 Example of field with multiple framework specific sources:
 
@@ -269,14 +269,10 @@ Example of field with multiple framework specific sources:
 
 ## Sensitive data redaction
 
-To handle sensitive data redaction you can assign a field with the properties ```"envVarSwitch"``` or ```"envVarRedact"```.
+To handle sensitive data redaction you can assign a field with the properties `"envVarSwitch"` or `"envVarRedact"`.
 
-* ```"envVarSwitch"```:
-                      Only log this field, if specified environment variable is set to "true".
-                      If specified environment variable is not set to "true" or not present, field gets omitted. This is also affects fields with default values.
-* ```"envVarRedact"```:
-                      Only log this field, if specified environment variable is set to "true".
-                      If specified environment variable is not set to "true" or not present, field gets set to "redacted" if it is not set to its default value or null.
+* `"envVarSwitch"`: Only log this field, if specified environment variable is set to `"true"`. If specified environment variable is not set to `"true"` or not present, field gets omitted. This is also affects fields with default values.
+* `"envVarRedact"`: Only log this field, if specified environment variable is set to `"true"`. If specified environment variable is not set to `"true"` or not present, field gets set to `"redacted"` if it is not set to its default value or null.
 
 Example:
 

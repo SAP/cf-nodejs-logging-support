@@ -10,7 +10,7 @@ permalink: /configuration/framework
 
 By default the library will be configured to run with express. If you are going to use another server framework, you have to change the configuration accordingly. There are 2 ways to do this:
 
- 1. Set the key-value pair ``` "framework": "$frameworkName" ``` in a configuration file:
+ 1. Set the key-value pair `"framework": "$frameworkName"` in a configuration file:
 
     ```js
     {
@@ -26,7 +26,7 @@ log.forceLogger("connect")
 
 Our supported server frameworks are:
 
-* [Express](https://expressjs.com/): declare as ```"express"```
-* [Restify](http://restify.com/): declare as ```"restify"```
-* [Connect](https://www.npmjs.com/package/connect): declare as ```"connect"```
-* [Node.js HTTP](https://nodejs.org/api/http.html): declare as ```"nodejs-http"```
+* [Express](https://expressjs.com/): declare as `"express"`
+* [Restify](http://restify.com/): declare as `"restify"`
+* [Connect](https://www.npmjs.com/package/connect): declare as `"connect"`
+* [Node.js HTTP](https://nodejs.org/api/http.html): declare as `"nodejs-http"`

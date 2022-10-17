@@ -45,7 +45,7 @@ You can reset the fields configuration as follows:
 log.clearFieldsConfig();
 ```
 
-This will delete all fields except ```"level"```, ```"msg"``` and ```"type"```.
+This will delete all fields except `"level"`, `"msg"` and `"type"`.
 
 ## Get configuration as JSON object
 
