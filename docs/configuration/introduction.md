@@ -45,7 +45,7 @@ You can reset the fields configuration as follows:
 log.clearFieldsConfig();
 ```
 
-This will delete all fields except `"level"`, `"msg"` and `"type"`.
+This will delete all fields except `level`, `msg` and `type`.
 
 ## Get configuration as JSON object
 
@@ -65,7 +65,7 @@ You can find a sample result below:
             "source": [
                 {
                     "type": "req-object",
-                    "name": "orgId",
+                    "field-name": "orgId",
                     "framework": "restify"
                 },
                 {

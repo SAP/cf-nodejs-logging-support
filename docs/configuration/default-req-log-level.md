@@ -8,7 +8,7 @@ permalink: /configuration/defaultrequestlevel
 
 # Set default request loging level
 
-Change the default request logging level by setting the property `"reqLoggingLevel": $level` in your configuration file. For example:
+Change the default request logging level by setting the property `reqLoggingLevel` in your configuration file. For example:
 
 ```js
 {

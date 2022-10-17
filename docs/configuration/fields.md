@@ -12,7 +12,7 @@ You can write a configuration file to add new fields or override the behaviour o
 
 ## Write a JSON file and declare fields configuration
 
-Make sure to declare the configuration of your fields as a list in the property `"fields"`.
+Make sure to declare the configuration of your fields as a list in the property `fields`.
 
 Example:
 
@@ -47,7 +47,7 @@ Example:
             "name": "source_instance",
             "source": {
                 "type": "config-field",
-                "name": "component_instance"
+                "field-name": "component_instance"
             },
             "output": [
                 "msg-log"
@@ -57,7 +57,7 @@ Example:
             "name": "request",
             "source": {
                 "type": "req-object",
-                "name": "originalUrl"
+                "field-name": "originalUrl"
             },
             "output": [
                 "req-log".
@@ -84,25 +84,25 @@ Use the following properties to configurate a field:
 
 ### 1. name (required)
 
-  * **Type:**`string`
+  * **Type:** `string`
   * **Description:** Assign fields key.
 
 
 ### 2. source (required)
 
-  * **Type:**`Source | Source[]`
+  * **Type:** `Source | Source[]`
   * **Description:** Configures how the value of the field is determined. You can assign one or many sources to a field.
 
-Each Source is defined by the property `"type"`. Allowed values for each type of source are:
+Each Source is defined by the property `type`. Allowed values for each type of source are:
 
-1. ["static"](/cf-nodejs-logging-support/configuration/fields#static)
-1. ["env"](/cf-nodejs-logging-support/configuration/fields#env)
-1. ["config-field"](/cf-nodejs-logging-support/configuration/fields#config-field)
-1. ["req-header"](/cf-nodejs-logging-support/configuration/fields#req-header)
-1. ["req-body"](/cf-nodejs-logging-support/configuration/fields#req-body)
-1. ["res-header"](/cf-nodejs-logging-support/configuration/fields#res-header)
-1. ["res-body"](/cf-nodejs-logging-support/configuration/fields#res-body)
-1. ["uuid"](/cf-nodejs-logging-support/configuration/fields#uuid)
+1. [static](/cf-nodejs-logging-support/configuration/fields#static)
+1. [env](/cf-nodejs-logging-support/configuration/fields#env)
+1. [config-field](/cf-nodejs-logging-support/configuration/fields#config-field)
+1. [req-header](/cf-nodejs-logging-support/configuration/fields#req-header)
+1. [req-object](/cf-nodejs-logging-support/configuration/fields#req-object)
+1. [res-header](/cf-nodejs-logging-support/configuration/fields#res-header)
+1. [res-object](/cf-nodejs-logging-support/configuration/fields#res-object)
+1. [uuid](/cf-nodejs-logging-support/configuration/fields#uuid)
 
 To get more information about each type of source go to [source types](/cf-nodejs-logging-support/configuration/fields#source-types).
 
@@ -110,30 +110,30 @@ To get more information about assigning multiple sources to a field go to [multi
 
 ### 3. output (required)
 
-  * **Type:**`Array`
+  * **Type:** `Array`
   * **Description:** Define output of field (message logs, request logs or both).
-  * Allowed values:
-    * ["msg-log"] (Only log in [message logs](/cf-nodejs-logging-support/general-usage/message-logs))
-    * ["req-log"] (Only log in [request logs](/cf-nodejs-logging-support/general-usage/request-logs))
-    * ["msg-log","req-log"] (Log in both [message](/cf-nodejs-logging-support/general-usage/message-logs) and [request logs](/cf-nodejs-logging-support/general-usage/request-logs) )
+  * **Allowed values:**
+    * `["msg-log"]` (Only log in [message logs](/cf-nodejs-logging-support/general-usage/message-logs))
+    * `["req-log"]` (Only log in [request logs](/cf-nodejs-logging-support/general-usage/request-logs))
+    * `["msg-log","req-log"]` (Log in both [message](/cf-nodejs-logging-support/general-usage/message-logs) and [request logs](/cf-nodejs-logging-support/general-usage/request-logs) )
 
 ### 4. disable (optional)
 
-  * **Type:**`boolean`
+  * **Type:** `boolean`
   * **Description:** If `true`, ommit field.
 
 ### 5. default (optional)
 
-  * **Type:**`string`
+  * **Type:** `string`
   * **Description:** If returned value from source is `null`, then assign this value.
 
 ---
 
 ## Source types
 
-### 1.`"static"`
+### 1. `static`
 
-Return always a static value. Declare this value as string in the property `"value"`.
+Return always a static value. Declare this value as string in the property `value`.
 
 Example:
 
@@ -145,21 +145,21 @@ Example:
     }
   ```
 
-### 2.`"env"`
+### 2. `env`
 
-Read value from environment variable. Declare the environment variable as string in the property `"name"`.
+Read value from environment variable. Declare the environment variable as string in the property `field-name`.
 
 Example:
 
 ```js
     {
         "type": "env",
-        "path": "ENV_VAR",
+        "field-name": "ENV_VAR",
         "output": ["msg-log"]
     }
 ```
 
-If you need to access a subproperty of the environmet variable, declare the property `"path"` with the path as an array of strings.
+If you need to access a subproperty of the environmet variable, declare the property `path` with the path as an array of strings.
 
 Example:
 
@@ -171,45 +171,45 @@ Example:
     }
 ```
 
-### 3.`"config-field"`
+### 3. `config-field`
 
-Copy value from another configured field. Declare the name of the field to copy in the property `"name"`.
+Copy value from another configured field. Declare the name of the field to copy in the property `field-name`.
 
 Example:
 
   ```js
     {
         "type": "config-field",
-        "name": "field-a",
+        "field-name": "field-a",
         "output": ["msg-log"]
     }
   ```
 
-### 4.`"req-header"`
+### 4. `req-header`
 
-Read value from request header. Declare the property to be accesed in the property `"name"`.
+Read value from request header. Declare the property to be accesed in the property `field-name`.
 
 Example:
 
   ```js
     {
         "type": "req-header",
-        "name": "access-control-request-method",
+        "field-name": "access-control-request-method",
         "output": ["req-log"]
     }
   ```
 
-### 5. `"req-body"`
+### 5. `req-object`
 
-Read value from request object. Declare the property to be accesed in the property `"name"`.
+Read value from request object. Declare the property to be accesed in the property `field-name`.
 
-### 6. `"res-header"`
+### 6. `res-header`
 
-Read value from response header. Declare the property to be accesed in the property `"name"`.
+Read value from response header. Declare the property to be accesed in the property `field-name`.
 
-### 7. `"res-body"`
+### 7. `"res-object"`
 
-Read value from response object. Declare the property to be accesed in the property `"name"`.
+Read value from response object. Declare the property to be accesed in the property `field-name`.
 
 ### 8. `"uuid"`
 
@@ -227,12 +227,12 @@ Read value from response object. Declare the property to be accesed in the prope
 ## Multiple sources
 
 You can attach multiple sources to a field. In this case, the library will iterate each source until one delivers a value.
-You can also bind each source to a specific server framework. If the framework assigned to the source is not enabled, then this source will be ignored. To do this just declare the property `"framework": $framework` in the respected source. Our supported server frameworks are:
+You can also bind each source to a specific server framework. If the framework assigned to the source is not enabled, then this source will be ignored. To do this just declare the property `framework` in the respected source. Our supported server frameworks are:
 
-* [Express](https://expressjs.com/): declare as `"express"`
-* [Restify](http://restify.com/): declare as `"restify"`
-* [Connect](https://www.npmjs.com/package/connect): declare as `"connect"`
-* [Node.js HTTP](https://nodejs.org/api/http.html): declare as `"nodejs-http"`
+* [Express](https://expressjs.com/): declare as `express`
+* [Restify](http://restify.com/): declare as `restify`
+* [Connect](https://www.npmjs.com/package/connect): declare as `connect`
+* [Node.js HTTP](https://nodejs.org/api/http.html): declare as `nodejs-http`
 
 Example of field with multiple framework specific sources:
 
@@ -269,10 +269,10 @@ Example of field with multiple framework specific sources:
 
 ## Sensitive data redaction
 
-To handle sensitive data redaction you can assign a field with the properties `"envVarSwitch"` or `"envVarRedact"`.
+To handle sensitive data redaction you can assign a field with the properties `envVarSwitch` or `envVarRedact`.
 
-* `"envVarSwitch"`: Only log this field, if specified environment variable is set to `"true"`. If specified environment variable is not set to `"true"` or not present, field gets omitted. This is also affects fields with default values.
-* `"envVarRedact"`: Only log this field, if specified environment variable is set to `"true"`. If specified environment variable is not set to `"true"` or not present, field gets set to `"redacted"` if it is not set to its default value or null.
+* `envVarSwitch`: Only log this field, if specified environment variable is set to `true`. If specified environment variable is not set to `true` or not present, field gets omitted. This is also affects fields with default values.
+* `envVarRedact`: Only log this field, if specified environment variable is set to `true`. If specified environment variable is not set to `true` or not present, field gets set to `redacted` if it is not set to its default value or null.
 
 Example:
 
@@ -284,7 +284,7 @@ Example:
                 "envVarRedact": "LOG_SENSITIVE_CONNECTION_DATA",
                 "source": {
                     "type": "config-field",
-                    "name": "remote_host"
+                    "field-name": "remote_host"
                 },
                 "output": [
                     "req-log"
