@@ -103,29 +103,29 @@ export class SourceUtils {
                 value = this.getEnvFieldValue(source);
                 break;
             case "config-field":
-                value = record[source.name!];
+                value = record[source.fieldName!];
                 break;
             case "meta":
                 if (writtenAt == null) {
                     return;
                 }
-                if (source.name == "request_received_at") {
+                if (source.fieldName == "request_received_at") {
                     value = record["written_at"];
                     break;
                 }
-                if (source.name == "response_time_ms") {
+                if (source.fieldName == "response_time_ms") {
                     value = (Date.now() - writtenAt.getTime());
                     break;
                 }
-                if (source.name == "response_sent_at") {
+                if (source.fieldName == "response_sent_at") {
                     value = new Date().toJSON();
                     break;
                 }
-                if (source.name == "written_at") {
+                if (source.fieldName == "written_at") {
                     value = writtenAt.toJSON();
                     break;
                 }
-                if (source.name == "written_ts") {
+                if (source.fieldName == "written_ts") {
                     var lower = process.hrtime()[1] % NS_PER_MS
                     var higher = writtenAt.getTime() * NS_PER_MS
 
@@ -158,16 +158,16 @@ export class SourceUtils {
         let value;
         switch (source.type) {
             case "req-header":
-                value = this.requestAccessor.getHeaderField(req, source.name!);
+                value = this.requestAccessor.getHeaderField(req, source.fieldName!);
                 break;
             case "req-object":
-                value = this.requestAccessor.getField(req, source.name!);
+                value = this.requestAccessor.getField(req, source.fieldName!);
                 break;
             case "res-header":
-                value = this.responseAccessor.getHeaderField(res, source.name!);
+                value = this.responseAccessor.getHeaderField(res, source.fieldName!);
                 break;
             case "res-object":
-                value = this.responseAccessor.getField(res, source.name!);
+                value = this.responseAccessor.getField(res, source.fieldName!);
                 break;
             default:
                 value = this.getFieldValue(source, record, writtenAt);
@@ -188,10 +188,10 @@ export class SourceUtils {
         let value;
         switch (source.type) {
             case "req-header":
-                value = this.requestAccessor.getHeaderField(req, source.name!);
+                value = this.requestAccessor.getHeaderField(req, source.fieldName!);
                 break;
             case "req-object":
-                value = this.requestAccessor.getField(req, source.name!);
+                value = this.requestAccessor.getField(req, source.fieldName!);
                 break;
             case "config-field":
                 const writtenAt = new Date();
@@ -252,7 +252,7 @@ export class SourceUtils {
             const clonedPath = [...source.path];
             return NestedVarResolver.resolveNestedVariable(process.env, clonedPath);
         }
-        return process.env[source.name!];
+        return process.env[source.varName!];
     }
 
     // returns -1 when all sources were iterated

@@ -15,7 +15,7 @@
             "name": "disabled_field",
             "source": {
                 "type": "config-field",
-                "name": "component_instance"
+                "fieldName": "component_instance"
             },
             "output": [
                 "msg-log"
@@ -50,7 +50,7 @@
             "name": "new_field",
             "source": {
                 "type": "config-field",
-                "name": "component_instance"
+                "fieldName": "component_instance"
             },
             "output": [
                 "msg-log"

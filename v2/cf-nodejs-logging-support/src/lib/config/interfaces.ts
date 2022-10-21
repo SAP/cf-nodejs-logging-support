@@ -24,7 +24,8 @@ export interface Source {
     type: sources;
     value?: string;
     path?: string[];
-    name?: string;
+    fieldName?: string;
+    varName?: string;
     framework?: framework;
     regExp?: string;
 }

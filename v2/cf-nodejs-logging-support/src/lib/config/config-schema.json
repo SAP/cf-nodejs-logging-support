@@ -91,11 +91,11 @@
         "Source": {
             "additionalProperties": false,
             "properties": {
+                "fieldName": {
+                    "type": "string"
+                },
                 "framework": {
                     "$ref": "#/definitions/framework"
-                },
-                "name": {
-                    "type": "string"
                 },
                 "path": {
                     "items": {
@@ -110,6 +110,9 @@
                     "$ref": "#/definitions/sources"
                 },
                 "value": {
+                    "type": "string"
+                },
+                "varName": {
                     "type": "string"
                 }
             },

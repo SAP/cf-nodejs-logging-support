@@ -54,7 +54,7 @@ describe('Test Config class', function () {
                         "name": "request",
                         "source": {
                             "type": "req-object",
-                            "name": "originalUrl"
+                            "fieldName": "originalUrl"
                         },
                         "output": [
                             "req-log"
@@ -141,7 +141,7 @@ describe('Test Config class', function () {
                     "name": "disabled_field",
                     "source": {
                         "type": "config-field",
-                        "name": "component_instance"
+                        "fieldName": "component_instance"
                     },
                     "output": [
                         "msg-log"
@@ -176,7 +176,7 @@ describe('Test Config class', function () {
                     "name": "new_field",
                     "source": {
                         "type": "config-field",
-                        "name": "component_instance"
+                        "fieldName": "component_instance"
                     },
                     "output": [
                         "msg-log"
@@ -203,7 +203,7 @@ describe('Test Config class', function () {
                 "name": "disabled_field",
                 "source": {
                     "type": "config-field",
-                    "name": "component_instance"
+                    "fieldName": "component_instance"
                 },
                 "output": [
                     "msg-log"

@@ -4,7 +4,7 @@
             "name": "request_id",
             "source": {
                 "type": "req-header",
-                "name": "x-vcap-request-id"
+                "fieldName": "x-vcap-request-id"
             },
             "isContext": true,
             "output": [
@@ -16,7 +16,7 @@
             "name": "request_size_b",
             "source": {
                 "type": "req-header",
-                "name": "content-length"
+                "fieldName": "content-length"
             },
             "output": [
                 "req-log"
@@ -36,7 +36,7 @@
             "name": "request",
             "source": {
                 "type": "req-object",
-                "name": "originalUrl"
+                "fieldName": "originalUrl"
             },
             "output": [
                 "req-log"
@@ -46,7 +46,7 @@
             "name": "response_status",
             "source": {
                 "type": "res-object",
-                "name": "statusCode"
+                "fieldName": "statusCode"
             },
             "output": [
                 "req-log"
@@ -56,7 +56,7 @@
             "name": "method",
             "source": {
                 "type": "req-object",
-                "name": "method"
+                "fieldName": "method"
             },
             "output": [
                 "req-log"
@@ -66,7 +66,7 @@
             "name": "response_size_b",
             "source": {
                 "type": "res-header",
-                "name": "content-length"
+                "fieldName": "content-length"
             },
             "output": [
                 "req-log"
@@ -76,7 +76,7 @@
             "name": "response_content_type",
             "source": {
                 "type": "res-header",
-                "name": "content-type"
+                "fieldName": "content-type"
             },
             "output": [
                 "req-log"
@@ -87,7 +87,7 @@
             "envVarRedact": "LOG_SENSITIVE_CONNECTION_DATA",
             "source": {
                 "type": "req-object",
-                "name": "remote_host"
+                "fieldName": "remote_host"
             },
             "output": [
                 "req-log"
@@ -98,7 +98,7 @@
             "envVarRedact": "LOG_SENSITIVE_CONNECTION_DATA",
             "source": {
                 "type": "req-object",
-                "name": "remote_port"
+                "fieldName": "remote_port"
             },
             "output": [
                 "req-log"
@@ -109,7 +109,7 @@
             "envVarRedact": "LOG_REMOTE_USER",
             "source": {
                 "type": "req-object",
-                "name": "remote_user"
+                "fieldName": "remote_user"
             },
             "output": [
                 "req-log"
@@ -130,7 +130,7 @@
             "envVarRedact": "LOG_SENSITIVE_CONNECTION_DATA",
             "source": {
                 "type": "config-field",
-                "name": "remote_host"
+                "fieldName": "remote_host"
             },
             "output": [
                 "req-log"
@@ -140,7 +140,7 @@
             "name": "protocol",
             "source": {
                 "type": "req-object",
-                "name": "protocol"
+                "fieldName": "protocol"
             },
             "output": [
                 "req-log"
@@ -150,7 +150,7 @@
             "name": "request_received_at",
             "source": {
                 "type": "config-field",
-                "name": "written_at"
+                "fieldName": "written_at"
             },
             "output": [
                 "req-log"
@@ -160,7 +160,7 @@
             "name": "response_time_ms",
             "source": {
                 "type": "meta",
-                "name": "response_time_ms"
+                "fieldName": "response_time_ms"
             },
             "output": [
                 "req-log"
@@ -170,7 +170,7 @@
             "name": "response_sent_at",
             "source": {
                 "type": "meta",
-                "name": "response_sent_at"
+                "fieldName": "response_sent_at"
             },
             "output": [
                 "req-log"
@@ -181,7 +181,7 @@
             "envVarRedact": "LOG_REFERER",
             "source": {
                 "type": "req-header",
-                "name": "referer"
+                "fieldName": "referer"
             },
             "output": [
                 "req-log"
@@ -192,11 +192,11 @@
             "source": [
                 {
                     "type": "req-header",
-                    "name": "x-correlationid"
+                    "fieldName": "x-correlationid"
                 },
                 {
                     "type": "config-field",
-                    "name": "request_id",
+                    "fieldName": "request_id",
                     "regExp": "[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[0-9a-f]{4}-[0-9a-f]{12}"
                 },
                 {
@@ -213,7 +213,7 @@
             "name": "tenant_id",
             "source": {
                 "type": "req-header",
-                "name": "tenantid"
+                "fieldName": "tenantid"
             },
             "isContext": true,
             "output": [
@@ -236,7 +236,7 @@
             "envVarRedact": "LOG_SENSITIVE_CONNECTION_DATA",
             "source": {
                 "type": "req-header",
-                "name": "x-forwarded-for"
+                "fieldName": "x-forwarded-for"
             },
             "output": [
                 "req-log"
@@ -247,7 +247,7 @@
             "envVarRedact": "LOG_SENSITIVE_CONNECTION_DATA",
             "source": {
                 "type": "req-header",
-                "name": "x-custom-host"
+                "fieldName": "x-custom-host"
             },
             "output": [
                 "req-log"
@@ -258,7 +258,7 @@
             "envVarRedact": "LOG_SENSITIVE_CONNECTION_DATA",
             "source": {
                 "type": "req-header",
-                "name": "x-forwarded-host"
+                "fieldName": "x-forwarded-host"
             },
             "output": [
                 "req-log"
@@ -269,7 +269,7 @@
             "envVarRedact": "LOG_SENSITIVE_CONNECTION_DATA",
             "source": {
                 "type": "req-header",
-                "name": "x-forwarded-proto"
+                "fieldName": "x-forwarded-proto"
             },
             "output": [
                 "req-log"
@@ -280,7 +280,7 @@
             "envVarSwitch": "LOG_SSL_HEADERS",
             "source": {
                 "type": "req-header",
-                "name": "x-ssl-client"
+                "fieldName": "x-ssl-client"
             },
             "output": [
                 "req-log"
@@ -291,7 +291,7 @@
             "envVarSwitch": "LOG_SSL_HEADERS",
             "source": {
                 "type": "req-header",
-                "name": "x-ssl-client-verify"
+                "fieldName": "x-ssl-client-verify"
             },
             "output": [
                 "req-log"
@@ -302,7 +302,7 @@
             "envVarSwitch": "LOG_SSL_HEADERS",
             "source": {
                 "type": "req-header",
-                "name": "x-ssl-client-subject-dn"
+                "fieldName": "x-ssl-client-subject-dn"
             },
             "output": [
                 "req-log"
@@ -313,7 +313,7 @@
             "envVarSwitch": "LOG_SSL_HEADERS",
             "source": {
                 "type": "req-header",
-                "name": "x-ssl-client-subject-cn"
+                "fieldName": "x-ssl-client-subject-cn"
             },
             "output": [
                 "req-log"
@@ -324,7 +324,7 @@
             "envVarSwitch": "LOG_SSL_HEADERS",
             "source": {
                 "type": "req-header",
-                "name": "x-ssl-client-issuer-dn"
+                "fieldName": "x-ssl-client-issuer-dn"
             },
             "output": [
                 "req-log"
@@ -335,7 +335,7 @@
             "envVarSwitch": "LOG_SSL_HEADERS",
             "source": {
                 "type": "req-header",
-                "name": "x-ssl-client-notbefore"
+                "fieldName": "x-ssl-client-notbefore"
             },
             "output": [
                 "req-log"
@@ -346,7 +346,7 @@
             "envVarSwitch": "LOG_SSL_HEADERS",
             "source": {
                 "type": "req-header",
-                "name": "x-ssl-client-notafter"
+                "fieldName": "x-ssl-client-notafter"
             },
             "output": [
                 "req-log"
@@ -357,7 +357,7 @@
             "envVarSwitch": "LOG_SSL_HEADERS",
             "source": {
                 "type": "req-header",
-                "name": "x-ssl-client-session-id"
+                "fieldName": "x-ssl-client-session-id"
             },
             "output": [
                 "req-log"
