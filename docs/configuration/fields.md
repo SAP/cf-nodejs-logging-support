@@ -47,7 +47,7 @@ Example:
             "name": "source_instance",
             "source": {
                 "type": "config-field",
-                "field-name": "component_instance"
+                "fieldName": "component_instance"
             },
             "output": [
                 "msg-log"
@@ -57,7 +57,7 @@ Example:
             "name": "request",
             "source": {
                 "type": "req-object",
-                "field-name": "originalUrl"
+                "fieldName": "originalUrl"
             },
             "output": [
                 "req-log".
@@ -95,14 +95,14 @@ Use the following properties to configurate a field:
 
 Each Source is defined by the property `type`. Allowed values for each type of source are:
 
-1. [static](/cf-nodejs-logging-support/configuration/fields#static)
-1. [env](/cf-nodejs-logging-support/configuration/fields#env)
-1. [config-field](/cf-nodejs-logging-support/configuration/fields#config-field)
-1. [req-header](/cf-nodejs-logging-support/configuration/fields#req-header)
-1. [req-object](/cf-nodejs-logging-support/configuration/fields#req-object)
-1. [res-header](/cf-nodejs-logging-support/configuration/fields#res-header)
-1. [res-object](/cf-nodejs-logging-support/configuration/fields#res-object)
-1. [uuid](/cf-nodejs-logging-support/configuration/fields#uuid)
+1. [static](/cf-nodejs-logging-support/configuration/fields#1-static)
+1. [env](/cf-nodejs-logging-support/configuration/fields#2-env)
+1. [config-field](/cf-nodejs-logging-support/configuration/fields#3-config-field)
+1. [req-header](/cf-nodejs-logging-support/configuration/fields#4-req-header)
+1. [req-object](/cf-nodejs-logging-support/configuration/fields#5-req-object)
+1. [res-header](/cf-nodejs-logging-support/configuration/fields#6-res-header)
+1. [res-object](/cf-nodejs-logging-support/configuration/fields#7-res-object)
+1. [uuid](/cf-nodejs-logging-support/configuration/fields#8-uuid)
 
 To get more information about each type of source go to [source types](/cf-nodejs-logging-support/configuration/fields#source-types).
 
@@ -147,14 +147,14 @@ Example:
 
 ### 2. `env`
 
-Read value from environment variable. Declare the environment variable as string in the property `field-name`.
+Read value from environment variable. Declare the environment variable as string in the property `varName`.
 
 Example:
 
 ```js
     {
         "type": "env",
-        "field-name": "ENV_VAR",
+        "varName": "ENV_VAR",
         "output": ["msg-log"]
     }
 ```
@@ -173,43 +173,43 @@ Example:
 
 ### 3. `config-field`
 
-Copy value from another configured field. Declare the name of the field to copy in the property `field-name`.
+Copy value from another configured field. Declare the name of the field to copy in the property `fieldName`.
 
 Example:
 
   ```js
     {
         "type": "config-field",
-        "field-name": "field-a",
+        "fieldName": "field-a",
         "output": ["msg-log"]
     }
   ```
 
 ### 4. `req-header`
 
-Read value from request header. Declare the property to be accesed in the property `field-name`.
+Read value from request header. Declare the property to be accesed in the property `fieldName`.
 
 Example:
 
   ```js
     {
         "type": "req-header",
-        "field-name": "access-control-request-method",
+        "fieldName": "access-control-request-method",
         "output": ["req-log"]
     }
   ```
 
 ### 5. `req-object`
 
-Read value from request object. Declare the property to be accesed in the property `field-name`.
+Read value from request object. Declare the property to be accesed in the property `fieldName`.
 
 ### 6. `res-header`
 
-Read value from response header. Declare the property to be accesed in the property `field-name`.
+Read value from response header. Declare the property to be accesed in the property `fieldName`.
 
 ### 7. `"res-object"`
 
-Read value from response object. Declare the property to be accesed in the property `field-name`.
+Read value from response object. Declare the property to be accesed in the property `fieldName`.
 
 ### 8. `"uuid"`
 
@@ -284,7 +284,7 @@ Example:
                 "envVarRedact": "LOG_SENSITIVE_CONNECTION_DATA",
                 "source": {
                     "type": "config-field",
-                    "field-name": "remote_host"
+                    "fieldName": "remote_host"
                 },
                 "output": [
                     "req-log"

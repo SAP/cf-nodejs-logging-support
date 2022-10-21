@@ -65,7 +65,7 @@ You can find a sample result below:
             "source": [
                 {
                     "type": "req-object",
-                    "field-name": "orgId",
+                    "fieldName": "orgId",
                     "framework": "restify"
                 },
                 {
