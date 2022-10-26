@@ -15,7 +15,10 @@ export default class Logger {
     protected loggingLevelThreshold: Level = Level.INHERIT
 
     constructor(parent?: Logger) {
-        this.parent = parent;
+        if (parent) {
+            this.parent = parent;
+            this.registeredCustomFields = parent.registeredCustomFields;
+        }
         this.recordFactory = RecordFactory.getInstance();
         this.recordWriter = RecordWriter.getInstance();
     }

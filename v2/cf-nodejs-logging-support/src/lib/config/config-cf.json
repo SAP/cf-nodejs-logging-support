@@ -57,7 +57,7 @@
             "name": "source_instance",
             "source": {
                 "type": "config-field",
-                "name": "component_instance"
+                "fieldName": "component_instance"
             },
             "output": [
                 "msg-log",
@@ -135,7 +135,7 @@
             "name": "container_id",
             "source": {
                 "type": "env",
-                "name": "CF_INSTANCE_IP"
+                "varName": "CF_INSTANCE_IP"
             },
             "output": [
                 "msg-log",

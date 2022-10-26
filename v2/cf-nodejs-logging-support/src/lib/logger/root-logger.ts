@@ -30,12 +30,16 @@ export default class RootLogger extends Logger {
         return this.config.getConfig();
     }
 
-    getFields(...fieldNames: string[]) {
-        return this.config.getFields(fieldNames);
+    getConfigFields(...fieldNames: string[]) {
+        return this.config.getConfigFields(fieldNames);
     }
 
     addConfig(...configObject: ConfigObject[]) {
         return this.config.addConfig(configObject);
+    }
+
+    clearFieldsConfig() {
+        return this.config.clearFieldsConfig();
     }
 
     setCustomFieldsFormat(format: customFieldsFormat) {
@@ -84,7 +88,7 @@ export default class RootLogger extends Logger {
             return false;
         }
         // get field and override config
-        const configField = this.config.getFields([field]);
+        const configField = this.config.getConfigFields([field]);
 
         // if new field, then add as static field
         if (configField.length == 0) {

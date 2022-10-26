@@ -38,7 +38,7 @@ export default class RecordFactory {
         var customFieldsFromArgs = {};
         var lastArg = args[args.length - 1];
 
-        let record: any = {};
+        let record: any = { "level": level };
 
         if (typeof lastArg === "object") {
             if (this.stacktraceUtils.isErrorWithStacktrace(lastArg)) {
@@ -68,7 +68,6 @@ export default class RecordFactory {
 
         record = this.addCustomFields(record, registeredCustomFields, loggerCustomFields, customFieldsFromArgs);
 
-        record["level"] = level;
         record["msg"] = util.format.apply(util, args);
         record["type"] = this.LOG_TYPE;
 
@@ -105,35 +104,43 @@ export default class RecordFactory {
             return record;
         }
 
+        var customFields: any = {};
+        var value;
         for (var key in providedFields) {
             var value = providedFields[key];
+
+            // Stringify, if necessary.
+            if ((typeof value) != "string") {
+                value = stringifySafe(value);
+            }
 
             if (["cloud-logging", "all", "default"].includes(customFieldsFormat) || record[key] != null || this.config.isSettable(key)) {
                 record[key] = value;
             }
 
-            if (customFieldsFormat == "application-logging" || customFieldsFormat == "all") {
-                let res: any = {};
-                res.string = [];
-                let key;
-                for (var i = 0; i < registeredCustomFields.length; i++) {
-                    key = registeredCustomFields[i]
-                    if (providedFields[key]) {
-                        var value = providedFields[key];
-                        // Stringify, if necessary.
-                        if ((typeof value) != "string") {
-                            value = stringifySafe(value);
-                        }
-                        res.string.push({
-                            "k": key,
-                            "v": value,
-                            "i": i
-                        })
-                    }
-                }
-                if (res.string.length > 0)
-                    record["#cf"] = res;
+            if (["application-logging", "all"].includes(customFieldsFormat)) {
+                customFields[key] = value;
             }
+        }
+
+        //writes custom fields in the correct order and correlates i to the place in registeredCustomFields
+        if (Object.keys(customFields).length > 0) {
+            let res: any = {};
+            res.string = [];
+            let key;
+            for (var i = 0; i < registeredCustomFields.length; i++) {
+                key = registeredCustomFields[i]
+                if (customFields[key]) {
+                    var value = customFields[key];
+                    res.string.push({
+                        "k": key,
+                        "v": value,
+                        "i": i
+                    })
+                }
+            }
+            if (res.string.length > 0)
+                record["#cf"] = res;
         }
         return record;
     }

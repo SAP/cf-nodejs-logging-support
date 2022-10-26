@@ -107,6 +107,23 @@ describe('Test logging in global context', function () {
         });
     });
 
+    describe('overrideNetworkField', function () {
+
+        beforeEach(function () {
+            log.overrideNetworkField("logger", "new-value");
+            log.logMessage("info", "test-message");
+        });
+
+        it('overrides field', function () {
+            expect(lastOutput).to.have.property('logger', 'new-value');
+        });
+
+
+        afterEach(function () {
+            log.overrideNetworkField("logger", "TEST");
+        })
+    });
+
     describe('Test regExp constraint', function () {
         beforeEach(function () {
             log.logMessage("info", "test-message");

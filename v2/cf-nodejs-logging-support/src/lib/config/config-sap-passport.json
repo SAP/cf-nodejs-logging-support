@@ -4,56 +4,108 @@
             "name": "sap_passport",
             "source": {
                 "type": "req-header",
-                "name": "sap-passport"
-            }
+                "fieldName": "sap-passport"
+            },
+            "output": [
+                "msg-log",
+                "req-log"
+            ]
         },
         {
             "name": "sap_passport_Action",
-            "settable": "true"
+            "settable": "true",
+            "output": [
+                "msg-log",
+                "req-log"
+            ]
         },
         {
             "name": "sap_passport_ActionType",
-            "settable": "true"
+            "settable": "true",
+            "output": [
+                "msg-log",
+                "req-log"
+            ]
         },
         {
             "name": "sap_passport_ClientNumber",
-            "settable": "true"
+            "settable": "true",
+            "output": [
+                "msg-log",
+                "req-log"
+            ]
         },
         {
             "name": "sap_passport_ConnectionCounter",
-            "settable": "true"
+            "settable": "true",
+            "output": [
+                "msg-log",
+                "req-log"
+            ]
         },
         {
             "name": "sap_passport_ConnectionId",
-            "settable": "true"
+            "settable": "true",
+            "output": [
+                "msg-log",
+                "req-log"
+            ]
         },
         {
             "name": "sap_passport_ComponentName",
-            "settable": "true"
+            "settable": "true",
+            "output": [
+                "msg-log",
+                "req-log"
+            ]
         },
         {
             "name": "sap_passport_ComponentType",
-            "settable": "true"
+            "settable": "true",
+            "output": [
+                "msg-log",
+                "req-log"
+            ]
         },
         {
             "name": "sap_passport_PreviousComponentName",
-            "settable": "true"
+            "settable": "true",
+            "output": [
+                "msg-log",
+                "req-log"
+            ]
         },
         {
             "name": "sap_passport_TraceFlags",
-            "settable": "true"
+            "settable": "true",
+            "output": [
+                "msg-log",
+                "req-log"
+            ]
         },
         {
             "name": "sap_passport_TransactionId",
-            "settable": "true"
+            "settable": "true",
+            "output": [
+                "msg-log",
+                "req-log"
+            ]
         },
         {
             "name": "sap_passport_RootContextId",
-            "settable": "true"
+            "settable": "true",
+            "output": [
+                "msg-log",
+                "req-log"
+            ]
         },
         {
             "name": "sap_passport_UserId",
-            "settable": "true"
+            "settable": "true",
+            "output": [
+                "msg-log",
+                "req-log"
+            ]
         }
     ]
 }

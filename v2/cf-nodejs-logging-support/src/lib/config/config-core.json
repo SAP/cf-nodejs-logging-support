@@ -15,7 +15,7 @@
             "name": "written_at",
             "source": {
                 "type": "meta",
-                "name": "written_at"
+                "fieldName": "written_at"
             },
             "output": [
                 "msg-log",
@@ -26,7 +26,7 @@
             "name": "written_ts",
             "source": {
                 "type": "meta",
-                "name": "written_ts"
+                "fieldName": "written_ts"
             },
             "output": [
                 "msg-log",

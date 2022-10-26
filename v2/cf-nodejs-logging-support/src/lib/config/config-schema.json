@@ -57,6 +57,11 @@
                     ]
                 }
             },
+            "required": [
+                "name",
+                "output",
+                "source"
+            ],
             "type": "object"
         },
         "ConfigFieldMeta": {
@@ -75,16 +80,22 @@
                     "type": "boolean"
                 }
             },
+            "required": [
+                "isCache",
+                "isContext",
+                "isEnabled",
+                "isRedacted"
+            ],
             "type": "object"
         },
         "Source": {
             "additionalProperties": false,
             "properties": {
+                "fieldName": {
+                    "type": "string"
+                },
                 "framework": {
                     "$ref": "#/definitions/framework"
-                },
-                "name": {
-                    "type": "string"
                 },
                 "path": {
                     "items": {
@@ -100,8 +111,14 @@
                 },
                 "value": {
                     "type": "string"
+                },
+                "varName": {
+                    "type": "string"
                 }
             },
+            "required": [
+                "type"
+            ],
             "type": "object"
         },
         "customFieldsFormat": {
