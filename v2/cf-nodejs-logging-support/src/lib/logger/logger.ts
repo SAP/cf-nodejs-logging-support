@@ -110,7 +110,8 @@ export default class Logger {
     }
 
     registerCustomFields(fieldNames: Array<string>) {
-        this.registeredCustomFields = fieldNames;
+        this.registeredCustomFields.splice(0, this.registeredCustomFields.length);
+        this.registeredCustomFields.push(...fieldNames);
     }
 
     setCustomFields(customFields: Map<string, any>) {
