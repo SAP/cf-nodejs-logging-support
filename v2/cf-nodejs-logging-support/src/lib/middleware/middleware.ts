@@ -4,15 +4,19 @@ import RootLogger from "../logger/root-logger";
 import { JWTService } from "../config/jwt-service";
 import RequestAccessor from "./request-Accessor";
 import RecordWriter from "../logger/record-writer";
+import ReqContext from "../logger/context";
+import Logger from "../logger/logger";
 
 export default class Middleware {
 
     static logNetwork(req: any, res: any, next?: any) {
         let logSent = false;
 
-        let networkLogger = RootLogger.getInstance().createLogger();
+        const context = new ReqContext(req);
+        const parent = RootLogger.getInstance();
+        // initialize Logger with parent to set registered fields
+        let networkLogger = new Logger(parent, context);
         let jwtService = JWTService.getInstance();
-        const context = networkLogger.initContext(req);
 
         var dynLogLevelHeader = jwtService.getDynLogLevelHeaderName();
         var token = RequestAccessor.getInstance().getHeaderField(req, dynLogLevelHeader);
