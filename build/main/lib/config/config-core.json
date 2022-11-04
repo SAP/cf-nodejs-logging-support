@@ -1,0 +1,39 @@
+{
+    "fields": [
+        {
+            "name": "logger",
+            "source": {
+                "type": "static",
+                "value": "nodejs-logger"
+            },
+            "output": [
+                "msg-log",
+                "req-log"
+            ]
+        },
+        {
+            "name": "written_at",
+            "source": {
+                "type": "meta",
+                "fieldName": "written_at"
+            },
+            "output": [
+                "msg-log",
+                "req-log"
+            ]
+        },
+        {
+            "name": "written_ts",
+            "source": {
+                "type": "meta",
+                "fieldName": "written_ts"
+            },
+            "output": [
+                "msg-log",
+                "req-log"
+            ]
+        }
+    ],
+    "outputStartupMsg": true,
+    "framework": "express"
+}
