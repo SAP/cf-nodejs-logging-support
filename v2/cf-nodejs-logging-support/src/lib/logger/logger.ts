@@ -14,10 +14,13 @@ export default class Logger {
     private recordWriter: RecordWriter;
     protected loggingLevelThreshold: Level = Level.INHERIT
 
-    constructor(parent?: Logger) {
+    constructor(parent?: Logger, reqContext?: ReqContext) {
         if (parent) {
             this.parent = parent;
             this.registeredCustomFields = parent.registeredCustomFields;
+        }
+        if (reqContext) {
+            this.context = reqContext;
         }
         this.recordFactory = RecordFactory.getInstance();
         this.recordWriter = RecordWriter.getInstance();
@@ -149,11 +152,6 @@ export default class Logger {
 
     setTenantSubdomain(value: string) {
         this.context?.setProp("tenant_subdomain", value);
-    }
-
-    initContext(_req: any) {
-        this.context = new ReqContext(_req);
-        return this.context;
     }
 
     private extractCustomFieldsFromLogger(logger: Logger): any {
