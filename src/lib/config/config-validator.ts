@@ -1,4 +1,4 @@
-import ConfigShema from "./config-schema.json";
+import ConfigShema from "./default/config-schema.json";
 import Ajv from "ajv";
 
 export default class ConfigValidator {

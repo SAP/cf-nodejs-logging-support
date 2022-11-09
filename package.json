@@ -27,7 +27,7 @@
     "test": "npm run start && mocha 'src/test/**/*.test.js'",
     "test:lint": "eslint src --ext .ts",
     "test-performance": "mocha 'src/performance-test/*.test.js'",
-    "build-json-schema": "typescript-json-schema 'src/lib/config/interfaces.ts' ConfigObject --noExtraProps --required --out 'src/lib/config/config-schema.json'"
+    "build-json-schema": "typescript-json-schema 'src/lib/config/interfaces.ts' ConfigObject --noExtraProps --required --out 'src/lib/config/default/config-schema.json'"
   },
   "engines": {
     "node": ">=10"
