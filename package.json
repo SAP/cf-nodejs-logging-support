@@ -54,6 +54,7 @@
     "typescript-json-schema": "^0.53.0"
   },
   "files": [
+    "/.reuse/",
     "/build/",
     "LICENSE",
     "README.md"
