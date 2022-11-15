@@ -1,0 +1,186 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "additionalProperties": false,
+    "definitions": {
+        "ConfigField": {
+            "additionalProperties": false,
+            "properties": {
+                "_meta": {
+                    "$ref": "#/definitions/ConfigFieldMeta"
+                },
+                "default": {
+                    "type": [
+                        "string",
+                        "number",
+                        "boolean"
+                    ]
+                },
+                "disable": {
+                    "type": "boolean"
+                },
+                "envVarRedact": {
+                    "type": "string"
+                },
+                "envVarSwitch": {
+                    "type": "string"
+                },
+                "isContext": {
+                    "type": "boolean"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "output": {
+                    "items": {
+                        "enum": [
+                            "msg-log",
+                            "req-log"
+                        ],
+                        "type": "string"
+                    },
+                    "type": "array"
+                },
+                "settable": {
+                    "type": "boolean"
+                },
+                "source": {
+                    "anyOf": [
+                        {
+                            "$ref": "#/definitions/Source"
+                        },
+                        {
+                            "items": {
+                                "$ref": "#/definitions/Source"
+                            },
+                            "type": "array"
+                        }
+                    ]
+                }
+            },
+            "required": [
+                "name",
+                "output",
+                "source"
+            ],
+            "type": "object"
+        },
+        "ConfigFieldMeta": {
+            "additionalProperties": false,
+            "properties": {
+                "isCache": {
+                    "type": "boolean"
+                },
+                "isContext": {
+                    "type": "boolean"
+                },
+                "isEnabled": {
+                    "type": "boolean"
+                },
+                "isRedacted": {
+                    "type": "boolean"
+                }
+            },
+            "required": [
+                "isCache",
+                "isContext",
+                "isEnabled",
+                "isRedacted"
+            ],
+            "type": "object"
+        },
+        "Source": {
+            "additionalProperties": false,
+            "properties": {
+                "fieldName": {
+                    "type": "string"
+                },
+                "framework": {
+                    "$ref": "#/definitions/framework"
+                },
+                "path": {
+                    "items": {
+                        "type": "string"
+                    },
+                    "type": "array"
+                },
+                "regExp": {
+                    "type": "string"
+                },
+                "type": {
+                    "$ref": "#/definitions/sources"
+                },
+                "value": {
+                    "type": "string"
+                },
+                "varName": {
+                    "type": "string"
+                }
+            },
+            "required": [
+                "type"
+            ],
+            "type": "object"
+        },
+        "customFieldsFormat": {
+            "enum": [
+                "all",
+                "application-logging",
+                "cloud-logging",
+                "default",
+                "disabled"
+            ],
+            "type": "string"
+        },
+        "framework": {
+            "enum": [
+                "connect",
+                "express",
+                "nodejs-http",
+                "restify"
+            ],
+            "type": "string"
+        },
+        "sources": {
+            "enum": [
+                "config-field",
+                "env",
+                "meta",
+                "req-header",
+                "req-object",
+                "res-header",
+                "res-object",
+                "static",
+                "uuid"
+            ],
+            "type": "string"
+        }
+    },
+    "properties": {
+        "customFieldsFormat": {
+            "$ref": "#/definitions/customFieldsFormat"
+        },
+        "fields": {
+            "items": {
+                "$ref": "#/definitions/ConfigField"
+            },
+            "type": "array"
+        },
+        "framework": {
+            "$ref": "#/definitions/framework"
+        },
+        "outputStartupMsg": {
+            "type": "boolean"
+        },
+        "reqLoggingLevel": {
+            "type": "string"
+        },
+        "settableFields": {
+            "items": {
+                "type": "string"
+            },
+            "type": "array"
+        }
+    },
+    "type": "object"
+}
+
