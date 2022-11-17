@@ -6,8 +6,6 @@ nav_order: 2
 permalink: /advanced-usage/correlation-and-tenant-data
 ---
 
-
-
 # Getting and setting correlation and tenant data
 {: .no_toc }
 To further propagate correlation and tenant information to subsequent requests or processes you can extract them from the request context.  
