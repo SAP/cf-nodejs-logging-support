@@ -187,7 +187,7 @@ Example:
 
 ### 4. `req-header`
 
-Read value from request header. Declare the property to be accesed in the property `fieldName`.
+Read value from request header. Declare the property to be accessed in the property `fieldName`.
 
 Example:
 
@@ -201,15 +201,15 @@ Example:
 
 ### 5. `req-object`
 
-Read value from request object. Declare the property to be accesed in the property `fieldName`.
+Read value from request object. Declare the property to be accessed in the property `fieldName`.
 
 ### 6. `res-header`
 
-Read value from response header. Declare the property to be accesed in the property `fieldName`.
+Read value from response header. Declare the property to be accessed in the property `fieldName`.
 
 ### 7. `"res-object"`
 
-Read value from response object. Declare the property to be accesed in the property `fieldName`.
+Read value from response object. Declare the property to be accessed in the property `fieldName`.
 
 ### 8. `"uuid"`
 
