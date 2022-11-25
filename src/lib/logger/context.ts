@@ -26,11 +26,10 @@ export default class ReqContext {
 
     private setProperties(req: any) {
 
-        const writtenAt = new Date();
         const contextFields = this.config.getContextFields();
 
         contextFields.forEach(field => {
-            this.properties[field.name] = this.sourceUtils.getValue(field, this.properties, "context", writtenAt, req);
+            this.properties[field.name] = this.sourceUtils.getValue(field, this.properties, "context", 0, req);
         });
     }
 }

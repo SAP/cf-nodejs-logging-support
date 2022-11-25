@@ -10,6 +10,7 @@ import Logger from "../logger/logger";
 export default class Middleware {
 
     static logNetwork(req: any, res: any, next?: any) {
+        const writtenAt = Date.now();
         let logSent = false;
 
         const context = new ReqContext(req);
@@ -32,7 +33,7 @@ export default class Middleware {
         const finishLog = () => {
 
             if (!logSent) {
-                const record = RecordFactory.getInstance().buildReqRecord(req, res, context);
+                const record = RecordFactory.getInstance().buildReqRecord(req, res, context, writtenAt);
                 const reqLoggingLevel = LevelUtils.getLevel(record.level);
                 const loggingLevelThreshold = LevelUtils.getLevel(req.logger.getLoggingLevel());
                 if (LevelUtils.isLevelEnabled(loggingLevelThreshold, reqLoggingLevel)) {

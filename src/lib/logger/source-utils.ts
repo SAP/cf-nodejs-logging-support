@@ -57,7 +57,7 @@ export class SourceUtils {
         return false;
     }
 
-    getValue(field: ConfigField, record: any, origin: origin, writtenAt: Date, req?: any, res?: any): string | number | boolean | undefined {
+    getValue(field: ConfigField, record: any, origin: origin, writtenAt: number, req?: any, res?: any): string | number | boolean | undefined {
         let value: string | number | boolean | undefined;
         if (!Array.isArray(field.source)) {
             switch (origin) {
@@ -93,7 +93,7 @@ export class SourceUtils {
         return value;
     }
 
-    private getFieldValue(source: Source, record: any, writtenAt: Date): string | number | undefined {
+    private getFieldValue(source: Source, record: any, writtenAt: number): string | number | undefined {
         let value;
         switch (source.type) {
             case "static":
@@ -114,7 +114,7 @@ export class SourceUtils {
                     break;
                 }
                 if (source.fieldName == "response_time_ms") {
-                    value = (Date.now() - writtenAt.getTime());
+                    value = (Date.now() - writtenAt);
                     break;
                 }
                 if (source.fieldName == "response_sent_at") {
@@ -122,12 +122,12 @@ export class SourceUtils {
                     break;
                 }
                 if (source.fieldName == "written_at") {
-                    value = writtenAt.toJSON();
+                    value = writtenAt;
                     break;
                 }
                 if (source.fieldName == "written_ts") {
                     var lower = process.hrtime()[1] % NS_PER_MS
-                    var higher = writtenAt.getTime() * NS_PER_MS
+                    var higher = writtenAt * NS_PER_MS
 
                     let written_ts = higher + lower;
                     //This reorders written_ts, if the new timestamp seems to be smaller
@@ -151,7 +151,7 @@ export class SourceUtils {
         return value;
     }
 
-    private getReqFieldValue(source: Source, record: any, writtenAt: Date, req: any, res: any): string | number | undefined {
+    private getReqFieldValue(source: Source, record: any, writtenAt: number, req: any, res: any): string | number | undefined {
         if (req == null || res == null) {
             throw new Error("Please pass req and res as argument to get value for req-log field.");
         }
@@ -194,7 +194,7 @@ export class SourceUtils {
                 value = this.requestAccessor.getField(req, source.fieldName!);
                 break;
             case "config-field":
-                const writtenAt = new Date();
+                const writtenAt = Date.now();
                 value = this.getFieldValue(source, record, writtenAt);
                 break;
             case "uuid":
@@ -210,7 +210,7 @@ export class SourceUtils {
     }
 
     // iterate through sources until one source returns a value 
-    private getValueFromSources(field: ConfigField, record: any, origin: origin, writtenAt: Date, req?: any, res?: any) {
+    private getValueFromSources(field: ConfigField, record: any, origin: origin, writtenAt: number, req?: any, res?: any) {
 
         if (origin == "req-log" && (req == null || res == null)) {
             throw new Error("Please pass req and res as argument to get value for req-log field.");
