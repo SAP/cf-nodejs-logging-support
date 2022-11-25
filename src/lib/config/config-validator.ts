@@ -3,7 +3,7 @@ import Ajv from "ajv";
 
 export default class ConfigValidator {
 
-    private static ajv = new Ajv();
+    private static ajv = new Ajv({ strict: false });
 
     static isValid(config: any): true | [false, any] {
         const validate = ConfigValidator.ajv.compile(ConfigShema);
