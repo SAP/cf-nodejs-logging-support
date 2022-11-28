@@ -4,7 +4,6 @@ import NestedVarResolver from "../helper/nested-var-resolver";
 import RequestAccessor from "../middleware/request-Accessor";
 import ResponseAccessor from "../middleware/response-accessor";
 
-const stringifySafe = require('json-stringify-safe');
 const { v4: uuid } = require('uuid');
 
 type origin = "msg-log" | "req-log" | "context";
@@ -83,11 +82,6 @@ export class SourceUtils {
         // Replaces all fields, which are marked to be reduced and do not equal to their default value to REDUCED_PLACEHOLDER.
         if (field._meta!.isRedacted == true && value != null && value != field.default) {
             value = REDACTED_PLACEHOLDER;
-        }
-
-        // Stringify, if necessary.
-        if ((typeof value) != "string") {
-            value = stringifySafe(value);
         }
 
         return value;
