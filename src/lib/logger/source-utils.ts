@@ -56,22 +56,22 @@ export class SourceUtils {
         return false;
     }
 
-    getValue(field: ConfigField, record: any, origin: origin, writtenAt: number, req?: any, res?: any): string | number | boolean | undefined {
+    getValue(field: ConfigField, record: any, origin: origin, reqReceivedAt: number, req?: any, res?: any): string | number | boolean | undefined {
         let value: string | number | boolean | undefined;
         if (!Array.isArray(field.source)) {
             switch (origin) {
                 case "msg-log":
-                    value = this.getFieldValue(field.source, record, writtenAt);
+                    value = this.getFieldValue(field.source, record, reqReceivedAt);
                     break;
                 case "req-log":
-                    value = this.getReqFieldValue(field.source, record, writtenAt, req, res,);
+                    value = this.getReqFieldValue(field.source, record, reqReceivedAt, req, res,);
                     break;
                 case "context":
-                    value = this.getContextFieldValue(field.source, record, req);
+                    value = this.getContextFieldValue(field.source, record, reqReceivedAt, req);
                     break;
             }
         } else {
-            value = this.getValueFromSources(field, record, origin, writtenAt, req, res);
+            value = this.getValueFromSources(field, record, origin, reqReceivedAt, req, res);
         }
 
         // Handle default
@@ -87,7 +87,7 @@ export class SourceUtils {
         return value;
     }
 
-    private getFieldValue(source: Source, record: any, writtenAt: number): string | number | undefined {
+    private getFieldValue(source: Source, record: any, reqReceivedAt: number): string | number | undefined {
         let value;
         switch (source.type) {
             case "static":
@@ -100,15 +100,15 @@ export class SourceUtils {
                 value = record[source.fieldName!];
                 break;
             case "meta":
-                if (writtenAt == null) {
+                if (reqReceivedAt == null) {
                     return;
                 }
                 if (source.fieldName == "request_received_at") {
-                    value = record["written_at"];
+                    value = new Date(reqReceivedAt).toJSON();
                     break;
                 }
                 if (source.fieldName == "response_time_ms") {
-                    value = (Date.now() - writtenAt);
+                    value = (Date.now() - reqReceivedAt);
                     break;
                 }
                 if (source.fieldName == "response_sent_at") {
@@ -116,16 +116,16 @@ export class SourceUtils {
                     break;
                 }
                 if (source.fieldName == "written_at") {
-                    value = writtenAt;
+                    value = new Date().toJSON();
                     break;
                 }
                 if (source.fieldName == "written_ts") {
                     var lower = process.hrtime()[1] % NS_PER_MS
-                    var higher = writtenAt * NS_PER_MS
+                    var higher = reqReceivedAt * NS_PER_MS
 
                     let written_ts = higher + lower;
                     //This reorders written_ts, if the new timestamp seems to be smaller
-                    // due to different rollover times for process.hrtime and writtenAt.getTime
+                    // due to different rollover times for process.hrtime and reqReceivedAt.getTime
                     if (written_ts < this.lastTimestamp) {
                         written_ts += NS_PER_MS;
                     }
@@ -145,7 +145,7 @@ export class SourceUtils {
         return value;
     }
 
-    private getReqFieldValue(source: Source, record: any, writtenAt: number, req: any, res: any): string | number | undefined {
+    private getReqFieldValue(source: Source, record: any, reqReceivedAt: number, req: any, res: any): string | number | undefined {
         if (req == null || res == null) {
             throw new Error("Please pass req and res as argument to get value for req-log field.");
         }
@@ -164,7 +164,7 @@ export class SourceUtils {
                 value = this.responseAccessor.getField(res, source.fieldName!);
                 break;
             default:
-                value = this.getFieldValue(source, record, writtenAt);
+                value = this.getFieldValue(source, record, reqReceivedAt);
         }
 
         if (source.regExp && value) {
@@ -175,7 +175,7 @@ export class SourceUtils {
     }
 
     // if source is request, then assign to context. If not, then ignore.
-    private getContextFieldValue(source: Source, record: any, req: any) {
+    private getContextFieldValue(source: Source, record: any, reqReceivedAt: number, req: any) {
         if (req == null) {
             throw new Error("Please pass req as argument to get value for req-log field.");
         }
@@ -188,8 +188,7 @@ export class SourceUtils {
                 value = this.requestAccessor.getField(req, source.fieldName!);
                 break;
             case "config-field":
-                const writtenAt = Date.now();
-                value = this.getFieldValue(source, record, writtenAt);
+                value = this.getFieldValue(source, record, reqReceivedAt);
                 break;
             case "uuid":
                 value = uuid();
@@ -204,7 +203,7 @@ export class SourceUtils {
     }
 
     // iterate through sources until one source returns a value 
-    private getValueFromSources(field: ConfigField, record: any, origin: origin, writtenAt: number, req?: any, res?: any) {
+    private getValueFromSources(field: ConfigField, record: any, origin: origin, reqReceivedAt: number, req?: any, res?: any) {
 
         if (origin == "req-log" && (req == null || res == null)) {
             throw new Error("Please pass req and res as argument to get value for req-log field.");
@@ -227,9 +226,9 @@ export class SourceUtils {
 
             let source = field.source[sourceIndex];
 
-            fieldValue = origin == "msg-log" ? this.getFieldValue(source, record, writtenAt) :
-                origin == "req-log" ? this.getReqFieldValue(source, record, writtenAt, req, res,) :
-                    this.getContextFieldValue(source, record, req);
+            fieldValue = origin == "msg-log" ? this.getFieldValue(source, record, reqReceivedAt) :
+                origin == "req-log" ? this.getReqFieldValue(source, record, reqReceivedAt, req, res,) :
+                    this.getContextFieldValue(source, record, reqReceivedAt, req);
 
             if (source.regExp && fieldValue) {
                 fieldValue = this.validateRegExp(fieldValue, source.regExp);

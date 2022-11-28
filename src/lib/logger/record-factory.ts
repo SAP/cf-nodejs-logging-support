@@ -75,8 +75,7 @@ export default class RecordFactory {
     }
 
     // init a new record and assign fields with output "req-log"
-    buildReqRecord(req: any, res: any, context: ReqContext, writtenAt: number): any {
-        console.log("buildReqRecord writtenAt:" + writtenAt);
+    buildReqRecord(req: any, res: any, context: ReqContext, reqReceivedAt: number): any {
         const reqLoggingLevel = this.config.getReqLoggingLevel();
         let record: any = { "level": reqLoggingLevel };
 
@@ -86,7 +85,7 @@ export default class RecordFactory {
         record = Object.assign(record, cacheReqRecord);
 
         // assign dynamic fields
-        record = this.addDynamicFields(record, "req-log", writtenAt, req, res);
+        record = this.addDynamicFields(record, "req-log", reqReceivedAt, req, res);
 
         record = this.addContext(record, context);
 
@@ -156,7 +155,7 @@ export default class RecordFactory {
         return record;
     }
 
-    private addDynamicFields(record: any, output: outputs, writtenAt: number, req?: any, res?: object) {
+    private addDynamicFields(record: any, output: outputs, reqReceivedAt: number, req?: any, res?: object) {
         // assign dynamic fields
         const fields = (output == "msg-log") ? this.config.noCacheMsgFields : this.config.noCacheReqFields;
         fields.forEach(
@@ -166,7 +165,7 @@ export default class RecordFactory {
                     return;
                 }
 
-                record[field.name] = this.sourceUtils.getValue(field, record, output, writtenAt, req, res);
+                record[field.name] = this.sourceUtils.getValue(field, record, output, reqReceivedAt, req, res);
             }
         );
         return record;
