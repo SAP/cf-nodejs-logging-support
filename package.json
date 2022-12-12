@@ -28,7 +28,7 @@
   "devDependencies": {
     "chai": "^4.2.0",
     "import-fresh": "^3.2.1",
-    "mocha": "^7.1.1",
+    "mocha": "^10.2.0",
     "mock-require": "^3.0.3",
     "node-mocks-http": "^1.8.1",
     "nyc": "^15.0.1",
