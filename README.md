@@ -2,7 +2,7 @@
 
 [![Version npm](https://img.shields.io/npm/v/cf-nodejs-logging-support.svg)](https://www.npmjs.com/package/cf-nodejs-logging-support)
 [![npm Downloads](https://img.shields.io/npm/dm/cf-nodejs-logging-support.svg)](https://www.npmjs.com/package/cf-nodejs-logging-support)
-[![Build Status](https://travis-ci.com/SAP/cf-nodejs-logging-support.svg?branch=master)](https://travis-ci.com/SAP/cf-nodejs-logging-support)
+[![Node.js CI](https://github.com/SAP/cf-nodejs-logging-support/actions/workflows/node.js.yml/badge.svg)](https://github.com/SAP/cf-nodejs-logging-support/actions/workflows/node.js.yml)
 [![REUSE status](https://api.reuse.software/badge/github.com/SAP/cf-nodejs-logging-support)](https://api.reuse.software/info/github.com/SAP/cf-nodejs-logging-support)
 
 ## Summary
