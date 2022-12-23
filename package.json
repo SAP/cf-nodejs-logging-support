@@ -1,6 +1,6 @@
 {
   "name": "cf-nodejs-logging-support",
-  "version": "6.13.2",
+  "version": "6.14.0",
   "description": "Logging tool for Cloud Foundry",
   "keywords": [
     "logging",
@@ -22,7 +22,7 @@
   },
   "dependencies": {
     "json-stringify-safe": "^5.0.1",
-    "jsonwebtoken": "^8.5.1",
+    "jsonwebtoken": "^9.0.0",
     "uuid": "^8.3.2"
   },
   "devDependencies": {
