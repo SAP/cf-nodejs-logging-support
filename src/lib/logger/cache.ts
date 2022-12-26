@@ -46,7 +46,6 @@ export default class Cache {
     }
 
     private updateCache(output: outputs, cacheFields: ConfigField[], req?: any, res?: any) {
-        const writtenAt = new Date();
         let cache: any = {};
 
         if (output == "msg-log") {
@@ -60,7 +59,7 @@ export default class Cache {
         // build cache
         cacheFields.forEach(
             field => {
-                cache[field.name] = this.sourceUtils.getValue(field, cache, output, writtenAt, req, res);
+                cache[field.name] = this.sourceUtils.getValue(field, cache, output, 0, req, res);
             }
         );
     }

@@ -9,13 +9,13 @@ log.forceLogger("restify");
 // Add the logger middleware, so each time a request is received, it is will get logged.
 app.use(log.logNetwork);
 
-app.get('/log', (req, res) => {
+app.get('/log', (req, res, next) => {
   req.logger.logMessage("info", "restify-message");
   res.send();
 });
 
 
-app.get('/setcorrelationandtenantid', (req, res) => {
+app.get('/setcorrelationandtenantid', (req, res, next) => {
   var correlationId = "cbc2654f-1c35-45d0-96fc-f32efac20986";
   var tenantId = "abc8714f-5t15-12h0-78gt-n73jeuc01847";
 
@@ -26,7 +26,7 @@ app.get('/setcorrelationandtenantid', (req, res) => {
   res.send();
 });
 
-app.get("/getcorrelationandtenantid", function (req, res) {
+app.get("/getcorrelationandtenantid", function (req, res, next) {
   var correlationId = "cbc2654f-1c35-45d0-96fc-f32efac20986";
   var tenantId = "abc8714f-5t15-12h0-78gt-n73jeuc01847";
 
