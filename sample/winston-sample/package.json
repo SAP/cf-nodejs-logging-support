@@ -1,6 +1,6 @@
 {
     "name": "winston-sample",
-    "version": "1.0.1",
+    "version": "1.0.2",
     "description": "Sample Node.js app",
     "main": "web.js",
     "license": "Apache-2.0",
@@ -22,6 +22,6 @@
     },
     "repository": "https://github.com/SAP/cf-nodejs-logging-support/tree/master/sample/winston",
     "engines": {
-        "node": ">=8.0.0"
+        "node": ">=12.0.0"
     }
 }
