@@ -908,7 +908,7 @@ var bindDynLogLevel = function (token, logger) {
 
 // Verifies the given JWT and returns its payload.
 var verifyAndDecodeJWT = function (token, key) {
-    if (key == null || !token) {
+    if (key == null || typeof key !== "string" || !token) {
         return null; // no public key or jwt provided
     }
 
