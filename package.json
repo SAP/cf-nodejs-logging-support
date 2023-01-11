@@ -32,7 +32,7 @@
     "mock-require": "^3.0.3",
     "node-mocks-http": "^1.8.1",
     "nyc": "^15.0.1",
-    "rewire": "^4.0.1",
+    "rewire": "^6.0.0",
     "sinon": "^9.0.1",
     "winston": "^3.2.1",
     "winston-transport": "^4.3.0"
