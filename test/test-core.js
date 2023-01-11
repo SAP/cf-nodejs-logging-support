@@ -1896,11 +1896,14 @@ describe('Test log-core', function () {
     });
 
     describe('Test initLog', function () {
-        var core = rewire("../core/log-core.js");
+        var core;
         var logObject;
         var clock;
 
         before(function () {
+            // using require instead of rewire here, otherwise sinon fake clock does not work.
+            core = require("../core/log-core.js");
+
             // set clock to 2017-01-01T00:00:00.000Z
             clock = sinon.useFakeTimers({ now: 1483228800000 });
         });
