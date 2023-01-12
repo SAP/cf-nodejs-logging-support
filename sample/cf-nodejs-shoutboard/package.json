@@ -1,6 +1,6 @@
 {
   "name": "cf-nodejs-shoutboard",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "description": "Sample Node.js app",
   "main": "web-express.js",
   "license": "Apache-2.0",
@@ -20,6 +20,6 @@
     "restify": "^8.5.1"
   },
   "engines": {
-    "node": ">=8.0.0"
+    "node": ">=12.0.0"
   }
 }

@@ -1,6 +1,6 @@
 {
   "name": "cf-nodejs-logging-support-sample-app",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Sample app to learn and test features from the cf-nodejs-logging-support library",
   "main": "app.js",
   "scripts": {
@@ -18,6 +18,6 @@
     "nodemon": "^2.0.20"
   },
   "engines": {
-    "node": ">=8.0.0"
+    "node": ">=12.0.0"
   }
 }
