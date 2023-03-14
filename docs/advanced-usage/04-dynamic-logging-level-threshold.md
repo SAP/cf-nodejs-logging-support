@@ -27,7 +27,7 @@ It has no effect on the level reported as part of the logs.
 You can change the logging level threshold for a specific request by providing a JSON Web Token ([JWT](https://de.wikipedia.org/wiki/JSON_Web_Token)) via the request header.
 Using this feature allows changing the logging level threshold dynamically without the need to redeploy your app.
 
-### 1 Creating a key-pair
+### 1. Creating a key-pair
 
 To sign and verify JWTs a PEM encoded private key and a matching public key is required.
 
@@ -45,7 +45,7 @@ openssl rsa -in private.pem -outform PEM -pubout -out public.pem
 
 The generated key-pair can be found in `private.pem` and `public.pem` files.
 
-### 2 Creating a JWT
+### 2. Creating a JWT
 
 JWTs are signed claims, which consist of a header, a payload, and a signature.
 They can be signed using RSA or HMAC signing algorithms.
@@ -79,7 +79,7 @@ The payload of the created JWT has the following structure:
 }
 ```
 
-### 3 Providing the public key
+### 3. Providing the public key
 
 The logging library will verify JWTs attached to incoming requests.
 In order to do so, the public key (from `public.pem` file) needs to be provided via an environment variable called DYN_LOG_LEVEL_KEY:
@@ -100,7 +100,7 @@ Instead of using the whole content of the `public.pem` file, you can also only p
 
 Redeploy your app after setting the environment variable.
 
-### 4 Attaching JWTs to requests
+### 4. Attaching JWTs to requests
 
 Provide the created JWT via a header field named 'SAP-LOG-LEVEL'. The logging level threshold will be set to the provided level for this request and corresponding custom log messages.
 
@@ -114,10 +114,12 @@ DYN_LOG_HEADER: MY-HEADER-FIELD
 
 ## Change logging level threshold within request handlers
 
-You can also change the logging level threshold for all requests of a specific request handler by calling:
+You can also change the logging level threshold for all requests of a specific request handler as follows:
 
 ```js
 req.setLoggingLevel("verbose");
 ```
+
+Alternatively you can also do this by setting a configuration file as explained in  [Default Request Level](/cf-nodejs-logging-support/configuration/defaultrequestlevel).
 
 This feature is also available for [Child Loggers](/cf-nodejs-logging-support/advanced-usage/child-loggers#).

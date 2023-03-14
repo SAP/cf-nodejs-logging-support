@@ -1,6 +1,6 @@
 {
   "name": "cf-nodejs-logging-support-sample-app",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "Sample app to learn and test features from the cf-nodejs-logging-support library",
   "main": "app.js",
   "scripts": {
@@ -10,9 +10,9 @@
   "author": "Federico Romagnoli",
   "license": "Apache-2.0",
   "dependencies": {
-    "cf-nodejs-logging-support": "^6.14.0",
-    "ejs": "^3.1.7",
-    "express": "^4.18.2"
+    "cf-nodejs-logging-support": "latest",
+    "ejs": "^3.1.9",
+    "express": "latest"
   },
   "devDependencies": {
     "nodemon": "^2.0.20"

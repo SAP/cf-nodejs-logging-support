@@ -1,6 +1,6 @@
 ---
 applications:
-- name: I556334-express-cf-logging-support-sample
+- name: cf-nodejs-logging-support-sample
   command: node app.js
   memory: 128m
   disk: 128m

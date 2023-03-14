@@ -31,3 +31,5 @@ gem "wdm", "~> 0.1.1", :platforms => [:mingw, :x64_mingw, :mswin]
 # https://pmarsceill.github.io/just-the-docs/#getting-started
 gem "just-the-docs"
 
+
+gem "webrick", "~> 1.7"
