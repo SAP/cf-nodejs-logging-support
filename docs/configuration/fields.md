@@ -283,7 +283,7 @@ Example:
                 "name": "remote_ip",
                 "envVarRedact": "LOG_SENSITIVE_CONNECTION_DATA",
                 "source": {
-                    "type": "config-field",
+                    "type": "req-object",
                     "fieldName": "remote_host"
                 },
                 "output": [
