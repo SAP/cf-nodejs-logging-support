@@ -1,5 +1,5 @@
-import { ConfigField, outputs } from "../config/interfaces";
-import { SourceUtils } from "./sourceUtils";
+import { ConfigField, Output } from '../config/interfaces';
+import SourceUtils from './sourceUtils';
 
 export default class Cache {
 
@@ -16,7 +16,7 @@ export default class Cache {
         this.shouldUpdateReq = true;
     }
 
-    public static getInstance(): Cache {
+    static getInstance(): Cache {
         if (!Cache.instance) {
             Cache.instance = new Cache();
         }
@@ -26,7 +26,7 @@ export default class Cache {
 
     getCacheMsgRecord(cacheFields: ConfigField[]): any {
         if (this.shouldUpdateMsg) {
-            this.updateCache("msg-log", cacheFields);
+            this.updateCache(Output.msgLog, cacheFields);
             this.shouldUpdateMsg = false;
         }
         return this.cacheMsgRecord;
@@ -34,21 +34,21 @@ export default class Cache {
 
     getCacheReqRecord(cacheFields: ConfigField[], req: any, res: any): any {
         if (this.shouldUpdateReq) {
-            this.updateCache("req-log", cacheFields, req, res);
+            this.updateCache(Output.reqLog, cacheFields, req, res);
             this.shouldUpdateReq = false;
         }
         return this.cacheReqRecord;
     }
 
-    markCacheDirty() {
+    markDirty() {
         this.shouldUpdateMsg = true;
         this.shouldUpdateReq = true;
     }
 
-    private updateCache(output: outputs, cacheFields: ConfigField[], req?: any, res?: any) {
+    private updateCache(output: Output, cacheFields: ConfigField[], req?: any, res?: any) {
         let cache: any = {};
 
-        if (output == "msg-log") {
+        if (output == Output.msgLog) {
             this.cacheMsgRecord = {};
             cache = this.cacheMsgRecord;
         } else {
@@ -59,7 +59,7 @@ export default class Cache {
         // build cache
         cacheFields.forEach(
             field => {
-                cache[field.name] = this.sourceUtils.getValue(field, cache, output, 0, req, res);
+                cache[field.name] = this.sourceUtils.getValue(field, cache, output, req, res);
             }
         );
     }

@@ -1,10 +1,10 @@
 export interface ConfigObject {
     fields?: ConfigField[];
     settableFields?: string[];
-    customFieldsFormat?: customFieldsFormat;
+    customFieldsFormat?: CustomFieldsFormat;
     outputStartupMsg?: boolean;
     reqLoggingLevel?: string;
-    framework?: framework;
+    framework?: Framework;
 }
 
 export interface ConfigField {
@@ -12,7 +12,7 @@ export interface ConfigField {
     envVarRedact?: string;
     envVarSwitch?: string;
     source: Source | Source[];
-    output: outputs[];
+    output: Output[];
     disable?: boolean;
     default?: string | number | boolean;
     isContext?: boolean;
@@ -21,26 +21,51 @@ export interface ConfigField {
 }
 
 export interface Source {
-    type: sources;
+    type: SourceType;
     value?: string;
     path?: string[];
     fieldName?: string;
     varName?: string;
-    framework?: framework;
     regExp?: string;
+    framework?: Framework;
+    output?: Output;
 }
 
-
-interface ConfigFieldMeta {
+export interface ConfigFieldMeta {
     isRedacted: boolean;
     isEnabled: boolean;
     isCache: boolean;
     isContext: boolean;
 }
 
-type sources = "static" | "env" | "config-field" | "req-header" | "res-header" | "req-object" | "res-object" | "meta" | "uuid";
-export type outputs = "msg-log" | "req-log";
+export enum Framework {
+    express = "express",
+    restify = "restify",
+    connect = "connect",
+    nodejsHttp = "nodejs-http"    
+}
 
-export type framework = "express" | "restify" | "connect" | "nodejs-http";
+export enum Output {
+    msgLog = "msg-log",
+    reqLog = "req-log"
+}
 
-export type customFieldsFormat = "application-logging" | "cloud-logging" | "all" | "disabled" | "default";
+export enum CustomFieldsFormat {
+    applicationLogging = "application-logging",
+    cloudLogging = "cloud-logging",
+    all = "all",
+    disabled = "disabled",
+    default = "default"
+}
+
+export enum SourceType {
+    static = "static",
+    env = "env",
+    configField = "config-field",
+    reqHeader = "req-header",
+    resHeader = "res-header",
+    reqObject = "req-object",
+    resObject = "res-object",
+    meta = "meta",
+    uuid = "uuid"
+}

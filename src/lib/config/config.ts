@@ -1,50 +1,54 @@
 import EnvService from '../helper/envService';
+import EnvVarHelper from '../helper/envVarHelper';
 import Cache from '../logger/cache';
-import { SourceUtils } from '../logger/sourceUtils';
+import ConfigValidator from './configValidator';
 import cfConfig from './default/config-cf.json';
 import coreConfig from './default/config-core.json';
 import kymaConfig from './default/config-kyma.json';
 import requestConfig from './default/config-request.json';
 import sapPassportConfig from './default/config-sap-passport.json';
-import ConfigValidator from './configValidator';
-import { ConfigField, ConfigObject, customFieldsFormat, framework } from './interfaces';
-import { isEnvVarEnabled } from './utils';
+import { ConfigField, ConfigObject, CustomFieldsFormat, Framework, Output, Source, SourceType } from './interfaces';
 
 export default class Config {
 
     private static instance: Config;
-
-    private config: ConfigObject = {
-        "fields": [],
-        "settableFields": [],
-        "customFieldsFormat": "cloud-logging",
-        "reqLoggingLevel": "info",
-        "outputStartupMsg": false,
-        "framework": "express"
-    }
+    private validator: ConfigValidator;
+    private envVarHelper: EnvVarHelper;
 
     private msgFields: ConfigField[] = [];
     private reqFields: ConfigField[] = [];
     private contextFields: ConfigField[] = [];
-    public noCacheMsgFields: ConfigField[];
-    public noCacheReqFields: ConfigField[];
+    noCacheMsgFields: ConfigField[];
+    noCacheReqFields: ConfigField[];
 
-
+    private config: ConfigObject = {
+        "fields": [],
+        "settableFields": [],
+        "customFieldsFormat": CustomFieldsFormat.default,
+        "reqLoggingLevel": "info",
+        "outputStartupMsg": false,
+        "framework": Framework.express
+    }
 
     private constructor() {
+        this.validator = new ConfigValidator()
+        this.envVarHelper = EnvVarHelper.getInstance()
         this.noCacheMsgFields = [];
         this.noCacheReqFields = [];
     }
 
-    public static getInstance(): Config {
+    static getInstance(): Config {
         if (!Config.instance) {
+            Config.instance = new Config();
+
             const configFiles: ConfigObject[] = [
                 coreConfig as ConfigObject,
                 requestConfig as ConfigObject
             ];
 
-            const env = EnvService.getRuntimeName();
-            const boundServices = EnvService.getBoundServices();
+            const envService = EnvService.getInstance();
+            const env = envService.getRuntimeName();
+            const boundServices = envService.getBoundServices();
 
             if (env == "Kyma") {
                 configFiles.push(kymaConfig as ConfigObject);
@@ -52,16 +56,12 @@ export default class Config {
                 configFiles.push(cfConfig as ConfigObject);
             }
 
-            Config.instance = new Config();
-
             if (boundServices["application-logs"] && boundServices["cloud-logging"]) {
-                Config.instance.setCustomFieldsFormat("all");
+                Config.instance.setCustomFieldsFormat(CustomFieldsFormat.all);
             } else if (boundServices["application-logs"]) {
-                Config.instance.setCustomFieldsFormat("application-logging");
-                // configFiles.push(appLoggingConfig as ConfigObject);
+                Config.instance.setCustomFieldsFormat(CustomFieldsFormat.applicationLogging);
             } else {
-                Config.instance.setCustomFieldsFormat("cloud-logging");
-                // configFiles.push(cloudLoggingConfig as ConfigObject);
+                Config.instance.setCustomFieldsFormat(CustomFieldsFormat.cloudLogging);
             }
 
             Config.instance.addConfig(configFiles);
@@ -70,12 +70,11 @@ export default class Config {
         return Config.instance;
     }
 
-    public getConfig(): ConfigObject {
+    getConfig(): ConfigObject {
         return Config.instance.config;
     }
 
-    public getConfigFields(fieldNames?: string[]): ConfigField[] {
-
+    getConfigFields(fieldNames?: string[]): ConfigField[] {
         if (fieldNames && fieldNames.length > 0) {
             const result: ConfigField[] = [];
             fieldNames.forEach(name => {
@@ -92,11 +91,11 @@ export default class Config {
         return Config.instance.config.fields!;
     }
 
-    public getContextFields(): ConfigField[] {
+    getContextFields(): ConfigField[] {
         return Config.instance.contextFields;
     }
 
-    public getDisabledFields(): ConfigField[] {
+    getDisabledFields(): ConfigField[] {
         const filtered = Config.instance.config.fields!.filter(
             key => {
                 return key.disable === true
@@ -105,7 +104,7 @@ export default class Config {
         return filtered;
     }
 
-    public getCacheMsgFields(): ConfigField[] {
+    getCacheMsgFields(): ConfigField[] {
         const filtered = Config.instance.msgFields.filter(
             key => {
                 return key._meta?.isCache === true
@@ -114,7 +113,7 @@ export default class Config {
         return filtered;
     }
 
-    public getCacheReqFields(): ConfigField[] {
+    getCacheReqFields(): ConfigField[] {
         const filtered = Config.instance.reqFields.filter(
             key => {
                 return key._meta?.isCache === true
@@ -123,19 +122,19 @@ export default class Config {
         return filtered;
     }
 
-    public getFramework(): framework {
+    getFramework(): Framework {
         const framework = Config.instance.config.framework!;
         return framework;
     }
 
-    public getReqLoggingLevel() {
-        return Config.instance.config.reqLoggingLevel;
+    getReqLoggingLevel(): string {
+        let level = Config.instance.config.reqLoggingLevel
+        return level ? level : "info";
     }
 
-    public addConfig(configs: ConfigObject[]) {
-
+    addConfig(configs: ConfigObject[]) {
         configs.forEach(file => {
-            const validation = ConfigValidator.isValid(file);
+            const validation = this.validator.isValid(file);
             if (validation != true) {
                 const error = JSON.stringify(validation[1]);
                 throw new Error("Configuration file is not valid. Please check error: " + error);
@@ -155,11 +154,12 @@ export default class Config {
                 }
 
                 if (field.envVarSwitch) {
-                    field._meta.isEnabled = isEnvVarEnabled(field.envVarSwitch)
+                    field._meta.isEnabled = this.envVarHelper.isVarEnabled(field.envVarSwitch)
                 }
 
                 if (field.envVarRedact) {
-                    field._meta.isRedacted = !isEnvVarEnabled(field.envVarRedact) // if the env var is actually set to true, we do not redact => invert result
+                    // if the env var is actually set to true, we do not redact => invert result
+                    field._meta.isRedacted = !this.envVarHelper.isVarEnabled(field.envVarRedact)
                 }
 
                 if (field.disable) {
@@ -167,15 +167,15 @@ export default class Config {
                 }
 
                 // check if cache field
-                if (SourceUtils.getInstance().isCacheable(field.source)) {
+                if (this.isCacheable(field.source)) {
                     field._meta.isCache = true;
                 }
 
-                if (field.output?.includes('msg-log')) {
+                if (field.output?.includes(Output.msgLog)) {
                     this.addToList(this.msgFields, field);
                 }
 
-                if (field.output?.includes('req-log')) {
+                if (field.output?.includes(Output.reqLog)) {
                     this.addToList(this.reqFields, field);
                 }
 
@@ -186,10 +186,10 @@ export default class Config {
                 }
 
                 if (field._meta.isCache == false) {
-                    if (field.output?.includes("msg-log")) {
+                    if (field.output?.includes(Output.msgLog)) {
                         this.addToList(this.noCacheMsgFields, field);
                     }
-                    if (field.output?.includes("req-log")) {
+                    if (field.output?.includes(Output.reqLog)) {
                         this.addToList(this.noCacheReqFields, field);
                     }
                 }
@@ -226,27 +226,27 @@ export default class Config {
 
         // if config has changed, cache will have to be updated
         const cache = Cache.getInstance();
-        cache.markCacheDirty();
+        cache.markDirty();
     }
 
-    public setCustomFieldsFormat(format: customFieldsFormat) {
+    setCustomFieldsFormat(format: CustomFieldsFormat) {
         Config.instance.config.customFieldsFormat = format;
     }
 
-    public setStartupMessageEnabled(enabled: boolean) {
+    setStartupMessageEnabled(enabled: boolean) {
         Config.instance.config.outputStartupMsg = enabled;
     }
 
-    public setFramework(framework: framework): void {
+    setFramework(framework: Framework) {
         Config.instance.config.framework = framework;
     }
 
-    public setRequestLogLevel(name: string): void {
+    setRequestLogLevel(name: string) {
         Config.instance.config.reqLoggingLevel = name;
     }
 
-    public enableTracing(input: string[]) {
-        for (var i in input) {
+    enableTracing(input: string[]) {
+        for (let i in input) {
             switch (i.toLowerCase()) {
                 case "sap_passport":
                     this.addConfig([sapPassportConfig as ConfigObject]);
@@ -256,12 +256,12 @@ export default class Config {
         }
     }
 
-    public isSettable(key: string) {
+    isSettable(key: string) {
         if (this.config.settableFields!.length == 0) return false;
         return this.config.settableFields!.includes(key);
     }
 
-    public clearFieldsConfig() {
+    clearFieldsConfig() {
         this.config.fields = [];
         this.config.settableFields = [];
         this.msgFields = [];
@@ -270,7 +270,7 @@ export default class Config {
         this.noCacheMsgFields = [];
         this.noCacheReqFields = [];
         const cache = Cache.getInstance();
-        cache.markCacheDirty();
+        cache.markDirty();
     }
 
     // get index of field in config
@@ -293,5 +293,33 @@ export default class Config {
         } else {
             list.splice(index, 1, field);
         }
+    }
+
+    private isCacheable(s: Source | Source[]): boolean {
+        let sources = Array.isArray(s) ? s : [s]
+
+        for (let i in sources) {
+            let source = sources[i]
+            switch (source.type) {
+                case SourceType.static:
+                    return true;
+                case SourceType.env:
+                    // if this is the last source it does not matter, if the env var exists
+                    if (i == (sources.length - 1).toString()) return true
+
+                    // otherwise we have to check if there is a value to be sure that the field can be cached.
+                    let value;
+                    if (source.path) {
+                        value = EnvVarHelper.getInstance().resolveNestedVar(source.path);
+                    } else {
+                        value = process.env[source.varName!];
+                    }
+                    if (value != null) return true;
+                    break;
+                default:
+                    return false;
+            }
+        }
+        return false;
     }
 }
