@@ -1,8 +1,8 @@
 const importFresh = require('import-fresh');
-var connect = importFresh('connect');
-var log = importFresh('../../../../build/main/index');
-var http = importFresh('http');
-var app = connect();
+const connect = importFresh('connect');
+const log = importFresh('../../../../build/main/index');
+const http = importFresh('http');
+const app = connect();
 
 // Force logger to run the connect version. (default is express, forcing express is also legal)
 log.forceLogger("connect");

@@ -3,7 +3,7 @@ process.env.DYN_LOG_LEVEL_KEY = "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA2fz
 
 const importFresh = require('import-fresh');
 const express = importFresh("express");
-var log = importFresh('../../../../build/main/index');
+const log = importFresh('../../../../build/main/index');
 const app = express();
 
 // add logger to the server network queue to log all incoming requests.

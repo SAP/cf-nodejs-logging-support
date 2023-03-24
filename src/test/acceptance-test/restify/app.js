@@ -1,7 +1,7 @@
-var restify = require('restify');
+const restify = require('restify');
 const importFresh = require('import-fresh');
-var log = importFresh('../../../../build/main/index');
-var app = restify.createServer();
+const log = importFresh('../../../../build/main/index');
+const app = restify.createServer();
 
 // Force logger to run the restify version. (default is express, forcing express is also legal)
 log.forceLogger("restify");
@@ -38,7 +38,5 @@ app.get("/getcorrelationandtenantid", function (req, res, next) {
   }
   res.send();
 });
-
-
 
 module.exports = app;

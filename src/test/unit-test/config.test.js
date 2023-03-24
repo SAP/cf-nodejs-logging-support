@@ -13,7 +13,7 @@ describe('Test Config class', function () {
         });
         it('gets property fields', function () {
             expect(result).to.have.property("fields");
-            expect(result.fields.length).be.eql(36);
+            expect(result.fields.length).be.eql(39);
         });
         it('gets property outputStartupMsg', function () {
             expect(result).to.have.property("outputStartupMsg", true);
@@ -75,7 +75,7 @@ describe('Test Config class', function () {
                 result = singleton.getConfigFields();
             });
             it('gets all fields', function () {
-                expect(result.length).to.be.eql(36);
+                expect(result.length).to.be.eql(39);
             });
         })
     });
@@ -115,7 +115,7 @@ describe('Test Config class', function () {
         });
 
         it('adds 2 new fields and overrides preexisting field', function () {
-            expect(fields.length).to.be.eql(40);
+            expect(fields.length).to.be.eql(43);
         });
 
         it('adds new data correctly', function () {
