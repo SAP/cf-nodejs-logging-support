@@ -14,15 +14,13 @@
   ],
   "plugins": [
     "import",
-    "eslint-comments",
-    "functional"
+    "eslint-comments"
   ],
   "extends": [
     "eslint:recommended",
     "plugin:eslint-comments/recommended",
     "plugin:@typescript-eslint/recommended",
-    "plugin:import/typescript",
-    "plugin:functional/lite"
+    "plugin:import/typescript"
   ],
   "globals": {},
   "rules": {
@@ -34,15 +32,6 @@
       }
     ],
     "eslint-comments/no-unused-disable": "error",
-    "import/order": [
-      "error",
-      {
-        "newlines-between": "always",
-        "alphabetize": {
-          "order": "asc"
-        }
-      }
-    ],
     "sort-imports": [
       "error",
       {
