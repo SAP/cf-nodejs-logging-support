@@ -1,5 +1,5 @@
 export default class JSONHelper {
-    static parseJSONSafe(value: string | undefined): any {
+    parseJSONSafe(value: string | undefined): any {
         let tmp = {};
         if (value) {
             try {

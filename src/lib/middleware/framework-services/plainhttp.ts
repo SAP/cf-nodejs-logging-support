@@ -2,11 +2,11 @@ import { IFrameworkService } from "../interfaces";
 
 export default class HttpService implements IFrameworkService {
 
-    public getReqHeaderField(req: any, fieldName: string): string {
+    getReqHeaderField(req: any, fieldName: string): string {
         return req.header(fieldName);
     }
 
-    public getReqField(req: any, fieldName: string): string {
+    getReqField(req: any, fieldName: string): string {
         if (fieldName == "protocol") {
             return "HTTP" + (req.httpVersion == null ? "" : "/" + req.httpVersion);
         }
@@ -24,11 +24,11 @@ export default class HttpService implements IFrameworkService {
         return req[fieldName];
     }
 
-    public getResHeaderField(res: any, fieldName: string): string {
+    getResHeaderField(res: any, fieldName: string): string {
         return res.header(fieldName);
     }
 
-    public getResField(res: any, fieldName: string): string {
+    getResField(res: any, fieldName: string): string {
         return res[fieldName];
     }
 }

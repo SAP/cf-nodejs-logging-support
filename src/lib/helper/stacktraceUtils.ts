@@ -1,12 +1,9 @@
-export class StacktraceUtils {
+export default class StacktraceUtils {
 
-    private static instance: StacktraceUtils;
-
+    private static instance: StacktraceUtils
     private readonly MAX_STACKTRACE_SIZE = 55 * 1024;
 
-    private constructor() { }
-
-    public static getInstance(): StacktraceUtils {
+    static getInstance(): StacktraceUtils {
         if (!StacktraceUtils.instance) {
             StacktraceUtils.instance = new StacktraceUtils();
         }
@@ -24,17 +21,17 @@ export class StacktraceUtils {
 
     // Split stacktrace into string array and truncate lines if required by size limitation
     // Truncation strategy: Take one line from the top and two lines from the bottom of the stacktrace until limit is reached.
-    prepareStacktrace(stacktraceStr: any): any {
-        var fullStacktrace = stacktraceStr.split('\n');
-        var totalLineLength = fullStacktrace.reduce((acc: any, line: any) => acc + line.length, 0);
+    prepareStacktrace(stacktraceStr: string): string[] {
+        let fullStacktrace = stacktraceStr.split('\n');
+        let totalLineLength = fullStacktrace.reduce((acc: any, line: any) => acc + line.length, 0);
 
         if (totalLineLength > this.MAX_STACKTRACE_SIZE) {
-            var truncatedStacktrace = [];
-            var stackA = [];
-            var stackB = [];
-            var indexA = 0;
-            var indexB = fullStacktrace.length - 1;
-            var currentLength = 73; // set to approx. character count for "truncated" and "omitted" labels
+            let truncatedStacktrace = [];
+            let stackA = [];
+            let stackB = [];
+            let indexA = 0;
+            let indexB = fullStacktrace.length - 1;
+            let currentLength = 73; // set to approx. character count for "truncated" and "omitted" labels
 
             for (let i = 0; i < fullStacktrace.length; i++) {
                 if (i % 3 == 0) {

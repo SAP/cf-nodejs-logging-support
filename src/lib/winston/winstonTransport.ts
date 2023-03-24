@@ -1,10 +1,12 @@
-const Transport = require("winston-transport");
-const { SPLAT } = require("triple-beam");
+import TripleBeam from 'triple-beam';
+import TransportStream from 'winston-transport';
 
-const CfNodejsLoggingSupportLogger = class CfNodejsLoggingSupportLogger extends Transport {
+class CfNodejsLoggingSupportLogger extends TransportStream {
+
+    logMessage: Function
+
     constructor(options: any) {
         super(options);
-        this.name = "CfNodejsLoggingSupportLogger";
         this.level = options.level || "info";
         this.logMessage = options.logMessage;
     }
@@ -14,16 +16,16 @@ const CfNodejsLoggingSupportLogger = class CfNodejsLoggingSupportLogger extends 
             this.emit('logged', info);
         });
 
-        if (info[SPLAT]) {
-            this.logMessage.apply(this, [info.level, info.message, ...info[SPLAT]]);
+        if (info[TripleBeam.SPLAT]) {
+            this.logMessage.apply(this, [info.level, info.message, ...info[TripleBeam.SPLAT]]);
         } else {
             this.logMessage(info.level, info.message);
         }
 
         callback();
     }
-};
+}
 
 export default function createTransport(options: any) {
     return new CfNodejsLoggingSupportLogger(options);
-};
+}

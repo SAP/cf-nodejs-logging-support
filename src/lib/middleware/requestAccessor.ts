@@ -1,5 +1,5 @@
-import { IFrameworkService } from "./interfaces";
-import { assignFrameworkService } from "./utils";
+import { IFrameworkService } from './interfaces';
+import { assignFrameworkService } from './utils';
 
 export default class RequestAccessor {
     private static instance: RequestAccessor;
@@ -9,23 +9,22 @@ export default class RequestAccessor {
         this.frameworkService = assignFrameworkService();
     }
 
-    public static getInstance(): RequestAccessor {
+    static getInstance(): RequestAccessor {
         if (!RequestAccessor.instance) {
             RequestAccessor.instance = new RequestAccessor();
         }
-
         return RequestAccessor.instance;
     }
 
-    public getHeaderField(req: any, fieldName: string): string {
+    getHeaderField(req: any, fieldName: string): string {
         return this.frameworkService.getReqHeaderField(req, fieldName);
-    };
+    }
 
-    public getField(req: any, fieldName: string): any {
+    getField(req: any, fieldName: string): any {
         return this.frameworkService.getReqField(req, fieldName);
-    };
+    }
 
-    public setFrameworkService() {
+    setFrameworkService() {
         this.frameworkService = assignFrameworkService();
     }
 }
