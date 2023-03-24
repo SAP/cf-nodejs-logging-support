@@ -1,4 +1,6 @@
 {
+    "outputStartupMsg": true,
+    "framework": "express",
     "fields": [
         {
             "name": "logger",
@@ -12,10 +14,60 @@
             ]
         },
         {
+            "name": "type",
+            "source": [
+                {
+                    "type": "static",
+                    "value": "request",
+                    "output": "req-log"
+                },
+                {
+                    "type": "static",
+                    "value": "log",
+                    "output": "msg-log"
+                }
+            ],
+            "output": [
+                "req-log",
+                "msg-log"
+            ]
+        },
+        {
+            "name": "msg",
+            "source": {
+                "type": "meta",
+                "fieldName": "message"
+            },
+            "output": [
+                "msg-log"
+            ]
+        },
+        {
+            "name": "level",
+            "source": {
+                "type": "meta",
+                "fieldName": "level"
+            },
+            "output": [
+                "msg-log",
+                "req-log"
+            ]
+        },
+        {
+            "name": "stacktrace",
+            "source": {
+                "type": "meta",
+                "fieldName": "stacktrace"
+            },
+            "output": [
+                "msg-log"
+            ]
+        },
+        {
             "name": "written_at",
             "source": {
                 "type": "meta",
-                "fieldName": "written_at"
+                "fieldName": "writtenAt"
             },
             "output": [
                 "msg-log",
@@ -26,14 +78,12 @@
             "name": "written_ts",
             "source": {
                 "type": "meta",
-                "fieldName": "written_ts"
+                "fieldName": "writtenTs"
             },
             "output": [
                 "msg-log",
                 "req-log"
             ]
         }
-    ],
-    "outputStartupMsg": true,
-    "framework": "express"
+    ]
 }

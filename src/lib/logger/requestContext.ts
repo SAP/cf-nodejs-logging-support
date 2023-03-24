@@ -1,35 +1,34 @@
-import Config from "../config/config";
-import { SourceUtils } from "./sourceUtils";
+import Config from '../config/config';
+import { Output } from '../config/interfaces';
+import SourceUtils from './sourceUtils';
 
-export default class ReqContext {
+export default class RequestContext {
     private properties: any = {};
     private config: Config;
     private sourceUtils: SourceUtils;
+
     constructor(req: any) {
         this.config = Config.getInstance();
         this.sourceUtils = SourceUtils.getInstance();
-
-        this.setProperties(req);
+        this.assignProperties(req);
     }
 
-    getProp(key: string) {
+    getProperty(key: string): string | undefined {
         return this.properties[key];
     }
 
-    getProps(): any {
+    getProperties(): any {
         return this.properties;
     }
 
-    setProp(key: string, value: string) {
+    setProperty(key: string, value: string) {
         this.properties[key] = value;
     }
 
-    private setProperties(req: any) {
-
+    private assignProperties(req: any) {
         const contextFields = this.config.getContextFields();
-
         contextFields.forEach(field => {
-            this.properties[field.name] = this.sourceUtils.getValue(field, this.properties, "context", 0, req);
+            this.properties[field.name] = this.sourceUtils.getValue(field, this.properties, Output.reqLog, req, null);
         });
     }
 }

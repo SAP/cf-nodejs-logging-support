@@ -1,20 +1,20 @@
-import Level from "./level";
-import LevelUtils from "../helper/levelUtils";
-import RecordWriter from "./recordWriter";
-import RecordFactory from "./recordFactory";
-import ReqContext from "./requestContext";
-import { isValidObject } from "../middleware/utils";
+import LevelUtils from '../helper/levelUtils';
+import { isValidObject } from '../middleware/utils';
+import Level from './level';
+import RecordFactory from './recordFactory';
+import RecordWriter from './recordWriter';
+import RequestContext from './requestContext';
 
 export default class Logger {
     private parent?: Logger = undefined
-    private context?: ReqContext;
+    private context?: RequestContext;
     private registeredCustomFields: Array<string> = [];
     private customFields: Map<string, any> = new Map<string, any>()
     private recordFactory: RecordFactory;
     private recordWriter: RecordWriter;
     protected loggingLevelThreshold: Level = Level.INHERIT
 
-    constructor(parent?: Logger, reqContext?: ReqContext) {
+    constructor(parent?: Logger, reqContext?: RequestContext) {
         if (parent) {
             this.parent = parent;
             this.registeredCustomFields = parent.registeredCustomFields;
@@ -57,7 +57,7 @@ export default class Logger {
 
     logMessage(levelName: string, ..._args: any) {
         if (!this.isLoggingLevel(levelName)) return;
-        const loggerCustomFields = Object.assign({}, this.extractCustomFieldsFromLogger(this));
+        const loggerCustomFields = Object.assign({}, this.getCustomFieldsFromLogger(this));
 
         const record = this.recordFactory.buildMsgRecord(this.registeredCustomFields, loggerCustomFields, levelName, _args, this.context);
 
@@ -130,34 +130,34 @@ export default class Logger {
     }
 
     getCorrelationId(): string | undefined {
-        return this.context?.getProp("correlation_id");
+        return this.context?.getProperty("correlation_id");
     }
 
     setCorrelationId(value: string) {
-        this.context?.setProp("correlation_id", value);
+        this.context?.setProperty("correlation_id", value);
     }
 
     getTenantId(): string | undefined {
-        return this.context?.getProp("tenant_id");
+        return this.context?.getProperty("tenant_id");
     }
 
     setTenantId(value: string) {
-        this.context?.setProp("tenant_id", value);
+        this.context?.setProperty("tenant_id", value);
 
     }
 
     getTenantSubdomain(): string | undefined {
-        return this.context?.getProp("tenant_subdomain");
+        return this.context?.getProperty("tenant_subdomain");
     }
 
     setTenantSubdomain(value: string) {
-        this.context?.setProp("tenant_subdomain", value);
+        this.context?.setProperty("tenant_subdomain", value);
     }
 
-    private extractCustomFieldsFromLogger(logger: Logger): any {
+    private getCustomFieldsFromLogger(logger: Logger): any {
         let fields = {};
         if (logger.parent && logger.parent !== this) {
-            fields = this.extractCustomFieldsFromLogger(logger.parent);
+            fields = this.getCustomFieldsFromLogger(logger.parent);
         }
 
         if (isValidObject(logger.customFields)) {

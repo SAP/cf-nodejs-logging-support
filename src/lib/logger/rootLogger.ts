@@ -1,13 +1,15 @@
-import Config from "../config/config"
-import { ConfigObject, customFieldsFormat, framework } from "../config/interfaces"
-import EnvService from "../helper/envService";
-import Level from "./level"
-import Logger from "./logger"
-import Middleware from "../middleware/middleware";
-import RecordWriter from "./recordWriter";
-import ResponseAccessor from "../middleware/responseAccessor";
-import RequestAccessor from "../middleware/requestAccessor";
-import createTransport from "../winston/winstonTransport";
+import Config from '../config/config';
+import {
+    ConfigObject, CustomFieldsFormat, Framework, Output, SourceType
+} from '../config/interfaces';
+import EnvService from '../helper/envService';
+import Middleware from '../middleware/middleware';
+import RequestAccessor from '../middleware/requestAccessor';
+import ResponseAccessor from '../middleware/responseAccessor';
+import createTransport from '../winston/winstonTransport';
+import Level from './level';
+import Logger from './logger';
+import RecordWriter from './recordWriter';
 
 export default class RootLogger extends Logger {
     private static instance: RootLogger;
@@ -18,7 +20,7 @@ export default class RootLogger extends Logger {
         this.loggingLevelThreshold = Level.INFO
     }
 
-    public static getInstance(): RootLogger {
+    static getInstance(): RootLogger {
         if (!RootLogger.instance) {
             RootLogger.instance = new RootLogger();
         }
@@ -42,7 +44,7 @@ export default class RootLogger extends Logger {
         return this.config.clearFieldsConfig();
     }
 
-    setCustomFieldsFormat(format: customFieldsFormat) {
+    setCustomFieldsFormat(format: CustomFieldsFormat) {
         return this.config.setCustomFieldsFormat(format);
     }
 
@@ -50,8 +52,8 @@ export default class RootLogger extends Logger {
         return this.config.setStartupMessageEnabled(enabled);
     }
 
-    setSinkFunction(f: Function) {
-        RecordWriter.getInstance().setSinkFunction(f);
+    setSinkFunction(func: (level: string, payload: string) => any) {
+        RecordWriter.getInstance().setSinkFunction(func);
     }
 
     enableTracing(...input: string[]) {
@@ -63,7 +65,7 @@ export default class RootLogger extends Logger {
     }
 
     getBoundServices() {
-        return EnvService.getBoundServices()
+        return EnvService.getInstance().getBoundServices()
     }
 
     createWinstonTransport(options: any) {
@@ -74,15 +76,16 @@ export default class RootLogger extends Logger {
         }
         options.logMessage = this.logMessage;
         return createTransport(options);
-    };
+    }
 
-    forceLogger(logger: framework) {
-        Config.getInstance().setFramework(logger);
+    forceLogger(framework: Framework) {
+        Config.getInstance().setFramework(framework);
         RequestAccessor.getInstance().setFrameworkService();
         ResponseAccessor.getInstance().setFrameworkService();
     }
 
     // legacy methods
+
     overrideNetworkField(field: string, value: string): boolean {
         if (field == null && typeof field != "string") {
             return false;
@@ -99,11 +102,11 @@ export default class RootLogger extends Logger {
                             {
                                 "name": field,
                                 "source": {
-                                    "type": "static",
+                                    "type": SourceType.static,
                                     "value": value
                                 },
                                 "output": [
-                                    "req-log"
+                                    Output.reqLog
                                 ]
                             },
                         ]
@@ -114,20 +117,20 @@ export default class RootLogger extends Logger {
 
         // set static source and override
         configField[0].source = {
-            "type": "static",
+            "type": SourceType.static,
             "value": value
         };
         this.config.addConfig([
             {
-                "fields":
-                    [configField[0]]
+                "fields": [configField[0]]
             }
         ]);
         return true;
     }
 
-    overrideCustomFieldFormat(value: customFieldsFormat) {
-        return this.setCustomFieldsFormat(value);
+    overrideCustomFieldFormat(format: CustomFieldsFormat) {
+        return this.setCustomFieldsFormat(format);
     }
+
     setLogPattern() { } // no longer supported
 }

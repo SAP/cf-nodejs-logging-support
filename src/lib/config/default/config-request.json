@@ -1,4 +1,5 @@
 {
+    "reqLoggingLevel": "info",
     "fields": [
         {
             "name": "request_id",
@@ -17,16 +18,6 @@
             "source": {
                 "type": "req-header",
                 "fieldName": "content-length"
-            },
-            "output": [
-                "req-log"
-            ]
-        },
-        {
-            "name": "type",
-            "source": {
-                "type": "static",
-                "value": "request"
             },
             "output": [
                 "req-log"
@@ -129,7 +120,7 @@
             "name": "remote_ip",
             "envVarRedact": "LOG_SENSITIVE_CONNECTION_DATA",
             "source": {
-                "type": "config-field",
+                "type": "req-object",
                 "fieldName": "remote_host"
             },
             "output": [
@@ -149,8 +140,8 @@
         {
             "name": "request_received_at",
             "source": {
-                "type": "config-field",
-                "fieldName": "written_at"
+                "type": "meta",
+                "fieldName": "requestReceivedAt"
             },
             "output": [
                 "req-log"
@@ -160,7 +151,7 @@
             "name": "response_time_ms",
             "source": {
                 "type": "meta",
-                "fieldName": "response_time_ms"
+                "fieldName": "responseTimeMs"
             },
             "output": [
                 "req-log"
@@ -170,7 +161,7 @@
             "name": "response_sent_at",
             "source": {
                 "type": "meta",
-                "fieldName": "response_sent_at"
+                "fieldName": "responseSentAt"
             },
             "output": [
                 "req-log"
@@ -363,6 +354,5 @@
                 "req-log"
             ]
         }
-    ],
-    "reqLoggingLevel": "info"
+    ]
 }

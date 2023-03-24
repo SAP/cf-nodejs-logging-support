@@ -1,12 +1,14 @@
-import util from "util";
-import Config from "../config/config";
-import { isValidObject } from "../middleware/utils";
-import Cache from "./cache";
-import ReqContext from "./requestContext";
-import { SourceUtils } from "./sourceUtils";
-import { StacktraceUtils } from "../helper/stacktraceUtils";
-import { outputs } from "../config/interfaces";
-const stringifySafe = require('json-stringify-safe');
+import jsonStringifySafe from 'json-stringify-safe';
+import util from 'util';
+
+import Config from '../config/config';
+import { CustomFieldsFormat, Output } from '../config/interfaces';
+import StacktraceUtils from '../helper/stacktraceUtils';
+import { isValidObject } from '../middleware/utils';
+import Cache from './cache';
+import Record from './record';
+import RequestContext from './requestContext';
+import SourceUtils from './sourceUtils';
 
 export default class RecordFactory {
 
@@ -14,17 +16,16 @@ export default class RecordFactory {
     private config: Config;
     private stacktraceUtils: StacktraceUtils;
     private sourceUtils: SourceUtils;
-    private LOG_TYPE = "log";
     private cache: Cache;
 
     private constructor() {
         this.config = Config.getInstance();
-        this.stacktraceUtils = StacktraceUtils.getInstance();
         this.sourceUtils = SourceUtils.getInstance();
         this.cache = Cache.getInstance();
+        this.stacktraceUtils = StacktraceUtils.getInstance();
     }
 
-    public static getInstance(): RecordFactory {
+    static getInstance(): RecordFactory {
         if (!RecordFactory.instance) {
             RecordFactory.instance = new RecordFactory();
         }
@@ -33,19 +34,17 @@ export default class RecordFactory {
     }
 
     // init a new record and assign fields with output "msg-log"
-    buildMsgRecord(registeredCustomFields: Array<string>, loggerCustomFields: Map<string, any>, level: string, args: Array<any>, context?: ReqContext): any {
-
-        var customFieldsFromArgs = {};
-        var lastArg = args[args.length - 1];
-
-        let record: any = { "level": level };
-
+    buildMsgRecord(registeredCustomFields: Array<string>, loggerCustomFields: Map<string, any>, levelName: string, args: Array<any>, context?: RequestContext): Record {
+        const lastArg = args[args.length - 1];
+        let customFieldsFromArgs = {};
+        let record = new Record(levelName)
+      
         if (typeof lastArg === "object") {
             if (this.stacktraceUtils.isErrorWithStacktrace(lastArg)) {
-                record.stacktrace = this.stacktraceUtils.prepareStacktrace(lastArg.stack);
+                record.metadata.stacktrace = this.stacktraceUtils.prepareStacktrace(lastArg.stack);
             } else if (isValidObject(lastArg)) {
                 if (this.stacktraceUtils.isErrorWithStacktrace(lastArg._error)) {
-                    record.stacktrace = this.stacktraceUtils.prepareStacktrace(lastArg._error.stack);
+                    record.metadata.stacktrace = this.stacktraceUtils.prepareStacktrace(lastArg._error.stack);
                     delete lastArg._error;
                 }
                 customFieldsFromArgs = lastArg;
@@ -53,84 +52,86 @@ export default class RecordFactory {
             args.pop();
         }
 
-        // assign cache
+        // assign static fields from cache
         const cacheFields = this.config.getCacheMsgFields();
         const cacheMsgRecord = this.cache.getCacheMsgRecord(cacheFields);
-        record = Object.assign(record, cacheMsgRecord);
+        Object.assign(record.payload, cacheMsgRecord);
+
+        record.metadata.message = util.format.apply(util, args);
 
         // assign dynamic fields
-        record = this.addDynamicFields(record, "msg-log", 0);
+        this.addDynamicFields(record, Output.msgLog, Date.now());
 
-        // read and copy values from context
+        // assign values from request context if present
         if (context) {
-            record = this.addContext(record, context);
+            this.addContext(record, context);
         }
 
-        record = this.addCustomFields(record, registeredCustomFields, loggerCustomFields, customFieldsFromArgs);
-
-        record["msg"] = util.format.apply(util, args);
-        record["type"] = this.LOG_TYPE;
+        // assign custom fields
+        this.addCustomFields(record, registeredCustomFields, loggerCustomFields, customFieldsFromArgs);
 
         return record;
     }
 
     // init a new record and assign fields with output "req-log"
-    buildReqRecord(req: any, res: any, context: ReqContext, reqReceivedAt: number): any {
-        const reqLoggingLevel = this.config.getReqLoggingLevel();
-        let record: any = { "level": reqLoggingLevel };
+    buildReqRecord(levelName: string, req: any, res: any, context: RequestContext, ): Record {
+        let record = new Record(levelName)
 
-        // assign cache
+        // assign static fields from cache
         const cacheFields = this.config.getCacheReqFields();
         const cacheReqRecord = this.cache.getCacheReqRecord(cacheFields, req, res);
-        record = Object.assign(record, cacheReqRecord);
+        Object.assign(record.payload, cacheReqRecord);
 
         // assign dynamic fields
-        record = this.addDynamicFields(record, "req-log", reqReceivedAt, req, res);
+        this.addDynamicFields(record, Output.reqLog, req, res);
 
-        record = this.addContext(record, context);
+         // assign values request context
+        this.addContext(record, context);
 
-        const loggerCustomFields = Object.assign({}, req.logger.extractCustomFieldsFromLogger(req.logger));
-        record = this.addCustomFields(record, req.logger.registeredCustomFields, loggerCustomFields, {});
+        // assign custom fields
+        const loggerCustomFields = Object.assign({}, req.logger.getCustomFieldsFromLogger(req.logger));
+        this.addCustomFields(record, req.logger.registeredCustomFields, loggerCustomFields, {});
+
         return record;
     }
 
-    private addCustomFields(record: any, registeredCustomFields: Array<string>, loggerCustomFields: Map<string, any>, customFieldsFromArgs: any): any {
-        var providedFields = Object.assign({}, loggerCustomFields, customFieldsFromArgs);
+    private addCustomFields(record: Record, registeredCustomFields: Array<string>, loggerCustomFields: Map<string, any>, customFieldsFromArgs: any) {
+        const providedFields = Object.assign({}, loggerCustomFields, customFieldsFromArgs);
         const customFieldsFormat = this.config.getConfig().customFieldsFormat!;
 
         // if format "disabled", do not log any custom fields
-        if (customFieldsFormat == "disabled") {
-            return record;
+        if (customFieldsFormat == CustomFieldsFormat.disabled) {
+            return;
         }
 
-        var customFields: any = {};
-        var value;
-        for (var key in providedFields) {
-            var value = providedFields[key];
+        let indexedCustomFields: any = {};
+        for (let key in providedFields) {
+            let value = providedFields[key];
 
             // Stringify, if necessary.
             if ((typeof value) != "string") {
-                value = stringifySafe(value);
+                value = jsonStringifySafe(value);
             }
 
-            if (["cloud-logging", "all", "default"].includes(customFieldsFormat) || record[key] != null || this.config.isSettable(key)) {
-                record[key] = value;
+            if ([CustomFieldsFormat.cloudLogging, CustomFieldsFormat.all, CustomFieldsFormat.default].includes(customFieldsFormat)
+                || record.payload[key] != null || this.config.isSettable(key)) {
+                    record.payload[key] = value;
             }
 
-            if (["application-logging", "all"].includes(customFieldsFormat)) {
-                customFields[key] = value;
+            if ([CustomFieldsFormat.applicationLogging, CustomFieldsFormat.all].includes(customFieldsFormat)) {
+                indexedCustomFields[key] = value;
             }
         }
 
         //writes custom fields in the correct order and correlates i to the place in registeredCustomFields
-        if (Object.keys(customFields).length > 0) {
+        if (Object.keys(indexedCustomFields).length > 0) {
             let res: any = {};
             res.string = [];
             let key;
-            for (var i = 0; i < registeredCustomFields.length; i++) {
+            for (let i = 0; i < registeredCustomFields.length; i++) {
                 key = registeredCustomFields[i]
-                if (customFields[key]) {
-                    var value = customFields[key];
+                if (indexedCustomFields[key]) {
+                    let value = indexedCustomFields[key];
                     res.string.push({
                         "k": key,
                         "v": value,
@@ -138,26 +139,25 @@ export default class RecordFactory {
                     })
                 }
             }
-            if (res.string.length > 0)
-                record["#cf"] = res;
+            if (res.string.length > 0) {
+                record.payload["#cf"] = res;
+            }
         }
-        return record;
     }
 
     // read and copy values from context
-    private addContext(record: any, context: ReqContext): any {
-        const contextFields = context.getProps();
+    private addContext(record: Record, context: RequestContext) {
+        const contextFields = context.getProperties();
         for (let key in contextFields) {
             if (contextFields[key] != null) {
-                record[key] = contextFields[key];
+                record.payload[key] = contextFields[key];
             }
         }
-        return record;
     }
 
-    private addDynamicFields(record: any, output: outputs, reqReceivedAt: number, req?: any, res?: object) {
+    private addDynamicFields(record: Record, output: Output, req?: any, res?: object) {
         // assign dynamic fields
-        const fields = (output == "msg-log") ? this.config.noCacheMsgFields : this.config.noCacheReqFields;
+        const fields = (output == Output.msgLog) ? this.config.noCacheMsgFields : this.config.noCacheReqFields;
         fields.forEach(
             field => {
                 // ignore context fields because they are handled in addContext()
@@ -165,9 +165,8 @@ export default class RecordFactory {
                     return;
                 }
 
-                record[field.name] = this.sourceUtils.getValue(field, record, output, reqReceivedAt, req, res);
+                record.payload[field.name] = this.sourceUtils.getValue(field, record, output, req, res);
             }
         );
-        return record;
     }
 }
