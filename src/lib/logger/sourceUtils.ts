@@ -30,29 +30,6 @@ export default class SourceUtils {
         return SourceUtils.instance;
     }
 
-    isCacheable(source: Source | Source[]): boolean {
-        if (!Array.isArray(source)) {
-            if ([SourceType.static, SourceType.env].includes(source.type)) {
-                return true;
-            }
-        } else {
-            for (const object of source) {
-                switch (object.type) {
-                    case SourceType.static:
-                        return true;
-                    case SourceType.env:
-                        if (this.getEnvFieldValue(object) != null) {
-                            return true;
-                        }
-                        continue;
-                    default:
-                        return false;
-                }
-            }
-        }
-        return false;
-    }
-
     getValue(field: ConfigField, record: any, output: Output, req?: any, res?: any): string | number | boolean | undefined {
         let sources = Array.isArray(field.source) ? field.source : [field.source]
         let value: string | number | boolean | undefined;
