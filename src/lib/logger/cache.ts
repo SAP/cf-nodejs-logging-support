@@ -1,5 +1,5 @@
 import { ConfigField, outputs } from "../config/interfaces";
-import { SourceUtils } from "./source-utils";
+import { SourceUtils } from "./sourceUtils";
 
 export default class Cache {
 

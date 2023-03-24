@@ -1,8 +1,8 @@
 import Level from "./level";
-import LevelUtils from "./level-utils";
-import RecordWriter from "./record-writer";
-import RecordFactory from "./record-factory";
-import ReqContext from "./context";
+import LevelUtils from "../helper/levelUtils";
+import RecordWriter from "./recordWriter";
+import RecordFactory from "./recordFactory";
+import ReqContext from "./requestContext";
 import { isValidObject } from "../middleware/utils";
 
 export default class Logger {

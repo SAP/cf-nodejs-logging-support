@@ -1,12 +1,12 @@
-import EnvService from '../core/env-service';
+import EnvService from '../helper/envService';
 import Cache from '../logger/cache';
-import { SourceUtils } from '../logger/source-utils';
+import { SourceUtils } from '../logger/sourceUtils';
 import cfConfig from './default/config-cf.json';
 import coreConfig from './default/config-core.json';
 import kymaConfig from './default/config-kyma.json';
 import requestConfig from './default/config-request.json';
 import sapPassportConfig from './default/config-sap-passport.json';
-import ConfigValidator from './config-validator';
+import ConfigValidator from './configValidator';
 import { ConfigField, ConfigObject, customFieldsFormat, framework } from './interfaces';
 import { isEnvVarEnabled } from './utils';
 

@@ -1,4 +1,4 @@
-import JSONHelper from '../helper/JSONHelper';
+import JSONHelper from './jsonHelper';
 
 export default class EnvService {
 

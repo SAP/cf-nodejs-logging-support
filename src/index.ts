@@ -1,4 +1,4 @@
-import RootLogger from "./lib/logger/root-logger"
+import RootLogger from "./lib/logger/rootLogger"
 
 const rootLogger = RootLogger.getInstance();
 

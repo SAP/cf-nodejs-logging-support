@@ -1,8 +1,8 @@
 import Config from "../config/config";
 import { ConfigField, Source } from "../config/interfaces";
-import NestedVarResolver from "../helper/nested-var-resolver";
-import RequestAccessor from "../middleware/request-Accessor";
-import ResponseAccessor from "../middleware/response-accessor";
+import NestedVarResolver from "../helper/envVarHelper";
+import RequestAccessor from "../middleware/requestAccessor";
+import ResponseAccessor from "../middleware/responseAccessor";
 
 const { v4: uuid } = require('uuid');
 

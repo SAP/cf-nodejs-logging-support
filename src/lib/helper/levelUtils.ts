@@ -1,4 +1,4 @@
-import Level from "./level";
+import Level from "../logger/level";
 
 export default class LevelUtils {
 

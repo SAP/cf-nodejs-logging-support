@@ -1,13 +1,13 @@
 import Config from "../config/config"
 import { ConfigObject, customFieldsFormat, framework } from "../config/interfaces"
-import EnvService from "../core/env-service";
+import EnvService from "../helper/envService";
 import Level from "./level"
 import Logger from "./logger"
 import Middleware from "../middleware/middleware";
-import RecordWriter from "./record-writer";
-import ResponseAccessor from "../middleware/response-accessor";
-import RequestAccessor from "../middleware/request-Accessor";
-import createTransport from "../winston/winston-transport";
+import RecordWriter from "./recordWriter";
+import ResponseAccessor from "../middleware/responseAccessor";
+import RequestAccessor from "../middleware/requestAccessor";
+import createTransport from "../winston/winstonTransport";
 
 export default class RootLogger extends Logger {
     private static instance: RootLogger;

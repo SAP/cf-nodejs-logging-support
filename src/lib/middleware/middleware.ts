@@ -1,10 +1,10 @@
-import LevelUtils from "../logger/level-utils";
-import RecordFactory from "../logger/record-factory";
-import RootLogger from "../logger/root-logger";
-import { JWTService } from "../config/jwt-service";
-import RequestAccessor from "./request-Accessor";
-import RecordWriter from "../logger/record-writer";
-import ReqContext from "../logger/context";
+import LevelUtils from "../helper/levelUtils";
+import RecordFactory from "../logger/recordFactory";
+import RootLogger from "../logger/rootLogger";
+import { JWTService } from "../core/jwtService";
+import RequestAccessor from "./requestAccessor";
+import RecordWriter from "../logger/recordWriter";
+import ReqContext from "../logger/requestContext";
 import Logger from "../logger/logger";
 
 export default class Middleware {
