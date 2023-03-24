@@ -71,10 +71,10 @@ export default class RootLogger extends Logger {
     createWinstonTransport(options: any) {
         if (!options) {
             options = {
-                level: 'info'
+                level: 'info',
+                rootLogger: this
             };
         }
-        options.logMessage = this.logMessage;
         return createTransport(options);
     }
 
