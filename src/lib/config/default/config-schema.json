@@ -32,11 +32,7 @@
                 },
                 "output": {
                     "items": {
-                        "enum": [
-                            "msg-log",
-                            "req-log"
-                        ],
-                        "type": "string"
+                        "$ref": "#/definitions/Output"
                     },
                     "type": "array"
                 },
@@ -88,6 +84,32 @@
             ],
             "type": "object"
         },
+        "CustomFieldsFormat": {
+            "enum": [
+                "all",
+                "application-logging",
+                "cloud-logging",
+                "default",
+                "disabled"
+            ],
+            "type": "string"
+        },
+        "Framework": {
+            "enum": [
+                "connect",
+                "express",
+                "nodejs-http",
+                "restify"
+            ],
+            "type": "string"
+        },
+        "Output": {
+            "enum": [
+                "msg-log",
+                "req-log"
+            ],
+            "type": "string"
+        },
         "Source": {
             "additionalProperties": false,
             "properties": {
@@ -95,7 +117,10 @@
                     "type": "string"
                 },
                 "framework": {
-                    "$ref": "#/definitions/framework"
+                    "$ref": "#/definitions/Framework"
+                },
+                "output": {
+                    "$ref": "#/definitions/Output"
                 },
                 "path": {
                     "items": {
@@ -107,7 +132,7 @@
                     "type": "string"
                 },
                 "type": {
-                    "$ref": "#/definitions/sources"
+                    "$ref": "#/definitions/SourceType"
                 },
                 "value": {
                     "type": "string"
@@ -121,26 +146,7 @@
             ],
             "type": "object"
         },
-        "customFieldsFormat": {
-            "enum": [
-                "all",
-                "application-logging",
-                "cloud-logging",
-                "default",
-                "disabled"
-            ],
-            "type": "string"
-        },
-        "framework": {
-            "enum": [
-                "connect",
-                "express",
-                "nodejs-http",
-                "restify"
-            ],
-            "type": "string"
-        },
-        "sources": {
+        "SourceType": {
             "enum": [
                 "config-field",
                 "env",
@@ -157,7 +163,7 @@
     },
     "properties": {
         "customFieldsFormat": {
-            "$ref": "#/definitions/customFieldsFormat"
+            "$ref": "#/definitions/CustomFieldsFormat"
         },
         "fields": {
             "items": {
@@ -166,7 +172,7 @@
             "type": "array"
         },
         "framework": {
-            "$ref": "#/definitions/framework"
+            "$ref": "#/definitions/Framework"
         },
         "outputStartupMsg": {
             "type": "boolean"

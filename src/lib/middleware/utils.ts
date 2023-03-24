@@ -1,25 +1,27 @@
-import Config from "../config/config";
-import ConnectService from "./framework-services/connect";
-import ExpressService from "./framework-services/express";
-import HttpService from "./framework-services/plainhttp";
-import RestifyService from "./framework-services/restify";
-import { IFrameworkService } from "./interfaces";
+import Config from '../config/config';
+import { Framework } from '../config/interfaces';
+import ConnectService from './framework-services/connect';
+import ExpressService from './framework-services/express';
+import HttpService from './framework-services/plainhttp';
+import RestifyService from './framework-services/restify';
+import { IFrameworkService } from './interfaces';
 
 export function assignFrameworkService(): IFrameworkService {
     const framework = Config.getInstance().getFramework();
     switch (framework) {
-        case "restify":
+        case Framework.restify:
             return new RestifyService();
-        case "nodejs-http":
+        case Framework.nodejsHttp:
             return new HttpService();
-        case "connect":
+        case Framework.connect:
             return new ConnectService();
+        case Framework.express:
         default:
             return new ExpressService();
     }
 }
 
-export function isValidObject(obj: any, canBeEmpty?: any): boolean {
+export function isValidObject(obj: any, canBeEmpty?: boolean): boolean {
     if (!obj) {
         return false;
     } else if (typeof obj !== "object") {

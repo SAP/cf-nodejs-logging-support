@@ -1,18 +1,15 @@
-import Config from "../config/config";
-import { ConfigField, Source } from "../config/interfaces";
-import NestedVarResolver from "../helper/envVarHelper";
-import RequestAccessor from "../middleware/requestAccessor";
-import ResponseAccessor from "../middleware/responseAccessor";
+import { v4 as uuid } from 'uuid';
 
-const { v4: uuid } = require('uuid');
-
-type origin = "msg-log" | "req-log" | "context";
+import Config from '../config/config';
+import { ConfigField, Output, Source, SourceType } from '../config/interfaces';
+import EnvVarHelper from '../helper/envVarHelper';
+import RequestAccessor from '../middleware/requestAccessor';
+import ResponseAccessor from '../middleware/responseAccessor';
 
 const NS_PER_MS = 1e6;
+const REDACTED_PLACEHOLDER = "redacted";
 
-export var REDACTED_PLACEHOLDER = "redacted";
-
-export class SourceUtils {
+export default class SourceUtils {
     private static instance: SourceUtils;
     private requestAccessor: RequestAccessor;
     private responseAccessor: ResponseAccessor;
@@ -25,7 +22,7 @@ export class SourceUtils {
         this.config = Config.getInstance();
     }
 
-    public static getInstance(): SourceUtils {
+    static getInstance(): SourceUtils {
         if (!SourceUtils.instance) {
             SourceUtils.instance = new SourceUtils();
         }
@@ -35,15 +32,15 @@ export class SourceUtils {
 
     isCacheable(source: Source | Source[]): boolean {
         if (!Array.isArray(source)) {
-            if (["static", "env"].includes(source.type)) {
+            if ([SourceType.static, SourceType.env].includes(source.type)) {
                 return true;
             }
         } else {
             for (const object of source) {
                 switch (object.type) {
-                    case "static":
+                    case SourceType.static:
                         return true;
-                    case "env":
+                    case SourceType.env:
                         if (this.getEnvFieldValue(object) != null) {
                             return true;
                         }
@@ -56,22 +53,22 @@ export class SourceUtils {
         return false;
     }
 
-    getValue(field: ConfigField, record: any, origin: origin, reqReceivedAt: number, req?: any, res?: any): string | number | boolean | undefined {
+    getValue(field: ConfigField, record: any, output: Output, req?: any, res?: any): string | number | boolean | undefined {
+        let sources = Array.isArray(field.source) ? field.source : [field.source]
         let value: string | number | boolean | undefined;
-        if (!Array.isArray(field.source)) {
-            switch (origin) {
-                case "msg-log":
-                    value = this.getFieldValue(field.source, record, reqReceivedAt);
-                    break;
-                case "req-log":
-                    value = this.getReqFieldValue(field.source, record, reqReceivedAt, req, res,);
-                    break;
-                case "context":
-                    value = this.getContextFieldValue(field.source, record, reqReceivedAt, req);
-                    break;
+
+        let sourceIndex = 0;
+
+        while (value == null) {
+            sourceIndex = this.getNextValidSourceIndex(sources, output, sourceIndex);
+            if (sourceIndex == -1) {
+                break;
             }
-        } else {
-            value = this.getValueFromSources(field, record, origin, reqReceivedAt, req, res);
+
+            let source = sources[sourceIndex];
+
+            value = this.getValueFromSource(source, record, req, res)
+            sourceIndex++;
         }
 
         // Handle default
@@ -84,180 +81,101 @@ export class SourceUtils {
             value = REDACTED_PLACEHOLDER;
         }
 
-        return value;
+        return value
     }
 
-    private getFieldValue(source: Source, record: any, reqReceivedAt: number): string | number | undefined {
-        let value;
+    private getValueFromSource(source: Source, record: any, req?: any, res?: any): string | number | boolean | undefined {
+        let value: string | number | boolean | undefined;
         switch (source.type) {
-            case "static":
+            case SourceType.reqHeader:
+                value = req ? this.requestAccessor.getHeaderField(req, source.fieldName!) : undefined;
+                break;
+            case SourceType.reqObject:
+                value = req ? this.requestAccessor.getField(req, source.fieldName!) : undefined;
+                break;
+            case SourceType.resHeader:
+                value = res ? this.responseAccessor.getHeaderField(res, source.fieldName!) : undefined;
+                break;
+            case SourceType.resObject:
+                value = res ? this.responseAccessor.getField(res, source.fieldName!) : undefined;
+                break;
+            case SourceType.static:
                 value = source.value;
                 break;
-            case "env":
+            case SourceType.env:
                 value = this.getEnvFieldValue(source);
                 break;
-            case "config-field":
+            case SourceType.configField:
                 value = record[source.fieldName!];
                 break;
-            case "meta":
-                if (reqReceivedAt == null) {
-                    return;
+            case SourceType.meta:
+                switch (source.fieldName) {
+                    case "requestReceivedAt":
+                        value = req ? new Date(req._receivedAt).toJSON() : undefined;
+                        break;
+                    case "responseSentAt":
+                        value = res ? new Date(res._sentAt).toJSON() : undefined;
+                        break;
+                    case "responseTimeMs":
+                        value = req && res ? (res._sentAt - req._receivedAt) : undefined;
+                        break;
+                    case "writtenAt":
+                        value = new Date().toJSON();
+                        break;
+                    case "writtenTs":
+                        const lower = process.hrtime()[1] % NS_PER_MS
+                        const higher = Date.now() * NS_PER_MS
+                        let writtenTs = higher + lower;
+
+                        // This reorders written_ts, if the new timestamp seems to be smaller
+                        // due to different rollover times for process.hrtime and reqReceivedAt.getTime
+                        if (writtenTs < this.lastTimestamp) {
+                            writtenTs += NS_PER_MS;
+                        }
+                        this.lastTimestamp = writtenTs;
+                        value = writtenTs;
+                        break;
+                    case "message":
+                        value = record.metadata.message
+                        break;
+                    case "stacktrace":
+                        value = record.metadata.stacktrace
+                        break;
+                    case "level":
+                        value = record.metadata.level
+                        break;
                 }
-                if (source.fieldName == "request_received_at") {
-                    value = new Date(reqReceivedAt).toJSON();
-                    break;
-                }
-                if (source.fieldName == "response_time_ms") {
-                    value = (Date.now() - reqReceivedAt);
-                    break;
-                }
-                if (source.fieldName == "response_sent_at") {
-                    value = new Date().toJSON();
-                    break;
-                }
-                if (source.fieldName == "written_at") {
-                    value = new Date().toJSON();
-                    break;
-                }
-                if (source.fieldName == "written_ts") {
-                    var lower = process.hrtime()[1] % NS_PER_MS
-                    var higher = reqReceivedAt * NS_PER_MS
-
-                    let written_ts = higher + lower;
-                    //This reorders written_ts, if the new timestamp seems to be smaller
-                    // due to different rollover times for process.hrtime and reqReceivedAt.getTime
-                    if (written_ts < this.lastTimestamp) {
-                        written_ts += NS_PER_MS;
-                    }
-                    this.lastTimestamp = written_ts;
-                    value = written_ts;
-                    break;
-                }
                 break;
-            default:
-                value = undefined;
-        }
-
-        if (source.regExp && value) {
-            value = this.validateRegExp(value, source.regExp);
-        }
-
-        return value;
-    }
-
-    private getReqFieldValue(source: Source, record: any, reqReceivedAt: number, req: any, res: any): string | number | undefined {
-        if (req == null || res == null) {
-            throw new Error("Please pass req and res as argument to get value for req-log field.");
-        }
-        let value;
-        switch (source.type) {
-            case "req-header":
-                value = this.requestAccessor.getHeaderField(req, source.fieldName!);
-                break;
-            case "req-object":
-                value = this.requestAccessor.getField(req, source.fieldName!);
-                break;
-            case "res-header":
-                value = this.responseAccessor.getHeaderField(res, source.fieldName!);
-                break;
-            case "res-object":
-                value = this.responseAccessor.getField(res, source.fieldName!);
-                break;
-            default:
-                value = this.getFieldValue(source, record, reqReceivedAt);
-        }
-
-        if (source.regExp && value) {
-            value = this.validateRegExp(value, source.regExp);
-        }
-
-        return value;
-    }
-
-    // if source is request, then assign to context. If not, then ignore.
-    private getContextFieldValue(source: Source, record: any, reqReceivedAt: number, req: any) {
-        if (req == null) {
-            throw new Error("Please pass req as argument to get value for req-log field.");
-        }
-        let value;
-        switch (source.type) {
-            case "req-header":
-                value = this.requestAccessor.getHeaderField(req, source.fieldName!);
-                break;
-            case "req-object":
-                value = this.requestAccessor.getField(req, source.fieldName!);
-                break;
-            case "config-field":
-                value = this.getFieldValue(source, record, reqReceivedAt);
-                break;
-            case "uuid":
+            case SourceType.uuid:
                 value = uuid();
                 break;
         }
 
-        if (source.regExp && value) {
+        if (source.regExp && value != null && typeof value == "string") {
             value = this.validateRegExp(value, source.regExp);
         }
 
-        return value;
-    }
-
-    // iterate through sources until one source returns a value 
-    private getValueFromSources(field: ConfigField, record: any, origin: origin, reqReceivedAt: number, req?: any, res?: any) {
-
-        if (origin == "req-log" && (req == null || res == null)) {
-            throw new Error("Please pass req and res as argument to get value for req-log field.");
-        }
-
-        if (origin == "context" && (req == null)) {
-            throw new Error("Please pass req as argument to get value for context field.");
-        }
-
-        field.source = field.source as Source[];
-
-        let sourceIndex = 0;
-        let fieldValue;
-        while (fieldValue == null) {
-            sourceIndex = this.getNextValidSourceIndex(field.source, sourceIndex);
-
-            if (sourceIndex == -1) {
-                return;
-            }
-
-            let source = field.source[sourceIndex];
-
-            fieldValue = origin == "msg-log" ? this.getFieldValue(source, record, reqReceivedAt) :
-                origin == "req-log" ? this.getReqFieldValue(source, record, reqReceivedAt, req, res,) :
-                    this.getContextFieldValue(source, record, reqReceivedAt, req);
-
-            if (source.regExp && fieldValue) {
-                fieldValue = this.validateRegExp(fieldValue, source.regExp);
-            }
-
-            ++sourceIndex;
-        }
-        return fieldValue;
+        return value
     }
 
     private getEnvFieldValue(source: Source): string | number | undefined {
         if (source.path) {
-            // clone path to avoid deleting path in resolveNestedVariable()
-            const clonedPath = [...source.path];
-            return NestedVarResolver.resolveNestedVariable(process.env, clonedPath);
+            return EnvVarHelper.getInstance().resolveNestedVar(source.path);
+        } else {
+            return process.env[source.varName!];
         }
-        return process.env[source.varName!];
     }
 
     // returns -1 when all sources were iterated
-    private getNextValidSourceIndex(sources: Source[], startIndex: number): number {
+    private getNextValidSourceIndex(sources: Source[], output: Output, startIndex: number): number {
         const framework = this.config.getFramework();
 
         for (let i = startIndex; i < sources.length; i++) {
-            if (!sources[i].framework) {
-                return i;
-            }
-            if (sources[i].framework == framework) {
-                return i;
+            let source = sources[i];
+            if (!source.framework || source.framework == framework) {
+                if (!source.output || source.output == output) {
+                    return i;
+                }
             }
         }
         return -1;
