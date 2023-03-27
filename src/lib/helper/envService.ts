@@ -17,7 +17,7 @@ export default class EnvService {
     }
 
     getRuntimeName(): string {
-        return process.env.VCAP_SERVICES ? "CF" : "Kyma";
+        return process.env.VCAP_APPLICATION ? "CF" : "Kyma";
     }
 
     getBoundServices() {
