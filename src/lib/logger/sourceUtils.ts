@@ -1,10 +1,11 @@
 import { v4 as uuid } from 'uuid';
 
 import Config from '../config/config';
-import { ConfigField, Output, Source, SourceType } from '../config/interfaces';
+import { ConfigField, Conversion, Output, Source, SourceType } from '../config/interfaces';
 import EnvVarHelper from '../helper/envVarHelper';
 import RequestAccessor from '../middleware/requestAccessor';
 import ResponseAccessor from '../middleware/responseAccessor';
+import Record from './record';
 
 const NS_PER_MS = 1e6;
 const REDACTED_PLACEHOLDER = "redacted";
@@ -30,7 +31,7 @@ export default class SourceUtils {
         return SourceUtils.instance;
     }
 
-    getValue(field: ConfigField, record: any, output: Output, req?: any, res?: any): string | number | boolean | undefined {
+    getValue(field: ConfigField, record: Record, output: Output, req?: any, res?: any): string | number | boolean | undefined {
         let sources = Array.isArray(field.source) ? field.source : [field.source]
         let value: string | number | boolean | undefined;
 
@@ -44,13 +45,30 @@ export default class SourceUtils {
 
             let source = sources[sourceIndex];
 
-            value = this.getValueFromSource(source, record, req, res)
+            value = this.getValueFromSource(source, record, output, req, res)
             sourceIndex++;
         }
 
         // Handle default
         if (value == null && field.default != null) {
             value = field.default;
+        }
+
+        if (value != null && field.convert != null) {
+            switch(field.convert) {
+                case Conversion.toString:
+                    value = value.toString ? value.toString() : undefined
+                break;
+                case Conversion.parseBoolean:
+                    value = this.parseBooleanValue(value)
+                break;
+                case Conversion.parseInt:
+                    value = this.parseIntValue(value)
+                break;
+                case Conversion.parseInt:
+                    value = this.parseFloatValue(value)
+                break;
+            }
         }
 
         // Replaces all fields, which are marked to be reduced and do not equal to their default value to REDUCED_PLACEHOLDER.
@@ -61,7 +79,7 @@ export default class SourceUtils {
         return value
     }
 
-    private getValueFromSource(source: Source, record: any, req?: any, res?: any): string | number | boolean | undefined {
+    private getValueFromSource(source: Source, record: Record, output: Output, req?: any, res?: any): string | number | boolean | undefined {
         let value: string | number | boolean | undefined;
         switch (source.type) {
             case SourceType.reqHeader:
@@ -83,7 +101,8 @@ export default class SourceUtils {
                 value = this.getEnvFieldValue(source);
                 break;
             case SourceType.configField:
-                value = record[source.fieldName!];
+                let fields = this.config.getConfigFields([source.fieldName!])
+                value = fields.length >= 1 ? this.getValue(fields[0], record, output, req, res) : undefined
                 break;
             case SourceType.meta:
                 switch (source.fieldName) {
@@ -165,5 +184,31 @@ export default class SourceUtils {
             return value;
         }
         return undefined;
+    }
+
+    private parseIntValue(value: string | number | boolean): number {
+        switch (typeof value) {
+            case 'string':
+                return parseInt(value, 0)
+            case 'number':
+                return value
+            case 'boolean':
+                return value ? 1 : 0
+        }
+    }
+
+    private parseFloatValue(value: string | number | boolean): number {
+        switch (typeof value) {
+            case 'string':
+                return parseFloat(value)
+            case 'number':
+                return value
+            case 'boolean':
+                return value ? 1 : 0
+        }
+    }
+
+    private parseBooleanValue(value: string | number | boolean) : boolean {
+        return value === 'true' || value === 'TRUE' || value === 'True' || value === 1 || value === true
     }
 }

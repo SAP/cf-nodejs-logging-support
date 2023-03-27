@@ -13,6 +13,7 @@ export interface ConfigField {
     envVarSwitch?: string;
     source: Source | Source[];
     output: Output[];
+    convert?: Conversion;
     disable?: boolean;
     default?: string | number | boolean;
     isContext?: boolean;
@@ -68,4 +69,11 @@ export enum SourceType {
     resObject = "res-object",
     meta = "meta",
     uuid = "uuid"
+}
+
+export enum Conversion {
+    toString = "toString",
+    parseInt = "parseInt",
+    parseFloat = "parseFloat",
+    parseBoolean = "parseBoolean"
 }
