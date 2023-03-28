@@ -32,6 +32,8 @@ export default class SourceUtils {
     }
 
     getValue(field: ConfigField, record: Record, output: Output, req?: any, res?: any): string | number | boolean | undefined {
+        if (!field.source) return undefined
+
         let sources = Array.isArray(field.source) ? field.source : [field.source]
         let value: string | number | boolean | undefined;
 

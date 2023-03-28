@@ -23,7 +23,6 @@ export default class Config {
 
     private config: ConfigObject = {
         "fields": [],
-        "settableFields": [],
         "customFieldsFormat": CustomFieldsFormat.default,
         "reqLoggingLevel": "info",
         "outputStartupMsg": false,
@@ -141,8 +140,19 @@ export default class Config {
             }
 
             file.fields?.forEach(field => {
-                if (field.settable) {
-                    this.config.settableFields!.push(field.name);
+
+                const index = Config.instance.getIndex(field.name);
+
+                // if new config field
+                if (index === -1) {
+                    Config.instance.config.fields!.push(field);
+                }
+
+                // replace object in array with new field
+                Config.instance.config.fields!.splice(index, 1, field);
+
+
+                if (field.settable || !field.source) {
                     return;
                 }
 
@@ -193,16 +203,6 @@ export default class Config {
                         this.addToList(this.noCacheReqFields, field);
                     }
                 }
-
-                const index = Config.instance.getIndex(field.name);
-
-                // if new config field
-                if (index === -1) {
-                    Config.instance.config.fields!.push(field);
-                }
-
-                // replace object in array with new field
-                Config.instance.config.fields!.splice(index, 1, field);
             })
 
             if (file.outputStartupMsg != undefined) {
@@ -245,9 +245,14 @@ export default class Config {
         Config.instance.config.reqLoggingLevel = name;
     }
 
-    enableTracing(input: string[]) {
-        for (let i in input) {
-            switch (i.toLowerCase()) {
+    enableTracing(input: string | string[]) {
+        let names = [];
+        if (typeof input == "string")
+            names.push(input);
+        else
+            names = input;
+        for (let i in names) {
+            switch (names[i].toLowerCase()) {
                 case "sap_passport":
                     this.addConfig([sapPassportConfig as ConfigObject]);
                     break;
@@ -256,14 +261,17 @@ export default class Config {
         }
     }
 
-    isSettable(key: string) {
-        if (this.config.settableFields!.length == 0) return false;
-        return this.config.settableFields!.includes(key);
+    isSettable(name: string) {
+        const index = this.getIndex(name);
+        if (index === -1) {
+            return false;
+        }
+        const configField = Config.instance.config.fields![index];
+        return configField.settable === true;
     }
 
     clearFieldsConfig() {
         this.config.fields = [];
-        this.config.settableFields = [];
         this.msgFields = [];
         this.reqFields = [];
         this.contextFields = [];

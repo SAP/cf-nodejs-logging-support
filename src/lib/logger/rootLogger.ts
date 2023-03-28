@@ -56,7 +56,7 @@ export default class RootLogger extends Logger {
         RecordWriter.getInstance().setSinkFunction(func);
     }
 
-    enableTracing(...input: string[]) {
+    enableTracing(input: string | string[]) {
         return this.config.enableTracing(input);
     }
 
@@ -78,13 +78,17 @@ export default class RootLogger extends Logger {
         return createTransport(options);
     }
 
-    forceLogger(framework: Framework) {
+    setFramework(framework: Framework) {
         Config.getInstance().setFramework(framework);
         RequestAccessor.getInstance().setFrameworkService();
         ResponseAccessor.getInstance().setFrameworkService();
     }
 
     // legacy methods
+
+    forceLogger(framework: Framework) {
+        this.setFramework(framework)
+    }
 
     overrideNetworkField(field: string, value: string): boolean {
         if (field == null && typeof field != "string") {

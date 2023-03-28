@@ -10,7 +10,7 @@ export interface ConfigField {
     name: string;
     envVarRedact?: string;
     envVarSwitch?: string;
-    source: Source | Source[];
+    source?: Source | Source[];
     output: Output[];
     convert?: Conversion;
     disable?: boolean;
