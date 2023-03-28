@@ -15,10 +15,16 @@
         },
         {
             "name": "request_size_b",
-            "source": {
-                "type": "req-header",
-                "fieldName": "content-length"
-            },
+            "source": [
+                {
+                    "type": "res-object",
+                    "fieldName": "_contentLength"
+                },
+                {
+                    "type": "req-header",
+                    "fieldName": "content-length"
+                }
+            ],
             "output": [
                 "req-log"
             ]
