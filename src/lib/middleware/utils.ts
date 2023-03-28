@@ -4,9 +4,9 @@ import ConnectService from './framework-services/connect';
 import ExpressService from './framework-services/express';
 import HttpService from './framework-services/plainhttp';
 import RestifyService from './framework-services/restify';
-import { IFrameworkService } from './interfaces';
+import { FrameworkService } from './interfaces';
 
-export function assignFrameworkService(): IFrameworkService {
+export function assignFrameworkService(): FrameworkService {
     const framework = Config.getInstance().getFramework();
     switch (framework) {
         case Framework.restify:

@@ -1,6 +1,6 @@
-import { IFrameworkService } from "../interfaces";
+import { FrameworkService } from "../interfaces";
 
-export default class RestifyService implements IFrameworkService {
+export default class RestifyService implements FrameworkService {
 
     getReqHeaderField(req: any, fieldName: string): string {
         return req.header(fieldName);
