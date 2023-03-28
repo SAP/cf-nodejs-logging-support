@@ -3,32 +3,38 @@ import { IFrameworkService } from "../interfaces";
 export default class ConnectService implements IFrameworkService {
 
     getReqHeaderField(req: any, fieldName: string): string {
-        return req.header(fieldName);
+        return req.headers[fieldName];
     }
 
-    getReqField(req: any, fieldName: string): string {
-        if (fieldName == "protocol") {
-            return "HTTP" + (req.httpVersion == null ? "" : "/" + req.httpVersion);
+    getReqField(req: any, fieldName: string): any {
+        let value: string | number | boolean | undefined = undefined;
+        switch (fieldName) {
+            case "protocol":
+                value = "HTTP" + (req.httpVersion == null ? "" : "/" + req.httpVersion);
+                break;
+            case "remote_host":
+                value = req.connection?.remoteAddress;
+                break;
+            case "remote_port":
+                value = req.connection?.remotePort?.toString();
+                break;
+            case "remote_user":
+                if (req.user && req.user.id) {
+                    value = req.user.id;
+                }
+                break;
+            default:
+                value = req[fieldName]
+                break;
         }
-        if (fieldName == "remote_host") {
-            return req.connection?.remoteAddress;
-        }
-        if (fieldName == "remote_port") {
-            return req.connection?.remotePort.toString();
-        }
-        if (fieldName == "remote_user") {
-            if (req.user && req.user.id) {
-                return req.user.id;
-            }
-        }
-        return req[fieldName];
+        return value
     }
 
     getResHeaderField(res: any, fieldName: string): string {
-        return res.header(fieldName);
+        return res.getHeader ? res.getHeader(fieldName) : "";
     }
 
-    getResField(res: any, fieldName: string): string {
+    getResField(res: any, fieldName: string): any {
         return res[fieldName];
     }
 }

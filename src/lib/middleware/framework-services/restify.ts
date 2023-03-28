@@ -6,29 +6,35 @@ export default class RestifyService implements IFrameworkService {
         return req.header(fieldName);
     }
 
-    getReqField(req: any, fieldName: string): string {
-        if (fieldName == "protocol") {
-            return "HTTP" + (req.httpVersion == null ? "" : "/" + req.httpVersion);
+    getReqField(req: any, fieldName: string): any {
+        let value: string | number | boolean | undefined = undefined;
+        switch (fieldName) {
+            case "protocol":
+                value = "HTTP" + (req.httpVersion == null ? "" : "/" + req.httpVersion);
+                break;
+            case "remote_host":
+                value = req.connection?.remoteAddress;
+                break;
+            case "remote_port":
+                value = req.connection?.remotePort?.toString();
+                break;
+            case "remote_user":
+                if (req.user && req.user.id) {
+                    value = req.user.id;
+                }
+                break;
+            default:
+                value = req[fieldName]
+                break;
         }
-        if (fieldName == "remote_host") {
-            return req.connection?.remoteAddress;
-        }
-        if (fieldName == "remote_port") {
-            return req.connection?.remotePort.toString();
-        }
-        if (fieldName == "remote_user") {
-            if (req.user && req.user.id) {
-                return req.user.id;
-            }
-        }
-        return req[fieldName];
+        return value
     }
 
     getResHeaderField(res: any, fieldName: string): string {
-        return res.get(fieldName);
+        return res.get ? res.get(fieldName) : "";
     }
 
-    getResField(res: any, fieldName: string): string {
+    getResField(res: any, fieldName: string): any {
         return res[fieldName];
     }
 }
