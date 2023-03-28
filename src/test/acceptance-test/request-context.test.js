@@ -38,9 +38,7 @@ describe('Test request context', function () {
                     .get("/requestcontext")
                     .set({ "x-vcap-request-id": "1234", "tenantid": "1234" })
                     .expect(200)
-                    .then(
-                        done()
-                    )
+                    .then(done())
                     .catch(err => done(err));
             });
 
@@ -96,9 +94,7 @@ describe('Test request context', function () {
                 supertest(expressApp)
                     .get("/setloglevel")
                     .expect(200)
-                    .then(
-                        done()
-                    )
+                    .then(done())
                     .catch(err => done(err));
 
             });
@@ -118,9 +114,7 @@ describe('Test request context', function () {
                 supertest(expressApp)
                     .get("/setcorrelationandtenantid")
                     .expect(200)
-                    .then(
-                        done()
-                    )
+                    .then(done())
                     .catch(err => done(err));
             });
 
@@ -153,9 +147,7 @@ describe('Test request context', function () {
                     .set("x-correlationid", correlation_id)
                     .set("tenantid", tenant_id)
                     .expect(200)
-                    .then(
-                        done()
-                    )
+                    .then(done())
                     .catch(err => done(err));
             });
 
@@ -179,9 +171,7 @@ describe('Test request context', function () {
                 supertest(expressApp)
                     .get("/getcorrelationandtenantid")
                     .expect(200)
-                    .then(
-                        done()
-                    )
+                    .then(done())
                     .catch(err => done(err));
             });
 
@@ -202,9 +192,7 @@ describe('Test request context', function () {
                 supertest(expressApp)
                     .get("/requestcontext")
                     .expect(200)
-                    .then(
-                        done()
-                    )
+                    .then(done())
                     .catch(err => done(err));
             });
 
@@ -306,9 +294,7 @@ describe('Test request context', function () {
                     .set("x-correlationid", correlation_id)
                     .set("tenantid", tenant_id)
                     .expect(200)
-                    .then(
-                        done()
-                    )
+                    .then(done())
                     .catch(err => done(err));
             });
 
@@ -334,9 +320,7 @@ describe('Test request context', function () {
                 supertest(restifyApp)
                     .get("/setcorrelationandtenantid")
                     .expect(200)
-                    .then(
-                        done()
-                    )
+                    .then(done())
                     .catch(err => done(err));
             });
 
@@ -359,9 +343,7 @@ describe('Test request context', function () {
                 supertest(restifyApp)
                     .get("/getcorrelationandtenantid")
                     .expect(200)
-                    .then(
-                        done()
-                    )
+                    .then(done())
                     .catch(err => done(err));
             });
 
@@ -395,9 +377,7 @@ describe('Test request context', function () {
                     .set("x-correlationid", correlation_id)
                     .set("tenantid", tenant_id)
                     .expect(200)
-                    .then(
-                        done()
-                    )
+                    .then(done())
                     .catch(err => done(err));
             });
 
@@ -424,9 +404,7 @@ describe('Test request context', function () {
                 supertest(connectApp)
                     .get("/setcorrelationandtenantid")
                     .expect(200)
-                    .then(
-                        done()
-                    )
+                    .then(done())
                     .catch(err => done(err));
             });
 
@@ -450,9 +428,7 @@ describe('Test request context', function () {
                 supertest(connectApp)
                     .get("/getcorrelationandtenantid")
                     .expect(200)
-                    .then(
-                        done()
-                    )
+                    .then(done())
                     .catch(err => done(err));
             });
 
@@ -484,9 +460,7 @@ describe('Test request context', function () {
                     .set("x-correlationid", correlation_id)
                     .set("tenantid", tenant_id)
                     .expect(200)
-                    .then(
-                        done()
-                    )
+                    .then(done())
                     .catch(err => done(err));
             });
 
@@ -513,9 +487,7 @@ describe('Test request context', function () {
                 supertest(httpApp)
                     .get("/setcorrelationandtenantid")
                     .expect(200)
-                    .then(
-                        done()
-                    )
+                    .then(done())
                     .catch(err => done(err));
             });
 
@@ -539,9 +511,7 @@ describe('Test request context', function () {
                 supertest(httpApp)
                     .get("/testget")
                     .expect(200)
-                    .then(
-                        done()
-                    )
+                    .then(done())
                     .catch(err => done(err));
             });
 
