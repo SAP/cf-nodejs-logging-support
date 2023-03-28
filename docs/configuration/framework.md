@@ -29,4 +29,4 @@ Our supported server frameworks are:
 * [Express](https://expressjs.com/): declare as `express`
 * [Restify](http://restify.com/): declare as `restify`
 * [Connect](https://www.npmjs.com/package/connect): declare as `connect`
-* [Node.js HTTP](https://nodejs.org/api/http.html): declare as `nodejs-http`
+* [Node.js HTTP](https://nodejs.org/api/http.html): declare as `plainhttp`

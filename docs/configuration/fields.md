@@ -232,7 +232,7 @@ You can also bind each source to a specific server framework. If the framework a
 * [Express](https://expressjs.com/): declare as `express`
 * [Restify](http://restify.com/): declare as `restify`
 * [Connect](https://www.npmjs.com/package/connect): declare as `connect`
-* [Node.js HTTP](https://nodejs.org/api/http.html): declare as `nodejs-http`
+* [Node.js HTTP](https://nodejs.org/api/http.html): declare as `plainhttp`
 
 Example of field with multiple framework specific sources:
 

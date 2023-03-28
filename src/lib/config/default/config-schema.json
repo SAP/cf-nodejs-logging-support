@@ -110,7 +110,7 @@
             "enum": [
                 "connect",
                 "express",
-                "nodejs-http",
+                "plainhttp",
                 "restify"
             ],
             "type": "string"

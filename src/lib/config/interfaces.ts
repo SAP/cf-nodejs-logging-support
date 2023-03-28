@@ -43,7 +43,7 @@ export enum Framework {
     express = "express",
     restify = "restify",
     connect = "connect",
-    nodejsHttp = "nodejs-http"    
+    nodejsHttp = "plainhttp"    
 }
 
 export enum Output {

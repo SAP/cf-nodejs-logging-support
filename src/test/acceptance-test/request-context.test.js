@@ -470,7 +470,7 @@ describe('Test request context', function () {
 
     describe("NODEJSHTTP", function () {
         before(function (done) {
-            log.forceLogger("nodejs-http");
+            log.forceLogger("plainhttp");
             done();
         });
         describe("Set implicit correlation- and tenant-id through request header", function () {
