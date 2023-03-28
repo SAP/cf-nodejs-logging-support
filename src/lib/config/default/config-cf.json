@@ -56,8 +56,11 @@
         {
             "name": "source_instance",
             "source": {
-                "type": "config-field",
-                "fieldName": "component_instance"
+                "type": "env",
+                "path": [
+                    "VCAP_APPLICATION",
+                    "instance_index"
+                ]
             },
             "output": [
                 "msg-log",

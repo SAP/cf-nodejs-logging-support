@@ -35,8 +35,8 @@
         {
             "name": "msg",
             "source": {
-                "type": "meta",
-                "fieldName": "message"
+                "type": "detail",
+                "detailName": "message"
             },
             "output": [
                 "msg-log"
@@ -45,8 +45,8 @@
         {
             "name": "level",
             "source": {
-                "type": "meta",
-                "fieldName": "level"
+                "type": "detail",
+                "detailName": "level"
             },
             "output": [
                 "msg-log",
@@ -56,8 +56,8 @@
         {
             "name": "stacktrace",
             "source": {
-                "type": "meta",
-                "fieldName": "stacktrace"
+                "type": "detail",
+                "detailName": "stacktrace"
             },
             "output": [
                 "msg-log"
@@ -66,8 +66,8 @@
         {
             "name": "written_at",
             "source": {
-                "type": "meta",
-                "fieldName": "writtenAt"
+                "type": "detail",
+                "detailName": "writtenAt"
             },
             "output": [
                 "msg-log",
@@ -77,8 +77,8 @@
         {
             "name": "written_ts",
             "source": {
-                "type": "meta",
-                "fieldName": "writtenTs"
+                "type": "detail",
+                "detailName": "writtenTs"
             },
             "output": [
                 "msg-log",

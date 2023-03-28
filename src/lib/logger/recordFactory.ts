@@ -74,7 +74,7 @@ export default class RecordFactory {
     }
 
     // init a new record and assign fields with output "req-log"
-    buildReqRecord(levelName: string, req: any, res: any, context: RequestContext, ): Record {
+    buildReqRecord(levelName: string, req: any, res: any, context: RequestContext): Record {
         let record = new Record(levelName)
 
         // assign static fields from cache

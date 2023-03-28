@@ -156,8 +156,8 @@
         {
             "name": "request_received_at",
             "source": {
-                "type": "config-field",
-                "fieldName": "written_at"
+                "type": "detail",
+                "detailName": "requestReceivedAt"
             },
             "output": [
                 "req-log"
@@ -166,7 +166,8 @@
         {
             "name": "response_time_ms",
             "source": {
-                "type": "meta"
+                "type": "detail",
+                "detailName": "responseTimeMs"
             },
             "output": [
                 "req-log"
@@ -175,7 +176,8 @@
         {
             "name": "response_sent_at",
             "source": {
-                "type": "meta"
+                "type": "detail",
+                "detailName": "responseSentAt"
             },
             "output": [
                 "req-log"
