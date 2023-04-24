@@ -3,22 +3,23 @@ layout: default
 title: Custom Fields Format
 parent: Advanced Configuration
 nav_order: 4
-permalink: /configuration/customfieldsformat
+permalink: /configuration/custom-fields-format
 ---
 
 # Custom fields format
 
-As described in [Custom Fields](/cf-nodejs-logging-support/general-usage/custom-fields), the library will automatically detect which logging service your app is bound to and will set the logging format accordingly. However, it is also possible to force the logging format by setting the property `customFieldsFormat` in a configuration file.
+As described in [Custom Fields](/cf-nodejs-logging-support/general-usage/custom-fields), the library will automatically detect which logging service your app is bound to and set the logging format accordingly.
+However, it is also possible to force the logging format by setting the property `customFieldsFormat`.
 
 Example:
 
 ```js
 {
-    "customFieldsFormat": "cloud-logging"
+    "customFieldsFormat": "application-logging"
 }
 ```
 
-Supported format values are:
+Supported format values:
 
 * `application-logging`
 * `cloud-logging`

@@ -8,11 +8,12 @@ has_children: false
 
 # Introduction
 
-You can customize the default configuration by writing a JSON file and adding it to the library. Take a look at the following sections to get a better understanding of what you can configure and how:
+You can extend or replace the default configuration by defining and loading JSON config files.
+Refer to the following sections to get a better understanding of configuration options:
 
 * [Configuration of logging fields](/cf-nodejs-logging-support/configuration/fields/)
-* [Default request logging level](/cf-nodejs-logging-support/configuration/defaultrequestlevel/)
-* [Custom fields format](/cf-nodejs-logging-support/configuration/customfieldsformat/)
+* [Default request logging level](/cf-nodejs-logging-support/configuration/default-request-level/)
+* [Custom fields format](/cf-nodejs-logging-support/configuration/custom-fields-format/)
 * [Server Framework](/cf-nodejs-logging-support/configuration/framework/)
 
 ## Add custom configuration
@@ -20,7 +21,7 @@ You can customize the default configuration by writing a JSON file and adding it
 Once you have a JSON file with your configuration, you can add it to the logger as follows:
 
 ```js
-import configFile from './config.json';
+const configFile = './config.json';
 
 log.addConfig(configFile);
 ```
@@ -28,78 +29,22 @@ log.addConfig(configFile);
 Alternatively, you can provide and load multiple configuration files:
 
 ```js
-import configFile1 from './config1.json';
-import configFile2 from './config2.json';
-import configFile3 from './config3.json';
+const configFile1 = require('./config1.json');
+const configFile2 = require('./config2.json');
+const configFile3 = require('./config3.json');
 
 log.addConfig(configFile1, configFile2, configFile3);
 ```
 
-Configuration files will be added iteratively. This means that in case of collisions latter configuration files will override previous ones.
-
-## Reset fields configuration
-
-You can reset the fields configuration as follows:
-
-```js
-log.clearFieldsConfig();
-```
-
-This will delete all fields except `level`, `msg` and `type`.
+Configuration files can be added iteratively.
+This means that in case of collisions latter configuration files will override previous ones.
 
 ## Get configuration as JSON object
 
-For local testing purposes you can get the setted library configuration as JSON object from any logger instance as follows:
+For local testing purposes you can get the full library configuration as JSON object from any logger instance as follows:
 
 ```js
 log.getConfig();
-```
-
-You can find a sample result below:
-
-```js
-{
-    "fields": [
-        {
-            "name": "organization_id",
-            "source": [
-                {
-                    "type": "req-object",
-                    "fieldName": "orgId",
-                    "framework": "restify"
-                },
-                {
-                    "type": "static",
-                    "value": "1111",
-                }
-            ],
-            "output": [
-                "msg-log"
-            ]
-        },
-        {
-            "name": "organization_name",
-            "source": {
-                "type": "env",
-                "path": [
-                    "VCAP_APPLICATION",
-                    "organization_name"
-                ]
-            },
-            "output": [
-                "msg-log",
-                "req-log"
-            ]
-        },
-        {
-            ...
-        }
-    ],
-    "reqLoggingLevel": "info",
-    "customFieldsFormat": "cloud-logging",
-    "outputStartupMsg": true,
-    "framework": "express"
-}
 ```
 
 Alternatively, you can get the configuration for one or multiple desired fields as follows:
@@ -107,3 +52,13 @@ Alternatively, you can get the configuration for one or multiple desired fields 
 ```js
 log.getConfigFields("organization_id","request_id")
 ```
+
+## Clear fields configuration
+
+You can clear the all default and configured fields as follows:
+
+```js
+log.clearFieldsConfig();
+```
+
+This might come in handy when aiming for a fully customized field configuration.
