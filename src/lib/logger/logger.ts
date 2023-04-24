@@ -142,29 +142,36 @@ export default class Logger {
         }
     }
 
+    getContextProperty(name: string): string | undefined {
+        return this.context?.getProperty(name);
+    }
+
+    setContextProperty(name: string, value: string) {
+        this.context?.setProperty(name, value);
+    }
+
     getCorrelationId(): string | undefined {
-        return this.context?.getProperty("correlation_id");
+        return this.getContextProperty("correlation_id");
     }
 
     setCorrelationId(value: string) {
-        this.context?.setProperty("correlation_id", value);
+        this.setContextProperty("correlation_id", value);
     }
 
     getTenantId(): string | undefined {
-        return this.context?.getProperty("tenant_id");
+        return this.getContextProperty("tenant_id");
     }
 
     setTenantId(value: string) {
-        this.context?.setProperty("tenant_id", value);
-
+        this.setContextProperty("tenant_id", value);
     }
 
     getTenantSubdomain(): string | undefined {
-        return this.context?.getProperty("tenant_subdomain");
+        return this.getContextProperty("tenant_subdomain");
     }
 
     setTenantSubdomain(value: string) {
-        this.context?.setProperty("tenant_subdomain", value);
+        this.setContextProperty("tenant_subdomain", value);
     }
 
     private getCustomFieldsFromLogger(logger: Logger): any {
