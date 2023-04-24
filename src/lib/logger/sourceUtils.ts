@@ -1,7 +1,7 @@
 import { v4 as uuid } from 'uuid';
 
 import Config from '../config/config';
-import { ConfigField, Conversion, Output, Source, SourceType } from '../config/interfaces';
+import { ConfigField, Conversion, DetailName, Output, Source, SourceType } from '../config/interfaces';
 import EnvVarHelper from '../helper/envVarHelper';
 import RequestAccessor from '../middleware/requestAccessor';
 import ResponseAccessor from '../middleware/responseAccessor';
@@ -32,6 +32,8 @@ export default class SourceUtils {
     }
 
     getValue(field: ConfigField, record: Record, output: Output, req?: any, res?: any): string | number | boolean | undefined {
+        if (!field.source) return undefined
+
         let sources = Array.isArray(field.source) ? field.source : [field.source]
         let value: string | number | boolean | undefined;
 
@@ -65,7 +67,7 @@ export default class SourceUtils {
                 case Conversion.parseInt:
                     value = this.parseIntValue(value)
                 break;
-                case Conversion.parseInt:
+                case Conversion.parseFloat:
                     value = this.parseFloatValue(value)
                 break;
             }
@@ -104,43 +106,8 @@ export default class SourceUtils {
                 let fields = this.config.getConfigFields([source.fieldName!])
                 value = fields.length >= 1 ? this.getValue(fields[0], record, output, req, res) : undefined
                 break;
-            case SourceType.meta:
-                switch (source.fieldName) {
-                    case "requestReceivedAt":
-                        value = req ? new Date(req._receivedAt).toJSON() : undefined;
-                        break;
-                    case "responseSentAt":
-                        value = res ? new Date(res._sentAt).toJSON() : undefined;
-                        break;
-                    case "responseTimeMs":
-                        value = req && res ? (res._sentAt - req._receivedAt) : undefined;
-                        break;
-                    case "writtenAt":
-                        value = new Date().toJSON();
-                        break;
-                    case "writtenTs":
-                        const lower = process.hrtime()[1] % NS_PER_MS
-                        const higher = Date.now() * NS_PER_MS
-                        let writtenTs = higher + lower;
-
-                        // This reorders written_ts, if the new timestamp seems to be smaller
-                        // due to different rollover times for process.hrtime and reqReceivedAt.getTime
-                        if (writtenTs < this.lastTimestamp) {
-                            writtenTs += NS_PER_MS;
-                        }
-                        this.lastTimestamp = writtenTs;
-                        value = writtenTs;
-                        break;
-                    case "message":
-                        value = record.metadata.message
-                        break;
-                    case "stacktrace":
-                        value = record.metadata.stacktrace
-                        break;
-                    case "level":
-                        value = record.metadata.level
-                        break;
-                }
+            case SourceType.detail:
+                value = this.getDetail(source.detailName!, record, req, res)
                 break;
             case SourceType.uuid:
                 value = uuid();
@@ -152,6 +119,47 @@ export default class SourceUtils {
         }
 
         return value
+    }
+
+    private getDetail(detailName: DetailName, record: Record, req?: any, res?: any) : string | number | undefined {
+        let value: string | number | undefined;
+        switch (detailName as DetailName) {
+            case DetailName.requestReceivedAt:
+                value = req ? new Date(req._receivedAt).toJSON() : undefined;
+                break;
+            case DetailName.responseSentAt:
+                value = res ? new Date(res._sentAt).toJSON() : undefined;
+                break;
+            case DetailName.responseTimeMs:
+                value = req && res ? (res._sentAt - req._receivedAt) : undefined;
+                break;
+            case DetailName.writtenAt:
+                value = new Date().toJSON();
+                break;
+            case DetailName.writtenTs:
+                const lower = process.hrtime()[1] % NS_PER_MS
+                const higher = Date.now() * NS_PER_MS
+                let writtenTs = higher + lower;
+
+                // This reorders written_ts, if the new timestamp seems to be smaller
+                // due to different rollover times for process.hrtime and reqReceivedAt.getTime
+                if (writtenTs < this.lastTimestamp) {
+                    writtenTs += NS_PER_MS;
+                }
+                this.lastTimestamp = writtenTs;
+                value = writtenTs;
+                break;
+            case DetailName.message:
+                value = record.metadata.message
+                break;
+            case DetailName.stacktrace:
+                value = record.metadata.stacktrace
+                break;
+            case DetailName.level:
+                value = record.metadata.level
+                break;
+        }
+        return value;
     }
 
     private getEnvFieldValue(source: Source): string | number | undefined {

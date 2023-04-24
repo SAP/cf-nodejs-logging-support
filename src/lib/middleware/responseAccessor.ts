@@ -1,9 +1,9 @@
-import { IFrameworkService } from './interfaces';
+import { FrameworkService } from './interfaces';
 import { assignFrameworkService } from './utils';
 
 export default class ResponseAccessor {
     private static instance: ResponseAccessor;
-    private frameworkService: IFrameworkService;
+    private frameworkService: FrameworkService;
 
     private constructor() {
         this.frameworkService = assignFrameworkService();

@@ -58,8 +58,7 @@
             },
             "required": [
                 "name",
-                "output",
-                "source"
+                "output"
             ],
             "type": "object"
         },
@@ -106,6 +105,19 @@
             ],
             "type": "string"
         },
+        "DetailName": {
+            "enum": [
+                "level",
+                "message",
+                "requestReceivedAt",
+                "responseSentAt",
+                "responseTimeMs",
+                "stacktrace",
+                "writtenAt",
+                "writtenTs"
+            ],
+            "type": "string"
+        },
         "Framework": {
             "enum": [
                 "connect",
@@ -125,6 +137,9 @@
         "Source": {
             "additionalProperties": false,
             "properties": {
+                "detailName": {
+                    "$ref": "#/definitions/DetailName"
+                },
                 "fieldName": {
                     "type": "string"
                 },
@@ -161,8 +176,8 @@
         "SourceType": {
             "enum": [
                 "config-field",
+                "detail",
                 "env",
-                "meta",
                 "req-header",
                 "req-object",
                 "res-header",
@@ -191,12 +206,6 @@
         },
         "reqLoggingLevel": {
             "type": "string"
-        },
-        "settableFields": {
-            "items": {
-                "type": "string"
-            },
-            "type": "array"
         }
     },
     "type": "object"

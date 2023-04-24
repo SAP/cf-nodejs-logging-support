@@ -17,10 +17,6 @@
             "name": "request_size_b",
             "source": [
                 {
-                    "type": "res-object",
-                    "fieldName": "_contentLength"
-                },
-                {
                     "type": "req-header",
                     "fieldName": "content-length"
                 }
@@ -61,10 +57,16 @@
         },
         {
             "name": "response_size_b",
-            "source": {
-                "type": "res-header",
-                "fieldName": "content-length"
-            },
+            "source": [
+                {
+                    "type": "res-object",
+                    "fieldName": "_contentLength"
+                },
+                {
+                    "type": "res-header",
+                    "fieldName": "content-length"
+                }
+            ],
             "output": [
                 "req-log"
             ]
@@ -146,8 +148,8 @@
         {
             "name": "request_received_at",
             "source": {
-                "type": "meta",
-                "fieldName": "requestReceivedAt"
+                "type": "detail",
+                "detailName": "requestReceivedAt"
             },
             "output": [
                 "req-log"
@@ -156,8 +158,8 @@
         {
             "name": "response_time_ms",
             "source": {
-                "type": "meta",
-                "fieldName": "responseTimeMs"
+                "type": "detail",
+                "detailName": "responseTimeMs"
             },
             "output": [
                 "req-log"
@@ -166,8 +168,8 @@
         {
             "name": "response_sent_at",
             "source": {
-                "type": "meta",
-                "fieldName": "responseSentAt"
+                "type": "detail",
+                "detailName": "responseSentAt"
             },
             "output": [
                 "req-log"

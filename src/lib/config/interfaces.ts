@@ -1,6 +1,5 @@
 export interface ConfigObject {
     fields?: ConfigField[];
-    settableFields?: string[];
     customFieldsFormat?: CustomFieldsFormat;
     outputStartupMsg?: boolean;
     reqLoggingLevel?: string;
@@ -11,7 +10,7 @@ export interface ConfigField {
     name: string;
     envVarRedact?: string;
     envVarSwitch?: string;
-    source: Source | Source[];
+    source?: Source | Source[];
     output: Output[];
     convert?: Conversion;
     disable?: boolean;
@@ -27,6 +26,7 @@ export interface Source {
     path?: string[];
     fieldName?: string;
     varName?: string;
+    detailName?: DetailName;
     regExp?: string;
     framework?: Framework;
     output?: Output;
@@ -67,9 +67,21 @@ export enum SourceType {
     resHeader = "res-header",
     reqObject = "req-object",
     resObject = "res-object",
-    meta = "meta",
+    detail = "detail",
     uuid = "uuid"
 }
+
+export enum DetailName {
+    requestReceivedAt = "requestReceivedAt",
+    responseSentAt = "responseSentAt",
+    responseTimeMs = "responseTimeMs",
+    writtenAt = "writtenAt",
+    writtenTs = "writtenTs",
+    message = "message",
+    stacktrace = "stacktrace",
+    level = "level"
+}
+
 
 export enum Conversion {
     toString = "toString",

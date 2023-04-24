@@ -1,6 +1,6 @@
-import { IFrameworkService } from "../interfaces";
+import { FrameworkService } from "../interfaces";
 
-export default class ExpressService implements IFrameworkService {
+export default class ExpressService implements FrameworkService {
 
     getReqHeaderField(req: any, fieldName: string): string {
         return req.header(fieldName);
