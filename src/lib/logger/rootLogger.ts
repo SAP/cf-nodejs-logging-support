@@ -106,11 +106,11 @@ export default class RootLogger extends Logger {
                             {
                                 "name": field,
                                 "source": {
-                                    "type": SourceType.static,
+                                    "type": SourceType.Static,
                                     "value": value
                                 },
                                 "output": [
-                                    Output.reqLog
+                                    Output.ReqLog
                                 ]
                             },
                         ]
@@ -121,7 +121,7 @@ export default class RootLogger extends Logger {
 
         // set static source and override
         configField[0].source = {
-            "type": SourceType.static,
+            "type": SourceType.Static,
             "value": value
         };
         this.config.addConfig([

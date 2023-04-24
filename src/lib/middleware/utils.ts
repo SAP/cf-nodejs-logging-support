@@ -9,13 +9,13 @@ import { FrameworkService } from './interfaces';
 export function assignFrameworkService(): FrameworkService {
     const framework = Config.getInstance().getFramework();
     switch (framework) {
-        case Framework.restify:
+        case Framework.Restify:
             return new RestifyService();
-        case Framework.nodejsHttp:
+        case Framework.NodeJsHttp:
             return new HttpService();
-        case Framework.connect:
+        case Framework.Connect:
             return new ConnectService();
-        case Framework.express:
+        case Framework.Express:
         default:
             return new ExpressService();
     }

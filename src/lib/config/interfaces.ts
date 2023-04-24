@@ -40,52 +40,52 @@ export interface ConfigFieldMeta {
 }
 
 export enum Framework {
-    express = "express",
-    restify = "restify",
-    connect = "connect",
-    nodejsHttp = "plainhttp"    
+    Express = "express",
+    Restify = "restify",
+    Connect = "connect",
+    NodeJsHttp = "plainhttp"    
 }
 
 export enum Output {
-    msgLog = "msg-log",
-    reqLog = "req-log"
+    MsgLog = "msg-log",
+    ReqLog = "req-log"
 }
 
 export enum CustomFieldsFormat {
-    applicationLogging = "application-logging",
-    cloudLogging = "cloud-logging",
-    all = "all",
-    disabled = "disabled",
-    default = "default"
+    ApplicationLogging = "application-logging",
+    CloudLogging = "cloud-logging",
+    All = "all",
+    Disabled = "disabled",
+    Default = "default"
 }
 
 export enum SourceType {
-    static = "static",
-    env = "env",
-    configField = "config-field",
-    reqHeader = "req-header",
-    resHeader = "res-header",
-    reqObject = "req-object",
-    resObject = "res-object",
-    detail = "detail",
-    uuid = "uuid"
+    Static = "static",
+    Env = "env",
+    ConfigField = "config-field",
+    ReqHeader = "req-header",
+    ResHeader = "res-header",
+    ReqObject = "req-object",
+    ResObject = "res-object",
+    Detail = "detail",
+    UUID = "uuid"
 }
 
 export enum DetailName {
-    requestReceivedAt = "requestReceivedAt",
-    responseSentAt = "responseSentAt",
-    responseTimeMs = "responseTimeMs",
-    writtenAt = "writtenAt",
-    writtenTs = "writtenTs",
-    message = "message",
-    stacktrace = "stacktrace",
-    level = "level"
+    RequestReceivedAt = "requestReceivedAt",
+    ResponseSentAt = "responseSentAt",
+    ResponseTimeMs = "responseTimeMs",
+    WrittenAt = "writtenAt",
+    WrittenTs = "writtenTs",
+    Message = "message",
+    Stacktrace = "stacktrace",
+    Level = "level"
 }
 
 
 export enum Conversion {
-    toString = "toString",
-    parseInt = "parseInt",
-    parseFloat = "parseFloat",
-    parseBoolean = "parseBoolean"
+    ToString = "toString",
+    ParseInt = "parseInt",
+    ParseFloat = "parseFloat",
+    ParseBoolean = "parseBoolean"
 }

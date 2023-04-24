@@ -28,7 +28,7 @@ export default class RequestContext {
     private assignProperties(req: any) {
         const contextFields = this.config.getContextFields();
         contextFields.forEach(field => {
-            this.properties[field.name] = this.sourceUtils.getValue(field, this.properties, Output.reqLog, req, null);
+            this.properties[field.name] = this.sourceUtils.getValue(field, this.properties, Output.ReqLog, req, null);
         });
     }
 }

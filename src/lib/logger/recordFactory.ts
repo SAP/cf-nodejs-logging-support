@@ -60,7 +60,7 @@ export default class RecordFactory {
         record.metadata.message = util.format.apply(util, args);
 
         // assign dynamic fields
-        this.addDynamicFields(record, Output.msgLog, Date.now());
+        this.addDynamicFields(record, Output.MsgLog, Date.now());
 
         // assign values from request context if present
         if (context) {
@@ -83,7 +83,7 @@ export default class RecordFactory {
         Object.assign(record.payload, cacheReqRecord);
 
         // assign dynamic fields
-        this.addDynamicFields(record, Output.reqLog, req, res);
+        this.addDynamicFields(record, Output.ReqLog, req, res);
 
          // assign values request context
         this.addContext(record, context);
@@ -100,7 +100,7 @@ export default class RecordFactory {
         const customFieldsFormat = this.config.getConfig().customFieldsFormat!;
 
         // if format "disabled", do not log any custom fields
-        if (customFieldsFormat == CustomFieldsFormat.disabled) {
+        if (customFieldsFormat == CustomFieldsFormat.Disabled) {
             return;
         }
 
@@ -113,12 +113,12 @@ export default class RecordFactory {
                 value = jsonStringifySafe(value);
             }
 
-            if ([CustomFieldsFormat.cloudLogging, CustomFieldsFormat.all, CustomFieldsFormat.default].includes(customFieldsFormat)
+            if ([CustomFieldsFormat.CloudLogging, CustomFieldsFormat.All, CustomFieldsFormat.Default].includes(customFieldsFormat)
                 || record.payload[key] != null || this.config.isSettable(key)) {
                     record.payload[key] = value;
             }
 
-            if ([CustomFieldsFormat.applicationLogging, CustomFieldsFormat.all].includes(customFieldsFormat)) {
+            if ([CustomFieldsFormat.ApplicationLogging, CustomFieldsFormat.All].includes(customFieldsFormat)) {
                 indexedCustomFields[key] = value;
             }
         }
@@ -157,7 +157,7 @@ export default class RecordFactory {
 
     private addDynamicFields(record: Record, output: Output, req?: any, res?: object) {
         // assign dynamic fields
-        const fields = (output == Output.msgLog) ? this.config.noCacheMsgFields : this.config.noCacheReqFields;
+        const fields = (output == Output.MsgLog) ? this.config.noCacheMsgFields : this.config.noCacheReqFields;
         fields.forEach(
             field => {
                 // ignore context fields because they are handled in addContext()

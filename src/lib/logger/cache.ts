@@ -26,7 +26,7 @@ export default class Cache {
 
     getCacheMsgRecord(cacheFields: ConfigField[]): any {
         if (this.shouldUpdateMsg) {
-            this.updateCache(Output.msgLog, cacheFields);
+            this.updateCache(Output.MsgLog, cacheFields);
             this.shouldUpdateMsg = false;
         }
         return this.cacheMsgRecord;
@@ -34,7 +34,7 @@ export default class Cache {
 
     getCacheReqRecord(cacheFields: ConfigField[], req: any, res: any): any {
         if (this.shouldUpdateReq) {
-            this.updateCache(Output.reqLog, cacheFields, req, res);
+            this.updateCache(Output.ReqLog, cacheFields, req, res);
             this.shouldUpdateReq = false;
         }
         return this.cacheReqRecord;
@@ -48,7 +48,7 @@ export default class Cache {
     private updateCache(output: Output, cacheFields: ConfigField[], req?: any, res?: any) {
         let cache: any = {};
 
-        if (output == Output.msgLog) {
+        if (output == Output.MsgLog) {
             this.cacheMsgRecord = {};
             cache = this.cacheMsgRecord;
         } else {
