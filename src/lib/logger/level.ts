@@ -1,12 +1,10 @@
-enum Level {
-    INHERIT = -2,
-    OFF = -1,
-    ERROR = 0,
-    WARN = 1,
-    INFO = 2,
-    VERBOSE = 3,
-    DEBUG = 4,
-    SILLY = 5
+export enum Level {
+    Inherit = -2,
+    Off = -1,
+    Error = 0,
+    Warn = 1,
+    Info = 2,
+    Verbose = 3,
+    Debug = 4,
+    Silly = 5
 }
-
-export default Level

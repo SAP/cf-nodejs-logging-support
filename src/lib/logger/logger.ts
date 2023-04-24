@@ -1,6 +1,6 @@
 import LevelUtils from '../helper/levelUtils';
 import { isValidObject } from '../middleware/utils';
-import Level from './level';
+import { Level } from './level';
 import RecordFactory from './recordFactory';
 import RecordWriter from './recordWriter';
 import RequestContext from './requestContext';
@@ -12,7 +12,7 @@ export default class Logger {
     private customFields: Map<string, any> = new Map<string, any>()
     private recordFactory: RecordFactory;
     private recordWriter: RecordWriter;
-    protected loggingLevelThreshold: Level = Level.INHERIT
+    protected loggingLevelThreshold: Level = Level.Inherit
 
     constructor(parent?: Logger, reqContext?: RequestContext) {
         if (parent) {
@@ -26,7 +26,7 @@ export default class Logger {
         this.recordWriter = RecordWriter.getInstance();
     }
 
-    createLogger(customFields?: any): Logger {
+    createLogger(customFields?: Map<string, any>): Logger {
 
         let logger = new Logger(this);
         // assign custom fields, if provided
@@ -36,79 +36,92 @@ export default class Logger {
         return logger;
     }
 
-    setLoggingLevel(name: string) {
-        this.loggingLevelThreshold = LevelUtils.getLevel(name)
+    setLoggingLevel(level: string | Level) {
+        if (typeof level === 'string') {
+            this.loggingLevelThreshold = LevelUtils.getLevel(level)
+        } else {
+            this.loggingLevelThreshold = level
+        }
     }
 
     getLoggingLevel(): string {
-        if (this.loggingLevelThreshold == Level.INHERIT) {
+        if (this.loggingLevelThreshold == Level.Inherit) {
             return this.parent!.getLoggingLevel()
         }
         return LevelUtils.getName(this.loggingLevelThreshold)
     }
 
-    isLoggingLevel(name: string): boolean {
-        if (this.loggingLevelThreshold == Level.INHERIT) {
-            return this.parent!.isLoggingLevel(name)
+    isLoggingLevel(level: string | Level): boolean {
+        if (this.loggingLevelThreshold == Level.Inherit) {
+            return this.parent!.isLoggingLevel(level)
         }
-        const level = LevelUtils.getLevel(name)
-        return LevelUtils.isLevelEnabled(this.loggingLevelThreshold, level)
+        if (typeof level === 'string') {
+            return LevelUtils.isLevelEnabled(this.loggingLevelThreshold, LevelUtils.getLevel(level))
+        } else {
+            return LevelUtils.isLevelEnabled(this.loggingLevelThreshold, level)
+        }
     }
 
-    logMessage(levelName: string, ..._args: any) {
-        if (!this.isLoggingLevel(levelName)) return;
+    logMessage(level: string | Level, ...args: any) {
+        if (!this.isLoggingLevel(level)) return;
         const loggerCustomFields = Object.assign({}, this.getCustomFieldsFromLogger(this));
 
-        const record = this.recordFactory.buildMsgRecord(this.registeredCustomFields, loggerCustomFields, levelName, _args, this.context);
+        let levelName : string
+        if (typeof level === 'string') {
+            levelName = level
+        } else {
+            levelName = LevelUtils.getName(level)
+        }
 
+        const record = this.recordFactory.buildMsgRecord(this.registeredCustomFields, loggerCustomFields, levelName, args, this.context);
         this.recordWriter.writeLog(record);
     }
 
-    error() {
-        this.logMessage("error", ...arguments);
+    error(...args: any) {
+        this.logMessage("error", ...args);
     }
 
-    warn() {
-        this.logMessage("warn", ...arguments);
+    warn(...args: any) {
+        this.logMessage("warn", ...args);
     }
 
-    info() {
-        this.logMessage("info", ...arguments);
+    info(...args: any) {
+        this.logMessage("info", ...args);
     }
 
-    verbose() {
-        this.logMessage("verbose", ...arguments);
+    verbose(...args: any) {
+        this.logMessage("verbose", ...args);
     }
 
-    debug() {
-        this.logMessage("debug", ...arguments);
+    debug(...args: any) {
+        this.logMessage("debug", ...args);
     }
 
-    silly() {
-        this.logMessage("silly", ...arguments);
+    silly(...args: any) {
+        this.logMessage("silly", ...args);
     }
 
-    isError() {
+    isError(): boolean {
         return this.isLoggingLevel("error");
     }
 
-    isWarn() {
+    isWarn(): boolean {
         return this.isLoggingLevel("warn");
     }
 
-    isInfo() {
+    isInfo(): boolean {
         return this.isLoggingLevel("info");
     }
 
-    isVerbose() {
+    isVerbose(): boolean {
         return this.isLoggingLevel("verbose");
     }
 
-    isDebug() {
+    isDebug(): boolean {
         return this.isLoggingLevel("debug");
     }
 
-    isSilly() {
+    isSilly(): boolean {
         return this.isLoggingLevel("silly");
     }
 
