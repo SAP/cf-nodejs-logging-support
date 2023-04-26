@@ -20,7 +20,16 @@ See [Advanced Configuration](/cf-nodejs-logging-support/configuration) to learn 
 
 ## Typescript Typings
 
-Typescript typings are available now.
+Typescript typings are available for log levels and configuration types.
+Typings can be imported in addition to the default import:
+
+```ts
+import log, { Level, Framework } from "cf-nodejs-logging-support";
+
+log.setLoggingLevel(Level.Info)
+log.setFramework(Framework.Express)
+```
+
 
 ## Omit default values
 
