@@ -10,7 +10,6 @@ permalink: /configuration/fields
 
 All fields logged by the library are defined by a default set of field configurations.
 You can add new fields or override the behavior of already existing ones by adding field configurations.
-If you configure a field that already exists in the current set configurations the existing one gets replaced.
 
 <details open markdown="block">
   <summary>
