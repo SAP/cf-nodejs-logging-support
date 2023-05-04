@@ -18,7 +18,7 @@ Head over to the [General Usage](/cf-nodejs-logging-support/general-usage) artic
 
 Advanced topics, e.g., dynamic logging level threshold, SAP Passport support get covered in the [Advanced Usage](/cf-nodejs-logging-support/advanced-usage) articles.
 
-Since version *.*.* the configuration of the logging library is customizable. Head over to [Configuration](/cf-nodejs-logging-support/configuration/configuration) for further information.
+As of version 7.0.0 the configuration of the logging library is customizable. Head over to [Advanced Configuration](/cf-nodejs-logging-support/configuration) for further information.
 
 For details on the concepts and log formats please look at the sibling project for [java logging support](https://github.com/SAP/cf-java-logging-support).
 
