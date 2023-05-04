@@ -3,10 +3,10 @@ layout: default
 title: Default Request Level
 parent: Advanced Configuration
 nav_order: 3
-permalink: /configuration/defaultrequestlevel
+permalink: /configuration/default-request-level
 ---
 
-# Set default request loging level
+# Set the default request logging level
 
 Change the default request logging level by setting the property `reqLoggingLevel` in your configuration file. For example:
 
