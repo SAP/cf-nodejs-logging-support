@@ -58,16 +58,16 @@ export default class SourceUtils {
 
         if (value != null && field.convert != null) {
             switch(field.convert) {
-                case Conversion.toString:
+                case Conversion.ToString:
                     value = value.toString ? value.toString() : undefined
                 break;
-                case Conversion.parseBoolean:
+                case Conversion.ParseBoolean:
                     value = this.parseBooleanValue(value)
                 break;
-                case Conversion.parseInt:
+                case Conversion.ParseInt:
                     value = this.parseIntValue(value)
                 break;
-                case Conversion.parseFloat:
+                case Conversion.ParseFloat:
                     value = this.parseFloatValue(value)
                 break;
             }
@@ -84,32 +84,32 @@ export default class SourceUtils {
     private getValueFromSource(source: Source, record: Record, output: Output, req?: any, res?: any): string | number | boolean | undefined {
         let value: string | number | boolean | undefined;
         switch (source.type) {
-            case SourceType.reqHeader:
+            case SourceType.ReqHeader:
                 value = req ? this.requestAccessor.getHeaderField(req, source.fieldName!) : undefined;
                 break;
-            case SourceType.reqObject:
+            case SourceType.ReqObject:
                 value = req ? this.requestAccessor.getField(req, source.fieldName!) : undefined;
                 break;
-            case SourceType.resHeader:
+            case SourceType.ResHeader:
                 value = res ? this.responseAccessor.getHeaderField(res, source.fieldName!) : undefined;
                 break;
-            case SourceType.resObject:
+            case SourceType.ResObject:
                 value = res ? this.responseAccessor.getField(res, source.fieldName!) : undefined;
                 break;
-            case SourceType.static:
+            case SourceType.Static:
                 value = source.value;
                 break;
-            case SourceType.env:
+            case SourceType.Env:
                 value = this.getEnvFieldValue(source);
                 break;
-            case SourceType.configField:
+            case SourceType.ConfigField:
                 let fields = this.config.getConfigFields([source.fieldName!])
                 value = fields.length >= 1 ? this.getValue(fields[0], record, output, req, res) : undefined
                 break;
-            case SourceType.detail:
+            case SourceType.Detail:
                 value = this.getDetail(source.detailName!, record, req, res)
                 break;
-            case SourceType.uuid:
+            case SourceType.UUID:
                 value = uuid();
                 break;
         }
@@ -124,19 +124,19 @@ export default class SourceUtils {
     private getDetail(detailName: DetailName, record: Record, req?: any, res?: any) : string | number | undefined {
         let value: string | number | undefined;
         switch (detailName as DetailName) {
-            case DetailName.requestReceivedAt:
+            case DetailName.RequestReceivedAt:
                 value = req ? new Date(req._receivedAt).toJSON() : undefined;
                 break;
-            case DetailName.responseSentAt:
+            case DetailName.ResponseSentAt:
                 value = res ? new Date(res._sentAt).toJSON() : undefined;
                 break;
-            case DetailName.responseTimeMs:
+            case DetailName.ResponseTimeMs:
                 value = req && res ? (res._sentAt - req._receivedAt) : undefined;
                 break;
-            case DetailName.writtenAt:
+            case DetailName.WrittenAt:
                 value = new Date().toJSON();
                 break;
-            case DetailName.writtenTs:
+            case DetailName.WrittenTs:
                 const lower = process.hrtime()[1] % NS_PER_MS
                 const higher = Date.now() * NS_PER_MS
                 let writtenTs = higher + lower;
@@ -149,13 +149,13 @@ export default class SourceUtils {
                 this.lastTimestamp = writtenTs;
                 value = writtenTs;
                 break;
-            case DetailName.message:
+            case DetailName.Message:
                 value = record.metadata.message
                 break;
-            case DetailName.stacktrace:
+            case DetailName.Stacktrace:
                 value = record.metadata.stacktrace
                 break;
-            case DetailName.level:
+            case DetailName.Level:
                 value = record.metadata.level
                 break;
         }

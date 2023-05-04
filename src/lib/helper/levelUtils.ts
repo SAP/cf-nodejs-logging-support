@@ -1,11 +1,12 @@
-import Level from '../logger/level';
+import { Level } from '../logger/level';
 
 export default class LevelUtils {
 
-    private static readonly defaultLevel: Level = Level.INFO
+    private static readonly defaultLevel: Level = Level.Info
 
     static getLevel(name: string): Level {
-        const level: Level = Level[name.toUpperCase() as keyof typeof Level]
+        const key = name.charAt(0).toUpperCase() + name.slice(1).toLowerCase();
+        const level: Level = Level[key as keyof typeof Level]
         if (level === undefined) {
             return LevelUtils.defaultLevel;
         }
@@ -17,7 +18,7 @@ export default class LevelUtils {
     }
 
     static isLevelEnabled(threshold: Level, level: Level) {
-        if (level <= Level.OFF) return false;
+        if (level <= Level.Off) return false;
         return level <= threshold
     }
 }

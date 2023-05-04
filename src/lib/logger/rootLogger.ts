@@ -7,7 +7,7 @@ import Middleware from '../middleware/middleware';
 import RequestAccessor from '../middleware/requestAccessor';
 import ResponseAccessor from '../middleware/responseAccessor';
 import createTransport from '../winston/winstonTransport';
-import Level from './level';
+import { Level } from './level';
 import Logger from './logger';
 import RecordWriter from './recordWriter';
 
@@ -17,7 +17,7 @@ export default class RootLogger extends Logger {
 
     private constructor() {
         super()
-        this.loggingLevelThreshold = Level.INFO
+        this.loggingLevelThreshold = Level.Info
     }
 
     static getInstance(): RootLogger {
@@ -106,11 +106,11 @@ export default class RootLogger extends Logger {
                             {
                                 "name": field,
                                 "source": {
-                                    "type": SourceType.static,
+                                    "type": SourceType.Static,
                                     "value": value
                                 },
                                 "output": [
-                                    Output.reqLog
+                                    Output.ReqLog
                                 ]
                             },
                         ]
@@ -121,7 +121,7 @@ export default class RootLogger extends Logger {
 
         // set static source and override
         configField[0].source = {
-            "type": SourceType.static,
+            "type": SourceType.Static,
             "value": value
         };
         this.config.addConfig([

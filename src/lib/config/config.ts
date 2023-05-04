@@ -23,10 +23,10 @@ export default class Config {
 
     private config: ConfigObject = {
         "fields": [],
-        "customFieldsFormat": CustomFieldsFormat.default,
+        "customFieldsFormat": CustomFieldsFormat.Default,
         "reqLoggingLevel": "info",
         "outputStartupMsg": false,
-        "framework": Framework.express
+        "framework": Framework.Express
     }
 
     private constructor() {
@@ -56,11 +56,11 @@ export default class Config {
             }
 
             if (boundServices["application-logs"] && boundServices["cloud-logging"]) {
-                Config.instance.setCustomFieldsFormat(CustomFieldsFormat.all);
+                Config.instance.setCustomFieldsFormat(CustomFieldsFormat.All);
             } else if (boundServices["application-logs"]) {
-                Config.instance.setCustomFieldsFormat(CustomFieldsFormat.applicationLogging);
+                Config.instance.setCustomFieldsFormat(CustomFieldsFormat.ApplicationLogging);
             } else {
-                Config.instance.setCustomFieldsFormat(CustomFieldsFormat.cloudLogging);
+                Config.instance.setCustomFieldsFormat(CustomFieldsFormat.CloudLogging);
             }
 
             Config.instance.addConfig(configFiles);
@@ -181,11 +181,11 @@ export default class Config {
                     field._meta.isCache = true;
                 }
 
-                if (field.output?.includes(Output.msgLog)) {
+                if (field.output?.includes(Output.MsgLog)) {
                     this.addToList(this.msgFields, field);
                 }
 
-                if (field.output?.includes(Output.reqLog)) {
+                if (field.output?.includes(Output.ReqLog)) {
                     this.addToList(this.reqFields, field);
                 }
 
@@ -196,10 +196,10 @@ export default class Config {
                 }
 
                 if (field._meta.isCache == false) {
-                    if (field.output?.includes(Output.msgLog)) {
+                    if (field.output?.includes(Output.MsgLog)) {
                         this.addToList(this.noCacheMsgFields, field);
                     }
-                    if (field.output?.includes(Output.reqLog)) {
+                    if (field.output?.includes(Output.ReqLog)) {
                         this.addToList(this.noCacheReqFields, field);
                     }
                 }
@@ -309,9 +309,9 @@ export default class Config {
         for (let i in sources) {
             let source = sources[i]
             switch (source.type) {
-                case SourceType.static:
+                case SourceType.Static:
                     return true;
-                case SourceType.env:
+                case SourceType.Env:
                     // if this is the last source it does not matter, if the env var exists
                     if (i == (sources.length - 1).toString()) return true
 
