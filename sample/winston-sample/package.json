@@ -16,9 +16,9 @@
     ],
     "author": "Nicklas Dohrn, Christian Dinse",
     "dependencies": {
+        "cf-nodejs-logging-support": "^7.0.0-beta.6",
         "express": "latest",
-        "winston": "latest",
-        "cf-nodejs-logging-support": "latest"
+        "winston": "latest"
     },
     "repository": "https://github.com/SAP/cf-nodejs-logging-support/tree/master/sample/winston",
     "engines": {
