@@ -2,6 +2,7 @@ var expect = require('chai').expect;
 const importFresh = require('import-fresh');
 
 var log;
+var childLogger;
 var lastOutput;
 
 describe('Test custom fields', function () {
@@ -16,33 +17,113 @@ describe('Test custom fields', function () {
         });
     });
 
-
-    describe('Writes log with a global custom field ', function () {
+    describe('Test writing a log with a global custom field', function () {
         beforeEach(function () {
-            log.setCustomFields({ "field-a": "value" });
-            log.logMessage("info", "test-message");
+            log.setCustomFields({'field-a': 'value'});
+            log.logMessage('info', 'test-message');
         });
 
         it('writes a log with a custom field', function () {
             expect(lastOutput).to.have.property('field-a', 'value');
+        });
+
+        it('returns the global custom field', function () {
+            expect([ ...log.getCustomFields().keys() ]).to.have.members(['field-a']);
+            expect(log.getCustomFields().get('field-a')).to.equal('value');
         });
     });
 
-    describe('Write log with a child custom field ', function () {
+    describe('Test writing custom fields with a child logger', function () {
         beforeEach(function () {
-            log.setCustomFields({ "field-a": "value" });
-            log.logMessage("info", "test-message");
+            log.setCustomFields({'field-a': 'value-a'});
+            childLogger = log.createLogger({'field-b': 'value-b'});
+            childLogger.logMessage('info', 'test-message', {'field-c': 'value-c'});
         });
 
-        it('writes a log with a custom field', function () {
-            expect(lastOutput).to.have.property('field-a', 'value');
+        it('writes a log with a global custom field', function () {
+            expect(lastOutput).to.have.property('field-a', 'value-a');
+        });
+
+        it('writes a log with a child logger custom field', function () {
+            expect(lastOutput).to.have.property('field-b', 'value-b');
+        });
+
+        it('writes a log with a custom field from logMessage call', function () {
+            expect(lastOutput).to.have.property('field-c', 'value-c');
+        });
+
+        it('returns the global custom field', function () {
+            expect([ ...log.getCustomFields().keys() ]).to.have.members(['field-a'])
+            expect(log.getCustomFields().get('field-a')).to.equal('value-a');
+        });
+
+        it('returns the global and the child logger custom fields', function () {
+            expect([ ...childLogger.getCustomFields().keys() ]).to.have.members(['field-a', 'field-b']);
+            expect(childLogger.getCustomFields().get('field-a')).to.equal('value-a');
+            expect(childLogger.getCustomFields().get('field-b')).to.equal('value-b');
+        });
+    });
+
+    describe('Test overriding custom fields with a child logger', function () {
+        beforeEach(function () {
+            log.setCustomFields({'field-a': 'value-a'});
+            childLogger = log.createLogger({'field-a': 'value-override-a','field-b': 'value-b'});
+            childLogger.logMessage('info', 'test-message', {'field-b': 'value-override-b'});
+        });
+
+        it('writes a log with an overridden global custom field', function () {
+            expect(lastOutput).to.have.property('field-a', 'value-override-a');
+        });
+
+        it('writes a log with an overridden child logger custom field', function () {
+            expect(lastOutput).to.have.property('field-b', 'value-override-b');
+        });
+
+        it('returns the original global custom field', function () {
+            expect([ ...log.getCustomFields().keys() ]).to.have.members(['field-a']);
+            expect(log.getCustomFields().get('field-a')).to.equal('value-a');
+        });
+
+        it('returns the overridden global and the child logger custom fields', function () {
+            expect([ ...childLogger.getCustomFields().keys() ]).to.have.members(['field-a', 'field-b']);
+            expect(childLogger.getCustomFields().get('field-a')).to.equal('value-override-a');
+            expect(childLogger.getCustomFields().get('field-b')).to.equal('value-b');
+        });
+    });
+
+    describe('Test writing custom fields using JS Maps', function () {
+        beforeEach(function () {
+            log.setCustomFields(new Map().set('field-a', 'value-a'));
+            childLogger = log.createLogger(new Map().set('field-b', 'value-b'));
+            childLogger.logMessage('info', 'test-message', new Map().set('field-c', 'value-c'));
+        });
+
+        it('writes a log with a global custom field', function () {
+            expect(lastOutput).to.have.property('field-a', 'value-a');
+        });
+
+        it('writes a log with a child logger custom field', function () {
+            expect(lastOutput).to.have.property('field-b', 'value-b');
+        });
+
+        it('writes a log with a custom field from logMessage call', function () {
+            expect(lastOutput).to.have.property('field-c', 'value-c');
+        });
+
+        it('returns the global custom field', function () {
+            expect([ ...log.getCustomFields().keys() ]).to.have.members(['field-a']);
+            expect(log.getCustomFields().get('field-a')).to.equal('value-a');
+        });
+
+        it('returns the global and the child logger custom fields', function () {
+            expect([ ...childLogger.getCustomFields().keys() ]).to.have.members(['field-a', 'field-b']);
+            expect(childLogger.getCustomFields().get('field-a')).to.equal('value-a');
+            expect(childLogger.getCustomFields().get('field-b')).to.equal('value-b');
         });
     });
 
     describe('Test custom field format', function () {
-
         describe('"cloud-logging" format', function () {
-
             beforeEach(function () {
                 var obj = {
                     "cloud-logs": {}

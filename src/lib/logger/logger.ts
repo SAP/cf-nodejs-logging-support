@@ -64,13 +64,13 @@ export default class Logger {
 
     logMessage(level: string | Level, ...args: any) {
         if (!this.isLoggingLevel(level)) return;
-        const loggerCustomFields = Object.assign({}, this.getCustomFieldsFromLogger(this));
+        const loggerCustomFields = this.getCustomFieldsFromLogger(this);
 
-        let levelName : string
+        let levelName : string;
         if (typeof level === 'string') {
-            levelName = level
+            levelName = level;
         } else {
-            levelName = LevelUtils.getName(level)
+            levelName = LevelUtils.getName(level);
         }
 
         const record = this.recordFactory.buildMsgRecord(this.registeredCustomFields, loggerCustomFields, levelName, args, this.context);
@@ -130,16 +130,16 @@ export default class Logger {
         this.registeredCustomFields.push(...fieldNames);
     }
 
-    setCustomFields(customFields: Map<string, any>) {
-        this.customFields = customFields;
+    setCustomFields(customFields: Map<string, any> | Object) {
+        if (customFields instanceof Map) {
+            this.customFields = customFields;
+        } else if (isValidObject(customFields)) {
+            this.customFields = new Map(Object.entries(customFields))
+        }
     }
 
     getCustomFields(): Map<string, any> {
-        if (this.parent) {
-            return new Map([...this.parent.getCustomFields(), ...this.customFields.entries()])
-        } else {
-            return new Map(...this.customFields.entries())
-        }
+        return this.getCustomFieldsFromLogger(this)
     }
 
     getContextProperty(name: string): string | undefined {
@@ -174,16 +174,12 @@ export default class Logger {
         this.setContextProperty("tenant_subdomain", value);
     }
 
-    private getCustomFieldsFromLogger(logger: Logger): any {
-        let fields = {};
+    private getCustomFieldsFromLogger(logger: Logger): Map<string, any> {
         if (logger.parent && logger.parent !== this) {
-            fields = this.getCustomFieldsFromLogger(logger.parent);
+            let parentFields = this.getCustomFieldsFromLogger(logger.parent);
+            return new Map([...parentFields, ...logger.customFields]);
+        } else {
+            return logger.customFields;
         }
-
-        if (isValidObject(logger.customFields)) {
-            fields = Object.assign(fields, logger.customFields);
-        }
-
-        return fields;
     }
 }

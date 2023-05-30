@@ -36,8 +36,9 @@ export default class RecordFactory {
     // init a new record and assign fields with output "msg-log"
     buildMsgRecord(registeredCustomFields: Array<string>, loggerCustomFields: Map<string, any>, levelName: string, args: Array<any>, context?: RequestContext): Record {
         const lastArg = args[args.length - 1];
-        let customFieldsFromArgs = {};
+        let customFieldsFromArgs = new Map<string, any>();
         let record = new Record(levelName)
+      
       
         if (typeof lastArg === "object") {
             if (this.stacktraceUtils.isErrorWithStacktrace(lastArg)) {
@@ -47,6 +48,8 @@ export default class RecordFactory {
                     record.metadata.stacktrace = this.stacktraceUtils.prepareStacktrace(lastArg._error.stack);
                     delete lastArg._error;
                 }
+                customFieldsFromArgs = new Map<string, any>(Object.entries(lastArg));
+            } else if (lastArg instanceof Map) {
                 customFieldsFromArgs = lastArg;
             }
             args.pop();
@@ -60,7 +63,7 @@ export default class RecordFactory {
         record.metadata.message = util.format.apply(util, args);
 
         // assign dynamic fields
-        this.addDynamicFields(record, Output.MsgLog, Date.now());
+        this.addDynamicFields(record, Output.MsgLog, new Date());
 
         // assign values from request context if present
         if (context) {
@@ -89,14 +92,15 @@ export default class RecordFactory {
         this.addContext(record, context);
 
         // assign custom fields
-        const loggerCustomFields = Object.assign({}, req.logger.getCustomFieldsFromLogger(req.logger));
-        this.addCustomFields(record, req.logger.registeredCustomFields, loggerCustomFields, {});
+        const loggerCustomFields = req.logger.getCustomFieldsFromLogger(req.logger);
+        this.addCustomFields(record, req.logger.registeredCustomFields, loggerCustomFields, new Map<string, any>());
 
         return record;
     }
 
-    private addCustomFields(record: Record, registeredCustomFields: Array<string>, loggerCustomFields: Map<string, any>, customFieldsFromArgs: any) {
-        const providedFields = Object.assign({}, loggerCustomFields, customFieldsFromArgs);
+    private addCustomFields(record: Record, registeredCustomFields: Array<string>, loggerCustomFields: Map<string, any>, 
+        customFieldsFromArgs: Map<string, any>) {
+        const providedFields = new Map<string, any>([...loggerCustomFields, ...customFieldsFromArgs]);
         const customFieldsFormat = this.config.getConfig().customFieldsFormat!;
 
         // if format "disabled", do not log any custom fields
@@ -105,9 +109,7 @@ export default class RecordFactory {
         }
 
         let indexedCustomFields: any = {};
-        for (let key in providedFields) {
-            let value = providedFields[key];
-
+        providedFields.forEach((value, key) => {
             // Stringify, if necessary.
             if ((typeof value) != "string") {
                 value = jsonStringifySafe(value);
@@ -116,12 +118,13 @@ export default class RecordFactory {
             if ([CustomFieldsFormat.CloudLogging, CustomFieldsFormat.All, CustomFieldsFormat.Default].includes(customFieldsFormat)
                 || record.payload[key] != null || this.config.isSettable(key)) {
                     record.payload[key] = value;
+                   
             }
 
             if ([CustomFieldsFormat.ApplicationLogging, CustomFieldsFormat.All].includes(customFieldsFormat)) {
                 indexedCustomFields[key] = value;
             }
-        }
+        });
 
         //writes custom fields in the correct order and correlates i to the place in registeredCustomFields
         if (Object.keys(indexedCustomFields).length > 0) {
