@@ -63,7 +63,7 @@ export default class RecordFactory {
         record.metadata.message = util.format.apply(util, args);
 
         // assign dynamic fields
-        this.addDynamicFields(record, Output.MsgLog, new Date());
+        this.addDynamicFields(record, Output.MsgLog);
 
         // assign values from request context if present
         if (context) {
