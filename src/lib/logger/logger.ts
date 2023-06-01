@@ -26,7 +26,7 @@ export default class Logger {
         this.recordWriter = RecordWriter.getInstance();
     }
 
-    createLogger(customFields?: Map<string, any>): Logger {
+    createLogger(customFields?: Map<string, any> | Object): Logger {
 
         let logger = new Logger(this);
         // assign custom fields, if provided
@@ -178,8 +178,7 @@ export default class Logger {
         if (logger.parent && logger.parent !== this) {
             let parentFields = this.getCustomFieldsFromLogger(logger.parent);
             return new Map([...parentFields, ...logger.customFields]);
-        } else {
-            return logger.customFields;
         }
+        return logger.customFields;
     }
 }

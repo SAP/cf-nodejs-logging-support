@@ -93,13 +93,13 @@ export default class RecordFactory {
 
         // assign custom fields
         const loggerCustomFields = req.logger.getCustomFieldsFromLogger(req.logger);
-        this.addCustomFields(record, req.logger.registeredCustomFields, loggerCustomFields, new Map<string, any>());
+        this.addCustomFields(record, req.logger.registeredCustomFields, loggerCustomFields);
 
         return record;
     }
 
     private addCustomFields(record: Record, registeredCustomFields: Array<string>, loggerCustomFields: Map<string, any>, 
-        customFieldsFromArgs: Map<string, any>) {
+        customFieldsFromArgs: Map<string, any> = new Map()) {
         const providedFields = new Map<string, any>([...loggerCustomFields, ...customFieldsFromArgs]);
         const customFieldsFormat = this.config.getConfig().customFieldsFormat!;
 
