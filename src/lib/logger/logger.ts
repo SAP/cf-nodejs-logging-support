@@ -26,17 +26,14 @@ export default class Logger {
         this.recordWriter = RecordWriter.getInstance();
     }
 
-    createLogger(customFields?: Map<string, any> | Object): Logger {
-        let logger = new Logger(this, this.context);
+    createLogger(customFields?: Map<string, any> | Object, createNewContext?: boolean): Logger {
+        let context = createNewContext == true ? new Context() : this.context
+        let logger = new Logger(this, context);
         // assign custom fields, if provided
         if (customFields) {
             logger.setCustomFields(customFields);
         }
         return logger;
-    }
-
-    createContext() {
-        this.context = new Context();
     }
 
     setLoggingLevel(level: string | Level) {
