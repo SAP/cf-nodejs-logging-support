@@ -3,7 +3,7 @@ import LevelUtils from '../helper/levelUtils';
 import Logger from '../logger/logger';
 import RecordFactory from '../logger/recordFactory';
 import RecordWriter from '../logger/recordWriter';
-import RequestContext from '../logger/requestContext';
+import Context from '../logger/context';
 import RootLogger from '../logger/rootLogger';
 import RequestAccessor from './requestAccessor';
 import Config from '../config/config';
@@ -13,7 +13,7 @@ export default class Middleware {
     static logNetwork(req: any, res: any, next?: any) {
         let logSent = false;
 
-        const context = new RequestContext(req);
+        const context = new Context(req);
         const parentLogger = RootLogger.getInstance();
         const reqReceivedAt = Date.now();
 

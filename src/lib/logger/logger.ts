@@ -3,18 +3,18 @@ import { isValidObject } from '../middleware/utils';
 import { Level } from './level';
 import RecordFactory from './recordFactory';
 import RecordWriter from './recordWriter';
-import RequestContext from './requestContext';
+import Context from './context';
 
 export default class Logger {
     private parent?: Logger = undefined
-    private context?: RequestContext;
+    private context?: Context;
     private registeredCustomFields: Array<string> = [];
     private customFields: Map<string, any> = new Map<string, any>()
     private recordFactory: RecordFactory;
     private recordWriter: RecordWriter;
     protected loggingLevelThreshold: Level = Level.Inherit
 
-    constructor(parent?: Logger, context?: RequestContext) {
+    constructor(parent?: Logger, context?: Context) {
         if (parent) {
             this.parent = parent;
             this.registeredCustomFields = parent.registeredCustomFields;
@@ -36,7 +36,7 @@ export default class Logger {
     }
 
     createContext() {
-        this.context = new RequestContext();
+        this.context = new Context();
     }
 
     setLoggingLevel(level: string | Level) {
