@@ -7,7 +7,7 @@ export default class RequestContext {
     private config: Config;
     private sourceUtils: SourceUtils;
 
-    constructor(req: any) {
+    constructor(req?: any) {
         this.config = Config.getInstance();
         this.sourceUtils = SourceUtils.getInstance();
         this.assignProperties(req);

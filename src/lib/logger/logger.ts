@@ -35,6 +35,10 @@ export default class Logger {
         return logger;
     }
 
+    createContext() {
+        this.context = new RequestContext();
+    }
+
     setLoggingLevel(level: string | Level) {
         if (typeof level === 'string') {
             this.loggingLevelThreshold = LevelUtils.getLevel(level)
