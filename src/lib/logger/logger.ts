@@ -14,21 +14,20 @@ export default class Logger {
     private recordWriter: RecordWriter;
     protected loggingLevelThreshold: Level = Level.Inherit
 
-    constructor(parent?: Logger, reqContext?: RequestContext) {
+    constructor(parent?: Logger, context?: RequestContext) {
         if (parent) {
             this.parent = parent;
             this.registeredCustomFields = parent.registeredCustomFields;
         }
-        if (reqContext) {
-            this.context = reqContext;
+        if (context) {
+            this.context = context;
         }
         this.recordFactory = RecordFactory.getInstance();
         this.recordWriter = RecordWriter.getInstance();
     }
 
     createLogger(customFields?: Map<string, any> | Object): Logger {
-
-        let logger = new Logger(this);
+        let logger = new Logger(this, this.context);
         // assign custom fields, if provided
         if (customFields) {
             logger.setCustomFields(customFields);
@@ -66,7 +65,7 @@ export default class Logger {
         if (!this.isLoggingLevel(level)) return;
         const loggerCustomFields = this.getCustomFieldsFromLogger(this);
 
-        let levelName : string;
+        let levelName: string;
         if (typeof level === 'string') {
             levelName = level;
         } else {
