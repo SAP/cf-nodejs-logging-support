@@ -146,32 +146,36 @@ export default class Logger {
         return this.context?.getProperty(name);
     }
 
-    setContextProperty(name: string, value: string) {
-        this.context?.setProperty(name, value);
+    setContextProperty(name: string, value: string) : boolean {
+        if (this.context) {
+            this.context.setProperty(name, value);
+            return true
+        }
+        return false
     }
 
     getCorrelationId(): string | undefined {
         return this.getContextProperty("correlation_id");
     }
 
-    setCorrelationId(value: string) {
-        this.setContextProperty("correlation_id", value);
+    setCorrelationId(value: string) : boolean {
+        return this.setContextProperty("correlation_id", value);
     }
 
     getTenantId(): string | undefined {
         return this.getContextProperty("tenant_id");
     }
 
-    setTenantId(value: string) {
-        this.setContextProperty("tenant_id", value);
+    setTenantId(value: string) : boolean {
+        return this.setContextProperty("tenant_id", value);
     }
 
     getTenantSubdomain(): string | undefined {
         return this.getContextProperty("tenant_subdomain");
     }
 
-    setTenantSubdomain(value: string) {
-        this.setContextProperty("tenant_subdomain", value);
+    setTenantSubdomain(value: string) : boolean {
+        return this.setContextProperty("tenant_subdomain", value);
     }
 
     private getCustomFieldsFromLogger(logger: Logger): Map<string, any> {
