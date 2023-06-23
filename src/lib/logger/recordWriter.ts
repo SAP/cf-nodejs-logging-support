@@ -2,7 +2,6 @@ import os from 'os';
 
 import Record from './record';
 
-
 export default class RecordWriter {
 
     private static instance: RecordWriter;

@@ -1,6 +1,6 @@
 import JWTService from '../helper/jwtService';
 import LevelUtils from '../helper/levelUtils';
-import Logger from '../logger/logger';
+import { Logger } from '../logger/logger';
 import RecordFactory from '../logger/recordFactory';
 import RecordWriter from '../logger/recordWriter';
 import Context from '../logger/context';

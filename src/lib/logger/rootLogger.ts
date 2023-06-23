@@ -8,7 +8,7 @@ import RequestAccessor from '../middleware/requestAccessor';
 import ResponseAccessor from '../middleware/responseAccessor';
 import createTransport from '../winston/winstonTransport';
 import { Level } from './level';
-import Logger from './logger';
+import { Logger } from './logger';
 import RecordWriter from './recordWriter';
 
 export default class RootLogger extends Logger {
