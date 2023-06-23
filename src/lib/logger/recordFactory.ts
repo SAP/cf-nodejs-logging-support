@@ -7,7 +7,7 @@ import StacktraceUtils from '../helper/stacktraceUtils';
 import { isValidObject } from '../middleware/utils';
 import Cache from './cache';
 import Record from './record';
-import RequestContext from './requestContext';
+import Context from './context';
 import SourceUtils from './sourceUtils';
 
 export default class RecordFactory {
@@ -34,7 +34,7 @@ export default class RecordFactory {
     }
 
     // init a new record and assign fields with output "msg-log"
-    buildMsgRecord(registeredCustomFields: Array<string>, loggerCustomFields: Map<string, any>, levelName: string, args: Array<any>, context?: RequestContext): Record {
+    buildMsgRecord(registeredCustomFields: Array<string>, loggerCustomFields: Map<string, any>, levelName: string, args: Array<any>, context?: Context): Record {
         const lastArg = args[args.length - 1];
         let customFieldsFromArgs = new Map<string, any>();
         let record = new Record(levelName)
@@ -77,7 +77,7 @@ export default class RecordFactory {
     }
 
     // init a new record and assign fields with output "req-log"
-    buildReqRecord(levelName: string, req: any, res: any, context: RequestContext): Record {
+    buildReqRecord(levelName: string, req: any, res: any, context: Context): Record {
         let record = new Record(levelName)
 
         // assign static fields from cache
@@ -149,7 +149,7 @@ export default class RecordFactory {
     }
 
     // read and copy values from context
-    private addContext(record: Record, context: RequestContext) {
+    private addContext(record: Record, context: Context) {
         const contextFields = context.getProperties();
         for (let key in contextFields) {
             if (contextFields[key] != null) {

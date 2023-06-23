@@ -3,32 +3,32 @@ import { isValidObject } from '../middleware/utils';
 import { Level } from './level';
 import RecordFactory from './recordFactory';
 import RecordWriter from './recordWriter';
-import RequestContext from './requestContext';
+import Context from './context';
 
 export default class Logger {
     private parent?: Logger = undefined
-    private context?: RequestContext;
+    private context?: Context;
     private registeredCustomFields: Array<string> = [];
     private customFields: Map<string, any> = new Map<string, any>()
     private recordFactory: RecordFactory;
     private recordWriter: RecordWriter;
     protected loggingLevelThreshold: Level = Level.Inherit
 
-    constructor(parent?: Logger, reqContext?: RequestContext) {
+    constructor(parent?: Logger, context?: Context) {
         if (parent) {
             this.parent = parent;
             this.registeredCustomFields = parent.registeredCustomFields;
         }
-        if (reqContext) {
-            this.context = reqContext;
+        if (context) {
+            this.context = context;
         }
         this.recordFactory = RecordFactory.getInstance();
         this.recordWriter = RecordWriter.getInstance();
     }
 
-    createLogger(customFields?: Map<string, any> | Object): Logger {
-
-        let logger = new Logger(this);
+    createLogger(customFields?: Map<string, any> | Object, createNewContext?: boolean): Logger {
+        let context = createNewContext == true ? new Context() : this.context
+        let logger = new Logger(this, context);
         // assign custom fields, if provided
         if (customFields) {
             logger.setCustomFields(customFields);
@@ -66,7 +66,7 @@ export default class Logger {
         if (!this.isLoggingLevel(level)) return;
         const loggerCustomFields = this.getCustomFieldsFromLogger(this);
 
-        let levelName : string;
+        let levelName: string;
         if (typeof level === 'string') {
             levelName = level;
         } else {
@@ -146,32 +146,36 @@ export default class Logger {
         return this.context?.getProperty(name);
     }
 
-    setContextProperty(name: string, value: string) {
-        this.context?.setProperty(name, value);
+    setContextProperty(name: string, value: string) : boolean {
+        if (this.context) {
+            this.context.setProperty(name, value);
+            return true
+        }
+        return false
     }
 
     getCorrelationId(): string | undefined {
         return this.getContextProperty("correlation_id");
     }
 
-    setCorrelationId(value: string) {
-        this.setContextProperty("correlation_id", value);
+    setCorrelationId(value: string) : boolean {
+        return this.setContextProperty("correlation_id", value);
     }
 
     getTenantId(): string | undefined {
         return this.getContextProperty("tenant_id");
     }
 
-    setTenantId(value: string) {
-        this.setContextProperty("tenant_id", value);
+    setTenantId(value: string) : boolean {
+        return this.setContextProperty("tenant_id", value);
     }
 
     getTenantSubdomain(): string | undefined {
         return this.getContextProperty("tenant_subdomain");
     }
 
-    setTenantSubdomain(value: string) {
-        this.setContextProperty("tenant_subdomain", value);
+    setTenantSubdomain(value: string) : boolean {
+        return this.setContextProperty("tenant_subdomain", value);
     }
 
     private getCustomFieldsFromLogger(logger: Logger): Map<string, any> {

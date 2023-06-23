@@ -2,12 +2,12 @@ import Config from '../config/config';
 import { Output } from '../config/interfaces';
 import SourceUtils from './sourceUtils';
 
-export default class RequestContext {
+export default class Context {
     private properties: any = {};
     private config: Config;
     private sourceUtils: SourceUtils;
 
-    constructor(req: any) {
+    constructor(req?: any) {
         this.config = Config.getInstance();
         this.sourceUtils = SourceUtils.getInstance();
         this.assignProperties(req);

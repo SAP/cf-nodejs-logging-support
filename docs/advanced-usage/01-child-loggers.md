@@ -7,7 +7,9 @@ permalink: /advanced-usage/child-loggers
 ---
 
 # Child loggers
-You can create child loggers sharing the [Logging Context](/cf-nodejs-logging-support/general-usage/logging-contexts) of their parent (*global* or *request* context):
+
+You can create child loggers sharing the [Logging Context](/cf-nodejs-logging-support/general-usage/logging-contexts) of their parent logger:
+
 ```js
 app.get('/', function (req, res) {
     var logger = req.logger.createLogger(); // equivalent to req.createLogger();
@@ -16,35 +18,61 @@ app.get('/', function (req, res) {
 });
 ```
 
-There are two reasons why you probably want to use child loggers:
-- Each child logger can have its own set of custom fields, which will be added to each messages:
+Each child logger can have its own set of custom fields, which will be added to each messages:
+
 ```js
 var logger = req.logger.createLogger(); 
 logger.setCustomFields({"field-a" :"value"})
 // OR
 var logger = req.logger.createLogger({"field-a" :"value"}); 
 ```
-- Child loggers can have a different logging threshold, so you can customize your log output with them:
+
+Child loggers can have a different logging threshold, so you can customize your log output with them:
+
 ```js
 var logger = req.logger.createLogger(); 
 logger.setLoggingLevel("info");
 ```
 
+## Child loggers with global context
 
-You can also create child loggers inheriting from the global logging context like this:
+You can also create child loggers inheriting from the *global* logging context like this:
+
 ```js
 var log = require("cf-nodejs-logging-support");
 ...
-var subLogger = log.createLogger(); 
-subLogger.setCustomFields({"field-a" :"value"})
+var logger = log.createLogger(); 
+logger.setCustomFields({"field-a" :"value"})
 // OR
-var subLogger = log.createLogger({"field-a" :"value"}); 
+var logger = log.createLogger({"field-a" :"value"}); 
 ```
 
-When using [child loggers](/cf-nodejs-logging-support/advanced-usage/child-loggers) the custom fields of the parent logger will be inherited.
+Keep in mind that the *global* context is empty and immutable.
+As mentioned in the [logging context](/cf-nodejs-logging-support/general-usage/logging-contexts) docs, adding properties to it is not possible.
+
+## Child loggers with custom context
+
+New child loggers can be equipped with a new extensible and inheritable context by providing `true` for the `createNewContext` parameter:
+
+```js
+var log = require("cf-nodejs-logging-support");
+...
+var logger = log.createLogger(null, true); 
+logger.setTenantId("my-tenant-id");
+```
+
+Similar to a *request* context, a newly created *custom* context includes a generated `correlation_id` (uuid v4).
+
+A practical use case for this feature would be correlating logs on events that reach your application through channels other than HTTP(S).
+By creating a child logger and assigning it (or using the auto-generated) `correlation_id`, any kind of event handling could be made to log correlated messages.
+
+## Custom field inheritance
+
+When using child loggers the custom fields of the parent logger will be inherited.
 In case you have set a field for a child logger, which is already set for the parent logger, the value set to the child logger will be used.
 
 Example for custom field inheritance:
+
 ```js
 // Register all custom fields that can occur.
 log.registerCustomFields(["field-a", "field-b", "field-c"]);

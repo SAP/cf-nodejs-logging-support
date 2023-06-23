@@ -183,6 +183,26 @@ describe('Test logging in global context', function () {
 
     });
 
+    describe('Test disabled context', function () {
+
+        it('cannot set context properties', function () {
+            expect(log.setContextProperty("some-field", "some-value")).to.be.false;
+        });
+
+        it('cannot set the correlation_id', function () {
+            expect(log.setCorrelationId("f79ed23f-cff6-4599-8668-12838c898b70")).to.be.false;
+        });
+
+        it('cannot set the tenant_id', function () {
+            expect(log.setTenantId("some-value")).to.be.false;
+        });
+
+        it('cannot set the correlation_id', function () {
+            expect(log.setTenantSubdomain("some-value")).to.be.false;
+        });
+
+    });
+
     after(function () {
         log.setLoggingLevel("info");
     })

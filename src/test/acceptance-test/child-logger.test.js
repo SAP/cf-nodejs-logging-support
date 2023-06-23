@@ -116,6 +116,60 @@ describe('Test child logger', function () {
         });
     });
 
+    describe('Test context features', function () {
+
+        describe('Create child logger without context', function () {
+
+            beforeEach(function () {
+                childLogger = log.createLogger();
+            });
+
+            it('cannot set context properties', function () {
+                expect(childLogger.setContextProperty('some-field', 'some-value')).to.be.false;
+            });
+    
+            it('does not log a custom context property', function () {
+                childLogger.setContextProperty('some-field', 'some-value');
+                childLogger.warn('test-message');
+                expect(lastOutput).to.not.include.key('some-field');
+            });
+    
+            it('does not log the correlation_id', function () {
+                childLogger.warn("test-message");
+                expect(lastOutput).to.not.include.key('correlation_id');
+            });
+        });
+
+        describe('Create child logger with new context', function () {
+
+            beforeEach(function () {
+                childLogger = log.createLogger(null, true);
+            });
+
+            it('sets context properties', function () {
+                expect(childLogger.setContextProperty('some-field', 'some-value')).to.be.true;
+            });
+    
+            it('logs a custom context property', function () {
+                childLogger.setContextProperty('some-field', 'some-value');
+                childLogger.warn('test-message');
+                expect(lastOutput).to.include.property('some-field', 'some-value');
+            });
+
+            it('inherits the context', function () {
+                childLogger.setContextProperty('some-field', 'some-value');
+                childLogger.createLogger().warn('test-message');
+                expect(lastOutput).to.include.property('some-field', 'some-value');
+            });
+    
+            it('generates a correlation_id', function () {
+                childLogger.warn("test-message");
+                expect(lastOutput).to.include.key('correlation_id');
+                expect(lastOutput.correlation_id).to.match(/[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[0-9a-f]{4}-[0-9a-f]{12}/);
+            });
+        });
+    });
+
     describe('Set logging level threshold per child logger', function () {
 
         describe('Child logger sets treshold', function () {
