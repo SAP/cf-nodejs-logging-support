@@ -3,7 +3,11 @@ body {
 }
 
 .main-container {
-    text-align: center!important;
+    padding: 20px;
+    text-align: center;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
 }
 
 .title {
@@ -11,12 +15,8 @@ body {
     display: block;
     font-size: 2.5rem;
     font-weight: 700!important;
-    margin-bottom: 1rem!important;
-    margin-block-start: 0.67em;
-    margin-block-end: 0.67em;
-    margin-inline-start: 0px;
-    margin-inline-end: 0px;
     margin-top: 0;
+    text-align: center;
 }
 
 .subtitle {
@@ -24,19 +24,19 @@ body {
     display: block;
     font-size: 2rem;
     font-weight: 400;
-    margin-block-start: 0.83em;
-    margin-block-end: 0.63em;
-    margin-inline-start: 0px;
-    margin-inline-end: 0px;
+    margin-top: 20px!important;
     margin-top: 0;
+    text-align: center;
 }
 
 .buttons-container {
-    display: inline-block;
+    max-width: 450px;
+    margin: 10px;
 }
 
-.buttons-container>* {
-    max-width: 450px;
+.feedback-container {
+    max-width: 900px;
+    margin: 10px;
 }
 
 .btn {
@@ -61,6 +61,25 @@ body {
     -webkit-appearance: button;
     text-transform: none;
     overflow: visible;
+}
+
+.feedback-box {
+    text-align: left;
+    margin-top: 0.5rem;
+    display: block;
+    padding: 0.5rem 1rem;
+    line-height: 1.5;
+    border-radius: 0.3rem;
+    background-color: #dadada;
+    font-weight: 200;
+    user-select: all;
+    border: 1px solid #dcdcdc;
+    text-transform: none;
+    overflow: auto;
+}
+
+.btn:active {
+    background-color: #3f9cff;
 }
 
 a {
