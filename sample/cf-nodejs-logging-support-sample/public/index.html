@@ -11,10 +11,10 @@
 </head>
 
 <body>
+    <div class="title">cf-nodejs-logging-support | sample app</div>
     <div class="main-container">
-        <h1 class="title">cf-nodejs-logging-support | sample app</h1>
         <div id="buttons-container" class="buttons-container">
-            <h2 class="subtitle">Buttons to test functionalities:</h2>
+            <div class="subtitle">Use buttons to send test logs:</div>
             <button class="btn" targetpath="globalcontext" type="submit">Log message in global
         context</button>
             <button class="btn" targetpath="requestcontext" type="submit">Log message in request
@@ -27,6 +27,13 @@
             <button class="btn" targetpath="childlogger" type="submit">Logs from child logger</button>
             <button class="btn" targetpath="correlationandtenantid" type="submit">Logs Correlation-
         and Tenant-ID</button>
+        </div>
+        <div id="feedback-container" class="feedback-container">
+            <div class="subtitle">The message sent:</div>
+            <div class="feedback-box" id="feedback">
+            </div>
+            <div class="subtitle">Binding information:</div>
+            <div class="feedback-box" id="binding_information">
             <a href="https://sap.github.io/cf-nodejs-logging-support/">Visit Documentation</a>
         </div>
     </div>
