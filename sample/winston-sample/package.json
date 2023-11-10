@@ -1,6 +1,6 @@
 {
     "name": "winston-sample",
-    "version": "1.0.3",
+    "version": "1.0.4",
     "description": "Sample Node.js app",
     "main": "web.js",
     "license": "Apache-2.0",
@@ -16,7 +16,7 @@
     ],
     "author": "Nicklas Dohrn, Christian Dinse",
     "dependencies": {
-        "cf-nodejs-logging-support": "^7.0.0-beta.6",
+        "cf-nodejs-logging-support": "latest",
         "express": "latest",
         "winston": "latest"
     },
