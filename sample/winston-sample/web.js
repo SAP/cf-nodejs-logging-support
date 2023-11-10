@@ -1,5 +1,5 @@
 var express = require('express');
-var log = require("../../build/main/index");
+var log = require("cf-nodejs-logging-support");
 var winston = require('winston');
 
 var app = express();
