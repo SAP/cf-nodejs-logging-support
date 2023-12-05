@@ -68,16 +68,19 @@ describe('Test winston-transport.js', function () {
         it('Test default initialization', function () {
             var transport = logger.createWinstonTransport();
             transport.level.should.equal("info");
+            transport.logger.should.equal(logger);
         });
 
         it('Test custom initialization', function () {
             var transport = logger.createWinstonTransport({ level: "error" });
             transport.level.should.equal("error");
+            transport.logger.should.equal(logger);
         });
 
         it('Test incomplete initialization', function () {
             var transport = logger.createWinstonTransport({});
             transport.level.should.equal("info");
+            transport.logger.should.equal(logger);
         });
     });
 });

@@ -68,12 +68,12 @@ export default class RootLogger extends Logger {
         return EnvService.getInstance().getBoundServices()
     }
 
-    createWinstonTransport(options: any) {
+    createWinstonTransport(options?: any) {
         if (!options) {
-            options = {
-                level: 'info',
-                rootLogger: this
-            };
+            options = {};
+        }
+        if (!options.rootLogger) {
+            options.rootLogger = this;
         }
         return createTransport(options);
     }
