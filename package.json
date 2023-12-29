@@ -9,7 +9,7 @@
   "main": "build/main/index.js",
   "types": "build/main/index.d.ts",
   "typings": "build/main/index.d.ts",
-  "module": "build/module/index.js",
+  "module": "build/main/index.js",
   "repository": {
     "type": "git",
     "url": "https://github.com/SAP/cf-nodejs-logging-support"
