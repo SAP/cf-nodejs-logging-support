@@ -37,4 +37,9 @@ export default class RestifyService implements FrameworkService {
     getResField(res: any, fieldName: string): any {
         return res[fieldName];
     }
+
+    onResFinish(res: any, handler: () => void): undefined {
+        res.on("header", handler);
+        res.on("finish", handler);
+    }
 }

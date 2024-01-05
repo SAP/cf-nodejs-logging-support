@@ -122,6 +122,7 @@
             "enum": [
                 "connect",
                 "express",
+                "fastify",
                 "plainhttp",
                 "restify"
             ],

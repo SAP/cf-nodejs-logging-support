@@ -24,6 +24,10 @@ export default class ResponseAccessor {
         return this.frameworkService.getResField(res, fieldName);
     }
 
+    onFinish(res: any, handler: () => void) {
+        this.frameworkService.onResFinish(res, handler);
+    }
+
     setFrameworkService() {
         this.frameworkService = assignFrameworkService();
     }

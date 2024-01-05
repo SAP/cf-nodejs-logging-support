@@ -3,4 +3,5 @@ export interface FrameworkService {
     getReqField(req: any, fieldName: string): string | number | boolean | undefined;
     getResHeaderField(req: any, fieldName: string): string;
     getResField(req: any, fieldName: string): string | number | boolean | undefined;
+    onResFinish(res: any, handler: () => void): undefined;
 }
