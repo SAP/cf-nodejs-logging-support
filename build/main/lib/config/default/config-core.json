@@ -1,0 +1,89 @@
+{
+    "outputStartupMsg": true,
+    "framework": "express",
+    "fields": [
+        {
+            "name": "logger",
+            "source": {
+                "type": "static",
+                "value": "nodejs-logger"
+            },
+            "output": [
+                "msg-log",
+                "req-log"
+            ]
+        },
+        {
+            "name": "type",
+            "source": [
+                {
+                    "type": "static",
+                    "value": "request",
+                    "output": "req-log"
+                },
+                {
+                    "type": "static",
+                    "value": "log",
+                    "output": "msg-log"
+                }
+            ],
+            "output": [
+                "req-log",
+                "msg-log"
+            ]
+        },
+        {
+            "name": "msg",
+            "source": {
+                "type": "detail",
+                "detailName": "message"
+            },
+            "output": [
+                "msg-log"
+            ]
+        },
+        {
+            "name": "level",
+            "source": {
+                "type": "detail",
+                "detailName": "level"
+            },
+            "output": [
+                "msg-log",
+                "req-log"
+            ]
+        },
+        {
+            "name": "stacktrace",
+            "source": {
+                "type": "detail",
+                "detailName": "stacktrace"
+            },
+            "output": [
+                "msg-log"
+            ]
+        },
+        {
+            "name": "written_at",
+            "source": {
+                "type": "detail",
+                "detailName": "writtenAt"
+            },
+            "output": [
+                "msg-log",
+                "req-log"
+            ]
+        },
+        {
+            "name": "written_ts",
+            "source": {
+                "type": "detail",
+                "detailName": "writtenTs"
+            },
+            "output": [
+                "msg-log",
+                "req-log"
+            ]
+        }
+    ]
+}

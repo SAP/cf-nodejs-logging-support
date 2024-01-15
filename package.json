@@ -20,6 +20,7 @@
   },
   "homepage": "https://sap.github.io/cf-nodejs-logging-support/",
   "scripts": {
+    "prepare": "tsc -p tsconfig.json",
     "build": "npm run build-json-schema && tsc -p tsconfig.json",
     "test": "npm run build-json-schema && tsc -p tsconfig.json && node build/main/index.js && ./node_modules/mocha/bin/mocha 'src/test/**/*.test.js'",
     "test-lint": "eslint src --ext .ts",
@@ -60,6 +61,7 @@
     "README.md"
   ],
   "dependencies": {
+    "@opentelemetry/api-logs": "^0.48.0",
     "ajv": "^8.11.0",
     "json-stringify-safe": "^5.0.1",
     "jsonwebtoken": "^9.0.0",

@@ -1,0 +1,33 @@
+import { ConfigField, ConfigObject, CustomFieldsFormat, Framework } from './interfaces';
+export default class Config {
+    private static instance;
+    private validator;
+    private envVarHelper;
+    private msgFields;
+    private reqFields;
+    private contextFields;
+    noCacheMsgFields: ConfigField[];
+    noCacheReqFields: ConfigField[];
+    private config;
+    private constructor();
+    static getInstance(): Config;
+    getConfig(): ConfigObject;
+    getConfigFields(fieldNames?: string[]): ConfigField[];
+    getContextFields(): ConfigField[];
+    getDisabledFields(): ConfigField[];
+    getCacheMsgFields(): ConfigField[];
+    getCacheReqFields(): ConfigField[];
+    getFramework(): Framework;
+    getReqLoggingLevel(): string;
+    addConfig(configs: ConfigObject[]): void;
+    setCustomFieldsFormat(format: CustomFieldsFormat): void;
+    setStartupMessageEnabled(enabled: boolean): void;
+    setFramework(framework: Framework): void;
+    setRequestLogLevel(name: string): void;
+    enableTracing(input: string | string[]): void;
+    isSettable(name: string): boolean;
+    clearFieldsConfig(): void;
+    private getIndex;
+    private addToList;
+    private isCacheable;
+}
