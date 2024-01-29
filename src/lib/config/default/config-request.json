@@ -27,10 +27,16 @@
         },
         {
             "name": "request",
-            "source": {
-                "type": "req-object",
-                "fieldName": "originalUrl"
-            },
+            "source": [
+                {
+                    "type": "req-object",
+                    "fieldName": "originalUrl"
+                },
+                {
+                    "type": "req-object",
+                    "fieldName": "url"
+                }
+            ],
             "output": [
                 "req-log"
             ]

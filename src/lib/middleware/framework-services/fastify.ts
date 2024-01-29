@@ -3,7 +3,7 @@ import { FrameworkService } from "../interfaces";
 export default class FastifyService implements FrameworkService {
 
     getReqHeaderField(req: any, fieldName: string): string {
-        return req.raw.headers[fieldName];
+        return req.headers[fieldName] ? req.headers[fieldName] : ""
     }
 
     getReqField(req: any, fieldName: string): any {
@@ -31,7 +31,8 @@ export default class FastifyService implements FrameworkService {
     }
 
     getResHeaderField(res: any, fieldName: string): string {
-        return res.raw.getHeader ? res.raw.getHeader(fieldName) : "";
+        let value = res.getHeader(fieldName)
+        return value ? value : "";
     }
 
     getResField(res: any, fieldName: string): any {
