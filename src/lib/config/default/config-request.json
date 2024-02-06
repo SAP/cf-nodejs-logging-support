@@ -23,7 +23,8 @@
             ],
             "output": [
                 "req-log"
-            ]
+            ],
+            "convert": "parseInt"
         },
         {
             "name": "request",
@@ -75,7 +76,8 @@
             ],
             "output": [
                 "req-log"
-            ]
+            ],
+            "convert": "parseInt"
         },
         {
             "name": "response_content_type",
