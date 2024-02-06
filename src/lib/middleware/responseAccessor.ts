@@ -16,7 +16,7 @@ export default class ResponseAccessor {
         return ResponseAccessor.instance;
     }
 
-    getHeaderField(res: any, fieldName: string): string {
+    getHeaderField(res: any, fieldName: string): string | undefined {
         return this.frameworkService.getResHeaderField(res, fieldName);
     }
 

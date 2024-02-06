@@ -31,7 +31,7 @@ export default class HttpService implements FrameworkService {
     }
 
     getResHeaderField(res: any, fieldName: string): string {
-        return res.getHeader ? res.getHeader(fieldName) : "";
+        return res.getHeader ? res.getHeader(fieldName) : undefined;
     }
 
     getResField(res: any, fieldName: string): any {

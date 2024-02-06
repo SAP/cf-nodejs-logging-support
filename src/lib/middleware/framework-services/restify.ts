@@ -31,7 +31,7 @@ export default class RestifyService implements FrameworkService {
     }
 
     getResHeaderField(res: any, fieldName: string): string {
-        return res.get ? res.get(fieldName) : "";
+        return res.get ? res.get(fieldName) : undefined;
     }
 
     getResField(res: any, fieldName: string): any {

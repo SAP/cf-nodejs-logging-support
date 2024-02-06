@@ -2,8 +2,8 @@ import { FrameworkService } from "../interfaces";
 
 export default class FastifyService implements FrameworkService {
 
-    getReqHeaderField(req: any, fieldName: string): string {
-        return req.headers[fieldName] ? req.headers[fieldName] : ""
+    getReqHeaderField(req: any, fieldName: string): string | undefined {
+        return req.headers[fieldName]
     }
 
     getReqField(req: any, fieldName: string): any {
@@ -31,8 +31,7 @@ export default class FastifyService implements FrameworkService {
     }
 
     getResHeaderField(res: any, fieldName: string): string {
-        let value = res.getHeader(fieldName)
-        return value ? value : "";
+        return res.getHeader(fieldName)
     }
 
     getResField(res: any, fieldName: string): any {
