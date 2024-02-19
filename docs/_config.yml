@@ -18,7 +18,7 @@
 # You can create any custom variable you would like, and they will be accessible
 # in the templates via {{ site.myvariable }}.
 
-title: cf-nodejs-logging-support
+title: "CF Node.js Logging Support"
 description: >- # this means to ignore newlines until "baseurl:"
   Node.js Logging Support for Cloud Foundry provides the creation of structured log messages and the collection of request metrics.
 baseurl: "/cf-nodejs-logging-support" # the subpath of your site, e.g. /blog
@@ -60,7 +60,7 @@ back_to_top: true
 back_to_top_text: "Back to top"
 
 # Footer copyright
-footer_content: "Copyright &copy; 2021 SAP SE | <a href=\"https://www.sap.com/about/legal/privacy.html\">SAP Privacy Statement</a>"
+footer_content: "Copyright &copy; 2024 SAP SE | <a href=\"https://www.sap.com/about/legal/privacy.html\">SAP Privacy Statement</a>"
 
 # Footer last edited timestamp
 last_edit_timestamp: true # show or hide edit time - page must have `last_modified_date` defined in the frontmatter
