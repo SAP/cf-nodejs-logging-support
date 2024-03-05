@@ -30,15 +30,15 @@ export default class FastifyService implements FrameworkService {
         return value
     }
 
-    getResHeaderField(res: any, fieldName: string): string {
-        return res.getHeader(fieldName)
+    getResHeaderField(res: any, fieldName: string): string | undefined {
+        return res.getHeader ? res.getHeader(fieldName) : undefined
     }
 
     getResField(res: any, fieldName: string): any {
         return res.raw[fieldName];
     }
 
-    onResFinish(res: any, handler: () => void): undefined {
+    onResFinish(res: any, handler: () => void): void {
         res.raw.on("header", handler);
         res.raw.on("finish", handler);
     }

@@ -2,7 +2,7 @@ import { FrameworkService } from "../interfaces";
 
 export default class HttpService implements FrameworkService {
 
-    getReqHeaderField(req: any, fieldName: string): string {
+    getReqHeaderField(req: any, fieldName: string): string | undefined {
         return req.headers[fieldName];
     }
 
@@ -30,7 +30,7 @@ export default class HttpService implements FrameworkService {
         return value
     }
 
-    getResHeaderField(res: any, fieldName: string): string {
+    getResHeaderField(res: any, fieldName: string): string | undefined {
         return res.getHeader ? res.getHeader(fieldName) : undefined;
     }
 
@@ -38,7 +38,7 @@ export default class HttpService implements FrameworkService {
         return res[fieldName];
     }
 
-    onResFinish(res: any, handler: () => void): undefined {
+    onResFinish(res: any, handler: () => void): void {
         res.on("header", handler);
         res.on("finish", handler);
     }

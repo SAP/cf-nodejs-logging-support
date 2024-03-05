@@ -49,10 +49,6 @@ export default class Middleware {
 
         ResponseAccessor.getInstance().onFinish(res, finishLog);
 
-       /* res.on("finish", finishLog);
-
-        res.on("header", finishLog);*/
-
         next ? next() : null;
     }
 }

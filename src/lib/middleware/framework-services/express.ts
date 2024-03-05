@@ -3,7 +3,7 @@ import { FrameworkService } from "../interfaces";
 export default class ExpressService implements FrameworkService {
 
     getReqHeaderField(req: any, fieldName: string): string | undefined {
-        return req.header(fieldName);
+        return req.header ? req.header(fieldName) : undefined;
     }
 
     getReqField(req: any, fieldName: string): any {
@@ -31,14 +31,14 @@ export default class ExpressService implements FrameworkService {
     }
 
     getResHeaderField(res: any, fieldName: string): string | undefined {
-        return res.get(fieldName);
+        return res.get ? res.get(fieldName) : undefined;
     }
 
     getResField(res: any, fieldName: string): any {
         return res[fieldName];
     }
 
-    onResFinish(res: any, handler: () => void): undefined {
+    onResFinish(res: any, handler: () => void): void {
         res.on("header", handler);
         res.on("finish", handler);
     }
