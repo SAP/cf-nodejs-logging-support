@@ -24,11 +24,11 @@ export default class ResponseAccessor {
         return this.frameworkService.getResField(res, fieldName);
     }
 
-    onFinish(res: any, handler: () => void) {
+    onFinish(res: any, handler: () => void): void {
         this.frameworkService.onResFinish(res, handler);
     }
 
-    setFrameworkService() {
+    setFrameworkService(): void {
         this.frameworkService = assignFrameworkService();
     }
 }
