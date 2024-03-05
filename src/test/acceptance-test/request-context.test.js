@@ -31,7 +31,6 @@ describe('Test request context', function () {
         });
 
         describe("Logs in request context", function () {
-
             before(function (done) {
                 lastLogs = [];
                 supertest(expressApp)
@@ -88,7 +87,6 @@ describe('Test request context', function () {
         });
 
         describe("Set log level treshold in request handler", function () {
-
             before(function (done) {
                 lastLogs = [];
                 supertest(expressApp)
@@ -109,7 +107,6 @@ describe('Test request context', function () {
         });
 
         describe("Set implicit correlation-, tenant-id and tenant-subdomain through methods", function () {
-
             before(function (done) {
                 supertest(expressApp)
                     .get("/setcorrelationandtenantid")
@@ -137,7 +134,6 @@ describe('Test request context', function () {
         });
 
         describe("Set implicit correlation- and tenant-id through request header", function () {
-
             var correlation_id = "cbc4343f-1c31-27d0-96fc-f32efac20986";
             var tenant_id = "abc2654f-5t15-12h0-78gt-n73jeuc01847";
 
@@ -166,7 +162,6 @@ describe('Test request context', function () {
         });
 
         describe("Get correlation-, tenant-id and tenant-subdomain", function () {
-
             before(function (done) {
                 supertest(expressApp)
                     .get("/getcorrelationandtenantid")
@@ -187,7 +182,6 @@ describe('Test request context', function () {
         });
 
         describe("Test sensitive data redaction without activated env vars", function () {
-
             before(function (done) {
                 supertest(expressApp)
                     .get("/requestcontext")
@@ -234,7 +228,6 @@ describe('Test request context', function () {
         });
 
         describe("Set dynamic log level with JWT", function () {
-
             describe("Set treshold to level error", function () {
                 before(function (done) {
                     supertest(expressApp)
@@ -277,14 +270,12 @@ describe('Test request context', function () {
     })
 
     describe("Use Restify framework", function () {
-
         before(function (done) {
             log.forceLogger("restify");
             done();
         });
 
         describe("Set implicit correlation- and tenant-id through request header", function () {
-
             var correlation_id = "cbc4343f-1c31-27d0-96fc-f32efac20986";
             var tenant_id = "abc2654f-5t15-12h0-78gt-n73jeuc01847";
 
@@ -311,6 +302,7 @@ describe('Test request context', function () {
                 lastLogs = [];
             });
         });
+
         describe("Set implicit correlation- and tenant-id through methods", function () {
 
             var correlation_id = "cbc2654f-1c35-45d0-96fc-f32efac20986";
@@ -337,6 +329,7 @@ describe('Test request context', function () {
                 lastLogs = [];
             });
         });
+
         describe("Get correlation- and tenant-id", function () {
 
             before(function (done) {
@@ -360,14 +353,12 @@ describe('Test request context', function () {
     });
 
     describe("Use Connect framework", function () {
-
         before(function (done) {
             log.forceLogger("connect");
             done();
         });
 
         describe("Set implicit correlation- and tenant-id through request header", function () {
-
             var correlation_id = "cbc4343f-1c31-27d0-96fc-f32efac20986";
             var tenant_id = "abc2654f-5t15-12h0-78gt-n73jeuc01847";
 
@@ -395,8 +386,8 @@ describe('Test request context', function () {
             });
 
         });
-        describe("Set implicit correlation- and tenant-id through methods", function () {
 
+        describe("Set implicit correlation- and tenant-id through methods", function () {
             var correlation_id = "cbc2654f-1c35-45d0-96fc-f32efac20986";
             var tenant_id = "abc8714f-5t15-12h0-78gt-n73jeuc01847";
 
@@ -422,8 +413,8 @@ describe('Test request context', function () {
             });
 
         });
-        describe("Get correlation- and tenant-id", function () {
 
+        describe("Get correlation- and tenant-id", function () {
             before(function (done) {
                 supertest(connectApp)
                     .get("/getcorrelationandtenantid")
@@ -481,7 +472,6 @@ describe('Test request context', function () {
         });
 
         describe("Set implicit correlation- and tenant-id through methods", function () {
-
             var correlation_id = "cbc2654f-1c35-45d0-96fc-f32efac20986";
             var tenant_id = "abc8714f-5t15-12h0-78gt-n73jeuc01847";
 
@@ -537,8 +527,8 @@ describe('Test request context', function () {
             log.forceLogger("plainhttp");
             done();
         });
-        describe("Set implicit correlation- and tenant-id through request header", function () {
 
+        describe("Set implicit correlation- and tenant-id through request header", function () {
             var correlation_id = "cbc4343f-1c31-27d0-96fc-f32efac20986";
             var tenant_id = "abc2654f-5t15-12h0-78gt-n73jeuc01847";
 
@@ -564,10 +554,9 @@ describe('Test request context', function () {
             after(function () {
                 lastLogs = [];
             });
-
         });
-        describe("Set implicit correlation- and tenant-id through methods", function () {
 
+        describe("Set implicit correlation- and tenant-id through methods", function () {
             var correlation_id = "cbc2654f-1c35-45d0-96fc-f32efac20986";
             var tenant_id = "abc8714f-5t15-12h0-78gt-n73jeuc01847";
 
@@ -591,8 +580,8 @@ describe('Test request context', function () {
             after(function () {
                 lastLogs = [];
             });
-
         });
+
         describe("Get correlation- and tenant-id", function () {
 
             before(function (done) {
