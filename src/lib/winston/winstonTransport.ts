@@ -1,6 +1,6 @@
 import TripleBeam from 'triple-beam';
 import TransportStream from 'winston-transport';
-import Logger from '../logger/logger';
+import { Logger } from '../logger/logger';
 
 class CfNodejsLoggingSupportLogger extends TransportStream {
 

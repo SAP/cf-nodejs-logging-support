@@ -5,7 +5,7 @@ import RecordFactory from './recordFactory';
 import RecordWriter from './recordWriter';
 import Context from './context';
 
-export default class Logger {
+export class Logger {
     private parent?: Logger = undefined
     private context?: Context;
     private registeredCustomFields: Array<string> = [];
