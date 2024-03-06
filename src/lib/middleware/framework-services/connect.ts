@@ -1,8 +1,7 @@
 import { FrameworkService } from "../interfaces";
 
 export default class ConnectService implements FrameworkService {
-
-    getReqHeaderField(req: any, fieldName: string): string {
+    getReqHeaderField(req: any, fieldName: string): string | undefined {
         return req.headers[fieldName];
     }
 
@@ -30,11 +29,16 @@ export default class ConnectService implements FrameworkService {
         return value
     }
 
-    getResHeaderField(res: any, fieldName: string): string {
-        return res.getHeader ? res.getHeader(fieldName) : "";
+    getResHeaderField(res: any, fieldName: string): string | undefined {
+        return res.getHeader ? res.getHeader(fieldName) : undefined;
     }
 
     getResField(res: any, fieldName: string): any {
         return res[fieldName];
+    }
+
+    onResFinish(res: any, handler: () => void): void {
+        res.on("header", handler);
+        res.on("finish", handler);
     }
 }

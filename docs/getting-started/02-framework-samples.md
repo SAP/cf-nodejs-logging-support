@@ -8,8 +8,8 @@ permalink: /getting-started/framework-samples/
 
 # Samples for supported Server Frameworks
 {: .no_toc }
-This library can be used in combination with different server frameworks: 
-[express](https://expressjs.com/), [connect](https://www.npmjs.com/package/connect), [restify](http://restify.com/) and also pure [Node.js HTTP](https://nodejs.org/api/http.html).
+
+This library can be used in combination with several different server frameworks.
 You can find small code samples for each supported framework below.
 
 <details open markdown="block">
@@ -21,96 +21,139 @@ You can find small code samples for each supported framework below.
 {:toc}
 </details>
 
-
 ## Express
+
 ```js
-const HTTP_PORT = 3000;
-var express = require('express');
-var log = require('cf-nodejs-logging-support');
-var app = express();
+const app = require('express')()
+const log = require('cf-nodejs-logging-support')
 
-// Set the minimum logging level (Levels: off, error, warn, info, verbose, debug, silly)
-log.setLoggingLevel("info");
+// Configure logger for working with Express framework
+log.setFramework(log.Framework.Express)
 
-// Bind to express app
-app.use(log.logNetwork);
+// Add the logger middleware to write access logs
+app.use(log.logNetwork)
 
-app.get('/', function (req, res) {
-    // Context bound custom message
-    req.logger.info("Hello World will be sent");
-    
-    res.send('Hello World');
-});
+// Handle '/' path
+app.get("/", (req, res) => {
+    // Write a log message bound to request context
+    req.logger.info(`Sending a greeting`)
+    res.send("Hello Express")
+})
 
 // Listen on specified port
-app.listen(HTTP_PORT);
-
-// Formatted log message
-log.info("Server is listening on port %d", HTTP_PORT);
+const listener = app.listen(3000, () => {
+  // Formatted log message
+  log.info("Server is listening on port %d", listener.address().port)
+})
 ```
 
 ## Connect
+
 ```js
-const HTTP_PORT = 3000;
-var connect = require('connect');
-var http = require('http');
-var log = require('cf-nodejs-logging-support');
-var app = connect();
+const app = require('connect')()
+const http = require('http')
+const log = require('cf-nodejs-logging-support')
 
-// Force logger to run the connect version. (default is express, forcing express is also legal)
-log.forceLogger("connect");
+// Configure logger for working with Connect framework
+log.setFramework(log.Framework.Connect)
 
-// Add the logger middleware, so each time a request is received, it will get logged.
-app.use(log.logNetwork);
+// Add the logger middleware to write access logs
+app.use(log.logNetwork)
 
-// Create node.js http server and listen on port
-http.createServer(app).listen(HTTP_PORT, () => {
-  // Formatted log message
-  log.info("Server is listening on port %d", HTTP_PORT);
-});
+// Handle '/' path
+app.use("/", (req, res) => {
+    // Write a log message bound to request context
+    req.logger.info(`Sending a greeting`)
+    res.end("Hello Connect")
+})
+
+// Listen on specified port
+const server = http.createServer(app).listen(3000, () => {
+    // Formatted log message
+    log.info("Server is listening on port %d", server.address().port)
+})
 ```
 
 ## Restify
+
 ```js
-const HTTP_PORT = 3000;
-var restify = require('restify');
-var log = require('cf-nodejs-logging-support');
-var app = restify.createServer();
+const restify = require('restify')
+const log = require('cf-nodejs-logging-support')
+const app = restify.createServer()
 
-// Force logger to run the restify version. (default is express, forcing express is also legal)
-log.forceLogger("restify");
+// Configure logger for working with Restify framework
+log.setFramework(log.Framework.Restify)
 
-// Add the logger middleware, so each time a request is received, it will get logged.
-app.use(log.logNetwork);
+// Add the logger middleware to write access logs
+app.use(log.logNetwork)
+
+// Handle '/' path
+app.get("/", (req, res, next) => {
+    // Write a log message bound to request context
+    req.logger.info(`Sending a greeting`)
+    res.send("Hello Restify")
+    next()
+})
 
 // Listen on specified port
-server.listen(HTTP_PORT, () => {
+app.listen(3000, () => {
   // Formatted log message
-  log.info("Server is listening on port %d", HTTP_PORT);
-});
+  log.info("Server is listening on port %d", app.address().port)
+})
+```
+
+## Fastify
+
+```js
+const log = require('cf-nodejs-logging-support')
+const app = require('fastify')()
+
+// Configure logger for working with Fastify framework
+log.setFramework(log.Framework.Fastify)
+
+// Add the logger middleware to write access logs
+app.addHook("onRequest", log.logNetwork)
+
+// Handle '/' path
+app.get("/", (request, reply) => {
+    // Write a log message bound to request context
+    request.logger.info(`Sending a greeting`)
+    reply.send("Hello Fastify")
+})
+
+// Listen on specified port
+app.listen({ port: 3000 }, (err, address) => {
+    if (err) {
+        // Formatted error message
+        log.error("Failed to run server", err.message)
+        process.exit(1)
+    }
+    // Formatted log message
+    log.info(`Server is listening on ${address}`)
+})
 ```
 
 ## Node.js HTTP
-```js
-const HTTP_PORT = 3000;
-const http = require('http');
-var log = require("cf-nodejs-logging-support");
 
-// Force logger to run the http version.
-log.forceLogger("plainhttp");
+```js
+const log = require('cf-nodejs-logging-support')
+const http = require('http')
+
+// Configure logger for working with Node.js http framework
+log.setFramework(log.Framework.NodeJsHttp)
 
 const server = http.createServer((req, res) => {
-    // Binds logging to the given request for request tracking
-    log.logNetwork(req, res);
-    
-    // Context bound custom message
-    req.logger.info("Hello World will be sent");
-    res.end('Hello World');
-});
+    // Call logger middleware to write access logs
+    log.logNetwork(req, res)
+
+    // Write a log message bound to request context
+    req.logger.info(`Sending a greeting`)
+    res.send("Hello Node.js HTTP")
+})
 
 // Listen on specified port
-server.listen(HTTP_PORT, () => {
-  // Formatted log message
-  log.info("Server is listening on port %d", HTTP_PORT);
-});
+server.listen(3000, () => {
+    // Formatted log message
+    log.info("Server is listening on port %d", server.address().port)
+})
 ```

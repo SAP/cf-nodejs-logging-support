@@ -2,8 +2,8 @@ import { FrameworkService } from "../interfaces";
 
 export default class RestifyService implements FrameworkService {
 
-    getReqHeaderField(req: any, fieldName: string): string {
-        return req.header(fieldName);
+    getReqHeaderField(req: any, fieldName: string): string | undefined {
+        return req ? req.header(fieldName): undefined;
     }
 
     getReqField(req: any, fieldName: string): any {
@@ -30,11 +30,16 @@ export default class RestifyService implements FrameworkService {
         return value
     }
 
-    getResHeaderField(res: any, fieldName: string): string {
-        return res.get ? res.get(fieldName) : "";
+    getResHeaderField(res: any, fieldName: string): string | undefined {
+        return res.get ? res.get(fieldName) : undefined;
     }
 
     getResField(res: any, fieldName: string): any {
         return res[fieldName];
+    }
+
+    onResFinish(res: any, handler: () => void): void {
+        res.on("header", handler);
+        res.on("finish", handler);
     }
 }

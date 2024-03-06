@@ -52,10 +52,16 @@ describe('Test Config class', function () {
                         }
                     }, {
                         "name": "request",
-                        "source": {
-                            "type": "req-object",
-                            "fieldName": "originalUrl"
-                        },
+                        "source": [
+                            {
+                                "fieldName": "originalUrl",
+                                "type": "req-object"
+                            },
+                            {
+                                "fieldName": "url",
+                                "type": "req-object"
+                            }
+                        ],
                         "output": [
                             "req-log"
                         ],

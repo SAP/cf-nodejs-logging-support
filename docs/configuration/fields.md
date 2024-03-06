@@ -259,6 +259,7 @@ Our supported server frameworks are:
 * [Express](https://expressjs.com/): declare as `express`
 * [Restify](http://restify.com/): declare as `restify`
 * [Connect](https://www.npmjs.com/package/connect): declare as `connect`
+* [Fastify](https://fastify.dev/): declare as `fastify`
 * [Node.js HTTP](https://nodejs.org/api/http.html): declare as `plainhttp`
 
 Example of field with multiple framework specific sources:

@@ -7,6 +7,7 @@ import Context from '../logger/context';
 import RootLogger from '../logger/rootLogger';
 import RequestAccessor from './requestAccessor';
 import Config from '../config/config';
+import ResponseAccessor from './responseAccessor';
 
 export default class Middleware {
 
@@ -46,9 +47,7 @@ export default class Middleware {
             }
         }
 
-        res.on("finish", finishLog);
-
-        res.on("header", finishLog);
+        ResponseAccessor.getInstance().onFinish(res, finishLog);
 
         next ? next() : null;
     }
