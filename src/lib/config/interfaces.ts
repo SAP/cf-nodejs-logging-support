@@ -86,6 +86,9 @@ export enum DetailName {
     WrittenTs = "writtenTs",
     Message = "message",
     Stacktrace = "stacktrace",
+    RawStacktrace = "rawStacktrace",
+    ErrorName = "errorName",
+    ErrorMessage = "errorMessage",
     Level = "level"
 }
 
