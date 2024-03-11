@@ -6,9 +6,10 @@ import { CustomFieldsFormat, CustomFieldsTypeConversion, Output } from '../confi
 import StacktraceUtils from '../helper/stacktraceUtils';
 import { isValidObject } from '../middleware/utils';
 import Cache from './cache';
-import Record from './record';
+import { Record, RecordType } from './record';
 import Context from './context';
 import SourceUtils from './sourceUtils';
+import { Level } from './level';
 
 export default class RecordFactory {
 
@@ -34,19 +35,25 @@ export default class RecordFactory {
     }
 
     // init a new record and assign fields with output "msg-log"
-    buildMsgRecord(registeredCustomFields: Array<string>, loggerCustomFields: Map<string, any>, levelName: string, args: Array<any>, context?: Context): Record {
+    buildMsgRecord(registeredCustomFields: Array<string>, loggerCustomFields: Map<string, any>, level: Level, args: Array<any>, context?: Context): Record {
         const lastArg = args[args.length - 1];
         let customFieldsFromArgs = new Map<string, any>();
-        let record = new Record(levelName)
-      
-      
+        let record = new Record(RecordType.Message, level)
+
+
         if (typeof lastArg === "object") {
             if (this.stacktraceUtils.isErrorWithStacktrace(lastArg)) {
                 record.metadata.stacktrace = this.stacktraceUtils.prepareStacktrace(lastArg.stack);
+                record.metadata.rawStacktrace = lastArg.stack
+                record.metadata.errorMessage = lastArg.message
+                record.metadata.errorName = lastArg.name
             } else if (isValidObject(lastArg)) {
                 customFieldsFromArgs = new Map<string, any>(Object.entries(lastArg));
                 if (this.stacktraceUtils.isErrorWithStacktrace(lastArg._error)) {
                     record.metadata.stacktrace = this.stacktraceUtils.prepareStacktrace(lastArg._error.stack);
+                    record.metadata.rawStacktrace = lastArg._error.stack
+                    record.metadata.errorMessage = lastArg._error.message
+                    record.metadata.errorName = lastArg._error.name
                     customFieldsFromArgs.delete("_error");
                 }
             } else if (lastArg instanceof Map) {
@@ -77,8 +84,8 @@ export default class RecordFactory {
     }
 
     // init a new record and assign fields with output "req-log"
-    buildReqRecord(levelName: string, req: any, res: any, context: Context): Record {
-        let record = new Record(levelName)
+    buildReqRecord(level: Level, req: any, res: any, context: Context): Record {
+        let record = new Record(RecordType.Request, level)
 
         // assign static fields from cache
         const cacheFields = this.config.getCacheReqFields();
@@ -88,7 +95,7 @@ export default class RecordFactory {
         // assign dynamic fields
         this.addDynamicFields(record, Output.ReqLog, req, res);
 
-         // assign values request context
+        // assign values request context
         this.addContext(record, context);
 
         // assign custom fields
@@ -98,7 +105,7 @@ export default class RecordFactory {
         return record;
     }
 
-    private addCustomFields(record: Record, registeredCustomFields: Array<string>, loggerCustomFields: Map<string, any>, 
+    private addCustomFields(record: Record, registeredCustomFields: Array<string>, loggerCustomFields: Map<string, any>,
         customFieldsFromArgs: Map<string, any> = new Map()) {
         const providedFields = new Map<string, any>([...loggerCustomFields, ...customFieldsFromArgs]);
         const customFieldsFormat = this.config.getConfig().customFieldsFormat!;
@@ -129,6 +136,8 @@ export default class RecordFactory {
                     indexedCustomFields[key] = value;
                 }
             }
+
+            record.metadata.customFieldNames.push(key)
         });
 
         // Write custom fields in the correct order and correlates i to the place in registeredCustomFields
