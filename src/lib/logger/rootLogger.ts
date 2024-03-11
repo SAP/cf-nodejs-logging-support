@@ -6,18 +6,23 @@ import EnvService from '../helper/envService';
 import Middleware from '../middleware/middleware';
 import RequestAccessor from '../middleware/requestAccessor';
 import ResponseAccessor from '../middleware/responseAccessor';
+import { DefaultOutput } from '../plugins/defaultOutput';
+import { OutputPlugin } from '../plugins/interfaces';
+import PluginProvider from '../helper/pluginProvider';
 import createTransport from '../winston/winstonTransport';
 import { Level } from './level';
 import { Logger } from './logger';
-import RecordWriter from './recordWriter';
 
 export default class RootLogger extends Logger {
     private static instance: RootLogger;
+    private defaultOutput: DefaultOutput;
     private config = Config.getInstance();
 
     private constructor() {
         super()
         this.loggingLevelThreshold = Level.Info
+        this.defaultOutput = new DefaultOutput();
+        PluginProvider.getInstance().setOutputPlugins([this.defaultOutput]);
     }
 
     static getInstance(): RootLogger {
@@ -57,7 +62,19 @@ export default class RootLogger extends Logger {
     }
 
     setSinkFunction(func: (level: string, payload: string) => any) {
-        RecordWriter.getInstance().setSinkFunction(func);
+        this.defaultOutput.setSinkFunction(func);
+    }
+
+    addOutputPlugin(outputPlugin: OutputPlugin) {
+        PluginProvider.getInstance().addOutputPlugin(outputPlugin);
+    }
+
+    setOutputPlugins(...outputPlugin: OutputPlugin[]) {
+        PluginProvider.getInstance().setOutputPlugins(outputPlugin);
+    }
+
+    getOutputPlugins(): OutputPlugin[] {
+        return PluginProvider.getInstance().getOutputPlugins();
     }
 
     enableTracing(input: string | string[]) {

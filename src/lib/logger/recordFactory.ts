@@ -6,9 +6,10 @@ import { CustomFieldsFormat, CustomFieldsTypeConversion, Output } from '../confi
 import StacktraceUtils from '../helper/stacktraceUtils';
 import { isValidObject } from '../middleware/utils';
 import Cache from './cache';
-import Record from './record';
+import { Record, RecordType } from './record';
 import Context from './context';
 import SourceUtils from './sourceUtils';
+import { Level } from './level';
 
 export default class RecordFactory {
 
@@ -34,10 +35,10 @@ export default class RecordFactory {
     }
 
     // init a new record and assign fields with output "msg-log"
-    buildMsgRecord(registeredCustomFields: Array<string>, loggerCustomFields: Map<string, any>, levelName: string, args: Array<any>, context?: Context): Record {
+    buildMsgRecord(registeredCustomFields: Array<string>, loggerCustomFields: Map<string, any>, level: Level, args: Array<any>, context?: Context): Record {
         const lastArg = args[args.length - 1];
         let customFieldsFromArgs = new Map<string, any>();
-        let record = new Record(levelName)
+        let record = new Record(RecordType.Message, level)
       
       
         if (typeof lastArg === "object") {
@@ -77,8 +78,8 @@ export default class RecordFactory {
     }
 
     // init a new record and assign fields with output "req-log"
-    buildReqRecord(levelName: string, req: any, res: any, context: Context): Record {
-        let record = new Record(levelName)
+    buildReqRecord(level: Level, req: any, res: any, context: Context): Record {
+        let record = new Record(RecordType.Request, level)
 
         // assign static fields from cache
         const cacheFields = this.config.getCacheReqFields();
