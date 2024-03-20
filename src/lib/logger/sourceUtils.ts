@@ -156,6 +156,15 @@ export default class SourceUtils {
             case DetailName.Stacktrace:
                 value = record.metadata.stacktrace
                 break;
+            case DetailName.RawStacktrace:
+                value = record.metadata.rawStacktrace
+                break
+            case DetailName.ErrorMessage:
+                value = record.metadata.errorMessage
+                break;
+            case DetailName.ErrorName:
+                value = record.metadata.errorName
+                break;
             case DetailName.Level:
                 value = LevelUtils.getName(record.metadata.level)
                 break;

@@ -39,14 +39,20 @@ export default class RecordFactory {
         const lastArg = args[args.length - 1];
         let customFieldsFromArgs = new Map<string, any>();
         let record = new Record(RecordType.Message, level)
-      
-      
+
+
         if (typeof lastArg === "object") {
             if (this.stacktraceUtils.isErrorWithStacktrace(lastArg)) {
                 record.metadata.stacktrace = this.stacktraceUtils.prepareStacktrace(lastArg.stack);
+                record.metadata.rawStacktrace = lastArg.stack
+                record.metadata.errorMessage = lastArg.message
+                record.metadata.errorName = lastArg.name
             } else if (isValidObject(lastArg)) {
                 if (this.stacktraceUtils.isErrorWithStacktrace(lastArg._error)) {
                     record.metadata.stacktrace = this.stacktraceUtils.prepareStacktrace(lastArg._error.stack);
+                    record.metadata.rawStacktrace = lastArg._error.stack
+                    record.metadata.errorMessage = lastArg._error.message
+                    record.metadata.errorName = lastArg._error.name
                     delete lastArg._error;
                 }
                 customFieldsFromArgs = new Map<string, any>(Object.entries(lastArg));
@@ -89,7 +95,7 @@ export default class RecordFactory {
         // assign dynamic fields
         this.addDynamicFields(record, Output.ReqLog, req, res);
 
-         // assign values request context
+        // assign values request context
         this.addContext(record, context);
 
         // assign custom fields
@@ -99,7 +105,7 @@ export default class RecordFactory {
         return record;
     }
 
-    private addCustomFields(record: Record, registeredCustomFields: Array<string>, loggerCustomFields: Map<string, any>, 
+    private addCustomFields(record: Record, registeredCustomFields: Array<string>, loggerCustomFields: Map<string, any>,
         customFieldsFromArgs: Map<string, any> = new Map()) {
         const providedFields = new Map<string, any>([...loggerCustomFields, ...customFieldsFromArgs]);
         const customFieldsFormat = this.config.getConfig().customFieldsFormat!;
@@ -118,8 +124,8 @@ export default class RecordFactory {
 
             if ([CustomFieldsFormat.CloudLogging, CustomFieldsFormat.All, CustomFieldsFormat.Default].includes(customFieldsFormat)
                 || record.payload[key] != null || this.config.isSettable(key)) {
-                    record.payload[key] = value;
-                   
+                record.payload[key] = value;
+
             }
 
             if ([CustomFieldsFormat.ApplicationLogging, CustomFieldsFormat.All].includes(customFieldsFormat)) {
