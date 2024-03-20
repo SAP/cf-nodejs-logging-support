@@ -1,6 +1,6 @@
 {
   "name": "cf-nodejs-logging-support",
-  "version": "7.4.0-beta.0",
+  "version": "7.4.0-beta.1",
   "description": "Logging tool for Cloud Foundry",
   "keywords": [
     "logging",
@@ -61,7 +61,7 @@
     "README.md"
   ],
   "dependencies": {
-    "@opentelemetry/api-logs": "^0.48.0",
+    "@opentelemetry/api-logs": "^0.49.1",
     "ajv": "^8.11.0",
     "json-stringify-safe": "^5.0.1",
     "jsonwebtoken": "^9.0.0",
