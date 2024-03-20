@@ -1,5 +1,5 @@
 
-import { logs as logsAPI, Logger, LoggerProvider, SeverityNumber , LogAttributes} from '@opentelemetry/api-logs'
+import { logs as logsAPI, Logger, LoggerProvider, SeverityNumber} from '@opentelemetry/api-logs'
 import { OutputPlugin } from './interfaces'
 import { Record, RecordType } from '../logger/record'
 import { Level } from '../logger/level'
