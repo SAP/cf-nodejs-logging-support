@@ -14,7 +14,10 @@ export class RecordMetadata {
     type: RecordType
     level: Level
     message?: string
+    rawStacktrace?: string
     stacktrace?: string[]
+    errorName?: string
+    errorMessage?: string
 
     constructor(type: RecordType, level: Level) {
         this.type = type
