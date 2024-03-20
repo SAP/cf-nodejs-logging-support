@@ -1,5 +1,5 @@
 
-import { logs as logsAPI, Logger, LoggerProvider, SeverityNumber} from '@opentelemetry/api-logs'
+import { logs as logsAPI, Logger, LoggerProvider, SeverityNumber, LogAttributes} from '@opentelemetry/api-logs'
 import { OutputPlugin } from './interfaces'
 import { Record, RecordType } from '../logger/record'
 import { Level } from '../logger/level'
@@ -20,10 +20,16 @@ export class OpenTelemetryLogsOutputPlugin implements OutputPlugin {
             return // ignore request logs
         }
 
-        let attributes = {
-            ["exception.message"]: record.metadata.message,
-            ["exception.stacktrace"]: record.metadata.rawStacktrace,
-            ["exception.type"]: record.metadata.errorName
+        let attributes = {} as LogAttributes
+
+        if (record.metadata.errorName) {
+            attributes["exception.type"] = record.metadata.errorName
+        }
+        if (record.metadata.errorMessage) {
+            attributes["exception.message"] = record.metadata.errorMessage
+        }
+        if (record.metadata.rawStacktrace) {
+            attributes["exception.stacktrace"] = record.metadata.rawStacktrace
         }
 
         let severityNumber = this.mapLevelToSeverityNumber(record.metadata.level)
