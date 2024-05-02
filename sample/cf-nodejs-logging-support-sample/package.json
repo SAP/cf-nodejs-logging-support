@@ -11,7 +11,7 @@
   "license": "Apache-2.0",
   "dependencies": {
     "cf-nodejs-logging-support": "latest",
-    "ejs": "^3.1.9",
+    "ejs": "^3.1.10",
     "express": "latest"
   },
   "devDependencies": {
