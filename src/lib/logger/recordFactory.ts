@@ -131,6 +131,8 @@ export default class RecordFactory {
             if ([CustomFieldsFormat.ApplicationLogging, CustomFieldsFormat.All].includes(customFieldsFormat)) {
                 indexedCustomFields[key] = value;
             }
+
+            record.metadata.customFieldNames.push(key)
         });
 
         //writes custom fields in the correct order and correlates i to the place in registeredCustomFields
