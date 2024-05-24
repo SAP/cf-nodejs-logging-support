@@ -107,8 +107,11 @@
         },
         "DetailName": {
             "enum": [
+                "errorMessage",
+                "errorName",
                 "level",
                 "message",
+                "rawStacktrace",
                 "requestReceivedAt",
                 "responseSentAt",
                 "responseTimeMs",
