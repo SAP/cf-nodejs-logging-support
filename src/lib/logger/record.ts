@@ -18,10 +18,12 @@ export class RecordMetadata {
     stacktrace?: string[]
     errorName?: string
     errorMessage?: string
+    customFieldNames: string[]
 
     constructor(type: RecordType, level: Level) {
         this.type = type
         this.level = level
+        this.customFieldNames = new Array<string>()
     }
 }
 

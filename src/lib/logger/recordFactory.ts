@@ -136,6 +136,8 @@ export default class RecordFactory {
                     indexedCustomFields[key] = value;
                 }
             }
+
+            record.metadata.customFieldNames.push(key)
         });
 
         // Write custom fields in the correct order and correlates i to the place in registeredCustomFields

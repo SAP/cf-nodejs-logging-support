@@ -6,6 +6,7 @@ import { Level } from '../logger/level'
 
 export class OpenTelemetryLogsOutputPlugin implements OutputPlugin {
     private logger: Logger
+    private includeFieldsAsAttributes: FieldInclusionMode
 
     public constructor(loggerProvider?: LoggerProvider) {
         if (loggerProvider) {
@@ -13,6 +14,11 @@ export class OpenTelemetryLogsOutputPlugin implements OutputPlugin {
         } else {
             this.logger = logsAPI.getLoggerProvider().getLogger("default")
         }
+        this.includeFieldsAsAttributes = FieldInclusionMode.CustomFieldsOnly
+    }
+
+    public setIncludeFieldsAsAttributes(includeFieldsAsAttributes: FieldInclusionMode) {
+        this.includeFieldsAsAttributes = includeFieldsAsAttributes
     }
 
     public writeRecord(record: Record): void {
@@ -21,16 +27,8 @@ export class OpenTelemetryLogsOutputPlugin implements OutputPlugin {
         }
 
         let attributes = {} as LogAttributes
-
-        if (record.metadata.errorName) {
-            attributes["exception.type"] = record.metadata.errorName
-        }
-        if (record.metadata.errorMessage) {
-            attributes["exception.message"] = record.metadata.errorMessage
-        }
-        if (record.metadata.rawStacktrace) {
-            attributes["exception.stacktrace"] = record.metadata.rawStacktrace
-        }
+        this.populateExceptionAttributes(record, attributes)
+        this.populateAdditionalAttributes(record, attributes)
 
         let severityNumber = this.mapLevelToSeverityNumber(record.metadata.level)
 
@@ -58,4 +56,42 @@ export class OpenTelemetryLogsOutputPlugin implements OutputPlugin {
         }
         return SeverityNumber.UNSPECIFIED
     }
+
+    private populateExceptionAttributes(record: Record, attributes: LogAttributes) {
+        if (record.metadata.errorName) {
+            attributes["exception.type"] = record.metadata.errorName
+        }
+        if (record.metadata.errorMessage) {
+            attributes["exception.message"] = record.metadata.errorMessage
+        }
+        if (record.metadata.rawStacktrace) {
+            attributes["exception.stacktrace"] = record.metadata.rawStacktrace
+        }
+    }
+
+    private populateAdditionalAttributes(record: Record, attributes: LogAttributes) {
+        switch(this.includeFieldsAsAttributes) {
+            case FieldInclusionMode.AllFields:
+                for (let key in record.payload) {
+                    attributes[key] = record.payload[key]
+                }
+            break;
+            case FieldInclusionMode.CustomFieldsOnly:
+                for (let key of record.metadata.customFieldNames) {
+                    if (record.payload[key] !== undefined) {
+                        attributes[key] = record.payload[key]
+                    }
+                }
+            break;
+            case FieldInclusionMode.None:
+            default:
+                return;
+        }
+    }
+}
+
+export enum FieldInclusionMode {
+    AllFields = "all",
+    CustomFieldsOnly = "custom-fields",
+    None = "none"
 }
