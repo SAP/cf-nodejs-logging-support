@@ -122,6 +122,37 @@ describe('Test custom fields', function () {
         });
     });
 
+    describe('Test custom field type conversion', function () {
+        describe('stringify fields', function () {
+            beforeEach(function () {
+                log = importFresh("../../../build/main/index");
+                log.setCustomFields({ "field-a": 42, "field-b": true, "field-c": { "key": "value" }});
+                log.logMessage("info", "test-message");
+            });
+
+            it('logs custom fields as strings', function () {
+                expect(lastOutput).to.have.property('field-a', '42').that.is.a('string');
+                expect(lastOutput).to.have.property('field-b', 'true').that.is.a('string');
+                expect(lastOutput).to.have.property('field-c', '{"key":"value"}').that.is.a('string');
+            });
+        });
+
+        describe('retain field types', function () {
+            beforeEach(function () {
+                log = importFresh("../../../build/main/index");
+                log.setCustomFieldsTypeConversion("retain");
+                log.setCustomFields({ "field-a": 42, "field-b": true, "field-c": { "key": "value" }});
+                log.logMessage("info", "test-message");
+            });
+
+            it('logs custom fields as strings', function () {
+                expect(lastOutput).to.have.property('field-a', 42).that.is.a('number');
+                expect(lastOutput).to.have.property('field-b', true).that.is.a('boolean');
+                expect(lastOutput).to.have.property('field-c').that.deep.equals({"key":"value"})
+            });
+        });
+    })
+
     describe('Test custom field format', function () {
         describe('"cloud-logging" format', function () {
             beforeEach(function () {

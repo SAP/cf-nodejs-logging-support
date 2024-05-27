@@ -105,6 +105,13 @@
             ],
             "type": "string"
         },
+        "CustomFieldsTypeConversion": {
+            "enum": [
+                "retain",
+                "stringify"
+            ],
+            "type": "string"
+        },
         "DetailName": {
             "enum": [
                 "level",
@@ -192,6 +199,9 @@
     "properties": {
         "customFieldsFormat": {
             "$ref": "#/definitions/CustomFieldsFormat"
+        },
+        "customFieldsTypeConversion": {
+            "$ref": "#/definitions/CustomFieldsTypeConversion"
         },
         "fields": {
             "items": {

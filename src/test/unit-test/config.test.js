@@ -100,6 +100,20 @@ describe('Test Config class', function () {
         })
     });
 
+    describe('Test setCustomFieldsTypeConversion', function () {
+        beforeEach(function () {
+            singleton.setCustomFieldsTypeConversion("retain");
+            result = singleton.getConfig();
+        });
+        it('sets custom fields format', function () {
+            expect(result).to.have.property("customFieldsTypeConversion", "retain");
+        });
+
+        afterEach(function () {
+            singleton.setCustomFieldsFormat("stringify");
+        })
+    });
+
     describe('Test setStartupMessageEnabled', function () {
         beforeEach(function () {
             singleton.setStartupMessageEnabled(false);

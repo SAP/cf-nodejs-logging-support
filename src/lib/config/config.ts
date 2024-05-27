@@ -7,7 +7,7 @@ import coreConfig from './default/config-core.json';
 import kymaConfig from './default/config-kyma.json';
 import requestConfig from './default/config-request.json';
 import sapPassportConfig from './default/config-sap-passport.json';
-import { ConfigField, ConfigObject, CustomFieldsFormat, Framework, Output, Source, SourceType } from './interfaces';
+import { ConfigField, ConfigObject, CustomFieldsFormat, CustomFieldsTypeConversion, Framework, Output, Source, SourceType } from './interfaces';
 
 export default class Config {
 
@@ -63,6 +63,7 @@ export default class Config {
                 Config.instance.setCustomFieldsFormat(CustomFieldsFormat.CloudLogging);
             }
 
+            Config.instance.setCustomFieldsTypeConversion(CustomFieldsTypeConversion.Stringify)
             Config.instance.addConfig(configFiles);
         }
 
@@ -213,6 +214,10 @@ export default class Config {
                 Config.instance.config.customFieldsFormat = file.customFieldsFormat;
             }
 
+            if (file.customFieldsTypeConversion) {
+                Config.instance.config.customFieldsTypeConversion = file.customFieldsTypeConversion;
+            }
+
             if (file.framework) {
                 Config.instance.config.framework = file.framework;
             }
@@ -231,6 +236,10 @@ export default class Config {
 
     setCustomFieldsFormat(format: CustomFieldsFormat) {
         Config.instance.config.customFieldsFormat = format;
+    }
+
+    setCustomFieldsTypeConversion(conversion: CustomFieldsTypeConversion) {
+        Config.instance.config.customFieldsTypeConversion = conversion;
     }
 
     setStartupMessageEnabled(enabled: boolean) {

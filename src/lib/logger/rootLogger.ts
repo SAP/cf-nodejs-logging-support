@@ -1,6 +1,6 @@
 import Config from '../config/config';
 import {
-    ConfigObject, CustomFieldsFormat, Framework, Output, SourceType
+    ConfigObject, CustomFieldsFormat, CustomFieldsTypeConversion, Framework, Output, SourceType
 } from '../config/interfaces';
 import EnvService from '../helper/envService';
 import Middleware from '../middleware/middleware';
@@ -46,6 +46,10 @@ export default class RootLogger extends Logger {
 
     setCustomFieldsFormat(format: CustomFieldsFormat) {
         return this.config.setCustomFieldsFormat(format);
+    }
+
+    setCustomFieldsTypeConversion(conversion: CustomFieldsTypeConversion) {
+        return this.config.setCustomFieldsTypeConversion(conversion);
     }
 
     setStartupMessageEnabled(enabled: boolean) {
