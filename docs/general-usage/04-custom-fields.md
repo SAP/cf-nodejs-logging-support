@@ -10,24 +10,12 @@ permalink: /general-usage/custom-fields
 
 You can use the custom field feature to add custom fields to your logs.
 
-## Register custom fields for SAP Application Logging
 
-In case you want to use this library with SAP Application Logging Service you need to register your custom fields.
-Please make sure to call the registration exactly once globally before logging any custom fields.
-Registered fields will be indexed based on the order given by the provided field array.
+## Format and type transformation for SAP logging services
 
-```js
-log.registerCustomFields(["field"]);
-info("Test data", {"field" :"value"}); 
-// ... "msg":"Test data" 
-// ... "#cf": {"string": [{"k":"field","v":"value","i":"0"}]}...
-```
+The library will automatically detect which logging service is bound to your app and will set the custom field format accordingly.
 
-## General use
-
-As of version 6.5.0 this library will automatically detect which logging service your app is bound to and will set the logging format accordingly.
-
-For local testing purposes you can still enforce a specific format like this:
+For local testing purposes you can enforce a specific format like this:
 
 ```js
 log.setCustomFieldsFormat("application-logging");
@@ -35,6 +23,38 @@ log.setCustomFieldsFormat("application-logging");
 ```
 
 Alternatively, you can force the logging format by setting a configuration file as explained in [Custom Fields Format](/cf-nodejs-logging-support/configuration/custom-fields-format).
+
+### SAP Application Logging
+
+In case you want to use this library with SAP Application Logging Service you need to register your custom fields.
+Please make sure to call the registration exactly once globally before logging any custom fields.
+Registered fields will be indexed based on the order given by the provided field array.
+
+Custom fields are converted and printed as string values independent of their original type.
+
+```js
+log.registerCustomFields(["field"]);
+info("Test data", {"field": 42}); 
+// ... "msg":"Test data" 
+// ... "#cf": {"string": [{"k":"field","v":"42","i":"0"}]}...
+```
+
+### SAP Cloud Logging
+
+When using the library with SAP Cloud Logging, custom fields get added as top-level fields.
+Registering custom fields is not required in this case.
+
+By default all custom field values get stringified, which can help to prevent field type mismatches when indexing to SAP Cloud Logging.
+However, if you want to retain the original type of your custom fields, you can change the type conversion configuration accordingly:
+
+```js
+log.setCustomFieldsTypeConversion(CustomFieldsTypeConversion.Retain)
+info("Test data", {"field": 42}); 
+// ... "msg":"Test data" 
+// ... "field": 42
+```
+
+## Adding custom fields
 
 In addition to logging messages as described in [Message Logs](/cf-nodejs-logging-support/general-usage/message-logs) you can attach custom fields as an object of key-value pairs as last parameter:
 

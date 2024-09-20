@@ -2,7 +2,7 @@ import jsonStringifySafe from 'json-stringify-safe';
 import util from 'util';
 
 import Config from '../config/config';
-import { CustomFieldsFormat, Output } from '../config/interfaces';
+import { CustomFieldsFormat, CustomFieldsTypeConversion, Output } from '../config/interfaces';
 import StacktraceUtils from '../helper/stacktraceUtils';
 import { isValidObject } from '../middleware/utils';
 import Cache from './cache';
@@ -102,6 +102,7 @@ export default class RecordFactory {
         customFieldsFromArgs: Map<string, any> = new Map()) {
         const providedFields = new Map<string, any>([...loggerCustomFields, ...customFieldsFromArgs]);
         const customFieldsFormat = this.config.getConfig().customFieldsFormat!;
+        const customFieldsTypeConversion = this.config.getConfig().customFieldsTypeConversion!;
 
         // if format "disabled", do not log any custom fields
         if (customFieldsFormat == CustomFieldsFormat.Disabled) {
@@ -110,23 +111,27 @@ export default class RecordFactory {
 
         let indexedCustomFields: any = {};
         providedFields.forEach((value, key) => {
-            // Stringify, if necessary.
-            if ((typeof value) != "string") {
-                value = jsonStringifySafe(value);
-            }
-
             if ([CustomFieldsFormat.CloudLogging, CustomFieldsFormat.All, CustomFieldsFormat.Default].includes(customFieldsFormat)
                 || record.payload[key] != null || this.config.isSettable(key)) {
+                // Stringify, if conversion type 'stringify' is selected and value is not a string already.
+                if (customFieldsTypeConversion == CustomFieldsTypeConversion.Stringify && (typeof value) != "string") {
+                    record.payload[key] = jsonStringifySafe(value);
+                } else {
                     record.payload[key] = value;
-                   
+                }
             }
 
             if ([CustomFieldsFormat.ApplicationLogging, CustomFieldsFormat.All].includes(customFieldsFormat)) {
-                indexedCustomFields[key] = value;
+                // Stringify, if necessary.
+                if ((typeof value) != "string") {
+                    indexedCustomFields[key] = jsonStringifySafe(value);
+                } else {
+                    indexedCustomFields[key] = value;
+                }
             }
         });
 
-        //writes custom fields in the correct order and correlates i to the place in registeredCustomFields
+        // Write custom fields in the correct order and correlates i to the place in registeredCustomFields
         if (Object.keys(indexedCustomFields).length > 0) {
             let res: any = {};
             res.string = [];

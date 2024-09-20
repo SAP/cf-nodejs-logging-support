@@ -1,6 +1,7 @@
 export interface ConfigObject {
     fields?: ConfigField[];
     customFieldsFormat?: CustomFieldsFormat;
+    customFieldsTypeConversion?: CustomFieldsTypeConversion;
     outputStartupMsg?: boolean;
     reqLoggingLevel?: string;
     framework?: Framework;
@@ -58,6 +59,11 @@ export enum CustomFieldsFormat {
     All = "all",
     Disabled = "disabled",
     Default = "default"
+}
+
+export enum CustomFieldsTypeConversion {
+    Retain = "retain",
+    Stringify = "stringify"
 }
 
 export enum SourceType {
