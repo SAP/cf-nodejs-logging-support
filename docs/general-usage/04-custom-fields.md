@@ -41,11 +41,11 @@ info("Test data", {"field": 42});
 
 ### SAP Cloud Logging
 
-When using the library with SAP Cloud Logging custom fields get added as top-level fields.
+When using the library with SAP Cloud Logging, custom fields get added as top-level fields.
 Registering custom fields is not required in this case.
 
 By default all custom field values get stringified, which can help to prevent field type mismatches when indexing to SAP Cloud Logging.
-However, if you want to retain the original type of your custom fields you can change the type conversion configuration accordingly:
+However, if you want to retain the original type of your custom fields, you can change the type conversion configuration accordingly:
 
 ```js
 log.setCustomFieldsTypeConversion(CustomFieldsTypeConversion.Retain)

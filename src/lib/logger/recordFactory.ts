@@ -115,10 +115,10 @@ export default class RecordFactory {
                 || record.payload[key] != null || this.config.isSettable(key)) {
                 // Stringify, if conversion type 'stringify' is selected and value is not a string already.
                 if (customFieldsTypeConversion == CustomFieldsTypeConversion.Stringify && (typeof value) != "string") {
-                    record.payload[key] = jsonStringifySafe(value);;
+                    record.payload[key] = jsonStringifySafe(value);
                 } else {
                     record.payload[key] = value;
-                }               
+                }
             }
 
             if ([CustomFieldsFormat.ApplicationLogging, CustomFieldsFormat.All].includes(customFieldsFormat)) {
@@ -131,7 +131,7 @@ export default class RecordFactory {
             }
         });
 
-        //writes custom fields in the correct order and correlates i to the place in registeredCustomFields
+        // Write custom fields in the correct order and correlates i to the place in registeredCustomFields
         if (Object.keys(indexedCustomFields).length > 0) {
             let res: any = {};
             res.string = [];

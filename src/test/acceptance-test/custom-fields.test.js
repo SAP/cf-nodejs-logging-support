@@ -145,7 +145,7 @@ describe('Test custom fields', function () {
                 log.logMessage("info", "test-message");
             });
 
-            it('logs custom fields as strings', function () {
+            it('logs custom fields with their retained type', function () {
                 expect(lastOutput).to.have.property('field-a', 42).that.is.a('number');
                 expect(lastOutput).to.have.property('field-b', true).that.is.a('boolean');
                 expect(lastOutput).to.have.property('field-c').that.deep.equals({"key":"value"})
