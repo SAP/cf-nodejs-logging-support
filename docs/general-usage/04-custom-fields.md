@@ -36,7 +36,7 @@ Custom fields are converted and printed as string values independent of their or
 log.registerCustomFields(["field"]);
 info("Test data", {"field": 42}); 
 // ... "msg":"Test data" 
-// ... "#cf": {"string": [{"k":"field","v":"42","i":"0"}]}...
+// ... "#cf": {"string": [{"k":"field","v":"42","i":0}]}...
 ```
 
 ### SAP Cloud Logging
