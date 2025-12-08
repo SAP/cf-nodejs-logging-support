@@ -6,10 +6,13 @@ nav_order: 4
 permalink: /configuration/custom-fields-format
 ---
 
-# Custom fields format
+# Custom fields format and type conversion
 
-As described in [Custom Fields](/cf-nodejs-logging-support/general-usage/custom-fields), the library will automatically detect which logging service your app is bound to and set the logging format accordingly.
-However, it is also possible to force the logging format by setting the property `customFieldsFormat`.
+
+
+As described in [Custom Fields](/cf-nodejs-logging-support/general-usage/custom-fields), the library supports different formats for logging custom fields to ensure compatibility with SAP logging services.
+When using user-provided services or running in environments without service bindings, you might want to explicitly set the custom fields format.
+Besides programmatic configuration, this can also be achieved via by adding the following settings to your configuration file.
 
 Example:
 

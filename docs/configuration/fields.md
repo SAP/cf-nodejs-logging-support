@@ -87,7 +87,7 @@ Each field, i.e., its source, format and behavior is defined by a set required a
 
 Read more on each available property below.
 
-### Property: name (required)
+### Property: `name` (required)
 
   * **Type:** `string`
   * **Description:** Assign field name.
