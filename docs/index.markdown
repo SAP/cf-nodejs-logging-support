@@ -9,8 +9,10 @@ nav_order: 1
 
 # CF Node.js Logging Support
 
-This library provides a bundle of targeted logging services for node.js applications running on Cloud Foundry which serves two main purposes:
+This library provides a bundle of targeted logging services for Node.js applications running on Cloud Foundry which serves two main purposes:
 It provides means to emit *structured application log messages* and instrument parts of your application stack to *collect request metrics*.
+
+The library is optimized for seamless integration with SAP BTP Cloud Foundry environment and its logging services [SAP Application Logging Service](https://help.sap.com/docs/application-logging-service) and [SAP Cloud Logging](https://help.sap.com/docs/cloud-logging).
 
 To get started follow our [Getting Started](/cf-nodejs-logging-support/getting-started/) chapters to install the library and learn how to integrate it with supported server frameworks.
 
