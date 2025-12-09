@@ -13,7 +13,7 @@ This is particularly useful for adding metadata that can help with filtering, se
 
 ## Format and type transformation for SAP logging services
 
-While the library can be used independently of SAP logging services, it provides built-in support for logging custom fields compatible with [SAP Application Logging Service](https://help.sap.com/docs/application-logging-service) and [SAP Cloud Logging](https://help.sap.com/docs/SAP_CLOUD_LOGGING).
+While the library can be used independently of SAP logging services, it provides built-in support for logging custom fields compatible with [SAP Application Logging Service](https://help.sap.com/docs/application-logging-service) and [SAP Cloud Logging](https://help.sap.com/docs/cloud-logging).
 This includes proper formatting and type conversion of custom fields to ensure compatibility with the respective logging service:
 
 - **SAP Application Logging**: Custom fields are formatted as key-value pairs within a special `#cf` field in the log message. The values are converted to strings to ensure compatibility with the service's field type requirements.
