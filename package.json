@@ -21,11 +21,12 @@
   "homepage": "https://sap.github.io/cf-nodejs-logging-support/",
   "scripts": {
     "build": "npm run build-json-schema && tsc -p tsconfig.json",
-    "test": "npm run build-json-schema && tsc -p tsconfig.json && node build/main/index.js && mocha 'src/test/**/*.test.js'",
+    "build-json-schema": "typescript-json-schema 'src/lib/config/interfaces.ts' ConfigObject --noExtraProps --required --out 'src/lib/config/default/config-schema.json'",
+    "prepare": "npm run build",
+    "test": "npm run build && node build/main/index.js && mocha 'src/test/**/*.test.js'",
     "test-lint": "eslint src --ext .ts",
     "test-performance": "mocha 'src/performance-test/*.test.js'",
-    "build-json-schema": "typescript-json-schema 'src/lib/config/interfaces.ts' ConfigObject --noExtraProps --required --out 'src/lib/config/default/config-schema.json'",
-    "coverage": "nyc --reporter=lcov --reporter=text-summary npm run test"
+    "test-coverage": "nyc --reporter=lcov --reporter=text-summary npm run test"
   },
   "engines": {
     "node": ">=14.14"
