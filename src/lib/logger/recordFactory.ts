@@ -46,7 +46,6 @@ export default class RecordFactory {
             } else if (isValidObject(lastArg)) {
                 if (this.stacktraceUtils.isErrorWithStacktrace(lastArg._error)) {
                     record.metadata.stacktrace = this.stacktraceUtils.prepareStacktrace(lastArg._error.stack);
-                    delete lastArg._error;
                 }
                 customFieldsFromArgs = new Map<string, any>(Object.entries(lastArg));
             } else if (lastArg instanceof Map) {
