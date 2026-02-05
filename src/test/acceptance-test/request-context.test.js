@@ -5,7 +5,6 @@ const { before, after } = require('mocha');
 const importFresh = require('import-fresh');
 const supertest = require('supertest');
 const expressApp = require("./express/app.js");
-const restifyApp = require("./restify/app.js");
 const connectApp = require("./connect/app.js");
 const fastifyApp = require("./fastify/app.js");
 const httpApp = require("./nodejs-http/app.js");
@@ -264,89 +263,6 @@ describe('Test request context', function () {
             });
         });
     })
-
-    describe("Use Restify framework", function () {
-        before(function (done) {
-            log.forceLogger("restify");
-            done();
-        });
-
-        describe("Set implicit correlation- and tenant-id through request header", function () {
-            var correlation_id = "cbc4343f-1c31-27d0-96fc-f32efac20986";
-            var tenant_id = "abc2654f-5t15-12h0-78gt-n73jeuc01847";
-
-            before(function (done) {
-                supertest(restifyApp)
-                    .get("/log")
-                    .set("x-correlationid", correlation_id)
-                    .set("tenantid", tenant_id)
-                    .expect(200)
-                    .then(() => done())
-                    .catch(err => done(err));
-            });
-
-            it("sets correlation_id via header", function () {
-                expect(lastLogs.length).to.be.gt(1);
-                expect(lastLogs[1]).to.have.property('correlation_id', correlation_id);
-            });
-
-            it("sets tenant_id via header", function () {
-                expect(lastLogs[1]).to.have.property('tenant_id', tenant_id);
-            });
-
-            after(function () {
-                lastLogs = [];
-            });
-        });
-
-        describe("Set implicit correlation- and tenant-id through methods", function () {
-
-            var correlation_id = "cbc2654f-1c35-45d0-96fc-f32efac20986";
-            var tenant_id = "abc8714f-5t15-12h0-78gt-n73jeuc01847";
-
-            before(function (done) {
-                supertest(restifyApp)
-                    .get("/setcorrelationandtenantid")
-                    .expect(200)
-                    .then(() => done())
-                    .catch(err => done(err));
-            });
-
-            it("writes a log with correlation id", function () {
-                expect(lastLogs.length).to.be.gt(1);
-                expect(lastLogs[1]).to.have.property('correlation_id', correlation_id);
-            });
-
-            it("sets tenant_id via header", function () {
-                expect(lastLogs[1]).to.have.property('tenant_id', tenant_id);
-            });
-
-            after(function () {
-                lastLogs = [];
-            });
-        });
-
-        describe("Get correlation- and tenant-id", function () {
-
-            before(function (done) {
-                supertest(restifyApp)
-                    .get("/getcorrelationandtenantid")
-                    .expect(200)
-                    .then(() => done())
-                    .catch(err => done(err));
-            });
-
-            it("get methods returned expected values", function () {
-                expect(lastLogs.length).to.be.gt(0);
-                expect(lastLogs[0]).to.have.property('msg', 'successful');
-            });
-
-
-            after(function () {
-                lastLogs = [];
-            });
-        });
-    });
 
     describe("Use Connect framework", function () {
         before(function (done) {
