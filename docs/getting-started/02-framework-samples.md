@@ -74,34 +74,6 @@ const server = http.createServer(app).listen(3000, () => {
 })
 ```
 
-## Restify
-
-```js
-const restify = require('restify')
-const log = require('cf-nodejs-logging-support')
-const app = restify.createServer()
-
-// Configure logger for working with Restify framework
-log.setFramework(log.Framework.Restify)
-
-// Add the logger middleware to write access logs
-app.use(log.logNetwork)
-
-// Handle '/' path
-app.get("/", (req, res, next) => {
-    // Write a log message bound to request context
-    req.logger.info(`Sending a greeting`)
-    res.send("Hello Restify")
-    next()
-})
-
-// Listen on specified port
-app.listen(3000, () => {
-  // Formatted log message
-  log.info("Server is listening on port %d", app.address().port)
-})
-```
-
 ## Fastify
 
 ```js
@@ -157,3 +129,8 @@ server.listen(3000, () => {
     log.info("Server is listening on port %d", server.address().port)
 })
 ```
+
+## Restify
+
+As of version 8.0.0, restify is no longer supported by cf-nodejs-logging-support. 
+Please consider switching to one of the other supported server frameworks.

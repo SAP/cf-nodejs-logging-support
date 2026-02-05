@@ -4,14 +4,11 @@ import ConnectService from './framework-services/connect';
 import ExpressService from './framework-services/express';
 import FastifyService from './framework-services/fastify';
 import HttpService from './framework-services/plainhttp';
-import RestifyService from './framework-services/restify';
 import { FrameworkService } from './interfaces';
 
 export function assignFrameworkService(): FrameworkService {
     const framework = Config.getInstance().getFramework();
     switch (framework) {
-        case Framework.Restify:
-            return new RestifyService();
         case Framework.NodeJsHttp:
             return new HttpService();
         case Framework.Connect:
