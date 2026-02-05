@@ -5,7 +5,7 @@ const http = importFresh('http');
 const app = connect();
 
 // Force logger to run the connect version. (default is express, forcing express is also legal)
-log.forceLogger("connect");
+log.setFramework("connect");
 
 // Add the logger middleware, so each time a request is received, it is will get logged.
 app.use(log.logNetwork);

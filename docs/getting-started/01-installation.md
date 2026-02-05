@@ -19,7 +19,6 @@ To take full advantage of cf-nodejs-logging-support make sure to fulfill followi
 * Use one of the supported server frameworks:
   * [Express](https://expressjs.com/)
   * [Connect](https://www.npmjs.com/package/connect)
-  * [Restify](http://restify.com/)
   * [Fastify](https://fastify.dev/)
   * [Node.js HTTP](https://nodejs.org/api/http.html)
 
