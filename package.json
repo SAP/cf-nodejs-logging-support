@@ -29,7 +29,7 @@
     "test-coverage": "nyc --reporter=lcov --reporter=text-summary npm run test"
   },
   "engines": {
-    "node": ">=14.14"
+    "node": ">=20"
   },
   "devDependencies": {
     "@types/json-stringify-safe": "^5.0.0",
