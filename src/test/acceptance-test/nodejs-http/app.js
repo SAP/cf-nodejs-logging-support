@@ -3,7 +3,7 @@ const http = importFresh('http');
 const log = importFresh('../../../../build/main/index');
 
 // Force logger to run the http version.
-log.forceLogger("plainhttp");
+log.setFramework("plainhttp");
 
 const server = http.createServer((req, res) => {
     // Binds logging to the given request for request tracking

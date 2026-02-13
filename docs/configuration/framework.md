@@ -21,7 +21,7 @@ By default the library will be configured to run with express. If you are going 
  2. Set the server framework from a logger instance by calling:
 
     ```js
-    log.forceLogger("fastify") 
+    log.setFramework("fastify") 
     ```
 
 Our supported server frameworks are:

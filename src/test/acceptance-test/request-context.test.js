@@ -26,7 +26,7 @@ describe('Test request context', function () {
 
     describe("Use Express framework", function () {
         before(function () {
-            log.forceLogger("express");
+            log.setFramework("express");
         });
 
         describe("Logs in request context", function () {
@@ -266,7 +266,7 @@ describe('Test request context', function () {
 
     describe("Use Connect framework", function () {
         before(function (done) {
-            log.forceLogger("connect");
+            log.setFramework("connect");
             done();
         });
 
@@ -349,7 +349,7 @@ describe('Test request context', function () {
 
     describe("Use Fastify framework", function () {
         before(function (done) {
-            log.forceLogger("fastify");
+            log.setFramework("fastify");
             done();
         });
 
@@ -436,7 +436,7 @@ describe('Test request context', function () {
 
     describe("Use Node.js http", function () {
         before(function (done) {
-            log.forceLogger("plainhttp");
+            log.setFramework("plainhttp");
             done();
         });
 
