@@ -5,7 +5,8 @@ import { ConfigField, Conversion, DetailName, Output, Source, SourceType } from 
 import EnvVarHelper from '../helper/envVarHelper';
 import RequestAccessor from '../middleware/requestAccessor';
 import ResponseAccessor from '../middleware/responseAccessor';
-import Record from './record';
+import { Record, RecordFieldValue } from './record';
+import { LevelUtils } from '../logger/level';
 
 const NS_PER_MS = 1e6;
 const REDACTED_PLACEHOLDER = "redacted";
@@ -31,11 +32,11 @@ export default class SourceUtils {
         return SourceUtils.instance;
     }
 
-    getValue(field: ConfigField, record: Record, output: Output, req?: any, res?: any): string | number | boolean | undefined {
+    getValue(field: ConfigField, record: Record, output: Output, req?: any, res?: any): RecordFieldValue | undefined {
         if (!field.source) return undefined
 
         let sources = Array.isArray(field.source) ? field.source : [field.source]
-        let value: string | number | boolean | undefined;
+        let value: RecordFieldValue | undefined;
 
         let sourceIndex = 0;
 
@@ -57,19 +58,19 @@ export default class SourceUtils {
         }
 
         if (value != null && field.convert != null) {
-            switch(field.convert) {
+            switch (field.convert) {
                 case Conversion.ToString:
                     value = value.toString ? value.toString() : undefined
-                break;
+                    break;
                 case Conversion.ParseBoolean:
                     value = this.parseBooleanValue(value)
-                break;
+                    break;
                 case Conversion.ParseInt:
                     value = this.parseIntValue(value)
-                break;
+                    break;
                 case Conversion.ParseFloat:
                     value = this.parseFloatValue(value)
-                break;
+                    break;
             }
         }
 
@@ -81,8 +82,8 @@ export default class SourceUtils {
         return value
     }
 
-    private getValueFromSource(source: Source, record: Record, output: Output, req?: any, res?: any): string | number | boolean | undefined {
-        let value: string | number | boolean | undefined;
+    private getValueFromSource(source: Source, record: Record, output: Output, req?: any, res?: any): RecordFieldValue | undefined {
+        let value: RecordFieldValue | undefined;
         switch (source.type) {
             case SourceType.ReqHeader:
                 value = req ? this.requestAccessor.getHeaderField(req, source.fieldName!) : undefined;
@@ -121,8 +122,8 @@ export default class SourceUtils {
         return value
     }
 
-    private getDetail(detailName: DetailName, record: Record, req?: any, res?: any) : string | number | undefined {
-        let value: string | number | undefined;
+    private getDetail(detailName: DetailName, record: Record, req?: any, res?: any): RecordFieldValue | undefined {
+        let value: RecordFieldValue | undefined;
         switch (detailName as DetailName) {
             case DetailName.RequestReceivedAt:
                 value = req ? new Date(req._receivedAt).toJSON() : undefined;
@@ -155,8 +156,17 @@ export default class SourceUtils {
             case DetailName.Stacktrace:
                 value = record.metadata.stacktrace
                 break;
+            case DetailName.RawStacktrace:
+                value = record.metadata.rawStacktrace
+                break
+            case DetailName.ErrorMessage:
+                value = record.metadata.errorMessage
+                break;
+            case DetailName.ErrorName:
+                value = record.metadata.errorName
+                break;
             case DetailName.Level:
-                value = record.metadata.level
+                value = LevelUtils.getName(record.metadata.level)
                 break;
         }
         return value;
@@ -194,7 +204,7 @@ export default class SourceUtils {
         return undefined;
     }
 
-    private parseIntValue(value: string | number | boolean): number {
+    private parseIntValue(value: RecordFieldValue): number {
         switch (typeof value) {
             case 'string':
                 return parseInt(value, 0)
@@ -203,9 +213,10 @@ export default class SourceUtils {
             case 'boolean':
                 return value ? 1 : 0
         }
+        return 0
     }
 
-    private parseFloatValue(value: string | number | boolean): number {
+    private parseFloatValue(value: RecordFieldValue): number {
         switch (typeof value) {
             case 'string':
                 return parseFloat(value)
@@ -214,9 +225,10 @@ export default class SourceUtils {
             case 'boolean':
                 return value ? 1 : 0
         }
+        return 0
     }
 
-    private parseBooleanValue(value: string | number | boolean) : boolean {
+    private parseBooleanValue(value: RecordFieldValue): boolean {
         return value === 'true' || value === 'TRUE' || value === 'True' || value === 1 || value === true
     }
 }

@@ -1,9 +1,8 @@
-import LevelUtils from '../helper/levelUtils';
 import { isValidObject } from '../middleware/utils';
-import { Level } from './level';
+import { Level, LevelUtils } from './level';
 import RecordFactory from './recordFactory';
-import RecordWriter from './recordWriter';
 import Context from './context';
+import PluginProvider from '../helper/pluginProvider';
 
 export class Logger {
     private parent?: Logger = undefined
@@ -11,7 +10,7 @@ export class Logger {
     private registeredCustomFields: Array<string> = [];
     private customFields: Map<string, any> = new Map<string, any>()
     private recordFactory: RecordFactory;
-    private recordWriter: RecordWriter;
+
     protected loggingLevelThreshold: Level = Level.Inherit
 
     constructor(parent?: Logger, context?: Context) {
@@ -23,7 +22,6 @@ export class Logger {
             this.context = context;
         }
         this.recordFactory = RecordFactory.getInstance();
-        this.recordWriter = RecordWriter.getInstance();
     }
 
     createLogger(customFields?: Map<string, any> | Object, createNewContext?: boolean): Logger {
@@ -37,11 +35,7 @@ export class Logger {
     }
 
     setLoggingLevel(level: string | Level) {
-        if (typeof level === 'string') {
-            this.loggingLevelThreshold = LevelUtils.getLevel(level)
-        } else {
-            this.loggingLevelThreshold = level
-        }
+        this.loggingLevelThreshold = LevelUtils.getLevel(level)
     }
 
     getLoggingLevel(): string {
@@ -55,26 +49,14 @@ export class Logger {
         if (this.loggingLevelThreshold == Level.Inherit) {
             return this.parent!.isLoggingLevel(level)
         }
-        if (typeof level === 'string') {
-            return LevelUtils.isLevelEnabled(this.loggingLevelThreshold, LevelUtils.getLevel(level))
-        } else {
-            return LevelUtils.isLevelEnabled(this.loggingLevelThreshold, level)
-        }
+        return LevelUtils.isLevelEnabled(this.loggingLevelThreshold, LevelUtils.getLevel(level))
     }
 
     logMessage(level: string | Level, ...args: any) {
         if (!this.isLoggingLevel(level)) return;
         const loggerCustomFields = this.getCustomFieldsFromLogger(this);
-
-        let levelName: string;
-        if (typeof level === 'string') {
-            levelName = level;
-        } else {
-            levelName = LevelUtils.getName(level);
-        }
-
-        const record = this.recordFactory.buildMsgRecord(this.registeredCustomFields, loggerCustomFields, levelName, args, this.context);
-        this.recordWriter.writeLog(record);
+        const record = this.recordFactory.buildMsgRecord(this.registeredCustomFields, loggerCustomFields, LevelUtils.getLevel(level), args, this.context);
+        PluginProvider.getInstance().getOutputPlugins().forEach(output => { output.writeRecord(record) })
     }
 
     error(...args: any) {
