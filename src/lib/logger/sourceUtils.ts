@@ -1,4 +1,4 @@
-import { v4 as uuid } from 'uuid';
+import { randomUUID } from 'crypto';
 
 import Config from '../config/config';
 import { ConfigField, Conversion, DetailName, Output, Source, SourceType } from '../config/interfaces';
@@ -110,7 +110,7 @@ export default class SourceUtils {
                 value = this.getDetail(source.detailName!, record, req, res)
                 break;
             case SourceType.UUID:
-                value = uuid();
+                value = randomUUID();
                 break;
         }
 
