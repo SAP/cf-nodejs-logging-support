@@ -1,6 +1,7 @@
 const { SPLAT } = require('triple-beam');
 var rewire = require('rewire');
 var chai = require("chai");
+const { BUILD_CJS_INDEX } = require('../paths');
 chai.should();
 
 
@@ -8,7 +9,7 @@ describe('Test winston-transport.js', function () {
     describe('Test parameter forwarding', function () {
 
         var transport;
-        var logger = rewire("../../../build/main/index.js");
+        var logger = rewire(BUILD_CJS_INDEX);
         var catchedArgs;
 
         before(function () {
@@ -63,7 +64,7 @@ describe('Test winston-transport.js', function () {
 
     describe('Test option initialization', function () {
 
-        var logger = require("../../../build/main/index.js");
+        var logger = require(BUILD_CJS_INDEX);
 
         it('Test default initialization', function () {
             var transport = logger.createWinstonTransport();

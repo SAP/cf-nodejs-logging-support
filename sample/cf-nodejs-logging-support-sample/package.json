@@ -1,7 +1,8 @@
 {
   "name": "cf-nodejs-logging-support-sample-app",
-  "version": "1.1.0",
+  "version": "2.0.0",
   "description": "Sample app to learn and test features from the cf-nodejs-logging-support library",
+  "type": "module",
   "main": "app.js",
   "scripts": {
     "start": "node app.js",

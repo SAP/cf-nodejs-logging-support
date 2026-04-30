@@ -3,12 +3,13 @@ process.env.DYN_LOG_LEVEL_KEY = "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA2fz
 const expect = require('chai').expect;
 const { before, after } = require('mocha');
 const importFresh = require('import-fresh');
+const { BUILD_CJS_INDEX } = require('../paths');
 const supertest = require('supertest');
 const expressApp = require("./express/app.js");
 const connectApp = require("./connect/app.js");
 const fastifyApp = require("./fastify/app.js");
 const httpApp = require("./nodejs-http/app.js");
-const log = importFresh("../../../build/main/index");
+const log = importFresh(BUILD_CJS_INDEX);
 
 var lastLogs = [];
 

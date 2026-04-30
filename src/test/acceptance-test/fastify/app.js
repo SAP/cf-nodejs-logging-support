@@ -1,7 +1,8 @@
 
 const importFresh = require('import-fresh');
+const { BUILD_CJS_INDEX } = require('../../paths');
 const fastify = importFresh('fastify');
-const log = importFresh('../../../../build/main/index');
+const log = importFresh(BUILD_CJS_INDEX);
 const app = fastify();
 
 // Force logger to run the fastify version.

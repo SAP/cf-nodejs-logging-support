@@ -6,10 +6,22 @@
     "logging",
     "cloud-foundry"
   ],
-  "main": "build/main/index.js",
-  "types": "build/main/index.d.ts",
-  "typings": "build/main/index.d.ts",
-  "module": "build/main/index.js",
+  "main": "build/cjs/index.js",
+  "types": "build/cjs/index.d.ts",
+  "typings": "build/cjs/index.d.ts",
+  "module": "build/esm/index.js",
+  "exports": {
+    ".": {
+      "import": {
+        "types": "./build/esm/index.d.ts",
+        "default": "./build/esm/index.js"
+      },
+      "require": {
+        "types": "./build/cjs/index.d.ts",
+        "default": "./build/cjs/index.js"
+      }
+    }
+  },
   "repository": {
     "type": "git",
     "url": "https://github.com/SAP/cf-nodejs-logging-support"
@@ -20,10 +32,10 @@
   },
   "homepage": "https://sap.github.io/cf-nodejs-logging-support/",
   "scripts": {
-    "build": "npm run build-json-schema && tsc -p tsconfig.json",
+    "build": "npm run build-json-schema && tsc -p tsconfig.cjs.json && tsc -p tsconfig.esm.json && node scripts/build-post.mjs",
     "build-json-schema": "typescript-json-schema 'src/lib/config/interfaces.ts' ConfigObject --noExtraProps --required --out 'src/lib/config/default/config-schema.json'",
     "prepare": "npm run build",
-    "test": "npm run build && node build/main/index.js && mocha 'src/test/**/*.test.js'",
+    "test": "npm run build && node build/cjs/index.js && mocha 'src/test/**/*.test.js'",
     "test-performance": "mocha 'src/performance-test/*.test.js'",
     "test-coverage": "nyc --reporter=lcov --reporter=text-summary npm run test",
     "lint": "eslint src --ext .ts",
@@ -43,16 +55,16 @@
     "chai": "^6.2.2",
     "connect": "^3.7.0",
     "express": "^5.2.1",
-    "fastify": "^5.7.4",
+    "fastify": "^5.8.5",
     "globals": "^17.5.0",
     "import-fresh": "^3.3.1",
     "jiti": "^2.6.1",
-    "mocha": "^11.3.0",
+    "mocha": "^11.7.5",
     "node-mocks-http": "^1.17.2",
-    "nyc": "^17.1.0",
+    "nyc": "^18.0.0",
     "rewire": "^9.0.1",
     "supertest": "^7.2.2",
-    "typescript": "^5.9.3",
+    "typescript": "^6.0.3",
     "typescript-eslint": "^8.59.1",
     "typescript-json-schema": "^0.67.1"
   },

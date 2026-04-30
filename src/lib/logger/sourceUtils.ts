@@ -1,11 +1,11 @@
 import { randomUUID } from 'crypto';
 
-import Config from '../config/config';
-import { ConfigField, Conversion, DetailName, Output, Source, SourceType } from '../config/interfaces';
-import EnvVarHelper from '../helper/envVarHelper';
-import RequestAccessor from '../middleware/requestAccessor';
-import ResponseAccessor from '../middleware/responseAccessor';
-import Record from './record';
+import Config from '../config/config.js';
+import { ConfigField, Conversion, DetailName, Output, Source, SourceType } from '../config/interfaces.js';
+import EnvVarHelper from '../helper/envVarHelper.js';
+import RequestAccessor from '../middleware/requestAccessor.js';
+import ResponseAccessor from '../middleware/responseAccessor.js';
+import Record from './record.js';
 
 const NS_PER_MS = 1e6;
 const REDACTED_PLACEHOLDER = "redacted";

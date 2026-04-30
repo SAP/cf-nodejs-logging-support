@@ -1,6 +1,7 @@
 const assert = require('chai').assert;
 const expect = require('chai').expect;
 const importFresh = require('import-fresh');
+const { BUILD_CJS_INDEX } = require('../paths');
 
 var log;
 var lastLevel;
@@ -10,7 +11,7 @@ var logCount;
 describe('Test logging in global context', function () {
 
     beforeEach(function () {
-        log = importFresh("../../../build/main/index");
+        log = importFresh(BUILD_CJS_INDEX);
 
         logCount = 0;
         lastLevel = "";

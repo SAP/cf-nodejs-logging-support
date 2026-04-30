@@ -1,6 +1,6 @@
-import Config from '../config/config';
-import { Output } from '../config/interfaces';
-import SourceUtils from './sourceUtils';
+import Config from '../config/config.js';
+import { Output } from '../config/interfaces.js';
+import SourceUtils from './sourceUtils.js';
 
 export default class Context {
     private properties: any = {};

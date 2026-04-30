@@ -1,10 +1,10 @@
-import Config from '../config/config';
-import { Framework } from '../config/interfaces';
-import ConnectService from './framework-services/connect';
-import ExpressService from './framework-services/express';
-import FastifyService from './framework-services/fastify';
-import HttpService from './framework-services/plainhttp';
-import { FrameworkService } from './interfaces';
+import Config from '../config/config.js';
+import { Framework } from '../config/interfaces.js';
+import ConnectService from './framework-services/connect.js';
+import ExpressService from './framework-services/express.js';
+import FastifyService from './framework-services/fastify.js';
+import HttpService from './framework-services/plainhttp.js';
+import { FrameworkService } from './interfaces.js';
 
 export function assignFrameworkService(): FrameworkService {
     const framework = Config.getInstance().getFramework();

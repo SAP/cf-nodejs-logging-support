@@ -1,15 +1,15 @@
-import Config from '../config/config';
+import Config from '../config/config.js';
 import {
     ConfigObject, CustomFieldsFormat, CustomFieldsTypeConversion, Framework
-} from '../config/interfaces';
-import EnvService from '../helper/envService';
-import Middleware from '../middleware/middleware';
-import RequestAccessor from '../middleware/requestAccessor';
-import ResponseAccessor from '../middleware/responseAccessor';
-import createTransport from '../winston/winstonTransport';
-import { Level } from './level';
-import { Logger } from './logger';
-import RecordWriter from './recordWriter';
+} from '../config/interfaces.js';
+import EnvService from '../helper/envService.js';
+import Middleware from '../middleware/middleware.js';
+import RequestAccessor from '../middleware/requestAccessor.js';
+import ResponseAccessor from '../middleware/responseAccessor.js';
+import createTransport from '../winston/winstonTransport.js';
+import { Level } from './level.js';
+import { Logger } from './logger.js';
+import RecordWriter from './recordWriter.js';
 
 export default class RootLogger extends Logger {
     private static instance: RootLogger;
