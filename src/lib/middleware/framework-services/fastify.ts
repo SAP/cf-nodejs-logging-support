@@ -1,4 +1,4 @@
-import { FrameworkService } from "../interfaces";
+import { FrameworkService } from "../interfaces.js";
 
 export default class FastifyService implements FrameworkService {
 

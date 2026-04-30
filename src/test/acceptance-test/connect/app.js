@@ -1,6 +1,7 @@
 const importFresh = require('import-fresh');
+const { BUILD_CJS_INDEX } = require('../../paths');
 const connect = importFresh('connect');
-const log = importFresh('../../../../build/main/index');
+const log = importFresh(BUILD_CJS_INDEX);
 const http = importFresh('http');
 const app = connect();
 

@@ -1,4 +1,4 @@
-import JSONHelper from './jsonHelper';
+import JSONHelper from './jsonHelper.js';
 
 export default class EnvService {
     private static instance: EnvService;

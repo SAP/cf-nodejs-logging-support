@@ -1,5 +1,5 @@
-import { FrameworkService } from './interfaces';
-import { assignFrameworkService } from './utils';
+import { FrameworkService } from './interfaces.js';
+import { assignFrameworkService } from './utils.js';
 
 export default class ResponseAccessor {
     private static instance: ResponseAccessor;

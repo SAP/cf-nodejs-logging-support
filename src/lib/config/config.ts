@@ -1,13 +1,13 @@
-import EnvService from '../helper/envService';
-import EnvVarHelper from '../helper/envVarHelper';
-import Cache from '../logger/cache';
-import ConfigValidator from './configValidator';
+import EnvService from '../helper/envService.js';
+import EnvVarHelper from '../helper/envVarHelper.js';
+import Cache from '../logger/cache.js';
+import ConfigValidator from './configValidator.js';
 import cfConfig from './default/config-cf.json';
 import coreConfig from './default/config-core.json';
 import kymaConfig from './default/config-kyma.json';
 import requestConfig from './default/config-request.json';
 import sapPassportConfig from './default/config-sap-passport.json';
-import { ConfigField, ConfigObject, CustomFieldsFormat, CustomFieldsTypeConversion, Framework, Output, Source, SourceType } from './interfaces';
+import { ConfigField, ConfigObject, CustomFieldsFormat, CustomFieldsTypeConversion, Framework, Output, Source, SourceType } from './interfaces.js';
 
 export default class Config {
 

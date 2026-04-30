@@ -1,9 +1,9 @@
-import LevelUtils from '../helper/levelUtils';
-import { isValidObject } from '../middleware/utils';
-import { Level } from './level';
-import RecordFactory from './recordFactory';
-import RecordWriter from './recordWriter';
-import Context from './context';
+import LevelUtils from '../helper/levelUtils.js';
+import { isValidObject } from '../middleware/utils.js';
+import { Level } from './level.js';
+import RecordFactory from './recordFactory.js';
+import RecordWriter from './recordWriter.js';
+import Context from './context.js';
 
 export class Logger {
     private parent?: Logger = undefined

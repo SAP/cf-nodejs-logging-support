@@ -1,14 +1,14 @@
 import jsonStringifySafe from 'json-stringify-safe';
 import util from 'util';
 
-import Config from '../config/config';
-import { CustomFieldsFormat, CustomFieldsTypeConversion, Output } from '../config/interfaces';
-import StacktraceUtils from '../helper/stacktraceUtils';
-import { isValidObject } from '../middleware/utils';
-import Cache from './cache';
-import Record from './record';
-import Context from './context';
-import SourceUtils from './sourceUtils';
+import Config from '../config/config.js';
+import { CustomFieldsFormat, CustomFieldsTypeConversion, Output } from '../config/interfaces.js';
+import StacktraceUtils from '../helper/stacktraceUtils.js';
+import { isValidObject } from '../middleware/utils.js';
+import Cache from './cache.js';
+import Record from './record.js';
+import Context from './context.js';
+import SourceUtils from './sourceUtils.js';
 
 export default class RecordFactory {
 

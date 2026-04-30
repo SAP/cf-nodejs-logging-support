@@ -1,13 +1,13 @@
-import JWTService from '../helper/jwtService';
-import LevelUtils from '../helper/levelUtils';
-import { Logger } from '../logger/logger';
-import RecordFactory from '../logger/recordFactory';
-import RecordWriter from '../logger/recordWriter';
-import Context from '../logger/context';
-import RootLogger from '../logger/rootLogger';
-import RequestAccessor from './requestAccessor';
-import Config from '../config/config';
-import ResponseAccessor from './responseAccessor';
+import JWTService from '../helper/jwtService.js';
+import LevelUtils from '../helper/levelUtils.js';
+import { Logger } from '../logger/logger.js';
+import RecordFactory from '../logger/recordFactory.js';
+import RecordWriter from '../logger/recordWriter.js';
+import Context from '../logger/context.js';
+import RootLogger from '../logger/rootLogger.js';
+import RequestAccessor from './requestAccessor.js';
+import Config from '../config/config.js';
+import ResponseAccessor from './responseAccessor.js';
 
 export default class Middleware {
     static logNetwork(req: any, res: any, next?: any) {
