@@ -34,7 +34,7 @@ export default class SourceUtils {
     getValue(field: ConfigField, record: Record, output: Output, req?: any, res?: any): string | number | boolean | undefined {
         if (!field.source) return undefined
 
-        let sources = Array.isArray(field.source) ? field.source : [field.source]
+        const sources = Array.isArray(field.source) ? field.source : [field.source]
         let value: string | number | boolean | undefined;
 
         let sourceIndex = 0;
@@ -45,7 +45,7 @@ export default class SourceUtils {
                 break;
             }
 
-            let source = sources[sourceIndex];
+            const source = sources[sourceIndex];
 
             value = this.getValueFromSource(source, record, output, req, res)
             sourceIndex++;
@@ -57,19 +57,19 @@ export default class SourceUtils {
         }
 
         if (value != null && field.convert != null) {
-            switch(field.convert) {
+            switch (field.convert) {
                 case Conversion.ToString:
                     value = value.toString ? value.toString() : undefined
-                break;
+                    break;
                 case Conversion.ParseBoolean:
                     value = this.parseBooleanValue(value)
-                break;
+                    break;
                 case Conversion.ParseInt:
                     value = this.parseIntValue(value)
-                break;
+                    break;
                 case Conversion.ParseFloat:
                     value = this.parseFloatValue(value)
-                break;
+                    break;
             }
         }
 
@@ -102,10 +102,11 @@ export default class SourceUtils {
             case SourceType.Env:
                 value = this.getEnvFieldValue(source);
                 break;
-            case SourceType.ConfigField:
-                let fields = this.config.getConfigFields([source.fieldName!])
+            case SourceType.ConfigField: {
+                const fields = this.config.getConfigFields([source.fieldName!])
                 value = fields.length >= 1 ? this.getValue(fields[0], record, output, req, res) : undefined
                 break;
+            }
             case SourceType.Detail:
                 value = this.getDetail(source.detailName!, record, req, res)
                 break;
@@ -121,7 +122,7 @@ export default class SourceUtils {
         return value
     }
 
-    private getDetail(detailName: DetailName, record: Record, req?: any, res?: any) : string | number | undefined {
+    private getDetail(detailName: DetailName, record: Record, req?: any, res?: any): string | number | undefined {
         let value: string | number | undefined;
         switch (detailName as DetailName) {
             case DetailName.RequestReceivedAt:
@@ -136,7 +137,7 @@ export default class SourceUtils {
             case DetailName.WrittenAt:
                 value = new Date().toJSON();
                 break;
-            case DetailName.WrittenTs:
+            case DetailName.WrittenTs: {
                 const lower = process.hrtime()[1] % NS_PER_MS
                 const higher = Date.now() * NS_PER_MS
                 let writtenTs = higher + lower;
@@ -149,6 +150,7 @@ export default class SourceUtils {
                 this.lastTimestamp = writtenTs;
                 value = writtenTs;
                 break;
+            }
             case DetailName.Message:
                 value = record.metadata.message
                 break;
@@ -175,7 +177,7 @@ export default class SourceUtils {
         const framework = this.config.getFramework();
 
         for (let i = startIndex; i < sources.length; i++) {
-            let source = sources[i];
+            const source = sources[i];
             if (!source.framework || source.framework == framework) {
                 if (!source.output || source.output == output) {
                     return i;
@@ -216,7 +218,7 @@ export default class SourceUtils {
         }
     }
 
-    private parseBooleanValue(value: string | number | boolean) : boolean {
+    private parseBooleanValue(value: string | number | boolean): boolean {
         return value === 'true' || value === 'TRUE' || value === 'True' || value === 1 || value === true
     }
 }

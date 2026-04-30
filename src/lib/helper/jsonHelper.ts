@@ -4,7 +4,7 @@ export default class JSONHelper {
         if (value) {
             try {
                 tmp = JSON.parse(value);
-            } catch (e) {
+            } catch {
                 tmp = {};
             }
         }

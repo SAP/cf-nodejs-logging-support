@@ -56,7 +56,7 @@ export default class RootLogger extends Logger {
         return this.config.setStartupMessageEnabled(enabled);
     }
 
-    setSinkFunction(func: (level: string, payload: string) => any) {
+    setSinkFunction(func: (level: string, payload: string) => void) {
         RecordWriter.getInstance().setSinkFunction(func);
     }
 

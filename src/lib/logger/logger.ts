@@ -26,9 +26,9 @@ export class Logger {
         this.recordWriter = RecordWriter.getInstance();
     }
 
-    createLogger(customFields?: Map<string, any> | Object, createNewContext?: boolean): Logger {
-        let context = createNewContext == true ? new Context() : this.context
-        let logger = new Logger(this, context);
+    createLogger(customFields?: Map<string, any> | object, createNewContext?: boolean): Logger {
+        const context = createNewContext == true ? new Context() : this.context
+        const logger = new Logger(this, context);
         // assign custom fields, if provided
         if (customFields) {
             logger.setCustomFields(customFields);
@@ -130,7 +130,7 @@ export class Logger {
         this.registeredCustomFields.push(...fieldNames);
     }
 
-    setCustomFields(customFields: Map<string, any> | Object) {
+    setCustomFields(customFields: Map<string, any> | object) {
         if (customFields instanceof Map) {
             this.customFields = customFields;
         } else if (isValidObject(customFields)) {
@@ -180,7 +180,7 @@ export class Logger {
 
     private getCustomFieldsFromLogger(logger: Logger): Map<string, any> {
         if (logger.parent && logger.parent !== this) {
-            let parentFields = this.getCustomFieldsFromLogger(logger.parent);
+            const parentFields = this.getCustomFieldsFromLogger(logger.parent);
             return new Map([...parentFields, ...logger.customFields]);
         }
         return logger.customFields;

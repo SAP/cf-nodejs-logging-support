@@ -10,7 +10,6 @@ import Config from '../config/config';
 import ResponseAccessor from './responseAccessor';
 
 export default class Middleware {
-
     static logNetwork(req: any, res: any, next?: any) {
         let logSent = false;
 
@@ -49,6 +48,6 @@ export default class Middleware {
 
         ResponseAccessor.getInstance().onFinish(res, finishLog);
 
-        next ? next() : null;
+        if (next) next();
     }
 }
