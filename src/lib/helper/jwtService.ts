@@ -1,4 +1,5 @@
-const jwt = require("jsonwebtoken");
+import jwt from "jsonwebtoken";
+
 const ENV_DYN_LOG_HEADER = "DYN_LOG_HEADER";
 const ENV_DYN_LOG_KEY = "DYN_LOG_LEVEL_KEY";
 const DEFAULT_DYN_LOG_LEVEL_HEADER = "SAP-LOG-LEVEL";
@@ -29,7 +30,7 @@ export default class JWTService {
         // Read dynamic log level key from environment var.
         const dynLogLevelKey = process.env[ENV_DYN_LOG_KEY];
         const payload = dynLogLevelKey ? this.verifyAndDecodeJWT(token, dynLogLevelKey) : null;
-        if (payload) {
+        if (payload && typeof payload === "object" && "level" in payload) {
             return payload.level;
         }
         return null;
@@ -45,7 +46,7 @@ export default class JWTService {
                 return jwt.verify(token, pubKey, { algorithms: ["RS256", "RS384", "RS512"] });
             else
                 return jwt.verify(token, "-----BEGIN PUBLIC KEY-----\n" + pubKey + "\n-----END PUBLIC KEY-----", { algorithms: ["RS256", "RS384", "RS512"] });
-        } catch (err) {
+        } catch {
             return null; // token expired or invalid
         }
     }

@@ -18,7 +18,7 @@ export default class RecordWriter {
     }
 
     writeLog(record: Record): void {
-        let level = record.metadata.level;
+        const level = record.metadata.level;
         if (this.customSinkFunction) {
             this.customSinkFunction(level, JSON.stringify(record.payload));
         } else {
