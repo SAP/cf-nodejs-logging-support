@@ -1,8 +1,7 @@
 const { BUILD_CJS_LIB } = require('../paths');
 const expect = require('chai').expect;
 const JSONHelper = require(`${BUILD_CJS_LIB}/helper/jsonHelper.js`).default;
-const LevelUtils = require(`${BUILD_CJS_LIB}/helper/levelUtils.js`).default;
-const { Level } = require(`${BUILD_CJS_LIB}/logger/level.js`);
+const { Level, LevelUtils } = require(`${BUILD_CJS_LIB}/logger/level.js`);
 const EnvVarHelper = require(`${BUILD_CJS_LIB}/helper/envVarHelper.js`).default;
 const StacktraceUtils = require(`${BUILD_CJS_LIB}/helper/stacktraceUtils.js`).default;
 

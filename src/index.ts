@@ -5,3 +5,5 @@ export default rootLogger;
 export * from "./lib/config/interfaces.js";
 export * from "./lib/logger/level.js";
 export * from "./lib/logger/logger.js";
+export * from "./lib/plugins/stdoutOutput.js";
+export * from "./lib/plugins/otelOutput.js";

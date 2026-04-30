@@ -6,18 +6,23 @@ import EnvService from '../helper/envService.js';
 import Middleware from '../middleware/middleware.js';
 import RequestAccessor from '../middleware/requestAccessor.js';
 import ResponseAccessor from '../middleware/responseAccessor.js';
+import { StdoutOutputPlugin } from '../plugins/stdoutOutput.js';
+import { OutputPlugin } from '../plugins/interfaces.js';
+import PluginProvider from '../helper/pluginProvider.js';
 import createTransport from '../winston/winstonTransport.js';
 import { Level } from './level.js';
 import { Logger } from './logger.js';
-import RecordWriter from './recordWriter.js';
 
 export default class RootLogger extends Logger {
     private static instance: RootLogger;
+    private stdoutOutput: StdoutOutputPlugin;
     private config = Config.getInstance();
 
     private constructor() {
         super()
         this.loggingLevelThreshold = Level.Info
+        this.stdoutOutput = new StdoutOutputPlugin();
+        PluginProvider.getInstance().setOutputPlugins([this.stdoutOutput]);
     }
 
     static getInstance(): RootLogger {
@@ -56,8 +61,20 @@ export default class RootLogger extends Logger {
         return this.config.setStartupMessageEnabled(enabled);
     }
 
-    setSinkFunction(func: (level: string, payload: string) => void) {
-        RecordWriter.getInstance().setSinkFunction(func);
+    setSinkFunction(func: (level: string, payload: string) => any) {
+        this.stdoutOutput.setSinkFunction(func);
+    }
+
+    addOutputPlugin(outputPlugin: OutputPlugin) {
+        PluginProvider.getInstance().addOutputPlugin(outputPlugin);
+    }
+
+    setOutputPlugins(...outputPlugin: OutputPlugin[]) {
+        PluginProvider.getInstance().setOutputPlugins(outputPlugin);
+    }
+
+    getOutputPlugins(): OutputPlugin[] {
+        return PluginProvider.getInstance().getOutputPlugins();
     }
 
     enableTracing(input: string | string[]) {
