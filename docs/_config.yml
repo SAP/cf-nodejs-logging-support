@@ -60,7 +60,7 @@ back_to_top: true
 back_to_top_text: "Back to top"
 
 # Footer copyright
-footer_content: "Copyright &copy; 2024 SAP SE | <a href=\"https://www.sap.com/about/legal/privacy.html\">SAP Privacy Statement</a>"
+footer_content: "Copyright &copy; 2026 SAP SE | <a href=\"https://www.sap.com/about/legal/privacy.html\">SAP Privacy Statement</a>"
 
 # Footer last edited timestamp
 last_edit_timestamp: true # show or hide edit time - page must have `last_modified_date` defined in the frontmatter
