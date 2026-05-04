@@ -1,20 +1,25 @@
 ---
 layout: default
-title: Migrate to Version 7
+title: Upgrade Guide
 permalink: /migration/
 nav_order: 2
 ---
 
+# Upgrade Guide
 
-# Migrate from Version 7.x to Version 8.x
+## Upgrade from Version 7.x to Version 8.x
 
-## Removed Restify support
+Version 8.x is a major release that introduces some breaking changes and improvements.
+Please find a description of discontinued and changed features below.
+A full list of changes can be found in the [release notes](https://github.com/SAP/cf-nodejs-logging-support/releases/tag/v8.0.0).
+
+### Removed Restify support
 
 Restify is no longer supported as a server framework. 
 If you are using restify, please switch to one of the other supported server frameworks (e.g. express or fastify) and adjust your configuration accordingly. 
 See [Server Framework](/cf-nodejs-logging-support/configuration/framework) for more details on how to set the server framework.
 
-## Removed legacy methods
+### Removed legacy methods
 
 Following methods have been removed in version 8.x:
 
@@ -31,29 +36,27 @@ Following methods have been removed in version 8.x:
     The features was already discontinued in version 7 and is not supported anymore. 
     Use a custom sink function to achieve a similar behavior.
 
-## Minimum Node.js version is now 20
+### Minimum Node.js version is now 22
 
-As of version 8.x, the minimum supported Node.js version is 20. 
+The new minimum supported Node.js version is 22 now. 
 If you are using an older version of Node.js, please upgrade to version 20 or later to use the latest version of the library.
 
-
-
-# Migrate from Version 6.x to Version 7.x
+## Upgrade from Version 6.x to Version 7.x
 
 Version 7.x introduces a redesigned architecture based on TypeScript.
 This enables the customization of generated fields and field contents and get rid of obsolete features.
 Below, you can find a description of discontinued, changed, and new features.
 Please let us know if you experience any unexpected behavior or problems that are not listed yet.
 
-## New Configuration Concept
+### New Configuration Concept
 
 Switching to v7 allows you to change the configuration without having to rebuild from source.
 Similar to the previous version, v7 loads default field configurations automatically based on the detected runtime environment and bound logging services without any further configuration.
 See [Advanced Configuration](/cf-nodejs-logging-support/configuration) to learn more about the new configuration concept.
 
-## Typescript Typings
+### TypeScript Typings
 
-Typescript typings are available for log levels and configuration types.
+TypeScript typings are available for log levels and configuration types.
 Typings can be imported in addition to the default import:
 
 ```ts
@@ -63,12 +66,11 @@ log.setLoggingLevel(Level.Info)
 log.setFramework(Framework.Express)
 ```
 
-
-## Omit default values
+### Omit default values
 
 The new version no longer writes default values (e.g. `-`) for unresolved values but omits the fields instead.
 
-## Discontinued log pattern feature
+### Discontinued log pattern feature
 
 The log pattern feature (`log.setLogPattern(<pattern>)`) has been removed. 
 It was used to set a custom formatting pattern for printing logs in a human-readable format.
