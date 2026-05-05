@@ -1,13 +1,14 @@
 const expect = require('chai').expect;
 const importFresh = require('import-fresh');
 const customConfig = require('../config-test.json');
+const { BUILD_CJS_INDEX } = require('../paths');
 
 describe('Test configuration', function () {
 
     var result;
 
     beforeEach(function () {
-        log = importFresh("../../../build/main/index");
+        log = importFresh(BUILD_CJS_INDEX);
     });
 
     describe('Add custom configuration', function () {

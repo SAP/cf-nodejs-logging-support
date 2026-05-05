@@ -22,27 +22,27 @@ export default class StacktraceUtils {
     // Split stacktrace into string array and truncate lines if required by size limitation
     // Truncation strategy: Take one line from the top and two lines from the bottom of the stacktrace until limit is reached.
     prepareStacktrace(stacktraceStr: string): string[] {
-        let fullStacktrace = stacktraceStr.split('\n');
-        let totalLineLength = fullStacktrace.reduce((acc: any, line: any) => acc + line.length, 0);
+        const fullStacktrace = stacktraceStr.split('\n');
+        const totalLineLength = fullStacktrace.reduce((acc: any, line: any) => acc + line.length, 0);
 
         if (totalLineLength > this.MAX_STACKTRACE_SIZE) {
             let truncatedStacktrace = [];
-            let stackA = [];
-            let stackB = [];
+            const stackA = [];
+            const stackB = [];
             let indexA = 0;
             let indexB = fullStacktrace.length - 1;
             let currentLength = 73; // set to approx. character count for "truncated" and "omitted" labels
 
             for (let i = 0; i < fullStacktrace.length; i++) {
                 if (i % 3 == 0) {
-                    let line = fullStacktrace[indexA++];
+                    const line = fullStacktrace[indexA++];
                     if (currentLength + line.length > this.MAX_STACKTRACE_SIZE) {
                         break;
                     }
                     currentLength += line.length;
                     stackA.push(line);
                 } else {
-                    let line = fullStacktrace[indexB--];
+                    const line = fullStacktrace[indexB--];
                     if (currentLength + line.length > this.MAX_STACKTRACE_SIZE) {
                         break;
                     }

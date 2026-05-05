@@ -2,3 +2,75 @@
 .site-title {
     font-size: 1.2em !important;
 }
+
+// ── Landing page ────────────────────────────────────────────────────────────
+
+.landing-hero {
+  padding: 3rem 0 2.5rem;
+  text-align: center;
+}
+
+.landing-version {
+  display: inline-block;
+  margin: 0 0 0.75rem;
+  padding: 0.2rem 0.75rem;
+  border-radius: 2rem;
+  background: $feedback-color;
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  color: $body-text-color;
+  text-decoration: none;
+
+  &:hover {
+    text-decoration: underline;
+  }
+}
+
+.landing-title {
+  margin: 0 0 1rem;
+  font-size: 2.4rem;
+  line-height: 1.2;
+  font-weight: 700;
+}
+
+.landing-subtitle {
+  max-width: 600px;
+  margin: 0 auto 2rem;
+  font-size: 1.05rem;
+  color: $nav-child-link-color;
+  line-height: 1.6;
+}
+
+.landing-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.5rem;
+}
+
+// Feature grid
+.landing-features {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 1.25rem;
+  margin: 1.5rem 0;
+}
+
+.landing-feature {
+  padding: 1.25rem 1.5rem;
+  border: 1px solid $border-color;
+  border-radius: 6px;
+
+  h3 {
+    margin: 0 0 0.5rem;
+    font-size: 0.95rem;
+  }
+
+  p, & {
+    font-size: 0.88rem;
+    color: $nav-child-link-color;
+    line-height: 1.55;
+    margin: 0;
+  }
+}

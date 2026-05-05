@@ -1,30 +1,61 @@
 ---
-# Feel free to add content and custom Front Matter to this file.
-# To modify the layout, see https://jekyllrb.com/docs/themes/#overriding-theme-defaults
-
 layout: home
-title: About
+title: Home
 nav_order: 1
 ---
 
-# CF Node.js Logging Support
+<div class="landing-hero">
+  <h1 class="landing-title">CF Node.js Logging Support</h1>
+  <p class="landing-subtitle">
+    Structured logging and request metrics for Node.js applications.
+    Drop-in middleware for Express, Fastify, Connect and plain Node.js HTTP servers.
+  </p>
+  <div class="landing-actions">
+    <a href="/cf-nodejs-logging-support/getting-started/installation" class="btn btn-purple mr-2">Get started</a>
+    <a href="/cf-nodejs-logging-support/migration" class="btn mr-2">Migrate to v8</a>
+    <a href="https://github.com/SAP/cf-nodejs-logging-support" class="btn mr-2">GitHub</a>
+    <a href="https://www.npmjs.com/package/cf-nodejs-logging-support" class="btn">npm</a>
+  </div>
+</div>
 
-This library provides a bundle of targeted logging services for Node.js applications running on Cloud Foundry which serves two main purposes:
-It provides means to emit *structured application log messages* and instrument parts of your application stack to *collect request metrics*.
+---
 
-The library is optimized for seamless integration with SAP BTP Cloud Foundry environment and its logging services [SAP Application Logging Service](https://help.sap.com/docs/application-logging-service) and [SAP Cloud Logging](https://help.sap.com/docs/cloud-logging).
+## Features
 
-To get started follow our [Getting Started](/cf-nodejs-logging-support/getting-started/) chapters to install the library and learn how to integrate it with supported server frameworks.
+<div class="landing-features">
 
-Head over to the [General Usage](/cf-nodejs-logging-support/general-usage) articles to find information about the main logging functions.
+<div class="landing-feature">
+<h3>Structured logs</h3>
+Emits structured JSON log messages ready to be ingested by <a href="https://help.sap.com/docs/cloud-logging">SAP Cloud Logging</a> and <a href="https://help.sap.com/docs/application-logging-service">SAP Application Logging Service</a>. On Cloud Foundry, app, space, org and instance metadata are added automatically.
+</div>
 
-Advanced topics, e.g., dynamic logging level threshold, SAP Passport support get covered in the [Advanced Usage](/cf-nodejs-logging-support/advanced-usage) articles.
+<div class="landing-feature">
+<h3>Request metrics</h3>
+Plug-in middleware that captures latency, status codes, correlation IDs and
+tenant information for every HTTP request.
+</div>
 
-As of version 7.0.0 the configuration of the logging library is customizable. Head over to [Advanced Configuration](/cf-nodejs-logging-support/configuration) for further information.
+<div class="landing-feature">
+<h3>Configurable fields</h3>
+Add custom fields, reduce sensitive data, override field names or swap in a
+completely custom log sink.
+</div>
 
-For details on the concepts and log formats please look at the sibling project for [java logging support](https://github.com/SAP/cf-java-logging-support).
+<div class="landing-feature">
+<h3>Child loggers &amp; contexts</h3>
+Create child loggers that inherit and extend a logging context, ideal for
+tracing a single request or transaction across multiple modules.
+</div>
 
-[Get started](/cf-nodejs-logging-support/getting-started/installation){: .btn .btn-purple .mr-2 }
-[Migrate to v7](/cf-nodejs-logging-support/migration){: .btn .mr-2 }
-[View it on GitHub](https://github.com/SAP/cf-nodejs-logging-support){: .btn .mr-2 }
-[View it on npm](https://www.npmjs.com/package/cf-nodejs-logging-support){: .btn }
+<div class="landing-feature">
+<h3>TypeScript ready</h3>
+Full TypeScript typings are included.
+</div>
+
+<div class="landing-feature">
+<h3>Winston transport</h3>
+Use the built-in Winston transport to route existing Winston log calls through
+the same structured pipeline.
+</div>
+
+</div>

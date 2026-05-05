@@ -1,7 +1,8 @@
+const { BUILD_CJS_LIB } = require('../paths');
 const expect = require('chai').expect;
 const importFresh = require('import-fresh');
 const customConfig = require('../config-test.json');
-const config = importFresh('../../../build/main/lib/config/config').default;
+const config = importFresh(`${BUILD_CJS_LIB}/config/config.js`).default;
 
 describe('Test Config class', function () {
     var singleton = config.getInstance();

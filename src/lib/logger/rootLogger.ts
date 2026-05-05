@@ -1,15 +1,15 @@
-import Config from '../config/config';
+import Config from '../config/config.js';
 import {
-    ConfigObject, CustomFieldsFormat, CustomFieldsTypeConversion, Framework, Output, SourceType
-} from '../config/interfaces';
-import EnvService from '../helper/envService';
-import Middleware from '../middleware/middleware';
-import RequestAccessor from '../middleware/requestAccessor';
-import ResponseAccessor from '../middleware/responseAccessor';
-import createTransport from '../winston/winstonTransport';
-import { Level } from './level';
-import { Logger } from './logger';
-import RecordWriter from './recordWriter';
+    ConfigObject, CustomFieldsFormat, CustomFieldsTypeConversion, Framework
+} from '../config/interfaces.js';
+import EnvService from '../helper/envService.js';
+import Middleware from '../middleware/middleware.js';
+import RequestAccessor from '../middleware/requestAccessor.js';
+import ResponseAccessor from '../middleware/responseAccessor.js';
+import createTransport from '../winston/winstonTransport.js';
+import { Level } from './level.js';
+import { Logger } from './logger.js';
+import RecordWriter from './recordWriter.js';
 
 export default class RootLogger extends Logger {
     private static instance: RootLogger;
@@ -56,7 +56,7 @@ export default class RootLogger extends Logger {
         return this.config.setStartupMessageEnabled(enabled);
     }
 
-    setSinkFunction(func: (level: string, payload: string) => any) {
+    setSinkFunction(func: (level: string, payload: string) => void) {
         RecordWriter.getInstance().setSinkFunction(func);
     }
 
@@ -87,58 +87,4 @@ export default class RootLogger extends Logger {
         RequestAccessor.getInstance().setFrameworkService();
         ResponseAccessor.getInstance().setFrameworkService();
     }
-
-    // legacy methods
-
-    forceLogger(framework: Framework) {
-        this.setFramework(framework)
-    }
-
-    overrideNetworkField(field: string, value: string): boolean {
-        if (field == null && typeof field != "string") {
-            return false;
-        }
-        // get field and override config
-        const configField = this.config.getConfigFields([field]);
-
-        // if new field, then add as static field
-        if (configField.length == 0) {
-            this.config.addConfig([
-                {
-                    "fields":
-                        [
-                            {
-                                "name": field,
-                                "source": {
-                                    "type": SourceType.Static,
-                                    "value": value
-                                },
-                                "output": [
-                                    Output.ReqLog
-                                ]
-                            },
-                        ]
-                }
-            ]);
-            return true;
-        }
-
-        // set static source and override
-        configField[0].source = {
-            "type": SourceType.Static,
-            "value": value
-        };
-        this.config.addConfig([
-            {
-                "fields": [configField[0]]
-            }
-        ]);
-        return true;
-    }
-
-    overrideCustomFieldFormat(format: CustomFieldsFormat) {
-        return this.setCustomFieldsFormat(format);
-    }
-
-    setLogPattern() { } // no longer supported
 }

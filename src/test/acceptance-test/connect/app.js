@@ -1,11 +1,12 @@
 const importFresh = require('import-fresh');
+const { BUILD_CJS_INDEX } = require('../../paths');
 const connect = importFresh('connect');
-const log = importFresh('../../../../build/main/index');
+const log = importFresh(BUILD_CJS_INDEX);
 const http = importFresh('http');
 const app = connect();
 
 // Force logger to run the connect version. (default is express, forcing express is also legal)
-log.forceLogger("connect");
+log.setFramework("connect");
 
 // Add the logger middleware, so each time a request is received, it is will get logged.
 app.use(log.logNetwork);

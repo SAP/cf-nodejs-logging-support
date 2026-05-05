@@ -15,11 +15,10 @@ The latest release version can be downloaded from [npm](https://www.npmjs.com/pa
 To take full advantage of cf-nodejs-logging-support make sure to fulfill following requirements:
 
 * Node.js app to be deployed on Cloud Foundry
-* Use [node.js](https://nodejs.org/) version 14.14 or higher
+* Use [node.js](https://nodejs.org/) version 22 or newer
 * Use one of the supported server frameworks:
   * [Express](https://expressjs.com/)
   * [Connect](https://www.npmjs.com/package/connect)
-  * [Restify](http://restify.com/)
   * [Fastify](https://fastify.dev/)
   * [Node.js HTTP](https://nodejs.org/api/http.html)
 

@@ -42,7 +42,6 @@ export interface ConfigFieldMeta {
 
 export enum Framework {
     Express = "express",
-    Restify = "restify",
     Connect = "connect",
     Fastify = "fastify",
     NodeJsHttp = "plainhttp"

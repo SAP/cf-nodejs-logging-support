@@ -1,5 +1,6 @@
 var expect = require('chai').expect;
 const importFresh = require('import-fresh');
+const { BUILD_CJS_INDEX } = require('../paths');
 
 var log;
 var lastOutput;
@@ -9,7 +10,7 @@ var childLogger;
 describe('Test child logger', function () {
 
     beforeEach(function () {
-        log = importFresh("../../../build/main/index");
+        log = importFresh(BUILD_CJS_INDEX);
 
         lastOutput = "";
         logCount = 0;
