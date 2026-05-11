@@ -18,9 +18,13 @@ To take full advantage of cf-nodejs-logging-support make sure to fulfill followi
 * Use [node.js](https://nodejs.org/) version 22 or newer
 * Use one of the supported server frameworks:
   * [Express](https://expressjs.com/)
-  * [Connect](https://www.npmjs.com/package/connect)
   * [Fastify](https://fastify.dev/)
   * [Node.js HTTP](https://nodejs.org/api/http.html)
+  * [Connect](https://www.npmjs.com/package/connect) 
+
+> Note on Connect: The Connect framework appears to have limited recent maintenance activity. 
+Because it is still widely used in existing projects, cf-nodejs-logging-support continues to support it for now. 
+This may change in a future major version.
 
 ## Install using npm
 

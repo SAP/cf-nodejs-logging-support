@@ -15,8 +15,10 @@ A full list of changes can be found in the [release notes](https://github.com/SA
 
 ### Removed Restify support
 
-Restify is no longer supported as a server framework. 
-If you are using restify, please switch to one of the other supported server frameworks (e.g. express or fastify) and adjust your configuration accordingly. 
+The restify project appears to have limited maintenance activity in recent years and is not widely used anymore.
+Therefore, support for the restify server framework has been removed in version 8.x.
+
+If you are using restify, consider switching to one of the supported server frameworks and updating your configuration accordingly.
 See [Server Framework](/cf-nodejs-logging-support/configuration/framework) for more details on how to set the server framework.
 
 ### Removed legacy methods
