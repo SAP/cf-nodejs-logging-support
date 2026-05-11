@@ -87,4 +87,18 @@ export default class RootLogger extends Logger {
         RequestAccessor.getInstance().setFrameworkService();
         ResponseAccessor.getInstance().setFrameworkService();
     }
+
+    /**
+     * Migration note (since v8.0.0):
+     *
+     * The following legacy APIs were removed and are intentionally unavailable:
+     * - forceLogger(framework: Framework) -> use setFramework(framework)
+     * - overrideNetworkField(field: string, value: string) -> use custom field instead
+     * - overrideCustomFieldFormat(format: CustomFieldsFormat) -> use setCustomFieldsFormat(format)
+     * - setLogPattern() -> use setSinkFunction(...) for custom output formatting
+     *
+     * See the upgrade guide:
+     * - docs/migration.md
+     * - https://sap.github.io/cf-nodejs-logging-support/migration/
+     */
 }
