@@ -1,22 +1,28 @@
 const assert = require('chai').assert;
 const { execSync } = require('child_process');
 const { ROOT, BUILD_CJS_INDEX, BUILD_ESM_INDEX } = require('../paths');
+const LOG_MESSAGE = 'module-format-test-message';
 
 describe('Module format compatibility', function () {
     this.slow(1000); // suppress slow-test warnings; each test spawns a Node process
 
     describe('CJS: require()', function () {
         it('returns the logger instance directly (backward compat)', function () {
-            const log = require(BUILD_CJS_INDEX);
-            assert.isObject(log, 'require() should return an object');
-            assert.isFunction(log.info, 'logger should have info()');
-            assert.isFunction(log.error, 'logger should have error()');
-            assert.isFunction(log.logMessage, 'logger should have logMessage()');
+            const result = execSync(
+                `node -e "const log = require('${BUILD_CJS_INDEX}'); process.stdout.write(typeof log.info + ':' + typeof log.error + ':' + typeof log.logMessage + '\\n'); log.info('${LOG_MESSAGE}')"`,
+                { encoding: 'utf8' }
+            );
+            const [typeLine] = result.split('\n');
+            const [infoType, errorType, logMessageType] = typeLine.split(':');
+            assert.equal(infoType, 'function', 'logger should have info()');
+            assert.equal(errorType, 'function', 'logger should have error()');
+            assert.equal(logMessageType, 'function', 'logger should have logMessage()');
+            assert.include(result, LOG_MESSAGE, 'log.info should write the message to stdout');
         });
 
         it('exposes named exports (Level, Logger, …) on the module', function () {
             const mod = require(BUILD_CJS_INDEX);
-              assert.isDefined(mod.Level, 'Level enum should be accessible');
+            assert.isDefined(mod.Level, 'Level enum should be accessible');
             assert.isDefined(mod.Logger, 'Logger class should be accessible');
         });
 
@@ -31,12 +37,15 @@ describe('Module format compatibility', function () {
     describe('ESM: import', function () {
         it('default export is the logger instance', function () {
             const result = execSync(
-                `node --input-type=module -e "import log from '${BUILD_ESM_INDEX}'; process.stdout.write(typeof log.info + ':' + typeof log.error)"`,
+                `node --input-type=module -e "import log from '${BUILD_ESM_INDEX}'; process.stdout.write(typeof log.info + ':' + typeof log.error + ':' + typeof log.logMessage + '\\n'); log.info('${LOG_MESSAGE}')"`,
                 { encoding: 'utf8' }
             );
-            const [infoType, errorType] = result.trim().split(':');
-            assert.equal(infoType, 'function', 'log.info should be a function');
-            assert.equal(errorType, 'function', 'log.error should be a function');
+            const [typeLine] = result.split('\n');
+            const [infoType, errorType, logMessageType] = typeLine.split(':');
+            assert.equal(infoType, 'function', 'logger should have info()');
+            assert.equal(errorType, 'function', 'logger should have error()');
+            assert.equal(logMessageType, 'function', 'logger should have logMessage()');
+            assert.include(result, LOG_MESSAGE, 'log.info should write the message to stdout');
         });
 
         it('named exports (Level, Logger) are available', function () {
