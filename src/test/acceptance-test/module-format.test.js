@@ -9,14 +9,20 @@ describe('Module format compatibility', function () {
     describe('CJS: require()', function () {
         it('returns the logger instance directly (backward compat)', function () {
             const result = execSync(
-                `node -e "const log = require('${BUILD_CJS_INDEX}'); process.stdout.write(typeof log.info + ':' + typeof log.error + ':' + typeof log.logMessage + '\\n'); log.info('${LOG_MESSAGE}')"`,
+                `node -e "const log = require('${BUILD_CJS_INDEX}'); process.stdout.write(typeof log.info + ':' + typeof log.error + ':' + typeof log.logMessage + '\\n')"`,
                 { encoding: 'utf8' }
             );
-            const [typeLine] = result.split('\n');
-            const [infoType, errorType, logMessageType] = typeLine.split(':');
+            const [infoType, errorType, logMessageType] = result.trim().split(':');
             assert.equal(infoType, 'function', 'logger should have info()');
             assert.equal(errorType, 'function', 'logger should have error()');
             assert.equal(logMessageType, 'function', 'logger should have logMessage()');
+        });
+
+        it('logs messages to stdout', function () {
+            const result = execSync(
+                `node -e "const log = require('${BUILD_CJS_INDEX}'); log.info('${LOG_MESSAGE}')"`,
+                { encoding: 'utf8' }
+            );
             assert.include(result, LOG_MESSAGE, 'log.info should write the message to stdout');
         });
 
@@ -35,20 +41,26 @@ describe('Module format compatibility', function () {
     });
 
     describe('ESM: import', function () {
-        it('default export is the logger instance', function () {
+        it('exports the logger instance as default', function () {
             const result = execSync(
-                `node --input-type=module -e "import log from '${BUILD_ESM_INDEX}'; process.stdout.write(typeof log.info + ':' + typeof log.error + ':' + typeof log.logMessage + '\\n'); log.info('${LOG_MESSAGE}')"`,
+                `node --input-type=module -e "import log from '${BUILD_ESM_INDEX}'; process.stdout.write(typeof log.info + ':' + typeof log.error + ':' + typeof log.logMessage + '\\n')"`,
                 { encoding: 'utf8' }
             );
-            const [typeLine] = result.split('\n');
-            const [infoType, errorType, logMessageType] = typeLine.split(':');
+            const [infoType, errorType, logMessageType] = result.trim().split(':');
             assert.equal(infoType, 'function', 'logger should have info()');
             assert.equal(errorType, 'function', 'logger should have error()');
             assert.equal(logMessageType, 'function', 'logger should have logMessage()');
+        });
+
+        it('logs messages to stdout', function () {
+            const result = execSync(
+                `node --input-type=module -e "import log from '${BUILD_ESM_INDEX}'; log.info('${LOG_MESSAGE}')"`,
+                { encoding: 'utf8' }
+            );
             assert.include(result, LOG_MESSAGE, 'log.info should write the message to stdout');
         });
 
-        it('named exports (Level, Logger) are available', function () {
+        it('exposes named exports (Level, Logger, …) on the module', function () {
             const result = execSync(
                 `node --input-type=module -e "import { Level, Logger } from '${BUILD_ESM_INDEX}'; process.stdout.write(typeof Level + ':' + typeof Logger)"`,
                 { encoding: 'utf8' }
