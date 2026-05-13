@@ -21,7 +21,8 @@ const log = require("cf-nodejs-logging-support");
 If needed, you can also import named exports by destructuring the required module:
 
 ```js
-const { default: log, Level } = require("cf-nodejs-logging-support");
+const log = require("cf-nodejs-logging-support");
+const { Level } = log;
 
 log.setLoggingLevel(Level.Info);
 ```
