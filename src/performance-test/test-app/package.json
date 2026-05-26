@@ -9,7 +9,7 @@
   "dependencies": {
     "cf-nodejs-logging-support": "^7.4.1",
     "ejs": "^3.1.10",
-    "express": "^4.22.1"
+    "express": "^4.22.2"
   },
   "engines": {
     "node": ">=8.0.0"
