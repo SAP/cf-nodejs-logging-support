@@ -88,20 +88,20 @@
         },
         "Conversion": {
             "enum": [
-                "parseBoolean",
-                "parseFloat",
+                "toString",
                 "parseInt",
-                "toString"
+                "parseFloat",
+                "parseBoolean"
             ],
             "type": "string"
         },
         "CustomFieldsFormat": {
             "enum": [
-                "all",
                 "application-logging",
                 "cloud-logging",
-                "default",
-                "disabled"
+                "all",
+                "disabled",
+                "default"
             ],
             "type": "string"
         },
@@ -114,24 +114,23 @@
         },
         "DetailName": {
             "enum": [
-                "level",
-                "message",
                 "requestReceivedAt",
                 "responseSentAt",
                 "responseTimeMs",
-                "stacktrace",
                 "writtenAt",
-                "writtenTs"
+                "writtenTs",
+                "message",
+                "stacktrace",
+                "level"
             ],
             "type": "string"
         },
         "Framework": {
             "enum": [
-                "connect",
                 "express",
+                "connect",
                 "fastify",
-                "plainhttp",
-                "restify"
+                "plainhttp"
             ],
             "type": "string"
         },
@@ -183,14 +182,14 @@
         },
         "SourceType": {
             "enum": [
-                "config-field",
-                "detail",
-                "env",
-                "req-header",
-                "req-object",
-                "res-header",
-                "res-object",
                 "static",
+                "env",
+                "config-field",
+                "req-header",
+                "res-header",
+                "req-object",
+                "res-object",
+                "detail",
                 "uuid"
             ],
             "type": "string"

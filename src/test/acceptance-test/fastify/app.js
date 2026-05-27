@@ -1,11 +1,12 @@
 
 const importFresh = require('import-fresh');
+const { BUILD_CJS_INDEX } = require('../../paths');
 const fastify = importFresh('fastify');
-const log = importFresh('../../../../build/main/index');
+const log = importFresh(BUILD_CJS_INDEX);
 const app = fastify();
 
 // Force logger to run the fastify version.
-log.forceLogger("fastify");
+log.setFramework("fastify");
 
 // Add the logger middleware, so each time a request is received, it is will get logged.
 app.addHook("onRequest", log.logNetwork);

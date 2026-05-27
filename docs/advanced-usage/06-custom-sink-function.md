@@ -2,7 +2,7 @@
 layout: default
 title: Custom Sink Function
 parent: Advanced Usage
-nav_order: 7
+nav_order: 6
 permalink: /advanced-usage/custom-sink-function
 ---
 

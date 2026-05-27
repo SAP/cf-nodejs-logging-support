@@ -1,5 +1,6 @@
-const express = require("express");
-const log = require("cf-nodejs-logging-support");
+import express from "express";
+import log, { Level } from "cf-nodejs-logging-support";
+
 const app = express();
 var lastMessage = null;
 
@@ -9,7 +10,7 @@ app.set('views', 'public');
 app.set('view engine', 'html');
 
 // tells express that the public folder is the static folder
-app.use(express.static(__dirname + "/public"));
+app.use(express.static("public"));
 
 // add logger to the server network queue to log all incoming requests.
 app.use(log.logNetwork);
@@ -20,7 +21,7 @@ log.setSinkFunction((_, msg) => {
 });
 
 // set the logging level threshold
-log.setLoggingLevel("info");
+log.setLoggingLevel(Level.Info);
 
 // register names of custom fields
 log.registerCustomFields(["global-field-a", "node_version", "pid", "platform", "custom-field-a", "custom-field-b", "new-field"]);
@@ -106,7 +107,7 @@ app.get("/correlationandtenantid", function (req, res) {
 });
 
 app.get("/binding_information", function (_, res) {
-  result = "There are the following bindings: <br>"
+  var result = "There are the following bindings: <br>"
   var services
   if (process.env.VCAP_SERVICES)
     services = JSON.parse(process.env.VCAP_SERVICES)

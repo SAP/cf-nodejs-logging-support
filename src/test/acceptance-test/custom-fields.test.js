@@ -1,5 +1,6 @@
 var expect = require('chai').expect;
 const importFresh = require('import-fresh');
+const { BUILD_CJS_INDEX } = require('../paths');
 
 var log;
 var childLogger;
@@ -8,7 +9,7 @@ var lastOutput;
 describe('Test custom fields', function () {
 
     beforeEach(function () {
-        log = importFresh("../../../build/main/index");
+        log = importFresh(BUILD_CJS_INDEX);
 
         lastOutput = "";
 
@@ -125,7 +126,7 @@ describe('Test custom fields', function () {
     describe('Test custom field type conversion', function () {
         describe('stringify fields', function () {
             beforeEach(function () {
-                log = importFresh("../../../build/main/index");
+                log = importFresh(BUILD_CJS_INDEX);
                 log.setCustomFields({ "field-a": 42, "field-b": true, "field-c": { "key": "value" }});
                 log.logMessage("info", "test-message");
             });
@@ -139,7 +140,7 @@ describe('Test custom fields', function () {
 
         describe('retain field types', function () {
             beforeEach(function () {
-                log = importFresh("../../../build/main/index");
+                log = importFresh(BUILD_CJS_INDEX);
                 log.setCustomFieldsTypeConversion("retain");
                 log.setCustomFields({ "field-a": 42, "field-b": true, "field-c": { "key": "value" }});
                 log.logMessage("info", "test-message");
@@ -161,7 +162,7 @@ describe('Test custom fields', function () {
                 }
                 process.env.VCAP_SERVICES = JSON.stringify(obj);
 
-                log = importFresh("../../../build/main/index");
+                log = importFresh(BUILD_CJS_INDEX);
 
                 log.setCustomFields({ "field-a": "value" });
                 log.logMessage("info", "test-message");
@@ -178,7 +179,7 @@ describe('Test custom fields', function () {
 
         describe('"application-logging" format', function () {
             beforeEach(function () {
-                log = importFresh("../../../build/main/index");
+                log = importFresh(BUILD_CJS_INDEX);
                 log.setCustomFieldsFormat("application-logging");
                 log.registerCustomFields(["field-a"]);
                 log.setCustomFields({ "field-a": "value" });
@@ -206,7 +207,7 @@ describe('Test custom fields', function () {
         describe('"all" format', function () {
             beforeEach(function () {
 
-                log = importFresh("../../../build/main/index");
+                log = importFresh(BUILD_CJS_INDEX);
                 log.setCustomFieldsFormat("all");
                 log.registerCustomFields(["field-a"]);
                 log.setCustomFields({ "field-a": "value" });
@@ -234,7 +235,7 @@ describe('Test custom fields', function () {
         describe('"disabled" format', function () {
             beforeEach(function () {
 
-                log = importFresh("../../../build/main/index");
+                log = importFresh(BUILD_CJS_INDEX);
                 log.setCustomFieldsFormat("disabled");
                 log.registerCustomFields(["field-a"]);
                 log.setCustomFields({ "field-a": "value" });
@@ -253,7 +254,7 @@ describe('Test custom fields', function () {
         describe('"default" format', function () {
             beforeEach(function () {
 
-                log = importFresh("../../../build/main/index");
+                log = importFresh(BUILD_CJS_INDEX);
                 log.setCustomFieldsFormat("default");
                 log.registerCustomFields(["field-a"]);
                 log.setCustomFields({ "field-a": "value" });

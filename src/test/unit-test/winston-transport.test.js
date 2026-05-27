@@ -1,3 +1,4 @@
+const { BUILD_CJS_INDEX } = require('../paths');
 const { SPLAT } = require('triple-beam');
 var rewire = require('rewire');
 var chai = require("chai");
@@ -8,12 +9,12 @@ describe('Test winston-transport.js', function () {
     describe('Test parameter forwarding', function () {
 
         var transport;
-        var logger = rewire("../../../build/main/index.js");
-        var catchedArgs;
+        var logger = rewire(BUILD_CJS_INDEX);
+        var caughtArgs;
 
         before(function () {
             logger.__set__("rootLogger.logMessage", function () {
-                catchedArgs = Array.prototype.slice.call(arguments);
+                caughtArgs = Array.prototype.slice.call(arguments);
             });
 
             transport = logger.createWinstonTransport();
@@ -34,9 +35,9 @@ describe('Test winston-transport.js', function () {
 
             transport.log(info, callback);
 
-            catchedArgs.length.should.equal(2);
-            catchedArgs[0].should.equal("error");
-            catchedArgs[1].should.equal("test");
+            caughtArgs.length.should.equal(2);
+            caughtArgs[0].should.equal("error");
+            caughtArgs[1].should.equal("test");
             called.should.equal(true)
         });
 
@@ -52,18 +53,18 @@ describe('Test winston-transport.js', function () {
 
             transport.log(info, callback);
 
-            catchedArgs.length.should.equal(4);
-            catchedArgs[0].should.equal("error");
-            catchedArgs[1].should.equal("test %d %s");
-            catchedArgs[2].should.equal(42);
-            catchedArgs[3].should.equal("abc");
+            caughtArgs.length.should.equal(4);
+            caughtArgs[0].should.equal("error");
+            caughtArgs[1].should.equal("test %d %s");
+            caughtArgs[2].should.equal(42);
+            caughtArgs[3].should.equal("abc");
             called.should.equal(true)
         });
     });
 
     describe('Test option initialization', function () {
 
-        var logger = require("../../../build/main/index.js");
+        var logger = require(BUILD_CJS_INDEX);
 
         it('Test default initialization', function () {
             var transport = logger.createWinstonTransport();

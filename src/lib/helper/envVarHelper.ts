@@ -39,7 +39,7 @@ export default class EnvVarHelper {
         }
 
         // get value from root object
-        let value = rootObj[path[0]];
+        const value = rootObj[path[0]];
 
         // cut first entry of the object path
         path.shift();

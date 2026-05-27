@@ -1,9 +1,9 @@
-import LevelUtils from '../helper/levelUtils';
-import { isValidObject } from '../middleware/utils';
-import { Level } from './level';
-import RecordFactory from './recordFactory';
-import RecordWriter from './recordWriter';
-import Context from './context';
+import LevelUtils from '../helper/levelUtils.js';
+import { isValidObject } from '../middleware/utils.js';
+import { Level } from './level.js';
+import RecordFactory from './recordFactory.js';
+import RecordWriter from './recordWriter.js';
+import Context from './context.js';
 
 export class Logger {
     private parent?: Logger = undefined
@@ -26,9 +26,9 @@ export class Logger {
         this.recordWriter = RecordWriter.getInstance();
     }
 
-    createLogger(customFields?: Map<string, any> | Object, createNewContext?: boolean): Logger {
-        let context = createNewContext == true ? new Context() : this.context
-        let logger = new Logger(this, context);
+    createLogger(customFields?: Map<string, any> | object, createNewContext?: boolean): Logger {
+        const context = createNewContext == true ? new Context() : this.context
+        const logger = new Logger(this, context);
         // assign custom fields, if provided
         if (customFields) {
             logger.setCustomFields(customFields);
@@ -130,7 +130,7 @@ export class Logger {
         this.registeredCustomFields.push(...fieldNames);
     }
 
-    setCustomFields(customFields: Map<string, any> | Object) {
+    setCustomFields(customFields: Map<string, any> | object) {
         if (customFields instanceof Map) {
             this.customFields = customFields;
         } else if (isValidObject(customFields)) {
@@ -180,7 +180,7 @@ export class Logger {
 
     private getCustomFieldsFromLogger(logger: Logger): Map<string, any> {
         if (logger.parent && logger.parent !== this) {
-            let parentFields = this.getCustomFieldsFromLogger(logger.parent);
+            const parentFields = this.getCustomFieldsFromLogger(logger.parent);
             return new Map([...parentFields, ...logger.customFields]);
         }
         return logger.customFields;

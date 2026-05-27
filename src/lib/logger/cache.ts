@@ -1,5 +1,5 @@
-import { ConfigField, Output } from '../config/interfaces';
-import SourceUtils from './sourceUtils';
+import { ConfigField, Output } from '../config/interfaces.js';
+import SourceUtils from './sourceUtils.js';
 
 export default class Cache {
 

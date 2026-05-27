@@ -2,7 +2,7 @@
 layout: default
 title: Winston Transport
 parent: Advanced Usage
-nav_order: 8
+nav_order: 7
 permalink: /advanced-usage/winston-transport
 ---
 

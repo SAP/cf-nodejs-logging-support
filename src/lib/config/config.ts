@@ -1,13 +1,13 @@
-import EnvService from '../helper/envService';
-import EnvVarHelper from '../helper/envVarHelper';
-import Cache from '../logger/cache';
-import ConfigValidator from './configValidator';
+import EnvService from '../helper/envService.js';
+import EnvVarHelper from '../helper/envVarHelper.js';
+import Cache from '../logger/cache.js';
+import ConfigValidator from './configValidator.js';
 import cfConfig from './default/config-cf.json';
 import coreConfig from './default/config-core.json';
 import kymaConfig from './default/config-kyma.json';
 import requestConfig from './default/config-request.json';
 import sapPassportConfig from './default/config-sap-passport.json';
-import { ConfigField, ConfigObject, CustomFieldsFormat, CustomFieldsTypeConversion, Framework, Output, Source, SourceType } from './interfaces';
+import { ConfigField, ConfigObject, CustomFieldsFormat, CustomFieldsTypeConversion, Framework, Output, Source, SourceType } from './interfaces.js';
 
 export default class Config {
 
@@ -128,7 +128,7 @@ export default class Config {
     }
 
     getReqLoggingLevel(): string {
-        let level = Config.instance.config.reqLoggingLevel
+        const level = Config.instance.config.reqLoggingLevel
         return level ? level : "info";
     }
 
@@ -260,7 +260,7 @@ export default class Config {
             names.push(input);
         else
             names = input;
-        for (let i in names) {
+        for (const i in names) {
             switch (names[i].toLowerCase()) {
                 case "sap_passport":
                     this.addConfig([sapPassportConfig as ConfigObject]);
@@ -313,14 +313,14 @@ export default class Config {
     }
 
     private isCacheable(s: Source | Source[]): boolean {
-        let sources = Array.isArray(s) ? s : [s]
+        const sources = Array.isArray(s) ? s : [s]
 
-        for (let i in sources) {
-            let source = sources[i]
+        for (const i in sources) {
+            const source = sources[i]
             switch (source.type) {
                 case SourceType.Static:
                     return true;
-                case SourceType.Env:
+                case SourceType.Env: {
                     // if this is the last source it does not matter, if the env var exists
                     if (i == (sources.length - 1).toString()) return true
 
@@ -333,6 +333,7 @@ export default class Config {
                     }
                     if (value != null) return true;
                     break;
+                }
                 default:
                     return false;
             }

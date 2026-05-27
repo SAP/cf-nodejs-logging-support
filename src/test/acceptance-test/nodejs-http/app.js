@@ -1,9 +1,10 @@
 const importFresh = require('import-fresh');
+const { BUILD_CJS_INDEX } = require('../../paths');
 const http = importFresh('http');
-const log = importFresh('../../../../build/main/index');
+const log = importFresh(BUILD_CJS_INDEX);
 
 // Force logger to run the http version.
-log.forceLogger("plainhttp");
+log.setFramework("plainhttp");
 
 const server = http.createServer((req, res) => {
     // Binds logging to the given request for request tracking

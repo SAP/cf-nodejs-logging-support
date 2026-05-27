@@ -1,14 +1,14 @@
 import jsonStringifySafe from 'json-stringify-safe';
 import util from 'util';
 
-import Config from '../config/config';
-import { CustomFieldsFormat, CustomFieldsTypeConversion, Output } from '../config/interfaces';
-import StacktraceUtils from '../helper/stacktraceUtils';
-import { isValidObject } from '../middleware/utils';
-import Cache from './cache';
-import Record from './record';
-import Context from './context';
-import SourceUtils from './sourceUtils';
+import Config from '../config/config.js';
+import { CustomFieldsFormat, CustomFieldsTypeConversion, Output } from '../config/interfaces.js';
+import StacktraceUtils from '../helper/stacktraceUtils.js';
+import { isValidObject } from '../middleware/utils.js';
+import Cache from './cache.js';
+import Record from './record.js';
+import Context from './context.js';
+import SourceUtils from './sourceUtils.js';
 
 export default class RecordFactory {
 
@@ -37,7 +37,7 @@ export default class RecordFactory {
     buildMsgRecord(registeredCustomFields: Array<string>, loggerCustomFields: Map<string, any>, levelName: string, args: Array<any>, context?: Context): Record {
         const lastArg = args[args.length - 1];
         let customFieldsFromArgs = new Map<string, any>();
-        let record = new Record(levelName)
+        const record = new Record(levelName)
       
       
         if (typeof lastArg === "object") {
@@ -60,7 +60,7 @@ export default class RecordFactory {
         const cacheMsgRecord = this.cache.getCacheMsgRecord(cacheFields);
         Object.assign(record.payload, cacheMsgRecord);
 
-        record.metadata.message = util.format.apply(util, args);
+        record.metadata.message = util.format(...args);
 
         // assign dynamic fields
         this.addDynamicFields(record, Output.MsgLog);
@@ -78,7 +78,7 @@ export default class RecordFactory {
 
     // init a new record and assign fields with output "req-log"
     buildReqRecord(levelName: string, req: any, res: any, context: Context): Record {
-        let record = new Record(levelName)
+        const record = new Record(levelName)
 
         // assign static fields from cache
         const cacheFields = this.config.getCacheReqFields();
@@ -109,7 +109,7 @@ export default class RecordFactory {
             return;
         }
 
-        let indexedCustomFields: any = {};
+        const indexedCustomFields: any = {};
         providedFields.forEach((value, key) => {
             if ([CustomFieldsFormat.CloudLogging, CustomFieldsFormat.All, CustomFieldsFormat.Default].includes(customFieldsFormat)
                 || record.payload[key] != null || this.config.isSettable(key)) {
@@ -133,13 +133,13 @@ export default class RecordFactory {
 
         // Write custom fields in the correct order and correlates i to the place in registeredCustomFields
         if (Object.keys(indexedCustomFields).length > 0) {
-            let res: any = {};
+            const res: any = {};
             res.string = [];
             let key;
             for (let i = 0; i < registeredCustomFields.length; i++) {
                 key = registeredCustomFields[i]
                 if (indexedCustomFields[key]) {
-                    let value = indexedCustomFields[key];
+                    const value = indexedCustomFields[key];
                     res.string.push({
                         "k": key,
                         "v": value,
@@ -156,7 +156,7 @@ export default class RecordFactory {
     // read and copy values from context
     private addContext(record: Record, context: Context) {
         const contextFields = context.getProperties();
-        for (let key in contextFields) {
+        for (const key in contextFields) {
             if (contextFields[key] != null) {
                 record.payload[key] = contextFields[key];
             }

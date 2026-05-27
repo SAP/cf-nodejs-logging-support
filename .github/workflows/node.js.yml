@@ -17,7 +17,7 @@ jobs:
 
     strategy:
       matrix:
-        node-version: [14, 16, 18, 20]
+        node-version: [22, 24, 25]
         # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
 
     steps:
@@ -30,3 +30,4 @@ jobs:
     - run: npm ci
     - run: npm run test
     - run: npm run test-coverage
+    - run: npm run lint
