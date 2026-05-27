@@ -62,6 +62,7 @@ log.setCustomFieldsTypeConversion(CustomFieldsTypeConversion.Retain);
 ```
 
 Available type conversion options are:
+
 | Type Conversion Constant | Description |
 |--------------------------|-------------|
 | `CustomFieldsTypeConversion.Stringify` | Convert all custom field values to strings. This is the default behavior. |
