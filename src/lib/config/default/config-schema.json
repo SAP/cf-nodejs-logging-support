@@ -121,6 +121,9 @@
                 "writtenTs",
                 "message",
                 "stacktrace",
+                "rawStacktrace",
+                "errorName",
+                "errorMessage",
                 "level"
             ],
             "type": "string"
