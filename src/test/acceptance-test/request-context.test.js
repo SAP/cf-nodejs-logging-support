@@ -1,6 +1,6 @@
-// saves public key
-process.env.DYN_LOG_LEVEL_KEY = "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA2fzU8StO511QYoC+BZp4riR2eVQM8FPPB2mF4I78WBDzloAVTaz0Z7hkMog1rAy8+Xva+fLiMuxDmN7kQZKBc24O4VeKNjOt8ZtNhz3vlMTZrNQ7bi+j8TS8ycUgKqe4/hSmjJBfXoduZ8Ye90u8RRfPLzbuutctLfCnL/ZhEehqfilt1iQb/CRCEsJou5XahmvOO5Gt+9kTBmY+2rS/+HKKdAhI3OpxwvXXNi8m9LrdHosMD7fTUpLUgdcIp8k3ACp9wCIIxbv1ssDeWKy7bKePihTl7vJq6RkopS6GvhO6yiD1IAJF/iDOrwrJAWzanrtavUc1RJZvbOvD0DFFOwIDAQAB";
 const expect = require('chai').expect;
+const crypto = require('crypto');
+const jwt = require('jsonwebtoken');
 const { before, after } = require('mocha');
 const importFresh = require('import-fresh');
 const { BUILD_CJS_INDEX } = require('../paths');
@@ -228,11 +228,32 @@ describe('Test request context', function () {
         });
 
         describe("Set dynamic log level with JWT", function () {
+            var privateKey;
+
+            before(function () {
+                const keyPair = crypto.generateKeyPairSync('rsa', {
+                    modulusLength: 2048,
+                    publicKeyEncoding: { type: 'spki', format: 'pem' },
+                    privateKeyEncoding: { type: 'pkcs8', format: 'pem' },
+                });
+                privateKey = keyPair.privateKey;
+                const pubKeyBase64 = keyPair.publicKey
+                    .replace('-----BEGIN PUBLIC KEY-----', '')
+                    .replace('-----END PUBLIC KEY-----', '')
+                    .replace(/\n/g, '');
+                process.env.DYN_LOG_LEVEL_KEY = pubKeyBase64;
+            });
+
+            after(function () {
+                delete process.env.DYN_LOG_LEVEL_KEY;
+            });
+
             describe("Set treshold to level error", function () {
                 before(function (done) {
+                    const token = jwt.sign({ level: 'error', issuer: 'issuer@sap.com' }, privateKey, { algorithm: 'RS256', expiresIn: '1d' });
                     supertest(expressApp)
                         .get("/requestcontext")
-                        .set('SAP-LOG-LEVEL', 'eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJsZXZlbCI6ImVycm9yIiwiZXhwIjoxNzgyOTgxNzg4LCJpc3N1ZXIiOiJpc3N1ZXJAc2FwLmNvbSIsImlhdCI6MTY1MzM4MTc4OH0.t3sHQMc5M8fch_U8WBFCCDyKS3D-1bj6hhft6MB1puXXHnzyTSQDz8oAbgkCpSiUOxRzE3GpRiMpMZEFCm4cvl2xy2TCxERzBBTQBxON_Au7_ggzJUtxrGkuurxWBMf7hjWWxMP2p3DkJvVD8gpM4VphJKwIto0WDJIcdqTtkFM4wruPAEn-nNlyAZCp3GYOcYMtqv3dz1ShckB8uF6KCs_dv238DMI_6q0Y9HtXW_o4gParTL20vDB9IIibpJ3JsKJu2LlZJ6dSkR0iAwqXSTjiXGpMIz3P82URKekTGABxumqHE1Jgl3Kdlquu5r6OvEgwqeMh8oui2ZofLiVe-Q')
+                        .set('SAP-LOG-LEVEL', token)
                         .expect(200)
                         .then(() => done())
                         .catch(err => done(err));
@@ -245,9 +266,10 @@ describe('Test request context', function () {
 
             describe("Set treshold to level debug", function () {
                 before(function (done) {
+                    const token = jwt.sign({ level: 'debug', issuer: 'issuer@sap.com' }, privateKey, { algorithm: 'RS256', expiresIn: '1d' });
                     supertest(expressApp)
                         .get("/requestcontext")
-                        .set('SAP-LOG-LEVEL', 'eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJsZXZlbCI6ImRlYnVnIiwiZXhwIjoxNzgyOTgyMDk0LCJpc3N1ZXIiOiJpc3N1ZXJAc2FwLmNvbSIsImlhdCI6MTY1MzM4MjA5NH0.c2TsfootLMbGNKoLmsaffINnyE-Vd-UQuOMvDLaQnkFdlSlp67fl327XL2Ttsc_JDse-YROqWcSMucohrLtcabE8MTcVTq_VeIIG_nGQ9WqKsDg1XXzJvFi5VdFAMcHdSgBnrcDSarRNn2kA6Hjcx7sT8aCCrHQRdtGyUVr4t20AHNpwTapKZvrfI7MjtQYDr4KywjoCojRklaUWSvoDn-iLIoZ-kbJLmQyxK5lvpjhvw-Ip8jRQAheyq04wp6CW0mMzWkvqdMIWciUQ_hh2RBg84s1An-kXIKq5Yju0zsDLQ8UPmJWfcNUZ4ACsaZO2WA3xytD4kY6KF_fpZVgVcA')
+                        .set('SAP-LOG-LEVEL', token)
                         .expect(200)
                         .then(() => done())
                         .catch(err => done(err));
