@@ -1,20 +1,25 @@
-
+import type { Context } from '@opentelemetry/api'
 import { logs as logsAPI, Logger, LoggerProvider, SeverityNumber, LogAttributes} from '@opentelemetry/api-logs'
 import { OutputPlugin } from './interfaces.js'
 import { Record, RecordType } from '../logger/record.js'
 import { Level } from '../logger/level.js'
 
+export type OpenTelemetryLogContextResolver = (record: Record) => Context | undefined
+export type OpenTelemetryLogContext = Context | OpenTelemetryLogContextResolver
+
 export class OpenTelemetryLogsOutputPlugin implements OutputPlugin {
     private logger: Logger
     private includeFieldsAsAttributes: FieldInclusionMode
+    private context?: OpenTelemetryLogContext
 
-    public constructor(loggerProvider?: LoggerProvider) {
+    public constructor(loggerProvider?: LoggerProvider, context?: OpenTelemetryLogContext) {
         if (loggerProvider) {
             this.logger = loggerProvider.getLogger('default')
         } else {
             this.logger = logsAPI.getLoggerProvider().getLogger("default")
         }
         this.includeFieldsAsAttributes = FieldInclusionMode.CustomFieldsOnly
+        this.context = context
     }
 
     public setIncludeFieldsAsAttributes(includeFieldsAsAttributes: FieldInclusionMode) {
@@ -31,13 +36,22 @@ export class OpenTelemetryLogsOutputPlugin implements OutputPlugin {
         this.populateAdditionalAttributes(record, attributes)
 
         const severityNumber = this.mapLevelToSeverityNumber(record.metadata.level)
+        const context = this.resolveContext(record)
 
         this.logger.emit({
             severityNumber: severityNumber,
             severityText: SeverityNumber[severityNumber],
             body: record.metadata.message,
-            attributes: attributes
+            attributes: attributes,
+            ...(context && { context })
         })
+    }
+
+    private resolveContext(record: Record): Context | undefined {
+        if (typeof this.context === 'function') {
+            return this.context(record)
+        }
+        return this.context
     }
 
     private mapLevelToSeverityNumber(level: Level): SeverityNumber {
