@@ -59,7 +59,7 @@
     "globals": "^17.5.0",
     "import-fresh": "^3.3.1",
     "jiti": "^2.6.1",
-    "mocha": "^11.7.5",
+    "mocha": "^12.0.0",
     "node-mocks-http": "^1.17.2",
     "nyc": "^18.0.0",
     "rewire": "^9.0.1",
