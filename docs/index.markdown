@@ -47,9 +47,9 @@ Create child loggers that inherit and extend a logging context, ideal for
 tracing a single request or transaction across multiple modules.
 </div>
 
-<div class="landing-feature">
-<h3>TypeScript ready</h3>
-Full TypeScript typings are included.
+<div class="landing-feature landing-feature-experimental">
+<h3>OpenTelemetry<span class="label label-yellow">Experimental</span></h3>
+Emit logs via the OpenTelemetry Logs API using the <a href="/cf-nodejs-logging-support/advanced-usage/output-plugins">built-in output plugin</a>.
 </div>
 
 <div class="landing-feature">
