@@ -28,7 +28,7 @@ describe('OpenTelemetryLogsOutputPlugin', function () {
         context.setGlobalContextManager(contextManager);
         exporter = new InMemoryLogRecordExporter();
         loggerProvider = new LoggerProvider({
-            processors: [new SimpleLogRecordProcessor(exporter)]
+            processors: [new SimpleLogRecordProcessor({ exporter })]
         });
     });
 
