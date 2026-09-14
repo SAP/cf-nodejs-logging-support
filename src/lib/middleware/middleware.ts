@@ -1,13 +1,13 @@
 import JWTService from '../helper/jwtService.js';
-import LevelUtils from '../helper/levelUtils.js';
+import { LevelUtils } from '../logger/level.js';
 import { Logger } from '../logger/logger.js';
 import RecordFactory from '../logger/recordFactory.js';
-import RecordWriter from '../logger/recordWriter.js';
 import Context from '../logger/context.js';
 import RootLogger from '../logger/rootLogger.js';
 import RequestAccessor from './requestAccessor.js';
 import Config from '../config/config.js';
 import ResponseAccessor from './responseAccessor.js';
+import PluginRegistry from '../helper/pluginProvider.js';
 
 export default class Middleware {
     static logNetwork(req: any, res: any, next?: any) {
@@ -20,7 +20,7 @@ export default class Middleware {
         // initialize Logger with parent to set registered fields
         const networkLogger = new Logger(parentLogger, context);
         const jwtService = JWTService.getInstance();
-        
+
         const dynLogLevelHeader = jwtService.getDynLogLevelHeaderName();
         const token = RequestAccessor.getInstance().getHeaderField(req, dynLogLevelHeader);
         if (token) {
@@ -39,8 +39,8 @@ export default class Middleware {
                 const level = LevelUtils.getLevel(levelName);
                 const threshold = LevelUtils.getLevel(req.logger.getLoggingLevel());
                 if (LevelUtils.isLevelEnabled(threshold, level)) {
-                    const record = RecordFactory.getInstance().buildReqRecord(levelName, req, res, context);
-                    RecordWriter.getInstance().writeLog(record);
+                    const record = RecordFactory.getInstance().buildReqRecord(level, req, res, context);
+                    PluginRegistry.getInstance().getOutputPlugins().forEach(output => { output.writeRecord(record) })
                 }
                 logSent = true;
             }
