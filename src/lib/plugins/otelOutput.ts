@@ -94,6 +94,7 @@ export class OpenTelemetryLogsOutputPlugin implements OutputPlugin {
             case Level.Info:
                 return SeverityNumber.INFO
             case Level.Verbose:
+                return SeverityNumber.DEBUG2
             case Level.Debug:
                 return SeverityNumber.DEBUG
             case Level.Silly:

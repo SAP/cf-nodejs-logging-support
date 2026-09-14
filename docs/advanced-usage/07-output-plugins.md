@@ -92,6 +92,6 @@ The plugin maps the library's log levels to OTel severity levels as follows:
 | `error` | `ERROR` | 17 |
 | `warn` | `WARN` | 13 |
 | `info` | `INFO` | 9 |
-| `verbose` | `DEBUG` | 5 |
+| `verbose` | `DEBUG2` | 6 |
 | `debug` | `DEBUG` | 5 |
 | `silly` | `TRACE` | 1 |
