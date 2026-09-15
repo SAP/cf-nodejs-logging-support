@@ -27,6 +27,6 @@ class CfNodejsLoggingSupportLogger extends TransportStream {
     }
 }
 
-export default function createTransport(options: any) {
+export default function createTransport(options: any): TransportStream {
     return new CfNodejsLoggingSupportLogger(options);
 }
