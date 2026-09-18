@@ -29,6 +29,7 @@ export class OpenTelemetryLogsOutputPlugin implements OutputPlugin {
     private logger: Logger
     private includeFieldsAsAttributes: FieldInclusionMode
     private context?: OpenTelemetryLogContext
+    private emitRequestLogs: boolean
 
     /**
      * Constructs a new OpenTelemetryLogsOutputPlugin.
@@ -43,6 +44,7 @@ export class OpenTelemetryLogsOutputPlugin implements OutputPlugin {
         }
         this.includeFieldsAsAttributes = FieldInclusionMode.CustomFieldsOnly
         this.context = context
+        this.emitRequestLogs = false
     }
 
     /**
@@ -54,12 +56,21 @@ export class OpenTelemetryLogsOutputPlugin implements OutputPlugin {
     }
 
     /**
-     * Writes a log record to the output plugin. Request logs are ignored; only message logs are emitted.
+     * Controls whether request logs are emitted as OTel log records in addition to message logs.
+     * @param enabled Whether request logs should be emitted. Defaults to false.
+     */
+    public setEmitRequestLogs(enabled: boolean) {
+        this.emitRequestLogs = enabled
+    }
+
+    /**
+     * Writes a log record to the output plugin. Request logs are ignored unless enabled via
+     * {@link setEmitRequestLogs}; message logs are always emitted.
      * @param record The log record to write.
      */
     public writeRecord(record: Record): void {
-        if (record.metadata.type == RecordType.Request) {
-            return // ignore request logs
+        if (record.metadata.type == RecordType.Request && !this.emitRequestLogs) {
+            return
         }
 
         const attributes = {} as LogAttributes
@@ -72,10 +83,23 @@ export class OpenTelemetryLogsOutputPlugin implements OutputPlugin {
         this.logger.emit({
             severityNumber: severityNumber,
             severityText: SeverityNumber[severityNumber],
-            body: record.metadata.message,
+            body: this.resolveBody(record),
             attributes: attributes,
             ...(context && { context })
         })
+    }
+
+    /**
+     * Resolves the OTel log body. Message logs use their message; request logs, which have none,
+     * use a short summary of common request fields, falling back to "request".
+     */
+    private resolveBody(record: Record): string | undefined {
+        if (record.metadata.type != RecordType.Request) {
+            return record.metadata.message
+        }
+        const { method, request, response_status } = record.payload
+        const summary = [method, request, response_status].filter(part => part !== undefined).join(" ")
+        return summary.length > 0 ? summary : "request"
     }
 
     private resolveContext(record: Record): Context | undefined {
