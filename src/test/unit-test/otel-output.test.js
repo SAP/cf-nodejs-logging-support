@@ -107,12 +107,55 @@ describe('OpenTelemetryLogsOutputPlugin', function () {
         serverSpan.end();
     });
 
+    it('ignores request logs by default', function () {
+        const plugin = new OpenTelemetryLogsOutputPlugin(loggerProvider);
+
+        plugin.writeRecord(createRequestRecord());
+
+        expect(exporter.getFinishedLogRecords()).to.have.lengthOf(0);
+    });
+
+    it('emits request logs with a summary body once enabled', function () {
+        const plugin = new OpenTelemetryLogsOutputPlugin(loggerProvider);
+        plugin.setEmitRequestLogs(true);
+        plugin.setIncludeFieldsAsAttributes(FieldInclusionMode.AllFields);
+
+        plugin.writeRecord(createRequestRecord());
+
+        const [logRecord] = exporter.getFinishedLogRecords();
+        expect(logRecord.body).to.equal('GET /hello 200');
+        expect(logRecord.attributes).to.deep.equal({
+            method: 'GET',
+            request: '/hello',
+            response_status: 200
+        });
+    });
+
+    it('falls back to a generic body when request fields are absent', function () {
+        const plugin = new OpenTelemetryLogsOutputPlugin(loggerProvider);
+        plugin.setEmitRequestLogs(true);
+
+        const record = new Record(RecordType.Request, Level.Info);
+        plugin.writeRecord(record);
+
+        const [logRecord] = exporter.getFinishedLogRecords();
+        expect(logRecord.body).to.equal('request');
+    });
+
     function createRecord() {
         const record = new Record(RecordType.Message, Level.Warn);
         record.metadata.message = 'context test';
         record.metadata.customFieldNames.push('custom');
         record.payload.custom = 'value';
         record.payload.internal = 'not included';
+        return record;
+    }
+
+    function createRequestRecord() {
+        const record = new Record(RecordType.Request, Level.Info);
+        record.payload.method = 'GET';
+        record.payload.request = '/hello';
+        record.payload.response_status = 200;
         return record;
     }
 });

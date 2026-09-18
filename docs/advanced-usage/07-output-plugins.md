@@ -31,7 +31,7 @@ It remains active unless explicitly replaced via `setOutputPlugins()`.
 > **Note:** This plugin relies on [`@opentelemetry/api-logs`](https://www.npmjs.com/package/@opentelemetry/api-logs), which is marked as experimental by the OpenTelemetry project. Therefore consider this plugin experimental as well and be prepared for potential breaking changes in future releases.
 
 Available since version 8.1.0. Emits log records via the [OpenTelemetry Logs API](https://opentelemetry.io/docs/specs/otel/logs/).
-Only message logs are forwarded, whereas request logs are not emitted.
+By default only message logs are forwarded; request logs can be enabled via [`setEmitRequestLogs()`](#emitting-request-logs).
 It requires a configured OTel SDK with a `LoggerProvider` and appropriate exporters, either via the global OTel SDK (e.g. `@opentelemetry/sdk-node`) or passed explicitly to the constructor. 
 The plugin itself does not initialize any OTel SDK components.
 
@@ -72,6 +72,27 @@ log.addOutputPlugin(plugin);
 | `FieldInclusionMode.CustomFieldsOnly` | Only custom fields are added as attributes (default) |
 | `FieldInclusionMode.AllFields` | All log record fields are added as attributes |
 | `FieldInclusionMode.None` | No fields are added as attributes |
+
+### Emitting Request Logs
+
+By default the plugin ignores request logs and only emits message logs. To emit request logs as OTel log records, enable it with `setEmitRequestLogs()`:
+
+```js
+import log, { OpenTelemetryLogsOutputPlugin, FieldInclusionMode } from 'cf-nodejs-logging-support';
+
+const plugin = new OpenTelemetryLogsOutputPlugin();
+plugin.setEmitRequestLogs(true);
+// Optional: forward all request fields as attributes
+plugin.setIncludeFieldsAsAttributes(FieldInclusionMode.AllFields);
+
+log.addOutputPlugin(plugin);
+```
+
+| Method | Description |
+|---|---|
+| `plugin.setEmitRequestLogs(enabled)` | Enables (`true`) or disables (`false`, default) emitting request logs as OTel log records. |
+
+Request logs have no message, so their OTel log body is a short summary of the `method`, `request` and `response_status` fields (e.g. `GET /hello 200`), falling back to `"request"`. All request fields are forwarded as attributes according to the configured [field inclusion mode](#including-fields-as-attributes).
 
 ### Exception Attributes
 
