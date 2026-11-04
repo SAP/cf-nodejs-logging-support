@@ -1,12 +1,11 @@
-const { context, SpanKind, trace, TraceFlags } = require('@opentelemetry/api');
-const { SeverityNumber } = require('@opentelemetry/api-logs');
+const { context, logs, SeverityNumber, SpanKind, trace, TraceFlags } = require('@opentelemetry/api');
 const { AsyncLocalStorageContextManager } = require('@opentelemetry/context-async-hooks');
 const {
     InMemoryLogRecordExporter,
     LoggerProvider,
     SimpleLogRecordProcessor
 } = require('@opentelemetry/sdk-logs');
-const { BasicTracerProvider } = require('@opentelemetry/sdk-trace-base');
+const { TracerProvider } = require('@opentelemetry/sdk-trace');
 const { expect } = require('chai');
 
 const { BUILD_CJS_LIB } = require('../paths');
@@ -37,8 +36,20 @@ describe('OpenTelemetryLogsOutputPlugin', function () {
         if (tracerProvider) {
             await tracerProvider.shutdown();
         }
+        logs.disable();
         context.disable();
         contextManager.disable();
+    });
+
+    it('uses the global logger provider from the unified API', function () {
+        logs.setGlobalLoggerProvider(loggerProvider);
+        const plugin = new OpenTelemetryLogsOutputPlugin();
+
+        plugin.writeRecord(createRecord());
+
+        const [logRecord] = exporter.getFinishedLogRecords();
+        expect(logRecord.body).to.equal('context test');
+        expect(logRecord.severityNumber).to.equal(SeverityNumber.WARN);
     });
 
     it('uses the active context when no context is configured', function () {
@@ -73,7 +84,7 @@ describe('OpenTelemetryLogsOutputPlugin', function () {
     });
 
     it('uses a resolved recording server context while preserving log fields', function () {
-        tracerProvider = new BasicTracerProvider();
+        tracerProvider = new TracerProvider();
         const serverSpan = tracerProvider.getTracer('test').startSpan('request', {
             kind: SpanKind.SERVER
         });

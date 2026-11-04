@@ -1,13 +1,13 @@
 import type { Context } from '@opentelemetry/api'
-import { logs as logsAPI, Logger, LoggerProvider, SeverityNumber, LogAttributes} from '@opentelemetry/api-logs'
+import { logs as logsAPI, Logger, LoggerProvider, SeverityNumber, Attributes} from '@opentelemetry/api'
 import { OutputPlugin } from './interfaces.js'
 import { Record, RecordType } from '../logger/record.js'
 import { Level } from '../logger/level.js'
 
-/** @experimental Requires `@opentelemetry/api-logs`, which is itself experimental and subject to breaking changes. */
+/** @experimental The output plugin API may change in future releases. */
 export type OpenTelemetryLogContextResolver = (record: Record) => Context | undefined
 
-/** @experimental Requires `@opentelemetry/api-logs`, which is itself experimental and subject to breaking changes. */
+/** @experimental The output plugin API may change in future releases. */
 export type OpenTelemetryLogContext = Context | OpenTelemetryLogContextResolver
 
 /**
@@ -22,8 +22,7 @@ export enum FieldInclusionMode {
 /**
  * Output plugin that emits log records via the OpenTelemetry Logs API.
  *
- * @experimental This plugin depends on `@opentelemetry/api-logs`, which is marked as experimental
- * by the OpenTelemetry project and may introduce breaking changes in future releases.
+ * @experimental The output plugin API may change in future releases.
  */
 export class OpenTelemetryLogsOutputPlugin implements OutputPlugin {
     private logger: Logger
@@ -62,7 +61,7 @@ export class OpenTelemetryLogsOutputPlugin implements OutputPlugin {
             return // ignore request logs
         }
 
-        const attributes = {} as LogAttributes
+        const attributes = {} as Attributes
         this.populateExceptionAttributes(record, attributes)
         this.populateAdditionalAttributes(record, attributes)
 
@@ -103,7 +102,7 @@ export class OpenTelemetryLogsOutputPlugin implements OutputPlugin {
         return SeverityNumber.UNSPECIFIED
     }
 
-    private populateExceptionAttributes(record: Record, attributes: LogAttributes) {
+    private populateExceptionAttributes(record: Record, attributes: Attributes) {
         if (record.metadata.errorName) {
             attributes["exception.type"] = record.metadata.errorName
         }
@@ -115,7 +114,7 @@ export class OpenTelemetryLogsOutputPlugin implements OutputPlugin {
         }
     }
 
-    private populateAdditionalAttributes(record: Record, attributes: LogAttributes) {
+    private populateAdditionalAttributes(record: Record, attributes: Attributes) {
         switch(this.includeFieldsAsAttributes) {
             case FieldInclusionMode.AllFields:
                 for (const key in record.payload) {

@@ -28,7 +28,7 @@ It remains active unless explicitly replaced via `setOutputPlugins()`.
 
 ## OpenTelemetryLogsOutputPlugin <span class="label label-yellow">Experimental</span>
 
-> **Note:** This plugin relies on [`@opentelemetry/api-logs`](https://www.npmjs.com/package/@opentelemetry/api-logs), which is marked as experimental by the OpenTelemetry project. Therefore consider this plugin experimental as well and be prepared for potential breaking changes in future releases.
+> **Note:** This plugin uses the Logs API included in [`@opentelemetry/api`](https://www.npmjs.com/package/@opentelemetry/api) since version 1.10.0. The output plugin API remains experimental and may change in future releases.
 
 Available since version 8.1.0. Emits log records via the [OpenTelemetry Logs API](https://opentelemetry.io/docs/specs/otel/logs/).
 Only message logs are forwarded, whereas request logs are not emitted.
